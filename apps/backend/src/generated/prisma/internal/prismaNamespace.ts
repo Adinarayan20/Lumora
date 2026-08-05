@@ -2392,11 +2392,18 @@ export type ObjectScalarFieldEnum =
 
 export const ReminderScalarFieldEnum = {
   id: 'id',
+  workspaceId: 'workspaceId',
   objectId: 'objectId',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   status: 'status',
   priority: 'priority',
   remindAt: 'remindAt',
+  snoozedUntil: 'snoozedUntil',
   completedAt: 'completedAt',
+  recurrence: 'recurrence',
+  revision: 'revision',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
 } as const;

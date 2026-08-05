@@ -264,6 +264,8 @@ export type UserWhereInput = {
   spacesUpdated?: Prisma.SpaceListRelationFilter;
   collectionsCreated?: Prisma.CollectionListRelationFilter;
   collectionsUpdated?: Prisma.CollectionListRelationFilter;
+  remindersCreated?: Prisma.ReminderListRelationFilter;
+  remindersUpdated?: Prisma.ReminderListRelationFilter;
 };
 
 export type UserOrderByWithRelationInput = {
@@ -295,6 +297,8 @@ export type UserOrderByWithRelationInput = {
   spacesUpdated?: Prisma.SpaceOrderByRelationAggregateInput;
   collectionsCreated?: Prisma.CollectionOrderByRelationAggregateInput;
   collectionsUpdated?: Prisma.CollectionOrderByRelationAggregateInput;
+  remindersCreated?: Prisma.ReminderOrderByRelationAggregateInput;
+  remindersUpdated?: Prisma.ReminderOrderByRelationAggregateInput;
 };
 
 export type UserWhereUniqueInput = Prisma.AtLeast<
@@ -330,6 +334,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<
     spacesUpdated?: Prisma.SpaceListRelationFilter;
     collectionsCreated?: Prisma.CollectionListRelationFilter;
     collectionsUpdated?: Prisma.CollectionListRelationFilter;
+    remindersCreated?: Prisma.ReminderListRelationFilter;
+    remindersUpdated?: Prisma.ReminderListRelationFilter;
   },
   'id' | 'email' | 'username'
 >;
@@ -406,6 +412,8 @@ export type UserCreateInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateInput = {
@@ -437,6 +445,8 @@ export type UserUncheckedCreateInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUpdateInput = {
@@ -468,6 +478,8 @@ export type UserUpdateInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateInput = {
@@ -499,6 +511,8 @@ export type UserUncheckedUpdateInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateManyInput = {
@@ -969,6 +983,60 @@ export type UserUpdateOneWithoutObjectsUpdatedNestedInput = {
   >;
 };
 
+export type UserCreateNestedOneWithoutRemindersCreatedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutRemindersCreatedInput,
+    Prisma.UserUncheckedCreateWithoutRemindersCreatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRemindersCreatedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserCreateNestedOneWithoutRemindersUpdatedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutRemindersUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutRemindersUpdatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRemindersUpdatedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutRemindersCreatedNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutRemindersCreatedInput,
+    Prisma.UserUncheckedCreateWithoutRemindersCreatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRemindersCreatedInput;
+  upsert?: Prisma.UserUpsertWithoutRemindersCreatedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutRemindersCreatedInput,
+      Prisma.UserUpdateWithoutRemindersCreatedInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutRemindersCreatedInput
+  >;
+};
+
+export type UserUpdateOneWithoutRemindersUpdatedNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutRemindersUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutRemindersUpdatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRemindersUpdatedInput;
+  upsert?: Prisma.UserUpsertWithoutRemindersUpdatedInput;
+  disconnect?: Prisma.UserWhereInput | boolean;
+  delete?: Prisma.UserWhereInput | boolean;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutRemindersUpdatedInput,
+      Prisma.UserUpdateWithoutRemindersUpdatedInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutRemindersUpdatedInput
+  >;
+};
+
 export type UserCreateNestedOneWithoutCollectionsCreatedInput = {
   create?: Prisma.XOR<
     Prisma.UserCreateWithoutCollectionsCreatedInput,
@@ -1051,6 +1119,8 @@ export type UserCreateWithoutOwnedWorkspacesInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
@@ -1081,6 +1151,8 @@ export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutOwnedWorkspacesInput = {
@@ -1139,6 +1211,8 @@ export type UserUpdateWithoutOwnedWorkspacesInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
@@ -1169,6 +1243,8 @@ export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutWorkspaceMembershipsInput = {
@@ -1199,6 +1275,8 @@ export type UserCreateWithoutWorkspaceMembershipsInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
@@ -1229,6 +1307,8 @@ export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
@@ -1287,6 +1367,8 @@ export type UserUpdateWithoutWorkspaceMembershipsInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
@@ -1317,6 +1399,8 @@ export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutSentInvitationsInput = {
@@ -1347,6 +1431,8 @@ export type UserCreateWithoutSentInvitationsInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutSentInvitationsInput = {
@@ -1377,6 +1463,8 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutSentInvitationsInput = {
@@ -1435,6 +1523,8 @@ export type UserUpdateWithoutSentInvitationsInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSentInvitationsInput = {
@@ -1465,6 +1555,8 @@ export type UserUncheckedUpdateWithoutSentInvitationsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutDevicesInput = {
@@ -1495,6 +1587,8 @@ export type UserCreateWithoutDevicesInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutDevicesInput = {
@@ -1525,6 +1619,8 @@ export type UserUncheckedCreateWithoutDevicesInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutDevicesInput = {
@@ -1583,6 +1679,8 @@ export type UserUpdateWithoutDevicesInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutDevicesInput = {
@@ -1613,6 +1711,8 @@ export type UserUncheckedUpdateWithoutDevicesInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutSessionsInput = {
@@ -1643,6 +1743,8 @@ export type UserCreateWithoutSessionsInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1673,6 +1775,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1731,6 +1835,8 @@ export type UserUpdateWithoutSessionsInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1761,6 +1867,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutOauthAccountsInput = {
@@ -1791,6 +1899,8 @@ export type UserCreateWithoutOauthAccountsInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutOauthAccountsInput = {
@@ -1821,6 +1931,8 @@ export type UserUncheckedCreateWithoutOauthAccountsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutOauthAccountsInput = {
@@ -1879,6 +1991,8 @@ export type UserUpdateWithoutOauthAccountsInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutOauthAccountsInput = {
@@ -1909,6 +2023,8 @@ export type UserUncheckedUpdateWithoutOauthAccountsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutUploadedFilesInput = {
@@ -1939,6 +2055,8 @@ export type UserCreateWithoutUploadedFilesInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutUploadedFilesInput = {
@@ -1969,6 +2087,8 @@ export type UserUncheckedCreateWithoutUploadedFilesInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutUploadedFilesInput = {
@@ -2027,6 +2147,8 @@ export type UserUpdateWithoutUploadedFilesInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutUploadedFilesInput = {
@@ -2057,6 +2179,8 @@ export type UserUncheckedUpdateWithoutUploadedFilesInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -2087,6 +2211,8 @@ export type UserCreateWithoutAuditLogsInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -2117,6 +2243,8 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -2175,6 +2303,8 @@ export type UserUpdateWithoutAuditLogsInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -2205,6 +2335,8 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutEventsInput = {
@@ -2235,6 +2367,8 @@ export type UserCreateWithoutEventsInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutEventsInput = {
@@ -2265,6 +2399,8 @@ export type UserUncheckedCreateWithoutEventsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutEventsInput = {
@@ -2323,6 +2459,8 @@ export type UserUpdateWithoutEventsInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutEventsInput = {
@@ -2353,6 +2491,8 @@ export type UserUncheckedUpdateWithoutEventsInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutSpacesCreatedInput = {
@@ -2383,6 +2523,8 @@ export type UserCreateWithoutSpacesCreatedInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutSpacesCreatedInput = {
@@ -2413,6 +2555,8 @@ export type UserUncheckedCreateWithoutSpacesCreatedInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutSpacesCreatedInput = {
@@ -2451,6 +2595,8 @@ export type UserCreateWithoutSpacesUpdatedInput = {
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutSpacesUpdatedInput = {
@@ -2481,6 +2627,8 @@ export type UserUncheckedCreateWithoutSpacesUpdatedInput = {
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutSpacesUpdatedInput = {
@@ -2539,6 +2687,8 @@ export type UserUpdateWithoutSpacesCreatedInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSpacesCreatedInput = {
@@ -2569,6 +2719,8 @@ export type UserUncheckedUpdateWithoutSpacesCreatedInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUpsertWithoutSpacesUpdatedInput = {
@@ -2619,6 +2771,8 @@ export type UserUpdateWithoutSpacesUpdatedInput = {
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSpacesUpdatedInput = {
@@ -2649,6 +2803,8 @@ export type UserUncheckedUpdateWithoutSpacesUpdatedInput = {
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutObjectsCreatedInput = {
@@ -2679,6 +2835,8 @@ export type UserCreateWithoutObjectsCreatedInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutObjectsCreatedInput = {
@@ -2709,6 +2867,8 @@ export type UserUncheckedCreateWithoutObjectsCreatedInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutObjectsCreatedInput = {
@@ -2747,6 +2907,8 @@ export type UserCreateWithoutObjectsUpdatedInput = {
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutObjectsUpdatedInput = {
@@ -2777,6 +2939,8 @@ export type UserUncheckedCreateWithoutObjectsUpdatedInput = {
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutObjectsUpdatedInput = {
@@ -2835,6 +2999,8 @@ export type UserUpdateWithoutObjectsCreatedInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutObjectsCreatedInput = {
@@ -2865,6 +3031,8 @@ export type UserUncheckedUpdateWithoutObjectsCreatedInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUpsertWithoutObjectsUpdatedInput = {
@@ -2915,6 +3083,8 @@ export type UserUpdateWithoutObjectsUpdatedInput = {
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutObjectsUpdatedInput = {
@@ -2945,6 +3115,320 @@ export type UserUncheckedUpdateWithoutObjectsUpdatedInput = {
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
+};
+
+export type UserCreateWithoutRemindersCreatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
+  spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
+  spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
+};
+
+export type UserUncheckedCreateWithoutRemindersCreatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
+  spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
+  spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
+};
+
+export type UserCreateOrConnectWithoutRemindersCreatedInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutRemindersCreatedInput,
+    Prisma.UserUncheckedCreateWithoutRemindersCreatedInput
+  >;
+};
+
+export type UserCreateWithoutRemindersUpdatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
+  spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
+  spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+};
+
+export type UserUncheckedCreateWithoutRemindersUpdatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
+  spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
+  spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+};
+
+export type UserCreateOrConnectWithoutRemindersUpdatedInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutRemindersUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutRemindersUpdatedInput
+  >;
+};
+
+export type UserUpsertWithoutRemindersCreatedInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutRemindersCreatedInput,
+    Prisma.UserUncheckedUpdateWithoutRemindersCreatedInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutRemindersCreatedInput,
+    Prisma.UserUncheckedCreateWithoutRemindersCreatedInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutRemindersCreatedInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutRemindersCreatedInput,
+    Prisma.UserUncheckedUpdateWithoutRemindersCreatedInput
+  >;
+};
+
+export type UserUpdateWithoutRemindersCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
+  spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
+  spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutRemindersCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
+  spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
+};
+
+export type UserUpsertWithoutRemindersUpdatedInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutRemindersUpdatedInput,
+    Prisma.UserUncheckedUpdateWithoutRemindersUpdatedInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutRemindersUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutRemindersUpdatedInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutRemindersUpdatedInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutRemindersUpdatedInput,
+    Prisma.UserUncheckedUpdateWithoutRemindersUpdatedInput
+  >;
+};
+
+export type UserUpdateWithoutRemindersUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
+  spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
+  spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutRemindersUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
+  spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
 };
 
 export type UserCreateWithoutCollectionsCreatedInput = {
@@ -2975,6 +3459,8 @@ export type UserCreateWithoutCollectionsCreatedInput = {
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutCollectionsCreatedInput = {
@@ -3005,6 +3491,8 @@ export type UserUncheckedCreateWithoutCollectionsCreatedInput = {
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutCollectionsCreatedInput = {
@@ -3043,6 +3531,8 @@ export type UserCreateWithoutCollectionsUpdatedInput = {
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  remindersCreated?: Prisma.ReminderCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutCollectionsUpdatedInput = {
@@ -3073,6 +3563,8 @@ export type UserUncheckedCreateWithoutCollectionsUpdatedInput = {
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
   collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersCreated?: Prisma.ReminderUncheckedCreateNestedManyWithoutCreatedByInput;
+  remindersUpdated?: Prisma.ReminderUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutCollectionsUpdatedInput = {
@@ -3131,6 +3623,8 @@ export type UserUpdateWithoutCollectionsCreatedInput = {
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutCollectionsCreatedInput = {
@@ -3161,6 +3655,8 @@ export type UserUncheckedUpdateWithoutCollectionsCreatedInput = {
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUpsertWithoutCollectionsUpdatedInput = {
@@ -3211,6 +3707,8 @@ export type UserUpdateWithoutCollectionsUpdatedInput = {
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutCollectionsUpdatedInput = {
@@ -3241,6 +3739,8 @@ export type UserUncheckedUpdateWithoutCollectionsUpdatedInput = {
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
   collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersCreated?: Prisma.ReminderUncheckedUpdateManyWithoutCreatedByNestedInput;
+  remindersUpdated?: Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 /**
@@ -3263,6 +3763,8 @@ export type UserCountOutputType = {
   spacesUpdated: number;
   collectionsCreated: number;
   collectionsUpdated: number;
+  remindersCreated: number;
+  remindersUpdated: number;
 };
 
 export type UserCountOutputTypeSelect<
@@ -3285,6 +3787,8 @@ export type UserCountOutputTypeSelect<
   spacesUpdated?: boolean | UserCountOutputTypeCountSpacesUpdatedArgs;
   collectionsCreated?: boolean | UserCountOutputTypeCountCollectionsCreatedArgs;
   collectionsUpdated?: boolean | UserCountOutputTypeCountCollectionsUpdatedArgs;
+  remindersCreated?: boolean | UserCountOutputTypeCountRemindersCreatedArgs;
+  remindersUpdated?: boolean | UserCountOutputTypeCountRemindersUpdatedArgs;
 };
 
 /**
@@ -3450,6 +3954,26 @@ export type UserCountOutputTypeCountCollectionsUpdatedArgs<
   where?: Prisma.CollectionWhereInput;
 };
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRemindersCreatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.ReminderWhereInput;
+};
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRemindersUpdatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.ReminderWhereInput;
+};
+
 export type UserSelect<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
@@ -3484,6 +4008,8 @@ export type UserSelect<
     spacesUpdated?: boolean | Prisma.User$spacesUpdatedArgs<ExtArgs>;
     collectionsCreated?: boolean | Prisma.User$collectionsCreatedArgs<ExtArgs>;
     collectionsUpdated?: boolean | Prisma.User$collectionsUpdatedArgs<ExtArgs>;
+    remindersCreated?: boolean | Prisma.User$remindersCreatedArgs<ExtArgs>;
+    remindersUpdated?: boolean | Prisma.User$remindersUpdatedArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['user']
@@ -3588,6 +4114,8 @@ export type UserInclude<
   spacesUpdated?: boolean | Prisma.User$spacesUpdatedArgs<ExtArgs>;
   collectionsCreated?: boolean | Prisma.User$collectionsCreatedArgs<ExtArgs>;
   collectionsUpdated?: boolean | Prisma.User$collectionsUpdatedArgs<ExtArgs>;
+  remindersCreated?: boolean | Prisma.User$remindersCreatedArgs<ExtArgs>;
+  remindersUpdated?: boolean | Prisma.User$remindersUpdatedArgs<ExtArgs>;
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type UserIncludeCreateManyAndReturn<
@@ -3620,6 +4148,8 @@ export type $UserPayload<
     spacesUpdated: Prisma.$SpacePayload<ExtArgs>[];
     collectionsCreated: Prisma.$CollectionPayload<ExtArgs>[];
     collectionsUpdated: Prisma.$CollectionPayload<ExtArgs>[];
+    remindersCreated: Prisma.$ReminderPayload<ExtArgs>[];
+    remindersUpdated: Prisma.$ReminderPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -4351,6 +4881,28 @@ export interface Prisma__UserClient<
   ): Prisma.PrismaPromise<
     | runtime.Types.Result.GetResult<
         Prisma.$CollectionPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  remindersCreated<T extends Prisma.User$remindersCreatedArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$remindersCreatedArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$ReminderPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  remindersUpdated<T extends Prisma.User$remindersUpdatedArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$remindersUpdatedArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$ReminderPayload<ExtArgs>,
         T,
         'findMany',
         GlobalOmitOptions
@@ -5290,6 +5842,64 @@ export type User$collectionsUpdatedArgs<
   skip?: number;
   distinct?:
     Prisma.CollectionScalarFieldEnum | Prisma.CollectionScalarFieldEnum[];
+};
+
+/**
+ * User.remindersCreated
+ */
+export type User$remindersCreatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Reminder
+   */
+  select?: Prisma.ReminderSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Reminder
+   */
+  omit?: Prisma.ReminderOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReminderInclude<ExtArgs> | null;
+  where?: Prisma.ReminderWhereInput;
+  orderBy?:
+    | Prisma.ReminderOrderByWithRelationInput
+    | Prisma.ReminderOrderByWithRelationInput[];
+  cursor?: Prisma.ReminderWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.ReminderScalarFieldEnum | Prisma.ReminderScalarFieldEnum[];
+};
+
+/**
+ * User.remindersUpdated
+ */
+export type User$remindersUpdatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Reminder
+   */
+  select?: Prisma.ReminderSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Reminder
+   */
+  omit?: Prisma.ReminderOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReminderInclude<ExtArgs> | null;
+  where?: Prisma.ReminderWhereInput;
+  orderBy?:
+    | Prisma.ReminderOrderByWithRelationInput
+    | Prisma.ReminderOrderByWithRelationInput[];
+  cursor?: Prisma.ReminderWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.ReminderScalarFieldEnum | Prisma.ReminderScalarFieldEnum[];
 };
 
 /**

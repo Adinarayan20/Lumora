@@ -20,73 +20,129 @@ export type ReminderModel =
 
 export type AggregateReminder = {
   _count: ReminderCountAggregateOutputType | null;
+  _avg: ReminderAvgAggregateOutputType | null;
+  _sum: ReminderSumAggregateOutputType | null;
   _min: ReminderMinAggregateOutputType | null;
   _max: ReminderMaxAggregateOutputType | null;
 };
 
+export type ReminderAvgAggregateOutputType = {
+  revision: number | null;
+};
+
+export type ReminderSumAggregateOutputType = {
+  revision: number | null;
+};
+
 export type ReminderMinAggregateOutputType = {
   id: string | null;
+  workspaceId: string | null;
   objectId: string | null;
+  createdById: string | null;
+  updatedById: string | null;
   status: $Enums.ReminderStatus | null;
   priority: $Enums.ReminderPriority | null;
   remindAt: Date | null;
+  snoozedUntil: Date | null;
   completedAt: Date | null;
+  revision: number | null;
+  deletedAt: Date | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
 
 export type ReminderMaxAggregateOutputType = {
   id: string | null;
+  workspaceId: string | null;
   objectId: string | null;
+  createdById: string | null;
+  updatedById: string | null;
   status: $Enums.ReminderStatus | null;
   priority: $Enums.ReminderPriority | null;
   remindAt: Date | null;
+  snoozedUntil: Date | null;
   completedAt: Date | null;
+  revision: number | null;
+  deletedAt: Date | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
 
 export type ReminderCountAggregateOutputType = {
   id: number;
+  workspaceId: number;
   objectId: number;
+  createdById: number;
+  updatedById: number;
   status: number;
   priority: number;
   remindAt: number;
+  snoozedUntil: number;
   completedAt: number;
+  recurrence: number;
+  revision: number;
+  deletedAt: number;
   createdAt: number;
   updatedAt: number;
   _all: number;
 };
 
+export type ReminderAvgAggregateInputType = {
+  revision?: true;
+};
+
+export type ReminderSumAggregateInputType = {
+  revision?: true;
+};
+
 export type ReminderMinAggregateInputType = {
   id?: true;
+  workspaceId?: true;
   objectId?: true;
+  createdById?: true;
+  updatedById?: true;
   status?: true;
   priority?: true;
   remindAt?: true;
+  snoozedUntil?: true;
   completedAt?: true;
+  revision?: true;
+  deletedAt?: true;
   createdAt?: true;
   updatedAt?: true;
 };
 
 export type ReminderMaxAggregateInputType = {
   id?: true;
+  workspaceId?: true;
   objectId?: true;
+  createdById?: true;
+  updatedById?: true;
   status?: true;
   priority?: true;
   remindAt?: true;
+  snoozedUntil?: true;
   completedAt?: true;
+  revision?: true;
+  deletedAt?: true;
   createdAt?: true;
   updatedAt?: true;
 };
 
 export type ReminderCountAggregateInputType = {
   id?: true;
+  workspaceId?: true;
   objectId?: true;
+  createdById?: true;
+  updatedById?: true;
   status?: true;
   priority?: true;
   remindAt?: true;
+  snoozedUntil?: true;
   completedAt?: true;
+  recurrence?: true;
+  revision?: true;
+  deletedAt?: true;
   createdAt?: true;
   updatedAt?: true;
   _all?: true;
@@ -135,6 +191,18 @@ export type ReminderAggregateArgs<
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    *
+   * Select which fields to average
+   **/
+  _avg?: ReminderAvgAggregateInputType;
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
+   * Select which fields to sum
+   **/
+  _sum?: ReminderSumAggregateInputType;
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
    * Select which fields to find the minimum value
    **/
   _min?: ReminderMinAggregateInputType;
@@ -167,20 +235,31 @@ export type ReminderGroupByArgs<
   take?: number;
   skip?: number;
   _count?: ReminderCountAggregateInputType | true;
+  _avg?: ReminderAvgAggregateInputType;
+  _sum?: ReminderSumAggregateInputType;
   _min?: ReminderMinAggregateInputType;
   _max?: ReminderMaxAggregateInputType;
 };
 
 export type ReminderGroupByOutputType = {
   id: string;
+  workspaceId: string;
   objectId: string;
+  createdById: string;
+  updatedById: string | null;
   status: $Enums.ReminderStatus;
   priority: $Enums.ReminderPriority;
   remindAt: Date;
+  snoozedUntil: Date | null;
   completedAt: Date | null;
+  recurrence: runtime.JsonValue | null;
+  revision: number;
+  deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   _count: ReminderCountAggregateOutputType | null;
+  _avg: ReminderAvgAggregateOutputType | null;
+  _sum: ReminderSumAggregateOutputType | null;
   _min: ReminderMinAggregateOutputType | null;
   _max: ReminderMaxAggregateOutputType | null;
 };
@@ -203,32 +282,62 @@ export type ReminderWhereInput = {
   OR?: Prisma.ReminderWhereInput[];
   NOT?: Prisma.ReminderWhereInput | Prisma.ReminderWhereInput[];
   id?: Prisma.UuidFilter<'Reminder'> | string;
+  workspaceId?: Prisma.UuidFilter<'Reminder'> | string;
   objectId?: Prisma.UuidFilter<'Reminder'> | string;
+  createdById?: Prisma.UuidFilter<'Reminder'> | string;
+  updatedById?: Prisma.UuidNullableFilter<'Reminder'> | string | null;
   status?: Prisma.EnumReminderStatusFilter<'Reminder'> | $Enums.ReminderStatus;
   priority?:
     Prisma.EnumReminderPriorityFilter<'Reminder'> | $Enums.ReminderPriority;
   remindAt?: Prisma.DateTimeFilter<'Reminder'> | Date | string;
+  snoozedUntil?:
+    Prisma.DateTimeNullableFilter<'Reminder'> | Date | string | null;
   completedAt?:
     Prisma.DateTimeNullableFilter<'Reminder'> | Date | string | null;
+  recurrence?: Prisma.JsonNullableFilter<'Reminder'>;
+  revision?: Prisma.IntFilter<'Reminder'> | number;
+  deletedAt?: Prisma.DateTimeNullableFilter<'Reminder'> | Date | string | null;
   createdAt?: Prisma.DateTimeFilter<'Reminder'> | Date | string;
   updatedAt?: Prisma.DateTimeFilter<'Reminder'> | Date | string;
+  workspace?: Prisma.XOR<
+    Prisma.WorkspaceScalarRelationFilter,
+    Prisma.WorkspaceWhereInput
+  >;
   object?: Prisma.XOR<
     Prisma.ObjectScalarRelationFilter,
     Prisma.ObjectWhereInput
   >;
+  createdBy?: Prisma.XOR<
+    Prisma.UserScalarRelationFilter,
+    Prisma.UserWhereInput
+  >;
+  updatedBy?: Prisma.XOR<
+    Prisma.UserNullableScalarRelationFilter,
+    Prisma.UserWhereInput
+  > | null;
   notifications?: Prisma.NotificationListRelationFilter;
 };
 
 export type ReminderOrderByWithRelationInput = {
   id?: Prisma.SortOrder;
+  workspaceId?: Prisma.SortOrder;
   objectId?: Prisma.SortOrder;
+  createdById?: Prisma.SortOrder;
+  updatedById?: Prisma.SortOrderInput | Prisma.SortOrder;
   status?: Prisma.SortOrder;
   priority?: Prisma.SortOrder;
   remindAt?: Prisma.SortOrder;
+  snoozedUntil?: Prisma.SortOrderInput | Prisma.SortOrder;
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+  recurrence?: Prisma.SortOrderInput | Prisma.SortOrder;
+  revision?: Prisma.SortOrder;
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  workspace?: Prisma.WorkspaceOrderByWithRelationInput;
   object?: Prisma.ObjectOrderByWithRelationInput;
+  createdBy?: Prisma.UserOrderByWithRelationInput;
+  updatedBy?: Prisma.UserOrderByWithRelationInput;
   notifications?: Prisma.NotificationOrderByRelationAggregateInput;
 };
 
@@ -239,19 +348,40 @@ export type ReminderWhereUniqueInput = Prisma.AtLeast<
     AND?: Prisma.ReminderWhereInput | Prisma.ReminderWhereInput[];
     OR?: Prisma.ReminderWhereInput[];
     NOT?: Prisma.ReminderWhereInput | Prisma.ReminderWhereInput[];
+    workspaceId?: Prisma.UuidFilter<'Reminder'> | string;
+    createdById?: Prisma.UuidFilter<'Reminder'> | string;
+    updatedById?: Prisma.UuidNullableFilter<'Reminder'> | string | null;
     status?:
       Prisma.EnumReminderStatusFilter<'Reminder'> | $Enums.ReminderStatus;
     priority?:
       Prisma.EnumReminderPriorityFilter<'Reminder'> | $Enums.ReminderPriority;
     remindAt?: Prisma.DateTimeFilter<'Reminder'> | Date | string;
+    snoozedUntil?:
+      Prisma.DateTimeNullableFilter<'Reminder'> | Date | string | null;
     completedAt?:
+      Prisma.DateTimeNullableFilter<'Reminder'> | Date | string | null;
+    recurrence?: Prisma.JsonNullableFilter<'Reminder'>;
+    revision?: Prisma.IntFilter<'Reminder'> | number;
+    deletedAt?:
       Prisma.DateTimeNullableFilter<'Reminder'> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<'Reminder'> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<'Reminder'> | Date | string;
+    workspace?: Prisma.XOR<
+      Prisma.WorkspaceScalarRelationFilter,
+      Prisma.WorkspaceWhereInput
+    >;
     object?: Prisma.XOR<
       Prisma.ObjectScalarRelationFilter,
       Prisma.ObjectWhereInput
     >;
+    createdBy?: Prisma.XOR<
+      Prisma.UserScalarRelationFilter,
+      Prisma.UserWhereInput
+    >;
+    updatedBy?: Prisma.XOR<
+      Prisma.UserNullableScalarRelationFilter,
+      Prisma.UserWhereInput
+    > | null;
     notifications?: Prisma.NotificationListRelationFilter;
   },
   'id' | 'objectId'
@@ -259,16 +389,25 @@ export type ReminderWhereUniqueInput = Prisma.AtLeast<
 
 export type ReminderOrderByWithAggregationInput = {
   id?: Prisma.SortOrder;
+  workspaceId?: Prisma.SortOrder;
   objectId?: Prisma.SortOrder;
+  createdById?: Prisma.SortOrder;
+  updatedById?: Prisma.SortOrderInput | Prisma.SortOrder;
   status?: Prisma.SortOrder;
   priority?: Prisma.SortOrder;
   remindAt?: Prisma.SortOrder;
+  snoozedUntil?: Prisma.SortOrderInput | Prisma.SortOrder;
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+  recurrence?: Prisma.SortOrderInput | Prisma.SortOrder;
+  revision?: Prisma.SortOrder;
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
   _count?: Prisma.ReminderCountOrderByAggregateInput;
+  _avg?: Prisma.ReminderAvgOrderByAggregateInput;
   _max?: Prisma.ReminderMaxOrderByAggregateInput;
   _min?: Prisma.ReminderMinOrderByAggregateInput;
+  _sum?: Prisma.ReminderSumOrderByAggregateInput;
 };
 
 export type ReminderScalarWhereWithAggregatesInput = {
@@ -280,7 +419,11 @@ export type ReminderScalarWhereWithAggregatesInput = {
     | Prisma.ReminderScalarWhereWithAggregatesInput
     | Prisma.ReminderScalarWhereWithAggregatesInput[];
   id?: Prisma.UuidWithAggregatesFilter<'Reminder'> | string;
+  workspaceId?: Prisma.UuidWithAggregatesFilter<'Reminder'> | string;
   objectId?: Prisma.UuidWithAggregatesFilter<'Reminder'> | string;
+  createdById?: Prisma.UuidWithAggregatesFilter<'Reminder'> | string;
+  updatedById?:
+    Prisma.UuidNullableWithAggregatesFilter<'Reminder'> | string | null;
   status?:
     | Prisma.EnumReminderStatusWithAggregatesFilter<'Reminder'>
     | $Enums.ReminderStatus;
@@ -288,7 +431,19 @@ export type ReminderScalarWhereWithAggregatesInput = {
     | Prisma.EnumReminderPriorityWithAggregatesFilter<'Reminder'>
     | $Enums.ReminderPriority;
   remindAt?: Prisma.DateTimeWithAggregatesFilter<'Reminder'> | Date | string;
+  snoozedUntil?:
+    | Prisma.DateTimeNullableWithAggregatesFilter<'Reminder'>
+    | Date
+    | string
+    | null;
   completedAt?:
+    | Prisma.DateTimeNullableWithAggregatesFilter<'Reminder'>
+    | Date
+    | string
+    | null;
+  recurrence?: Prisma.JsonNullableWithAggregatesFilter<'Reminder'>;
+  revision?: Prisma.IntWithAggregatesFilter<'Reminder'> | number;
+  deletedAt?:
     | Prisma.DateTimeNullableWithAggregatesFilter<'Reminder'>
     | Date
     | string
@@ -302,20 +457,34 @@ export type ReminderCreateInput = {
   status?: $Enums.ReminderStatus;
   priority?: $Enums.ReminderPriority;
   remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
   completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutRemindersInput;
   object: Prisma.ObjectCreateNestedOneWithoutReminderInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutRemindersCreatedInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutRemindersUpdatedInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutReminderInput;
 };
 
 export type ReminderUncheckedCreateInput = {
   id?: string;
+  workspaceId: string;
   objectId: string;
+  createdById: string;
+  updatedById?: string | null;
   status?: $Enums.ReminderStatus;
   priority?: $Enums.ReminderPriority;
   remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
   completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutReminderInput;
@@ -329,24 +498,42 @@ export type ReminderUpdateInput = {
     | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
     | $Enums.ReminderPriority;
   remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
     Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRemindersNestedInput;
   object?: Prisma.ObjectUpdateOneRequiredWithoutReminderNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutRemindersCreatedNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutRemindersUpdatedNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutReminderNestedInput;
 };
 
 export type ReminderUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
   objectId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   status?:
     Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
   priority?:
     | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
     | $Enums.ReminderPriority;
   remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
     Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -355,11 +542,18 @@ export type ReminderUncheckedUpdateInput = {
 
 export type ReminderCreateManyInput = {
   id?: string;
+  workspaceId: string;
   objectId: string;
+  createdById: string;
+  updatedById?: string | null;
   status?: $Enums.ReminderStatus;
   priority?: $Enums.ReminderPriority;
   remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
   completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };
@@ -372,7 +566,13 @@ export type ReminderUpdateManyMutationInput = {
     | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
     | $Enums.ReminderPriority;
   remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
     Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -380,17 +580,36 @@ export type ReminderUpdateManyMutationInput = {
 
 export type ReminderUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
   objectId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   status?:
     Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
   priority?:
     | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
     | $Enums.ReminderPriority;
   remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
     Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+
+export type ReminderListRelationFilter = {
+  every?: Prisma.ReminderWhereInput;
+  some?: Prisma.ReminderWhereInput;
+  none?: Prisma.ReminderWhereInput;
+};
+
+export type ReminderOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder;
 };
 
 export type ReminderNullableScalarRelationFilter = {
@@ -400,40 +619,337 @@ export type ReminderNullableScalarRelationFilter = {
 
 export type ReminderCountOrderByAggregateInput = {
   id?: Prisma.SortOrder;
+  workspaceId?: Prisma.SortOrder;
   objectId?: Prisma.SortOrder;
+  createdById?: Prisma.SortOrder;
+  updatedById?: Prisma.SortOrder;
   status?: Prisma.SortOrder;
   priority?: Prisma.SortOrder;
   remindAt?: Prisma.SortOrder;
+  snoozedUntil?: Prisma.SortOrder;
   completedAt?: Prisma.SortOrder;
+  recurrence?: Prisma.SortOrder;
+  revision?: Prisma.SortOrder;
+  deletedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
 };
 
+export type ReminderAvgOrderByAggregateInput = {
+  revision?: Prisma.SortOrder;
+};
+
 export type ReminderMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder;
+  workspaceId?: Prisma.SortOrder;
   objectId?: Prisma.SortOrder;
+  createdById?: Prisma.SortOrder;
+  updatedById?: Prisma.SortOrder;
   status?: Prisma.SortOrder;
   priority?: Prisma.SortOrder;
   remindAt?: Prisma.SortOrder;
+  snoozedUntil?: Prisma.SortOrder;
   completedAt?: Prisma.SortOrder;
+  revision?: Prisma.SortOrder;
+  deletedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
 };
 
 export type ReminderMinOrderByAggregateInput = {
   id?: Prisma.SortOrder;
+  workspaceId?: Prisma.SortOrder;
   objectId?: Prisma.SortOrder;
+  createdById?: Prisma.SortOrder;
+  updatedById?: Prisma.SortOrder;
   status?: Prisma.SortOrder;
   priority?: Prisma.SortOrder;
   remindAt?: Prisma.SortOrder;
+  snoozedUntil?: Prisma.SortOrder;
   completedAt?: Prisma.SortOrder;
+  revision?: Prisma.SortOrder;
+  deletedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+};
+
+export type ReminderSumOrderByAggregateInput = {
+  revision?: Prisma.SortOrder;
 };
 
 export type ReminderScalarRelationFilter = {
   is?: Prisma.ReminderWhereInput;
   isNot?: Prisma.ReminderWhereInput;
+};
+
+export type ReminderCreateNestedManyWithoutCreatedByInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutCreatedByInput,
+        Prisma.ReminderUncheckedCreateWithoutCreatedByInput
+      >
+    | Prisma.ReminderCreateWithoutCreatedByInput[]
+    | Prisma.ReminderUncheckedCreateWithoutCreatedByInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutCreatedByInput
+    | Prisma.ReminderCreateOrConnectWithoutCreatedByInput[];
+  createMany?: Prisma.ReminderCreateManyCreatedByInputEnvelope;
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+};
+
+export type ReminderCreateNestedManyWithoutUpdatedByInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutUpdatedByInput,
+        Prisma.ReminderUncheckedCreateWithoutUpdatedByInput
+      >
+    | Prisma.ReminderCreateWithoutUpdatedByInput[]
+    | Prisma.ReminderUncheckedCreateWithoutUpdatedByInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutUpdatedByInput
+    | Prisma.ReminderCreateOrConnectWithoutUpdatedByInput[];
+  createMany?: Prisma.ReminderCreateManyUpdatedByInputEnvelope;
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+};
+
+export type ReminderUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutCreatedByInput,
+        Prisma.ReminderUncheckedCreateWithoutCreatedByInput
+      >
+    | Prisma.ReminderCreateWithoutCreatedByInput[]
+    | Prisma.ReminderUncheckedCreateWithoutCreatedByInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutCreatedByInput
+    | Prisma.ReminderCreateOrConnectWithoutCreatedByInput[];
+  createMany?: Prisma.ReminderCreateManyCreatedByInputEnvelope;
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+};
+
+export type ReminderUncheckedCreateNestedManyWithoutUpdatedByInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutUpdatedByInput,
+        Prisma.ReminderUncheckedCreateWithoutUpdatedByInput
+      >
+    | Prisma.ReminderCreateWithoutUpdatedByInput[]
+    | Prisma.ReminderUncheckedCreateWithoutUpdatedByInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutUpdatedByInput
+    | Prisma.ReminderCreateOrConnectWithoutUpdatedByInput[];
+  createMany?: Prisma.ReminderCreateManyUpdatedByInputEnvelope;
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+};
+
+export type ReminderUpdateManyWithoutCreatedByNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutCreatedByInput,
+        Prisma.ReminderUncheckedCreateWithoutCreatedByInput
+      >
+    | Prisma.ReminderCreateWithoutCreatedByInput[]
+    | Prisma.ReminderUncheckedCreateWithoutCreatedByInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutCreatedByInput
+    | Prisma.ReminderCreateOrConnectWithoutCreatedByInput[];
+  upsert?:
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutCreatedByInput
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutCreatedByInput[];
+  createMany?: Prisma.ReminderCreateManyCreatedByInputEnvelope;
+  set?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  disconnect?:
+    Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  delete?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  update?:
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutCreatedByInput
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutCreatedByInput[];
+  updateMany?:
+    | Prisma.ReminderUpdateManyWithWhereWithoutCreatedByInput
+    | Prisma.ReminderUpdateManyWithWhereWithoutCreatedByInput[];
+  deleteMany?:
+    Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[];
+};
+
+export type ReminderUpdateManyWithoutUpdatedByNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutUpdatedByInput,
+        Prisma.ReminderUncheckedCreateWithoutUpdatedByInput
+      >
+    | Prisma.ReminderCreateWithoutUpdatedByInput[]
+    | Prisma.ReminderUncheckedCreateWithoutUpdatedByInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutUpdatedByInput
+    | Prisma.ReminderCreateOrConnectWithoutUpdatedByInput[];
+  upsert?:
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutUpdatedByInput
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutUpdatedByInput[];
+  createMany?: Prisma.ReminderCreateManyUpdatedByInputEnvelope;
+  set?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  disconnect?:
+    Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  delete?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  update?:
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutUpdatedByInput
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutUpdatedByInput[];
+  updateMany?:
+    | Prisma.ReminderUpdateManyWithWhereWithoutUpdatedByInput
+    | Prisma.ReminderUpdateManyWithWhereWithoutUpdatedByInput[];
+  deleteMany?:
+    Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[];
+};
+
+export type ReminderUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutCreatedByInput,
+        Prisma.ReminderUncheckedCreateWithoutCreatedByInput
+      >
+    | Prisma.ReminderCreateWithoutCreatedByInput[]
+    | Prisma.ReminderUncheckedCreateWithoutCreatedByInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutCreatedByInput
+    | Prisma.ReminderCreateOrConnectWithoutCreatedByInput[];
+  upsert?:
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutCreatedByInput
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutCreatedByInput[];
+  createMany?: Prisma.ReminderCreateManyCreatedByInputEnvelope;
+  set?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  disconnect?:
+    Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  delete?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  update?:
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutCreatedByInput
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutCreatedByInput[];
+  updateMany?:
+    | Prisma.ReminderUpdateManyWithWhereWithoutCreatedByInput
+    | Prisma.ReminderUpdateManyWithWhereWithoutCreatedByInput[];
+  deleteMany?:
+    Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[];
+};
+
+export type ReminderUncheckedUpdateManyWithoutUpdatedByNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutUpdatedByInput,
+        Prisma.ReminderUncheckedCreateWithoutUpdatedByInput
+      >
+    | Prisma.ReminderCreateWithoutUpdatedByInput[]
+    | Prisma.ReminderUncheckedCreateWithoutUpdatedByInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutUpdatedByInput
+    | Prisma.ReminderCreateOrConnectWithoutUpdatedByInput[];
+  upsert?:
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutUpdatedByInput
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutUpdatedByInput[];
+  createMany?: Prisma.ReminderCreateManyUpdatedByInputEnvelope;
+  set?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  disconnect?:
+    Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  delete?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  update?:
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutUpdatedByInput
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutUpdatedByInput[];
+  updateMany?:
+    | Prisma.ReminderUpdateManyWithWhereWithoutUpdatedByInput
+    | Prisma.ReminderUpdateManyWithWhereWithoutUpdatedByInput[];
+  deleteMany?:
+    Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[];
+};
+
+export type ReminderCreateNestedManyWithoutWorkspaceInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutWorkspaceInput,
+        Prisma.ReminderUncheckedCreateWithoutWorkspaceInput
+      >
+    | Prisma.ReminderCreateWithoutWorkspaceInput[]
+    | Prisma.ReminderUncheckedCreateWithoutWorkspaceInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutWorkspaceInput
+    | Prisma.ReminderCreateOrConnectWithoutWorkspaceInput[];
+  createMany?: Prisma.ReminderCreateManyWorkspaceInputEnvelope;
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+};
+
+export type ReminderUncheckedCreateNestedManyWithoutWorkspaceInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutWorkspaceInput,
+        Prisma.ReminderUncheckedCreateWithoutWorkspaceInput
+      >
+    | Prisma.ReminderCreateWithoutWorkspaceInput[]
+    | Prisma.ReminderUncheckedCreateWithoutWorkspaceInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutWorkspaceInput
+    | Prisma.ReminderCreateOrConnectWithoutWorkspaceInput[];
+  createMany?: Prisma.ReminderCreateManyWorkspaceInputEnvelope;
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+};
+
+export type ReminderUpdateManyWithoutWorkspaceNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutWorkspaceInput,
+        Prisma.ReminderUncheckedCreateWithoutWorkspaceInput
+      >
+    | Prisma.ReminderCreateWithoutWorkspaceInput[]
+    | Prisma.ReminderUncheckedCreateWithoutWorkspaceInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutWorkspaceInput
+    | Prisma.ReminderCreateOrConnectWithoutWorkspaceInput[];
+  upsert?:
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutWorkspaceInput
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutWorkspaceInput[];
+  createMany?: Prisma.ReminderCreateManyWorkspaceInputEnvelope;
+  set?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  disconnect?:
+    Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  delete?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  update?:
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutWorkspaceInput
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutWorkspaceInput[];
+  updateMany?:
+    | Prisma.ReminderUpdateManyWithWhereWithoutWorkspaceInput
+    | Prisma.ReminderUpdateManyWithWhereWithoutWorkspaceInput[];
+  deleteMany?:
+    Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[];
+};
+
+export type ReminderUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.ReminderCreateWithoutWorkspaceInput,
+        Prisma.ReminderUncheckedCreateWithoutWorkspaceInput
+      >
+    | Prisma.ReminderCreateWithoutWorkspaceInput[]
+    | Prisma.ReminderUncheckedCreateWithoutWorkspaceInput[];
+  connectOrCreate?:
+    | Prisma.ReminderCreateOrConnectWithoutWorkspaceInput
+    | Prisma.ReminderCreateOrConnectWithoutWorkspaceInput[];
+  upsert?:
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutWorkspaceInput
+    | Prisma.ReminderUpsertWithWhereUniqueWithoutWorkspaceInput[];
+  createMany?: Prisma.ReminderCreateManyWorkspaceInputEnvelope;
+  set?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  disconnect?:
+    Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  delete?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  connect?: Prisma.ReminderWhereUniqueInput | Prisma.ReminderWhereUniqueInput[];
+  update?:
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutWorkspaceInput
+    | Prisma.ReminderUpdateWithWhereUniqueWithoutWorkspaceInput[];
+  updateMany?:
+    | Prisma.ReminderUpdateManyWithWhereWithoutWorkspaceInput
+    | Prisma.ReminderUpdateManyWithWhereWithoutWorkspaceInput[];
+  deleteMany?:
+    Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[];
 };
 
 export type ReminderCreateNestedOneWithoutObjectInput = {
@@ -526,23 +1042,298 @@ export type ReminderUpdateOneRequiredWithoutNotificationsNestedInput = {
   >;
 };
 
+export type ReminderCreateWithoutCreatedByInput = {
+  id?: string;
+  status?: $Enums.ReminderStatus;
+  priority?: $Enums.ReminderPriority;
+  remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
+  completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutRemindersInput;
+  object: Prisma.ObjectCreateNestedOneWithoutReminderInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutRemindersUpdatedInput;
+  notifications?: Prisma.NotificationCreateNestedManyWithoutReminderInput;
+};
+
+export type ReminderUncheckedCreateWithoutCreatedByInput = {
+  id?: string;
+  workspaceId: string;
+  objectId: string;
+  updatedById?: string | null;
+  status?: $Enums.ReminderStatus;
+  priority?: $Enums.ReminderPriority;
+  remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
+  completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutReminderInput;
+};
+
+export type ReminderCreateOrConnectWithoutCreatedByInput = {
+  where: Prisma.ReminderWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.ReminderCreateWithoutCreatedByInput,
+    Prisma.ReminderUncheckedCreateWithoutCreatedByInput
+  >;
+};
+
+export type ReminderCreateManyCreatedByInputEnvelope = {
+  data:
+    | Prisma.ReminderCreateManyCreatedByInput
+    | Prisma.ReminderCreateManyCreatedByInput[];
+  skipDuplicates?: boolean;
+};
+
+export type ReminderCreateWithoutUpdatedByInput = {
+  id?: string;
+  status?: $Enums.ReminderStatus;
+  priority?: $Enums.ReminderPriority;
+  remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
+  completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutRemindersInput;
+  object: Prisma.ObjectCreateNestedOneWithoutReminderInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutRemindersCreatedInput;
+  notifications?: Prisma.NotificationCreateNestedManyWithoutReminderInput;
+};
+
+export type ReminderUncheckedCreateWithoutUpdatedByInput = {
+  id?: string;
+  workspaceId: string;
+  objectId: string;
+  createdById: string;
+  status?: $Enums.ReminderStatus;
+  priority?: $Enums.ReminderPriority;
+  remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
+  completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutReminderInput;
+};
+
+export type ReminderCreateOrConnectWithoutUpdatedByInput = {
+  where: Prisma.ReminderWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.ReminderCreateWithoutUpdatedByInput,
+    Prisma.ReminderUncheckedCreateWithoutUpdatedByInput
+  >;
+};
+
+export type ReminderCreateManyUpdatedByInputEnvelope = {
+  data:
+    | Prisma.ReminderCreateManyUpdatedByInput
+    | Prisma.ReminderCreateManyUpdatedByInput[];
+  skipDuplicates?: boolean;
+};
+
+export type ReminderUpsertWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.ReminderWhereUniqueInput;
+  update: Prisma.XOR<
+    Prisma.ReminderUpdateWithoutCreatedByInput,
+    Prisma.ReminderUncheckedUpdateWithoutCreatedByInput
+  >;
+  create: Prisma.XOR<
+    Prisma.ReminderCreateWithoutCreatedByInput,
+    Prisma.ReminderUncheckedCreateWithoutCreatedByInput
+  >;
+};
+
+export type ReminderUpdateWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.ReminderWhereUniqueInput;
+  data: Prisma.XOR<
+    Prisma.ReminderUpdateWithoutCreatedByInput,
+    Prisma.ReminderUncheckedUpdateWithoutCreatedByInput
+  >;
+};
+
+export type ReminderUpdateManyWithWhereWithoutCreatedByInput = {
+  where: Prisma.ReminderScalarWhereInput;
+  data: Prisma.XOR<
+    Prisma.ReminderUpdateManyMutationInput,
+    Prisma.ReminderUncheckedUpdateManyWithoutCreatedByInput
+  >;
+};
+
+export type ReminderScalarWhereInput = {
+  AND?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[];
+  OR?: Prisma.ReminderScalarWhereInput[];
+  NOT?: Prisma.ReminderScalarWhereInput | Prisma.ReminderScalarWhereInput[];
+  id?: Prisma.UuidFilter<'Reminder'> | string;
+  workspaceId?: Prisma.UuidFilter<'Reminder'> | string;
+  objectId?: Prisma.UuidFilter<'Reminder'> | string;
+  createdById?: Prisma.UuidFilter<'Reminder'> | string;
+  updatedById?: Prisma.UuidNullableFilter<'Reminder'> | string | null;
+  status?: Prisma.EnumReminderStatusFilter<'Reminder'> | $Enums.ReminderStatus;
+  priority?:
+    Prisma.EnumReminderPriorityFilter<'Reminder'> | $Enums.ReminderPriority;
+  remindAt?: Prisma.DateTimeFilter<'Reminder'> | Date | string;
+  snoozedUntil?:
+    Prisma.DateTimeNullableFilter<'Reminder'> | Date | string | null;
+  completedAt?:
+    Prisma.DateTimeNullableFilter<'Reminder'> | Date | string | null;
+  recurrence?: Prisma.JsonNullableFilter<'Reminder'>;
+  revision?: Prisma.IntFilter<'Reminder'> | number;
+  deletedAt?: Prisma.DateTimeNullableFilter<'Reminder'> | Date | string | null;
+  createdAt?: Prisma.DateTimeFilter<'Reminder'> | Date | string;
+  updatedAt?: Prisma.DateTimeFilter<'Reminder'> | Date | string;
+};
+
+export type ReminderUpsertWithWhereUniqueWithoutUpdatedByInput = {
+  where: Prisma.ReminderWhereUniqueInput;
+  update: Prisma.XOR<
+    Prisma.ReminderUpdateWithoutUpdatedByInput,
+    Prisma.ReminderUncheckedUpdateWithoutUpdatedByInput
+  >;
+  create: Prisma.XOR<
+    Prisma.ReminderCreateWithoutUpdatedByInput,
+    Prisma.ReminderUncheckedCreateWithoutUpdatedByInput
+  >;
+};
+
+export type ReminderUpdateWithWhereUniqueWithoutUpdatedByInput = {
+  where: Prisma.ReminderWhereUniqueInput;
+  data: Prisma.XOR<
+    Prisma.ReminderUpdateWithoutUpdatedByInput,
+    Prisma.ReminderUncheckedUpdateWithoutUpdatedByInput
+  >;
+};
+
+export type ReminderUpdateManyWithWhereWithoutUpdatedByInput = {
+  where: Prisma.ReminderScalarWhereInput;
+  data: Prisma.XOR<
+    Prisma.ReminderUpdateManyMutationInput,
+    Prisma.ReminderUncheckedUpdateManyWithoutUpdatedByInput
+  >;
+};
+
+export type ReminderCreateWithoutWorkspaceInput = {
+  id?: string;
+  status?: $Enums.ReminderStatus;
+  priority?: $Enums.ReminderPriority;
+  remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
+  completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  object: Prisma.ObjectCreateNestedOneWithoutReminderInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutRemindersCreatedInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutRemindersUpdatedInput;
+  notifications?: Prisma.NotificationCreateNestedManyWithoutReminderInput;
+};
+
+export type ReminderUncheckedCreateWithoutWorkspaceInput = {
+  id?: string;
+  objectId: string;
+  createdById: string;
+  updatedById?: string | null;
+  status?: $Enums.ReminderStatus;
+  priority?: $Enums.ReminderPriority;
+  remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
+  completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutReminderInput;
+};
+
+export type ReminderCreateOrConnectWithoutWorkspaceInput = {
+  where: Prisma.ReminderWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.ReminderCreateWithoutWorkspaceInput,
+    Prisma.ReminderUncheckedCreateWithoutWorkspaceInput
+  >;
+};
+
+export type ReminderCreateManyWorkspaceInputEnvelope = {
+  data:
+    | Prisma.ReminderCreateManyWorkspaceInput
+    | Prisma.ReminderCreateManyWorkspaceInput[];
+  skipDuplicates?: boolean;
+};
+
+export type ReminderUpsertWithWhereUniqueWithoutWorkspaceInput = {
+  where: Prisma.ReminderWhereUniqueInput;
+  update: Prisma.XOR<
+    Prisma.ReminderUpdateWithoutWorkspaceInput,
+    Prisma.ReminderUncheckedUpdateWithoutWorkspaceInput
+  >;
+  create: Prisma.XOR<
+    Prisma.ReminderCreateWithoutWorkspaceInput,
+    Prisma.ReminderUncheckedCreateWithoutWorkspaceInput
+  >;
+};
+
+export type ReminderUpdateWithWhereUniqueWithoutWorkspaceInput = {
+  where: Prisma.ReminderWhereUniqueInput;
+  data: Prisma.XOR<
+    Prisma.ReminderUpdateWithoutWorkspaceInput,
+    Prisma.ReminderUncheckedUpdateWithoutWorkspaceInput
+  >;
+};
+
+export type ReminderUpdateManyWithWhereWithoutWorkspaceInput = {
+  where: Prisma.ReminderScalarWhereInput;
+  data: Prisma.XOR<
+    Prisma.ReminderUpdateManyMutationInput,
+    Prisma.ReminderUncheckedUpdateManyWithoutWorkspaceInput
+  >;
+};
+
 export type ReminderCreateWithoutObjectInput = {
   id?: string;
   status?: $Enums.ReminderStatus;
   priority?: $Enums.ReminderPriority;
   remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
   completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutRemindersInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutRemindersCreatedInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutRemindersUpdatedInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutReminderInput;
 };
 
 export type ReminderUncheckedCreateWithoutObjectInput = {
   id?: string;
+  workspaceId: string;
+  createdById: string;
+  updatedById?: string | null;
   status?: $Enums.ReminderStatus;
   priority?: $Enums.ReminderPriority;
   remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
   completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutReminderInput;
@@ -584,22 +1375,40 @@ export type ReminderUpdateWithoutObjectInput = {
     | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
     | $Enums.ReminderPriority;
   remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
     Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRemindersNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutRemindersCreatedNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutRemindersUpdatedNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutReminderNestedInput;
 };
 
 export type ReminderUncheckedUpdateWithoutObjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   status?:
     Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
   priority?:
     | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
     | $Enums.ReminderPriority;
   remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
     Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -611,19 +1420,33 @@ export type ReminderCreateWithoutNotificationsInput = {
   status?: $Enums.ReminderStatus;
   priority?: $Enums.ReminderPriority;
   remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
   completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutRemindersInput;
   object: Prisma.ObjectCreateNestedOneWithoutReminderInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutRemindersCreatedInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutRemindersUpdatedInput;
 };
 
 export type ReminderUncheckedCreateWithoutNotificationsInput = {
   id?: string;
+  workspaceId: string;
   objectId: string;
+  createdById: string;
+  updatedById?: string | null;
   status?: $Enums.ReminderStatus;
   priority?: $Enums.ReminderPriority;
   remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
   completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };
@@ -664,23 +1487,305 @@ export type ReminderUpdateWithoutNotificationsInput = {
     | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
     | $Enums.ReminderPriority;
   remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
     Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRemindersNestedInput;
   object?: Prisma.ObjectUpdateOneRequiredWithoutReminderNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutRemindersCreatedNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutRemindersUpdatedNestedInput;
 };
 
 export type ReminderUncheckedUpdateWithoutNotificationsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
   objectId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   status?:
     Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
   priority?:
     | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
     | $Enums.ReminderPriority;
   remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+
+export type ReminderCreateManyCreatedByInput = {
+  id?: string;
+  workspaceId: string;
+  objectId: string;
+  updatedById?: string | null;
+  status?: $Enums.ReminderStatus;
+  priority?: $Enums.ReminderPriority;
+  remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
+  completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+};
+
+export type ReminderCreateManyUpdatedByInput = {
+  id?: string;
+  workspaceId: string;
+  objectId: string;
+  createdById: string;
+  status?: $Enums.ReminderStatus;
+  priority?: $Enums.ReminderPriority;
+  remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
+  completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+};
+
+export type ReminderUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  status?:
+    Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
+  priority?:
+    | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
+    | $Enums.ReminderPriority;
+  remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRemindersNestedInput;
+  object?: Prisma.ObjectUpdateOneRequiredWithoutReminderNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutRemindersUpdatedNestedInput;
+  notifications?: Prisma.NotificationUpdateManyWithoutReminderNestedInput;
+};
+
+export type ReminderUncheckedUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  objectId?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  status?:
+    Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
+  priority?:
+    | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
+    | $Enums.ReminderPriority;
+  remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutReminderNestedInput;
+};
+
+export type ReminderUncheckedUpdateManyWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  objectId?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  status?:
+    Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
+  priority?:
+    | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
+    | $Enums.ReminderPriority;
+  remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+
+export type ReminderUpdateWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  status?:
+    Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
+  priority?:
+    | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
+    | $Enums.ReminderPriority;
+  remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutRemindersNestedInput;
+  object?: Prisma.ObjectUpdateOneRequiredWithoutReminderNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutRemindersCreatedNestedInput;
+  notifications?: Prisma.NotificationUpdateManyWithoutReminderNestedInput;
+};
+
+export type ReminderUncheckedUpdateWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  objectId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  status?:
+    Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
+  priority?:
+    | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
+    | $Enums.ReminderPriority;
+  remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutReminderNestedInput;
+};
+
+export type ReminderUncheckedUpdateManyWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  objectId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  status?:
+    Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
+  priority?:
+    | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
+    | $Enums.ReminderPriority;
+  remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+
+export type ReminderCreateManyWorkspaceInput = {
+  id?: string;
+  objectId: string;
+  createdById: string;
+  updatedById?: string | null;
+  status?: $Enums.ReminderStatus;
+  priority?: $Enums.ReminderPriority;
+  remindAt: Date | string;
+  snoozedUntil?: Date | string | null;
+  completedAt?: Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+};
+
+export type ReminderUpdateWithoutWorkspaceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  status?:
+    Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
+  priority?:
+    | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
+    | $Enums.ReminderPriority;
+  remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  object?: Prisma.ObjectUpdateOneRequiredWithoutReminderNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutRemindersCreatedNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutRemindersUpdatedNestedInput;
+  notifications?: Prisma.NotificationUpdateManyWithoutReminderNestedInput;
+};
+
+export type ReminderUncheckedUpdateWithoutWorkspaceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  objectId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  status?:
+    Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
+  priority?:
+    | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
+    | $Enums.ReminderPriority;
+  remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutReminderNestedInput;
+};
+
+export type ReminderUncheckedUpdateManyWithoutWorkspaceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  objectId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  status?:
+    Prisma.EnumReminderStatusFieldUpdateOperationsInput | $Enums.ReminderStatus;
+  priority?:
+    | Prisma.EnumReminderPriorityFieldUpdateOperationsInput
+    | $Enums.ReminderPriority;
+  remindAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  snoozedUntil?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  completedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  recurrence?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  deletedAt?:
     Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -730,14 +1835,24 @@ export type ReminderSelect<
 > = runtime.Types.Extensions.GetSelect<
   {
     id?: boolean;
+    workspaceId?: boolean;
     objectId?: boolean;
+    createdById?: boolean;
+    updatedById?: boolean;
     status?: boolean;
     priority?: boolean;
     remindAt?: boolean;
+    snoozedUntil?: boolean;
     completedAt?: boolean;
+    recurrence?: boolean;
+    revision?: boolean;
+    deletedAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
     object?: boolean | Prisma.ObjectDefaultArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    updatedBy?: boolean | Prisma.Reminder$updatedByArgs<ExtArgs>;
     notifications?: boolean | Prisma.Reminder$notificationsArgs<ExtArgs>;
     _count?: boolean | Prisma.ReminderCountOutputTypeDefaultArgs<ExtArgs>;
   },
@@ -750,14 +1865,24 @@ export type ReminderSelectCreateManyAndReturn<
 > = runtime.Types.Extensions.GetSelect<
   {
     id?: boolean;
+    workspaceId?: boolean;
     objectId?: boolean;
+    createdById?: boolean;
+    updatedById?: boolean;
     status?: boolean;
     priority?: boolean;
     remindAt?: boolean;
+    snoozedUntil?: boolean;
     completedAt?: boolean;
+    recurrence?: boolean;
+    revision?: boolean;
+    deletedAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
     object?: boolean | Prisma.ObjectDefaultArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    updatedBy?: boolean | Prisma.Reminder$updatedByArgs<ExtArgs>;
   },
   ExtArgs['result']['reminder']
 >;
@@ -768,25 +1893,42 @@ export type ReminderSelectUpdateManyAndReturn<
 > = runtime.Types.Extensions.GetSelect<
   {
     id?: boolean;
+    workspaceId?: boolean;
     objectId?: boolean;
+    createdById?: boolean;
+    updatedById?: boolean;
     status?: boolean;
     priority?: boolean;
     remindAt?: boolean;
+    snoozedUntil?: boolean;
     completedAt?: boolean;
+    recurrence?: boolean;
+    revision?: boolean;
+    deletedAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
     object?: boolean | Prisma.ObjectDefaultArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    updatedBy?: boolean | Prisma.Reminder$updatedByArgs<ExtArgs>;
   },
   ExtArgs['result']['reminder']
 >;
 
 export type ReminderSelectScalar = {
   id?: boolean;
+  workspaceId?: boolean;
   objectId?: boolean;
+  createdById?: boolean;
+  updatedById?: boolean;
   status?: boolean;
   priority?: boolean;
   remindAt?: boolean;
+  snoozedUntil?: boolean;
   completedAt?: boolean;
+  recurrence?: boolean;
+  revision?: boolean;
+  deletedAt?: boolean;
   createdAt?: boolean;
   updatedAt?: boolean;
 };
@@ -796,11 +1938,18 @@ export type ReminderOmit<
     runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetOmit<
   | 'id'
+  | 'workspaceId'
   | 'objectId'
+  | 'createdById'
+  | 'updatedById'
   | 'status'
   | 'priority'
   | 'remindAt'
+  | 'snoozedUntil'
   | 'completedAt'
+  | 'recurrence'
+  | 'revision'
+  | 'deletedAt'
   | 'createdAt'
   | 'updatedAt',
   ExtArgs['result']['reminder']
@@ -809,7 +1958,10 @@ export type ReminderInclude<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
 > = {
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
   object?: boolean | Prisma.ObjectDefaultArgs<ExtArgs>;
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+  updatedBy?: boolean | Prisma.Reminder$updatedByArgs<ExtArgs>;
   notifications?: boolean | Prisma.Reminder$notificationsArgs<ExtArgs>;
   _count?: boolean | Prisma.ReminderCountOutputTypeDefaultArgs<ExtArgs>;
 };
@@ -817,13 +1969,19 @@ export type ReminderIncludeCreateManyAndReturn<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
 > = {
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
   object?: boolean | Prisma.ObjectDefaultArgs<ExtArgs>;
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+  updatedBy?: boolean | Prisma.Reminder$updatedByArgs<ExtArgs>;
 };
 export type ReminderIncludeUpdateManyAndReturn<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
 > = {
+  workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
   object?: boolean | Prisma.ObjectDefaultArgs<ExtArgs>;
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+  updatedBy?: boolean | Prisma.Reminder$updatedByArgs<ExtArgs>;
 };
 
 export type $ReminderPayload<
@@ -832,17 +1990,27 @@ export type $ReminderPayload<
 > = {
   name: 'Reminder';
   objects: {
+    workspace: Prisma.$WorkspacePayload<ExtArgs>;
     object: Prisma.$ObjectPayload<ExtArgs>;
+    createdBy: Prisma.$UserPayload<ExtArgs>;
+    updatedBy: Prisma.$UserPayload<ExtArgs> | null;
     notifications: Prisma.$NotificationPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
       id: string;
+      workspaceId: string;
       objectId: string;
+      createdById: string;
+      updatedById: string | null;
       status: $Enums.ReminderStatus;
       priority: $Enums.ReminderPriority;
       remindAt: Date;
+      snoozedUntil: Date | null;
       completedAt: Date | null;
+      recurrence: runtime.JsonValue | null;
+      revision: number;
+      deletedAt: Date | null;
       createdAt: Date;
       updatedAt: Date;
     },
@@ -1395,6 +2563,20 @@ export interface Prisma__ReminderClient<
   GlobalOmitOptions = {},
 > extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: 'PrismaPromise';
+  workspace<T extends Prisma.WorkspaceDefaultArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.WorkspaceDefaultArgs<ExtArgs>>,
+  ): Prisma.Prisma__WorkspaceClient<
+    | runtime.Types.Result.GetResult<
+        Prisma.$WorkspacePayload<ExtArgs>,
+        T,
+        'findUniqueOrThrow',
+        GlobalOmitOptions
+      >
+    | Null,
+    Null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
   object<T extends Prisma.ObjectDefaultArgs<ExtArgs> = {}>(
     args?: Prisma.Subset<T, Prisma.ObjectDefaultArgs<ExtArgs>>,
   ): Prisma.Prisma__ObjectClient<
@@ -1406,6 +2588,33 @@ export interface Prisma__ReminderClient<
       >
     | Null,
     Null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
+  createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>,
+  ): Prisma.Prisma__UserClient<
+    | runtime.Types.Result.GetResult<
+        Prisma.$UserPayload<ExtArgs>,
+        T,
+        'findUniqueOrThrow',
+        GlobalOmitOptions
+      >
+    | Null,
+    Null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
+  updatedBy<T extends Prisma.Reminder$updatedByArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.Reminder$updatedByArgs<ExtArgs>>,
+  ): Prisma.Prisma__UserClient<
+    runtime.Types.Result.GetResult<
+      Prisma.$UserPayload<ExtArgs>,
+      T,
+      'findUniqueOrThrow',
+      GlobalOmitOptions
+    > | null,
+    null,
     ExtArgs,
     GlobalOmitOptions
   >;
@@ -1457,11 +2666,18 @@ export interface Prisma__ReminderClient<
  */
 export interface ReminderFieldRefs {
   readonly id: Prisma.FieldRef<'Reminder', 'String'>;
+  readonly workspaceId: Prisma.FieldRef<'Reminder', 'String'>;
   readonly objectId: Prisma.FieldRef<'Reminder', 'String'>;
+  readonly createdById: Prisma.FieldRef<'Reminder', 'String'>;
+  readonly updatedById: Prisma.FieldRef<'Reminder', 'String'>;
   readonly status: Prisma.FieldRef<'Reminder', 'ReminderStatus'>;
   readonly priority: Prisma.FieldRef<'Reminder', 'ReminderPriority'>;
   readonly remindAt: Prisma.FieldRef<'Reminder', 'DateTime'>;
+  readonly snoozedUntil: Prisma.FieldRef<'Reminder', 'DateTime'>;
   readonly completedAt: Prisma.FieldRef<'Reminder', 'DateTime'>;
+  readonly recurrence: Prisma.FieldRef<'Reminder', 'Json'>;
+  readonly revision: Prisma.FieldRef<'Reminder', 'Int'>;
+  readonly deletedAt: Prisma.FieldRef<'Reminder', 'DateTime'>;
   readonly createdAt: Prisma.FieldRef<'Reminder', 'DateTime'>;
   readonly updatedAt: Prisma.FieldRef<'Reminder', 'DateTime'>;
 }
@@ -1927,6 +3143,28 @@ export type ReminderDeleteManyArgs<
    * Limit how many Reminders to delete.
    */
   limit?: number;
+};
+
+/**
+ * Reminder.updatedBy
+ */
+export type Reminder$updatedByArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null;
+  where?: Prisma.UserWhereInput;
 };
 
 /**

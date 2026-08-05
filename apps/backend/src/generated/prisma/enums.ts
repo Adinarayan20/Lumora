@@ -185,8 +185,11 @@ export type ObjectStatus = (typeof ObjectStatus)[keyof typeof ObjectStatus];
 
 export const ReminderStatus = {
   ACTIVE: 'ACTIVE',
+  SNOOZED: 'SNOOZED',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
+  DISMISSED: 'DISMISSED',
+  DELETED: 'DELETED',
 } as const;
 
 export type ReminderStatus =

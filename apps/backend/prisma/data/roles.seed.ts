@@ -33,6 +33,10 @@ export const SYSTEM_ROLES_PERMISSIONS_MAP = {
     Permissions.Collection.Read,
     Permissions.Collection.Update,
     Permissions.Collection.Delete,
+    Permissions.Reminder.Create,
+    Permissions.Reminder.Read,
+    Permissions.Reminder.Update,
+    Permissions.Reminder.Delete,
   ],
   [SYSTEM_ROLE_NAMES.ADMIN]: [
     Permissions.Workspace.Read,
@@ -54,6 +58,10 @@ export const SYSTEM_ROLES_PERMISSIONS_MAP = {
     Permissions.Collection.Read,
     Permissions.Collection.Update,
     Permissions.Collection.Delete,
+    Permissions.Reminder.Create,
+    Permissions.Reminder.Read,
+    Permissions.Reminder.Update,
+    Permissions.Reminder.Delete,
   ],
   [SYSTEM_ROLE_NAMES.MEMBER]: [
     Permissions.Workspace.Read,
@@ -67,11 +75,15 @@ export const SYSTEM_ROLES_PERMISSIONS_MAP = {
     Permissions.Collection.Create,
     Permissions.Collection.Read,
     Permissions.Collection.Update,
+    Permissions.Reminder.Create,
+    Permissions.Reminder.Read,
+    Permissions.Reminder.Update,
   ],
   [SYSTEM_ROLE_NAMES.GUEST]: [
     Permissions.Workspace.Read,
     Permissions.Space.Read,
     Permissions.Object.Read,
     Permissions.Collection.Read,
+    Permissions.Reminder.Read,
   ],
 };
