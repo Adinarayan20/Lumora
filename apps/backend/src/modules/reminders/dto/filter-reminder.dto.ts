@@ -1,7 +1,7 @@
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 import {
-  ReminderPriority,
+  ReminderExecutionStatus,
   ReminderStatus,
 } from '../../../generated/prisma/client';
 
@@ -11,8 +11,8 @@ export class FilterReminderDto {
   status?: ReminderStatus;
 
   @IsOptional()
-  @IsEnum(ReminderPriority)
-  priority?: ReminderPriority;
+  @IsEnum(ReminderExecutionStatus)
+  executionStatus?: ReminderExecutionStatus;
 
   @IsOptional()
   @Transform(({ value }) => value === 'true' || value === true)

@@ -14,8 +14,8 @@ import {
 import { RemindersService } from './reminders.service';
 import { CreateReminderDto } from './dto/create-reminder.dto';
 import { UpdateReminderDto } from './dto/update-reminder.dto';
-import { SnoozeReminderDto } from './dto/snooze-reminder.dto';
 import { FilterReminderDto } from './dto/filter-reminder.dto';
+import { SnoozeReminderDto } from './dto/snooze-reminder.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../rbac/guards/permissions.guard';
 import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator';
@@ -27,7 +27,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 export class RemindersController {
   constructor(private readonly remindersService: RemindersService) {}
 
-  @Post('objects/:objectId/reminder')
+  @Post('objects/:objectId/reminders')
   @RequirePermissions(Permissions.Reminder.Create)
   async createReminder(
     @Param('workspaceId') workspaceId: string,
@@ -52,73 +52,112 @@ export class RemindersController {
     return this.remindersService.getWorkspaceReminders(workspaceId, filter);
   }
 
-  @Get('objects/:objectId/reminder')
+  @Get('objects/:objectId/reminders')
   @RequirePermissions(Permissions.Reminder.Read)
-  async getObjectReminder(
+  async getObjectReminders(
     @Param('workspaceId') workspaceId: string,
     @Param('objectId') objectId: string,
   ) {
-    return this.remindersService.getObjectReminder(workspaceId, objectId);
+    return this.remindersService.getObjectReminders(workspaceId, objectId);
   }
 
-  @Patch('objects/:objectId/reminder')
+  @Get('reminders/:id')
+  @RequirePermissions(Permissions.Reminder.Read)
+  async getReminderById(
+    @Param('workspaceId') workspaceId: string,
+    @Param('id') reminderId: string,
+  ) {
+    return this.remindersService.getReminderById(workspaceId, reminderId);
+  }
+
+  @Patch('reminders/:id')
   @RequirePermissions(Permissions.Reminder.Update)
   async updateReminder(
     @Param('workspaceId') workspaceId: string,
-    @Param('objectId') objectId: string,
+    @Param('id') reminderId: string,
     @CurrentUser('id') userId: string,
     @Body() dto: UpdateReminderDto,
   ) {
     return this.remindersService.updateReminder(
       workspaceId,
-      objectId,
+      reminderId,
       userId,
       dto,
     );
   }
 
-  @Post('objects/:objectId/reminder/snooze')
+  @Post('reminders/:id/snooze')
   @HttpCode(HttpStatus.OK)
   @RequirePermissions(Permissions.Reminder.Update)
   async snoozeReminder(
     @Param('workspaceId') workspaceId: string,
-    @Param('objectId') objectId: string,
+    @Param('id') reminderId: string,
     @CurrentUser('id') userId: string,
     @Body() dto: SnoozeReminderDto,
   ) {
     return this.remindersService.snoozeReminder(
       workspaceId,
-      objectId,
+      reminderId,
       userId,
       dto,
     );
   }
 
-  @Post('objects/:objectId/reminder/complete')
+  @Post('reminders/:id/complete')
   @HttpCode(HttpStatus.OK)
   @RequirePermissions(Permissions.Reminder.Update)
   async completeReminder(
     @Param('workspaceId') workspaceId: string,
-    @Param('objectId') objectId: string,
+    @Param('id') reminderId: string,
     @CurrentUser('id') userId: string,
   ) {
     return this.remindersService.completeReminder(
       workspaceId,
-      objectId,
+      reminderId,
       userId,
     );
   }
 
-  @Delete('objects/:objectId/reminder')
+  @Post('reminders/:id/cancel')
+  @HttpCode(HttpStatus.OK)
+  @RequirePermissions(Permissions.Reminder.Update)
+  async cancelReminder(
+    @Param('workspaceId') workspaceId: string,
+    @Param('id') reminderId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    return this.remindersService.cancelReminder(
+      workspaceId,
+      reminderId,
+      userId,
+    );
+  }
+
+  @Post('reminders/:id/restore')
+  @HttpCode(HttpStatus.OK)
+  @RequirePermissions(Permissions.Reminder.Update)
+  async restoreReminder(
+    @Param('workspaceId') workspaceId: string,
+    @Param('id') reminderId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    return this.remindersService.restoreReminder(
+      workspaceId,
+      reminderId,
+      userId,
+    );
+  }
+
+  @Delete('reminders/:id')
   @RequirePermissions(Permissions.Reminder.Delete)
   async softDeleteReminder(
     @Param('workspaceId') workspaceId: string,
-    @Param('objectId') objectId: string,
+    @Param('id') reminderId: string,
     @CurrentUser('id') userId: string,
   ) {
     return this.remindersService.softDeleteReminder(
       workspaceId,
-      objectId,
+      reminderId,
       userId,
     );
   }

@@ -6,16 +6,25 @@ import {
 } from '@nestjs/common';
 import { ReminderRepository } from './repositories/reminder.repository';
 import { ObjectRepository } from '../objects/repositories/object.repository';
+import { AuditLogRepository } from '../auth/repositories/audit-log.repository';
+import { ReminderSchedulerService } from './services/reminder-scheduler.service';
 import { CreateReminderDto } from './dto/create-reminder.dto';
 import { UpdateReminderDto } from './dto/update-reminder.dto';
-import { SnoozeReminderDto, SnoozeDuration } from './dto/snooze-reminder.dto';
 import { FilterReminderDto } from './dto/filter-reminder.dto';
-import { AuditLogRepository } from '../auth/repositories/audit-log.repository';
+import { SnoozeReminderDto } from './dto/snooze-reminder.dto';
 import {
-  Reminder as LumoraReminder,
+  Reminder,
   AuditAction,
+  ReminderExecutionStatus,
   ReminderStatus,
 } from '../../generated/prisma/client';
+import {
+  ReminderCreatedEvent,
+  ReminderSnoozedEvent,
+  ReminderCompletedEvent,
+  ReminderCancelledEvent,
+  ReminderRestoredEvent,
+} from './events/reminder.events';
 
 @Injectable()
 export class RemindersService {
@@ -23,14 +32,15 @@ export class RemindersService {
     private readonly reminderRepository: ReminderRepository,
     private readonly objectRepository: ObjectRepository,
     private readonly auditLogRepository: AuditLogRepository,
+    private readonly schedulerService: ReminderSchedulerService,
   ) {}
 
   async createReminder(
     workspaceId: string,
     objectId: string,
-    createdById: string,
+    userId: string,
     dto: CreateReminderDto,
-  ): Promise<LumoraReminder> {
+  ): Promise<Reminder> {
     const object = await this.objectRepository.findById(objectId);
     if (!object || object.workspaceId !== workspaceId) {
       throw new NotFoundException(
@@ -38,35 +48,55 @@ export class RemindersService {
       );
     }
 
-    const existing = await this.reminderRepository.findByObjectId(objectId);
-    if (existing) {
-      throw new ConflictException(
-        'Universal Object already has an active reminder attached',
-      );
+    const remindAt = new Date(dto.remindAt);
+    if (isNaN(remindAt.getTime())) {
+      throw new BadRequestException('Invalid remindAt ISO date string');
     }
 
-    const remindAt = new Date(dto.remindAt);
+    const nextOccurrenceAt =
+      this.schedulerService.calculateNextOccurrence(
+        remindAt,
+        dto.recurrenceRule,
+      ) ?? remindAt;
+
     const reminder = await this.reminderRepository.create({
       workspaceId,
-      objectId,
-      createdById,
+      objectId: object.id,
+      createdById: userId,
       remindAt,
-      priority: dto.priority,
-      recurrence: dto.recurrence,
+      timezone: dto.timezone,
+      recurrenceRule: dto.recurrenceRule,
+      source: dto.source,
+      triggerType: dto.triggerType,
+      nextOccurrenceAt,
     });
 
     await this.auditLogRepository.create({
-      userId: createdById,
+      userId,
       entity: 'Reminder',
       entityId: reminder.id,
       action: AuditAction.CREATE,
       newData: {
         workspaceId,
         objectId,
-        remindAt,
-        priority: reminder.priority,
+        remindAt: reminder.remindAt,
+        status: reminder.status,
+        executionStatus: reminder.executionStatus,
       },
     });
+
+    await this.schedulerService.publishCreated(
+      new ReminderCreatedEvent(
+        reminder.id,
+        workspaceId,
+        objectId,
+        userId,
+        reminder.remindAt,
+        reminder.recurrenceRule,
+        reminder.source,
+        reminder.triggerType,
+      ),
+    );
 
     return reminder;
   }
@@ -74,28 +104,41 @@ export class RemindersService {
   async getWorkspaceReminders(
     workspaceId: string,
     filter: FilterReminderDto,
-  ): Promise<LumoraReminder[]> {
+  ): Promise<Reminder[]> {
     return this.reminderRepository.findWorkspaceReminders(workspaceId, filter);
   }
 
-  async getObjectReminder(
+  async getObjectReminders(
     workspaceId: string,
     objectId: string,
-  ): Promise<LumoraReminder> {
-    const reminder = await this.reminderRepository.findByObjectId(objectId);
+  ): Promise<Reminder[]> {
+    const object = await this.objectRepository.findById(objectId);
+    if (!object || object.workspaceId !== workspaceId) {
+      throw new NotFoundException(
+        'Universal Object not found in this workspace',
+      );
+    }
+    return this.reminderRepository.findByObjectId(workspaceId, objectId);
+  }
+
+  async getReminderById(
+    workspaceId: string,
+    reminderId: string,
+  ): Promise<Reminder> {
+    const reminder = await this.reminderRepository.findById(reminderId);
     if (!reminder || reminder.workspaceId !== workspaceId) {
-      throw new NotFoundException('Reminder not found for this object');
+      throw new NotFoundException('Reminder not found');
     }
     return reminder;
   }
 
   async updateReminder(
     workspaceId: string,
-    objectId: string,
+    reminderId: string,
     userId: string,
     dto: UpdateReminderDto,
-  ): Promise<LumoraReminder> {
-    const reminder = await this.getObjectReminder(workspaceId, objectId);
+  ): Promise<Reminder> {
+    const reminder = await this.getReminderById(workspaceId, reminderId);
 
     if (dto.revision !== undefined && dto.revision !== reminder.revision) {
       throw new ConflictException(
@@ -104,16 +147,26 @@ export class RemindersService {
     }
 
     const remindAt = dto.remindAt ? new Date(dto.remindAt) : undefined;
-    const completedAt =
-      dto.status === ReminderStatus.COMPLETED ? new Date() : undefined;
+    const recurrenceRule =
+      dto.recurrenceRule !== undefined
+        ? dto.recurrenceRule
+        : reminder.recurrenceRule;
+
+    const nextOccurrenceAt = remindAt
+      ? (this.schedulerService.calculateNextOccurrence(
+          remindAt,
+          recurrenceRule,
+        ) ?? remindAt)
+      : undefined;
 
     const updated = await this.reminderRepository.update(reminder.id, {
       updatedById: userId,
       remindAt,
-      priority: dto.priority,
+      timezone: dto.timezone,
+      recurrenceRule: dto.recurrenceRule,
       status: dto.status,
-      recurrence: dto.recurrence,
-      completedAt,
+      executionStatus: dto.executionStatus,
+      nextOccurrenceAt,
     });
 
     await this.auditLogRepository.create({
@@ -124,6 +177,7 @@ export class RemindersService {
       newData: {
         remindAt: updated.remindAt,
         status: updated.status,
+        executionStatus: updated.executionStatus,
         revision: updated.revision,
       },
     });
@@ -133,45 +187,37 @@ export class RemindersService {
 
   async snoozeReminder(
     workspaceId: string,
-    objectId: string,
+    reminderId: string,
     userId: string,
     dto: SnoozeReminderDto,
-  ): Promise<LumoraReminder> {
-    const reminder = await this.getObjectReminder(workspaceId, objectId);
+  ): Promise<Reminder> {
+    const reminder = await this.getReminderById(workspaceId, reminderId);
 
-    let snoozedUntil: Date;
-
-    if (dto.until) {
-      snoozedUntil = new Date(dto.until);
-    } else if (dto.duration) {
-      const now = Date.now();
-      let offsetMs = 15 * 60 * 1000;
-      switch (dto.duration) {
-        case SnoozeDuration.FIVE_MINUTES:
-          offsetMs = 5 * 60 * 1000;
-          break;
-        case SnoozeDuration.FIFTEEN_MINUTES:
-          offsetMs = 15 * 60 * 1000;
-          break;
-        case SnoozeDuration.ONE_HOUR:
-          offsetMs = 60 * 60 * 1000;
-          break;
-        case SnoozeDuration.ONE_DAY:
-          offsetMs = 24 * 60 * 60 * 1000;
-          break;
-      }
-      snoozedUntil = new Date(now + offsetMs);
-    } else {
-      throw new BadRequestException(
-        'Snooze requires either a preset duration or explicit until timestamp',
-      );
+    if (reminder.status !== ReminderStatus.ACTIVE) {
+      throw new ConflictException('Only ACTIVE reminders can be snoozed');
     }
+
+    const snoozedUntil = this.schedulerService.calculateSnoozeTarget(
+      dto.duration,
+      dto.until,
+    );
 
     const updated = await this.reminderRepository.update(reminder.id, {
       updatedById: userId,
-      status: ReminderStatus.SNOOZED,
       snoozedUntil,
+      executionStatus: ReminderExecutionStatus.SNOOZED,
+      nextOccurrenceAt: snoozedUntil,
     });
+
+    await this.schedulerService.publishSnoozed(
+      new ReminderSnoozedEvent(
+        reminder.id,
+        workspaceId,
+        reminder.objectId,
+        userId,
+        snoozedUntil,
+      ),
+    );
 
     await this.auditLogRepository.create({
       userId,
@@ -179,7 +225,7 @@ export class RemindersService {
       entityId: reminder.id,
       action: AuditAction.UPDATE,
       newData: {
-        status: ReminderStatus.SNOOZED,
+        executionStatus: ReminderExecutionStatus.SNOOZED,
         snoozedUntil,
       },
     });
@@ -189,16 +235,27 @@ export class RemindersService {
 
   async completeReminder(
     workspaceId: string,
-    objectId: string,
+    reminderId: string,
     userId: string,
-  ): Promise<LumoraReminder> {
-    const reminder = await this.getObjectReminder(workspaceId, objectId);
+  ): Promise<Reminder> {
+    const reminder = await this.getReminderById(workspaceId, reminderId);
 
+    const now = new Date();
     const updated = await this.reminderRepository.update(reminder.id, {
       updatedById: userId,
-      status: ReminderStatus.COMPLETED,
-      completedAt: new Date(),
+      completedAt: now,
+      executionStatus: ReminderExecutionStatus.COMPLETED,
     });
+
+    await this.schedulerService.publishCompleted(
+      new ReminderCompletedEvent(
+        reminder.id,
+        workspaceId,
+        reminder.objectId,
+        userId,
+        now,
+      ),
+    );
 
     await this.auditLogRepository.create({
       userId,
@@ -206,8 +263,83 @@ export class RemindersService {
       entityId: reminder.id,
       action: AuditAction.UPDATE,
       newData: {
-        status: ReminderStatus.COMPLETED,
-        completedAt: updated.completedAt,
+        executionStatus: ReminderExecutionStatus.COMPLETED,
+        completedAt: now,
+      },
+    });
+
+    return updated;
+  }
+
+  async cancelReminder(
+    workspaceId: string,
+    reminderId: string,
+    userId: string,
+  ): Promise<Reminder> {
+    const reminder = await this.getReminderById(workspaceId, reminderId);
+
+    const now = new Date();
+    const updated = await this.reminderRepository.update(reminder.id, {
+      updatedById: userId,
+      cancelledAt: now,
+      status: ReminderStatus.CANCELLED,
+    });
+
+    await this.schedulerService.publishCancelled(
+      new ReminderCancelledEvent(
+        reminder.id,
+        workspaceId,
+        reminder.objectId,
+        userId,
+        now,
+      ),
+    );
+
+    await this.auditLogRepository.create({
+      userId,
+      entity: 'Reminder',
+      entityId: reminder.id,
+      action: AuditAction.UPDATE,
+      newData: {
+        status: ReminderStatus.CANCELLED,
+        cancelledAt: now,
+      },
+    });
+
+    return updated;
+  }
+
+  async restoreReminder(
+    workspaceId: string,
+    reminderId: string,
+    userId: string,
+  ): Promise<Reminder> {
+    const reminder = await this.getReminderById(workspaceId, reminderId);
+
+    const updated = await this.reminderRepository.update(reminder.id, {
+      updatedById: userId,
+      status: ReminderStatus.ACTIVE,
+      executionStatus: ReminderExecutionStatus.PENDING,
+      cancelledAt: null,
+    });
+
+    await this.schedulerService.publishRestored(
+      new ReminderRestoredEvent(
+        reminder.id,
+        workspaceId,
+        reminder.objectId,
+        userId,
+      ),
+    );
+
+    await this.auditLogRepository.create({
+      userId,
+      entity: 'Reminder',
+      entityId: reminder.id,
+      action: AuditAction.UPDATE,
+      newData: {
+        status: ReminderStatus.ACTIVE,
+        executionStatus: ReminderExecutionStatus.PENDING,
       },
     });
 
@@ -216,10 +348,10 @@ export class RemindersService {
 
   async softDeleteReminder(
     workspaceId: string,
-    objectId: string,
+    reminderId: string,
     userId: string,
-  ): Promise<LumoraReminder> {
-    const reminder = await this.getObjectReminder(workspaceId, objectId);
+  ): Promise<Reminder> {
+    const reminder = await this.getReminderById(workspaceId, reminderId);
 
     const deleted = await this.reminderRepository.softDelete(
       reminder.id,

@@ -2,12 +2,12 @@ import {
   IsDateString,
   IsEnum,
   IsInt,
-  IsObject,
   IsOptional,
+  IsString,
 } from 'class-validator';
 import {
-  ReminderPriority,
   ReminderStatus,
+  ReminderExecutionStatus,
 } from '../../../generated/prisma/client';
 
 export class UpdateReminderDto {
@@ -16,16 +16,20 @@ export class UpdateReminderDto {
   remindAt?: string;
 
   @IsOptional()
-  @IsEnum(ReminderPriority)
-  priority?: ReminderPriority;
+  @IsString()
+  timezone?: string;
+
+  @IsOptional()
+  @IsString()
+  recurrenceRule?: string;
 
   @IsOptional()
   @IsEnum(ReminderStatus)
   status?: ReminderStatus;
 
   @IsOptional()
-  @IsObject()
-  recurrence?: Record<string, unknown>;
+  @IsEnum(ReminderExecutionStatus)
+  executionStatus?: ReminderExecutionStatus;
 
   @IsOptional()
   @IsInt()

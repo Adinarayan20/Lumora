@@ -107,6 +107,7 @@ model User {
   collectionsUpdated Collection[] @relation("CollectionModifier")
   remindersCreated  Reminder[]   @relation("ReminderAuthor")
   remindersUpdated  Reminder[]   @relation("ReminderModifier")
+  remindersDismissed Reminder[]  @relation("ReminderDismissedBy")
 
   @@index([email])
   @@index([username])
@@ -368,6 +369,23 @@ enum ObjectStatus {
   DELETED
 }
 
+enum ReminderTriggerType {
+  TIME
+  LOCATION
+  WEBHOOK
+  AI
+  AUTOMATION
+}
+
+enum ReminderSource {
+  MANUAL
+  AI
+  AUTOMATION
+  CALENDAR
+  IMPORT
+  API
+}
+
 enum ReminderStatus {
   ACTIVE
   SNOOZED
@@ -375,6 +393,14 @@ enum ReminderStatus {
   CANCELLED
   DISMISSED
   DELETED
+}
+
+enum ReminderExecutionStatus {
+  PENDING
+  TRIGGERED
+  SNOOZED
+  COMPLETED
+  MISSED
 }
 
 enum ReminderPriority {
@@ -682,7 +708,7 @@ model Object {
 
   updatedBy User? @relation("ObjectModifier", fields: [updatedById], references: [id])
 
-  reminder Reminder?
+  reminders Reminder[]
 
   timeline Timeline?
 
@@ -703,33 +729,55 @@ model Reminder {
 
   workspaceId String @db.Uuid
 
-  objectId String @unique @db.Uuid
+  objectId String @db.Uuid
 
   createdById String @db.Uuid
 
   updatedById String? @db.Uuid
 
+  dismissedById String? @db.Uuid
+
+  lastExecutionId String?
+
+  source ReminderSource @default(MANUAL)
+
+  triggerType ReminderTriggerType @default(TIME)
+
   status ReminderStatus @default(ACTIVE)
 
-  priority ReminderPriority @default(MEDIUM)
+  executionStatus ReminderExecutionStatus @default(PENDING)
 
   remindAt DateTime
 
   snoozedUntil DateTime?
 
+  nextOccurrenceAt DateTime?
+
+  lastTriggeredAt DateTime?
+
   completedAt DateTime?
+
+  dismissedAt DateTime?
+
+  cancelledAt DateTime?
+
+  deletedAt DateTime?
+
+  timezone String @default("UTC")
+
+  recurrenceRule String?
+
+  priority ReminderPriority?
 
   recurrence Json?
 
   revision Int @default(1)
 
-  deletedAt DateTime?
-
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   object Object @relation(fields: [objectId], references: [id], onDelete: Cascade)
 
@@ -737,12 +785,16 @@ model Reminder {
 
   updatedBy User? @relation("ReminderModifier", fields: [updatedById], references: [id])
 
+  dismissedBy User? @relation("ReminderDismissedBy", fields: [dismissedById], references: [id])
+
   notifications Notification[]
 
+  @@index([workspaceId, nextOccurrenceAt, executionStatus])
+  @@index([executionStatus, nextOccurrenceAt])
+  @@index([objectId, status])
+  @@index([workspaceId, objectId])
+  @@index([workspaceId, createdById])
   @@index([workspaceId, status])
-  @@index([workspaceId, remindAt])
-  @@index([objectId])
-  @@index([createdById])
 }
 
 model Notification {

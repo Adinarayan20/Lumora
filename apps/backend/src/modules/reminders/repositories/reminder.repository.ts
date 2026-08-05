@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
 import {
-  Reminder as LumoraReminder,
-  ReminderPriority,
+  Reminder,
+  ReminderExecutionStatus,
+  ReminderSource,
   ReminderStatus,
+  ReminderTriggerType,
   Prisma,
 } from '../../../generated/prisma/client';
 import { PrismaTransaction } from '../../auth/repositories/audit-log.repository';
@@ -13,12 +15,12 @@ import { USER_PUBLIC_SELECT } from '../../objects/repositories/object.repository
 export const REMINDER_RELATIONS_INCLUDE = {
   createdBy: { select: USER_PUBLIC_SELECT },
   updatedBy: { select: USER_PUBLIC_SELECT },
+  dismissedBy: { select: USER_PUBLIC_SELECT },
   object: {
     include: {
       createdBy: { select: USER_PUBLIC_SELECT },
     },
   },
-  notifications: true,
 } as const;
 
 export type ReminderWithRelations = Prisma.ReminderGetPayload<{
@@ -30,19 +32,29 @@ export interface CreateReminderData {
   objectId: string;
   createdById: string;
   remindAt: Date;
-  priority?: ReminderPriority;
-  recurrence?: Record<string, any>;
+  timezone?: string;
+  recurrenceRule?: string;
+  source?: ReminderSource;
+  triggerType?: ReminderTriggerType;
+  nextOccurrenceAt?: Date | null;
 }
 
 export interface UpdateReminderData {
   updatedById: string;
   remindAt?: Date;
-  priority?: ReminderPriority;
+  timezone?: string;
+  recurrenceRule?: string;
   status?: ReminderStatus;
+  executionStatus?: ReminderExecutionStatus;
   snoozedUntil?: Date | null;
+  nextOccurrenceAt?: Date | null;
+  lastTriggeredAt?: Date | null;
   completedAt?: Date | null;
-  recurrence?: Record<string, any>;
+  dismissedAt?: Date | null;
+  dismissedById?: string | null;
+  cancelledAt?: Date | null;
   deletedAt?: Date | null;
+  lastExecutionId?: string | null;
 }
 
 @Injectable()
@@ -64,16 +76,19 @@ export class ReminderRepository {
   }
 
   async findByObjectId(
+    workspaceId: string,
     objectId: string,
     tx?: PrismaTransaction,
-  ): Promise<ReminderWithRelations | null> {
+  ): Promise<ReminderWithRelations[]> {
     const client = tx ?? this.prisma;
-    return client.reminder.findFirst({
+    return client.reminder.findMany({
       where: {
+        workspaceId,
         objectId,
         status: { not: ReminderStatus.DELETED },
       },
       include: REMINDER_RELATIONS_INCLUDE,
+      orderBy: { remindAt: 'asc' },
     });
   }
 
@@ -88,25 +103,25 @@ export class ReminderRepository {
       status: filter.status ?? { not: ReminderStatus.DELETED },
     };
 
-    if (filter.priority) {
-      where.priority = filter.priority;
+    if (filter.executionStatus) {
+      where.executionStatus = filter.executionStatus;
     }
     if (filter.overdueOnly) {
-      where.remindAt = { lt: new Date() };
-      where.status = { in: [ReminderStatus.ACTIVE, ReminderStatus.SNOOZED] };
+      where.executionStatus = ReminderExecutionStatus.PENDING;
+      where.remindAt = { lte: new Date() };
     }
 
     return client.reminder.findMany({
       where,
       include: REMINDER_RELATIONS_INCLUDE,
-      orderBy: [{ remindAt: 'asc' }, { priority: 'desc' }],
+      orderBy: [{ remindAt: 'asc' }],
     });
   }
 
   async create(
     data: CreateReminderData,
     tx?: PrismaTransaction,
-  ): Promise<LumoraReminder> {
+  ): Promise<Reminder> {
     const client = tx ?? this.prisma;
     return client.reminder.create({
       data: {
@@ -114,8 +129,13 @@ export class ReminderRepository {
         objectId: data.objectId,
         createdById: data.createdById,
         remindAt: data.remindAt,
-        priority: data.priority ?? ReminderPriority.MEDIUM,
-        recurrence: data.recurrence,
+        timezone: data.timezone ?? 'UTC',
+        recurrenceRule: data.recurrenceRule,
+        source: data.source ?? ReminderSource.MANUAL,
+        triggerType: data.triggerType ?? ReminderTriggerType.TIME,
+        status: ReminderStatus.ACTIVE,
+        executionStatus: ReminderExecutionStatus.PENDING,
+        nextOccurrenceAt: data.nextOccurrenceAt ?? data.remindAt,
       },
     });
   }
@@ -131,12 +151,19 @@ export class ReminderRepository {
       data: {
         updatedById: data.updatedById,
         remindAt: data.remindAt,
-        priority: data.priority,
+        timezone: data.timezone,
+        recurrenceRule: data.recurrenceRule,
         status: data.status,
+        executionStatus: data.executionStatus,
         snoozedUntil: data.snoozedUntil,
+        nextOccurrenceAt: data.nextOccurrenceAt,
+        lastTriggeredAt: data.lastTriggeredAt,
         completedAt: data.completedAt,
-        recurrence: data.recurrence,
+        dismissedAt: data.dismissedAt,
+        dismissedById: data.dismissedById,
+        cancelledAt: data.cancelledAt,
         deletedAt: data.deletedAt,
+        lastExecutionId: data.lastExecutionId,
         revision: { increment: 1 },
       },
       include: REMINDER_RELATIONS_INCLUDE,
@@ -147,7 +174,7 @@ export class ReminderRepository {
     id: string,
     userId: string,
     tx?: PrismaTransaction,
-  ): Promise<LumoraReminder> {
+  ): Promise<Reminder> {
     const client = tx ?? this.prisma;
     return client.reminder.update({
       where: { id },
