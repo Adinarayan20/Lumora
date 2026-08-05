@@ -9,7 +9,141 @@
 * 🟢 You can import this file directly.
 */
 
+export const UserStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  PENDING: 'PENDING',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const WorkspacePlan = {
+  FREE: 'FREE',
+  PRO: 'PRO',
+  BUSINESS: 'BUSINESS',
+  ENTERPRISE: 'ENTERPRISE'
+} as const
+
+export type WorkspacePlan = (typeof WorkspacePlan)[keyof typeof WorkspacePlan]
+
+
+export const WorkspaceMemberStatus = {
+  INVITED: 'INVITED',
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type WorkspaceMemberStatus = (typeof WorkspaceMemberStatus)[keyof typeof WorkspaceMemberStatus]
+
+
+export const DevicePlatform = {
+  WEB: 'WEB',
+  WINDOWS: 'WINDOWS',
+  MACOS: 'MACOS',
+  LINUX: 'LINUX',
+  ANDROID: 'ANDROID',
+  IOS: 'IOS'
+} as const
+
+export type DevicePlatform = (typeof DevicePlatform)[keyof typeof DevicePlatform]
+
+
+export const SessionStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  REVOKED: 'REVOKED'
+} as const
+
+export type SessionStatus = (typeof SessionStatus)[keyof typeof SessionStatus]
+
+
+export const OAuthProvider = {
+  GOOGLE: 'GOOGLE',
+  GITHUB: 'GITHUB',
+  MICROSOFT: 'MICROSOFT',
+  APPLE: 'APPLE'
+} as const
+
+export type OAuthProvider = (typeof OAuthProvider)[keyof typeof OAuthProvider]
+
+
+export const FileProvider = {
+  LOCAL: 'LOCAL',
+  S3: 'S3',
+  CLOUDINARY: 'CLOUDINARY',
+  R2: 'R2',
+  GCS: 'GCS'
+} as const
+
+export type FileProvider = (typeof FileProvider)[keyof typeof FileProvider]
+
+
+export const AuditAction = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE',
+  LOGIN: 'LOGIN',
+  LOGOUT: 'LOGOUT'
+} as const
+
+export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const EventStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type EventStatus = (typeof EventStatus)[keyof typeof EventStatus]
+
+
+export const SpaceType = {
+  PERSONAL: 'PERSONAL',
+  TEAM: 'TEAM',
+  SHARED: 'SHARED'
+} as const
+
+export type SpaceType = (typeof SpaceType)[keyof typeof SpaceType]
+
+
+export const ObjectType = {
+  NOTE: 'NOTE',
+  TASK: 'TASK',
+  REMINDER: 'REMINDER',
+  EVENT: 'EVENT'
+} as const
+
+export type ObjectType = (typeof ObjectType)[keyof typeof ObjectType]
+
+
+export const ReminderStatus = {
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ReminderStatus = (typeof ReminderStatus)[keyof typeof ReminderStatus]
+
+
+export const ReminderPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const
+
+export type ReminderPriority = (typeof ReminderPriority)[keyof typeof ReminderPriority]
+
+
+export const NotificationStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  READ: 'READ',
+  FAILED: 'FAILED'
+} as const
+
+export type NotificationStatus = (typeof NotificationStatus)[keyof typeof NotificationStatus]
