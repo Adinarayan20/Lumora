@@ -13,6 +13,7 @@ import { OAuthService } from './services/oauth.service';
 import { OAuthAccountRepository } from './repositories/oauth-account.repository';
 import { AuditLogRepository } from './repositories/audit-log.repository';
 import { EventPublisherService } from './services/event-publisher.service';
+import { WorkspacesService } from '../workspaces/workspaces.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -38,6 +39,7 @@ export class AuthService {
     private readonly oauthAccountRepository: OAuthAccountRepository,
     private readonly auditLogRepository: AuditLogRepository,
     private readonly eventPublisher: EventPublisherService,
+    private readonly workspacesService: WorkspacesService,
   ) {}
 
   private sanitizeUser(user: User): Omit<User, 'passwordHash'> {
@@ -64,71 +66,81 @@ export class AuthService {
 
     const passwordHash = await this.passwordService.hashPassword(dto.password);
 
-    return this.prisma.$transaction(async (tx) => {
-      const user = await this.userRepository.create(
-        {
-          email: dto.email,
-          username: dto.username,
-          displayName: dto.displayName,
-          passwordHash,
-          avatarUrl: dto.avatarUrl,
-          timezone: dto.timezone,
-          locale: dto.locale,
-        },
-        tx,
-      );
-
-      const device = await this.deviceService.findOrCreateDevice(
-        user.id,
-        {
-          platform: dto.platform ?? meta.platform,
-          deviceName: dto.deviceName ?? meta.deviceName,
-          appVersion: dto.appVersion ?? meta.appVersion,
-          osVersion: dto.osVersion ?? meta.osVersion,
-          pushToken: dto.pushToken ?? meta.pushToken,
-          userAgent: meta.userAgent,
-          ipAddress: meta.ipAddress,
-        },
-        tx,
-      );
-
-      const { session, accessToken, refreshToken } =
-        await this.sessionService.createSession(
+    return this.prisma.$transaction(
+      async (tx) => {
+        const user = await this.userRepository.create(
           {
-            userId: user.id,
-            email: user.email,
-            username: user.username,
-            deviceId: device.id,
-            ipAddress: meta.ipAddress,
-            userAgent: meta.userAgent,
+            email: dto.email,
+            username: dto.username,
+            displayName: dto.displayName,
+            passwordHash,
+            avatarUrl: dto.avatarUrl,
+            timezone: dto.timezone,
+            locale: dto.locale,
           },
           tx,
         );
 
-      await this.auditLogRepository.create(
-        {
-          userId: user.id,
-          entity: 'User',
-          entityId: user.id,
-          action: AuditAction.CREATE,
-          newData: { email: user.email, username: user.username },
-        },
-        tx,
-      );
+        // Automatically provision 1 Personal Workspace in the same transaction
+        await this.workspacesService.createPersonalWorkspace(
+          user.id,
+          user.displayName,
+          tx,
+        );
 
-      await this.eventPublisher.publishUserRegistered(
-        new UserRegisteredEvent(user.id, user.email, user.username),
-        tx,
-      );
+        const device = await this.deviceService.findOrCreateDevice(
+          user.id,
+          {
+            platform: dto.platform ?? meta.platform,
+            deviceName: dto.deviceName ?? meta.deviceName,
+            appVersion: dto.appVersion ?? meta.appVersion,
+            osVersion: dto.osVersion ?? meta.osVersion,
+            pushToken: dto.pushToken ?? meta.pushToken,
+            userAgent: meta.userAgent,
+            ipAddress: meta.ipAddress,
+          },
+          tx,
+        );
 
-      return {
-        user: this.sanitizeUser(user),
-        accessToken,
-        refreshToken,
-        sessionId: session.id,
-        deviceId: device.id,
-      };
-    });
+        const { session, accessToken, refreshToken } =
+          await this.sessionService.createSession(
+            {
+              userId: user.id,
+              email: user.email,
+              username: user.username,
+              deviceId: device.id,
+              ipAddress: meta.ipAddress,
+              userAgent: meta.userAgent,
+            },
+            tx,
+          );
+
+        await this.auditLogRepository.create(
+          {
+            userId: user.id,
+            entity: 'User',
+            entityId: user.id,
+            action: AuditAction.CREATE,
+            newData: { email: user.email, username: user.username },
+          },
+          tx,
+        );
+
+        await this.eventPublisher.publishUserRegistered(
+          new UserRegisteredEvent(user.id, user.email, user.username),
+          tx,
+        );
+
+        return {
+          user: this.sanitizeUser(user),
+          accessToken,
+          refreshToken,
+          sessionId: session.id,
+          deviceId: device.id,
+        };
+      },
+      { timeout: 20000 },
+    );
   }
 
   async login(dto: LoginDto, meta: DeviceMetadata): Promise<AuthResponseDto> {
@@ -334,6 +346,13 @@ export class AuthService {
               passwordHash: randomPassword,
               avatarUrl: oauthData.avatarUrl,
             },
+            tx,
+          );
+
+          // Auto provision 1 Personal Workspace for OAuth user registration
+          await this.workspacesService.createPersonalWorkspace(
+            user.id,
+            user.displayName,
             tx,
           );
         }

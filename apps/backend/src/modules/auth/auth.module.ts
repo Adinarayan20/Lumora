@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
@@ -18,6 +18,7 @@ import { OAuthAccountRepository } from './repositories/oauth-account.repository'
 import { AuditLogRepository } from './repositories/audit-log.repository';
 import { EventRepository } from './repositories/event.repository';
 import { UsersModule } from '../users/users.module';
+import { WorkspacesModule } from '../workspaces/workspaces.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UsersModule } from '../users/users.module';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({}),
     UsersModule,
+    forwardRef(() => WorkspacesModule),
   ],
   controllers: [AuthController],
   providers: [

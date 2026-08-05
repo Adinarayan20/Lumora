@@ -25,10 +25,39 @@ enum WorkspacePlan {
   ENTERPRISE
 }
 
+enum WorkspaceType {
+  PERSONAL
+  CUSTOM
+  FAMILY
+  TEAM
+  BUSINESS
+}
+
+enum WorkspaceVisibility {
+  PRIVATE
+  INTERNAL
+  PUBLIC
+}
+
+enum WorkspaceStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+  DELETED
+}
+
 enum WorkspaceMemberStatus {
   INVITED
   ACTIVE
   SUSPENDED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  REVOKED
 }
 
 //////////////////////////////////////////////////////
@@ -61,6 +90,7 @@ model User {
 
   workspaceMemberships WorkspaceMember[]
   ownedWorkspaces      Workspace[]       @relation("WorkspaceOwner")
+  sentInvitations      WorkspaceInvitation[] @relation("InvitedBy")
 
   devices       Device[]
   sessions      Session[]
@@ -85,21 +115,45 @@ model Workspace {
 
   slug String @unique
 
+  description String?
+
+  icon String?
+
+  emoji String?
+
+  cover String?
+
+  color String?
+
+  type WorkspaceType @default(CUSTOM)
+
+  visibility WorkspaceVisibility @default(PRIVATE)
+
+  status WorkspaceStatus @default(ACTIVE)
+
   plan WorkspacePlan @default(FREE)
 
   ownerId String @db.Uuid
 
-  owner User @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+  settings Json?
+
+  billingId String?
+
+  deletedAt DateTime?
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
+
+  owner User @relation("WorkspaceOwner", fields: [ownerId], references: [id])
 
   members WorkspaceMember[]
 
   roles Role[]
 
   spaces Space[]
+
+  invitations WorkspaceInvitation[]
 }
 
 //////////////////////////////////////////////////////
@@ -113,7 +167,7 @@ model WorkspaceMember {
 
   userId String @db.Uuid
 
-  roleId String @db.Uuid
+  roleId String? @db.Uuid
 
   status WorkspaceMemberStatus @default(ACTIVE)
 
@@ -123,11 +177,42 @@ model WorkspaceMember {
 
   user User @relation(fields: [userId], references: [id])
 
-  role Role @relation(fields: [roleId], references: [id])
+  role Role? @relation(fields: [roleId], references: [id])
 
   @@unique([workspaceId, userId])
   @@index([workspaceId])
   @@index([userId])
+}
+
+//////////////////////////////////////////////////////
+// INVITATION
+//////////////////////////////////////////////////////
+
+model WorkspaceInvitation {
+  id String @id @default(uuid()) @db.Uuid
+
+  workspaceId String @db.Uuid
+
+  email String
+
+  roleId String? @db.Uuid
+
+  invitedById String @db.Uuid
+
+  token String @unique
+
+  status InvitationStatus @default(PENDING)
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+
+  invitedBy User @relation("InvitedBy", fields: [invitedById], references: [id])
+
+  @@index([workspaceId])
+  @@index([email])
 }
 
 //////////////////////////////////////////////////////
