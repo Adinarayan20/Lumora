@@ -141,6 +141,14 @@ export const SpaceType = {
 
 export type SpaceType = (typeof SpaceType)[keyof typeof SpaceType];
 
+export const SpaceStatus = {
+  ACTIVE: 'ACTIVE',
+  ARCHIVED: 'ARCHIVED',
+  DELETED: 'DELETED',
+} as const;
+
+export type SpaceStatus = (typeof SpaceStatus)[keyof typeof SpaceStatus];
+
 export const ObjectType = {
   NOTE: 'NOTE',
   TASK: 'TASK',

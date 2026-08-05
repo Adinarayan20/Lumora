@@ -101,6 +101,8 @@ model User {
   events        Event[]
   objectsCreated Object[] @relation("ObjectAuthor")
   objectsUpdated Object[] @relation("ObjectModifier")
+  spacesCreated  Space[]  @relation("SpaceAuthor")
+  spacesUpdated  Space[]  @relation("SpaceModifier")
 
   @@index([email])
   @@index([username])
@@ -328,6 +330,12 @@ enum SpaceType {
   SHARED
 }
 
+enum SpaceStatus {
+  ACTIVE
+  ARCHIVED
+  DELETED
+}
+
 enum ObjectType {
   NOTE
   TASK
@@ -539,13 +547,39 @@ model Space {
 
   workspaceId String @db.Uuid
 
+  parentId String? @db.Uuid
+
+  createdById String @db.Uuid
+
+  updatedById String? @db.Uuid
+
+  slug String
+
   name String
 
-  type SpaceType
+  description String?
+
+  icon String?
+
+  emoji String?
+
+  cover String?
 
   color String?
 
-  icon String?
+  pinnedAt DateTime?
+
+  isFavorite Boolean @default(false)
+
+  status SpaceStatus @default(ACTIVE)
+
+  settings Json? @default("{}")
+
+  revision Int @default(1)
+
+  archivedAt DateTime?
+
+  deletedAt DateTime?
 
   createdAt DateTime @default(now())
 
@@ -553,9 +587,22 @@ model Space {
 
   workspace Workspace @relation(fields: [workspaceId], references: [id])
 
+  parent Space? @relation("SpaceHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
+
+  children Space[] @relation("SpaceHierarchy")
+
+  createdBy User @relation("SpaceAuthor", fields: [createdById], references: [id])
+
+  updatedBy User? @relation("SpaceModifier", fields: [updatedById], references: [id])
+
   objects Object[]
 
-  @@index([workspaceId])
+  @@index([workspaceId, slug])
+  @@index([workspaceId, status])
+  @@index([workspaceId, parentId])
+  @@index([workspaceId, isFavorite])
+  @@index([workspaceId, pinnedAt])
+  @@index([createdById])
 }
 
 model Object {

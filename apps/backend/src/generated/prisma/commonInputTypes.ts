@@ -799,25 +799,33 @@ export type EnumEventStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumEventStatusFilter<$PrismaModel>;
 };
 
-export type EnumSpaceTypeFilter<$PrismaModel = never> = {
-  equals?: $Enums.SpaceType | Prisma.EnumSpaceTypeFieldRefInput<$PrismaModel>;
-  in?: $Enums.SpaceType[] | Prisma.ListEnumSpaceTypeFieldRefInput<$PrismaModel>;
+export type EnumSpaceStatusFilter<$PrismaModel = never> = {
+  equals?:
+    $Enums.SpaceStatus | Prisma.EnumSpaceStatusFieldRefInput<$PrismaModel>;
+  in?:
+    | $Enums.SpaceStatus[]
+    | Prisma.ListEnumSpaceStatusFieldRefInput<$PrismaModel>;
   notIn?:
-    $Enums.SpaceType[] | Prisma.ListEnumSpaceTypeFieldRefInput<$PrismaModel>;
-  not?: Prisma.NestedEnumSpaceTypeFilter<$PrismaModel> | $Enums.SpaceType;
+    | $Enums.SpaceStatus[]
+    | Prisma.ListEnumSpaceStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumSpaceStatusFilter<$PrismaModel> | $Enums.SpaceStatus;
 };
 
-export type EnumSpaceTypeWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.SpaceType | Prisma.EnumSpaceTypeFieldRefInput<$PrismaModel>;
-  in?: $Enums.SpaceType[] | Prisma.ListEnumSpaceTypeFieldRefInput<$PrismaModel>;
+export type EnumSpaceStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?:
+    $Enums.SpaceStatus | Prisma.EnumSpaceStatusFieldRefInput<$PrismaModel>;
+  in?:
+    | $Enums.SpaceStatus[]
+    | Prisma.ListEnumSpaceStatusFieldRefInput<$PrismaModel>;
   notIn?:
-    $Enums.SpaceType[] | Prisma.ListEnumSpaceTypeFieldRefInput<$PrismaModel>;
+    | $Enums.SpaceStatus[]
+    | Prisma.ListEnumSpaceStatusFieldRefInput<$PrismaModel>;
   not?:
-    | Prisma.NestedEnumSpaceTypeWithAggregatesFilter<$PrismaModel>
-    | $Enums.SpaceType;
+    | Prisma.NestedEnumSpaceStatusWithAggregatesFilter<$PrismaModel>
+    | $Enums.SpaceStatus;
   _count?: Prisma.NestedIntFilter<$PrismaModel>;
-  _min?: Prisma.NestedEnumSpaceTypeFilter<$PrismaModel>;
-  _max?: Prisma.NestedEnumSpaceTypeFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumSpaceStatusFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumSpaceStatusFilter<$PrismaModel>;
 };
 
 export type EnumObjectStatusFilter<$PrismaModel = never> = {
@@ -1674,25 +1682,33 @@ export type NestedEnumEventStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumEventStatusFilter<$PrismaModel>;
 };
 
-export type NestedEnumSpaceTypeFilter<$PrismaModel = never> = {
-  equals?: $Enums.SpaceType | Prisma.EnumSpaceTypeFieldRefInput<$PrismaModel>;
-  in?: $Enums.SpaceType[] | Prisma.ListEnumSpaceTypeFieldRefInput<$PrismaModel>;
+export type NestedEnumSpaceStatusFilter<$PrismaModel = never> = {
+  equals?:
+    $Enums.SpaceStatus | Prisma.EnumSpaceStatusFieldRefInput<$PrismaModel>;
+  in?:
+    | $Enums.SpaceStatus[]
+    | Prisma.ListEnumSpaceStatusFieldRefInput<$PrismaModel>;
   notIn?:
-    $Enums.SpaceType[] | Prisma.ListEnumSpaceTypeFieldRefInput<$PrismaModel>;
-  not?: Prisma.NestedEnumSpaceTypeFilter<$PrismaModel> | $Enums.SpaceType;
+    | $Enums.SpaceStatus[]
+    | Prisma.ListEnumSpaceStatusFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedEnumSpaceStatusFilter<$PrismaModel> | $Enums.SpaceStatus;
 };
 
-export type NestedEnumSpaceTypeWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.SpaceType | Prisma.EnumSpaceTypeFieldRefInput<$PrismaModel>;
-  in?: $Enums.SpaceType[] | Prisma.ListEnumSpaceTypeFieldRefInput<$PrismaModel>;
+export type NestedEnumSpaceStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?:
+    $Enums.SpaceStatus | Prisma.EnumSpaceStatusFieldRefInput<$PrismaModel>;
+  in?:
+    | $Enums.SpaceStatus[]
+    | Prisma.ListEnumSpaceStatusFieldRefInput<$PrismaModel>;
   notIn?:
-    $Enums.SpaceType[] | Prisma.ListEnumSpaceTypeFieldRefInput<$PrismaModel>;
+    | $Enums.SpaceStatus[]
+    | Prisma.ListEnumSpaceStatusFieldRefInput<$PrismaModel>;
   not?:
-    | Prisma.NestedEnumSpaceTypeWithAggregatesFilter<$PrismaModel>
-    | $Enums.SpaceType;
+    | Prisma.NestedEnumSpaceStatusWithAggregatesFilter<$PrismaModel>
+    | $Enums.SpaceStatus;
   _count?: Prisma.NestedIntFilter<$PrismaModel>;
-  _min?: Prisma.NestedEnumSpaceTypeFilter<$PrismaModel>;
-  _max?: Prisma.NestedEnumSpaceTypeFilter<$PrismaModel>;
+  _min?: Prisma.NestedEnumSpaceStatusFilter<$PrismaModel>;
+  _max?: Prisma.NestedEnumSpaceStatusFilter<$PrismaModel>;
 };
 
 export type NestedEnumObjectStatusFilter<$PrismaModel = never> = {

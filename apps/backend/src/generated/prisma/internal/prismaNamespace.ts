@@ -2181,10 +2181,23 @@ export type SearchIndexScalarFieldEnum =
 export const SpaceScalarFieldEnum = {
   id: 'id',
   workspaceId: 'workspaceId',
+  parentId: 'parentId',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
+  slug: 'slug',
   name: 'name',
-  type: 'type',
-  color: 'color',
+  description: 'description',
   icon: 'icon',
+  emoji: 'emoji',
+  cover: 'cover',
+  color: 'color',
+  pinnedAt: 'pinnedAt',
+  isFavorite: 'isFavorite',
+  status: 'status',
+  settings: 'settings',
+  revision: 'revision',
+  archivedAt: 'archivedAt',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
 } as const;
@@ -2567,19 +2580,19 @@ export type ListEnumEventStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 >;
 
 /**
- * Reference to a field of type 'SpaceType'
+ * Reference to a field of type 'SpaceStatus'
  */
-export type EnumSpaceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
+export type EnumSpaceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
   $PrismaModel,
-  'SpaceType'
+  'SpaceStatus'
 >;
 
 /**
- * Reference to a field of type 'SpaceType[]'
+ * Reference to a field of type 'SpaceStatus[]'
  */
-export type ListEnumSpaceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
+export type ListEnumSpaceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
   $PrismaModel,
-  'SpaceType[]'
+  'SpaceStatus[]'
 >;
 
 /**

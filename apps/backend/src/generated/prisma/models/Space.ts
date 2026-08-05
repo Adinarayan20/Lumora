@@ -20,17 +20,39 @@ export type SpaceModel =
 
 export type AggregateSpace = {
   _count: SpaceCountAggregateOutputType | null;
+  _avg: SpaceAvgAggregateOutputType | null;
+  _sum: SpaceSumAggregateOutputType | null;
   _min: SpaceMinAggregateOutputType | null;
   _max: SpaceMaxAggregateOutputType | null;
+};
+
+export type SpaceAvgAggregateOutputType = {
+  revision: number | null;
+};
+
+export type SpaceSumAggregateOutputType = {
+  revision: number | null;
 };
 
 export type SpaceMinAggregateOutputType = {
   id: string | null;
   workspaceId: string | null;
+  parentId: string | null;
+  createdById: string | null;
+  updatedById: string | null;
+  slug: string | null;
   name: string | null;
-  type: $Enums.SpaceType | null;
-  color: string | null;
+  description: string | null;
   icon: string | null;
+  emoji: string | null;
+  cover: string | null;
+  color: string | null;
+  pinnedAt: Date | null;
+  isFavorite: boolean | null;
+  status: $Enums.SpaceStatus | null;
+  revision: number | null;
+  archivedAt: Date | null;
+  deletedAt: Date | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
@@ -38,10 +60,22 @@ export type SpaceMinAggregateOutputType = {
 export type SpaceMaxAggregateOutputType = {
   id: string | null;
   workspaceId: string | null;
+  parentId: string | null;
+  createdById: string | null;
+  updatedById: string | null;
+  slug: string | null;
   name: string | null;
-  type: $Enums.SpaceType | null;
-  color: string | null;
+  description: string | null;
   icon: string | null;
+  emoji: string | null;
+  cover: string | null;
+  color: string | null;
+  pinnedAt: Date | null;
+  isFavorite: boolean | null;
+  status: $Enums.SpaceStatus | null;
+  revision: number | null;
+  archivedAt: Date | null;
+  deletedAt: Date | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
@@ -49,22 +83,55 @@ export type SpaceMaxAggregateOutputType = {
 export type SpaceCountAggregateOutputType = {
   id: number;
   workspaceId: number;
+  parentId: number;
+  createdById: number;
+  updatedById: number;
+  slug: number;
   name: number;
-  type: number;
-  color: number;
+  description: number;
   icon: number;
+  emoji: number;
+  cover: number;
+  color: number;
+  pinnedAt: number;
+  isFavorite: number;
+  status: number;
+  settings: number;
+  revision: number;
+  archivedAt: number;
+  deletedAt: number;
   createdAt: number;
   updatedAt: number;
   _all: number;
 };
 
+export type SpaceAvgAggregateInputType = {
+  revision?: true;
+};
+
+export type SpaceSumAggregateInputType = {
+  revision?: true;
+};
+
 export type SpaceMinAggregateInputType = {
   id?: true;
   workspaceId?: true;
+  parentId?: true;
+  createdById?: true;
+  updatedById?: true;
+  slug?: true;
   name?: true;
-  type?: true;
-  color?: true;
+  description?: true;
   icon?: true;
+  emoji?: true;
+  cover?: true;
+  color?: true;
+  pinnedAt?: true;
+  isFavorite?: true;
+  status?: true;
+  revision?: true;
+  archivedAt?: true;
+  deletedAt?: true;
   createdAt?: true;
   updatedAt?: true;
 };
@@ -72,10 +139,22 @@ export type SpaceMinAggregateInputType = {
 export type SpaceMaxAggregateInputType = {
   id?: true;
   workspaceId?: true;
+  parentId?: true;
+  createdById?: true;
+  updatedById?: true;
+  slug?: true;
   name?: true;
-  type?: true;
-  color?: true;
+  description?: true;
   icon?: true;
+  emoji?: true;
+  cover?: true;
+  color?: true;
+  pinnedAt?: true;
+  isFavorite?: true;
+  status?: true;
+  revision?: true;
+  archivedAt?: true;
+  deletedAt?: true;
   createdAt?: true;
   updatedAt?: true;
 };
@@ -83,10 +162,23 @@ export type SpaceMaxAggregateInputType = {
 export type SpaceCountAggregateInputType = {
   id?: true;
   workspaceId?: true;
+  parentId?: true;
+  createdById?: true;
+  updatedById?: true;
+  slug?: true;
   name?: true;
-  type?: true;
-  color?: true;
+  description?: true;
   icon?: true;
+  emoji?: true;
+  cover?: true;
+  color?: true;
+  pinnedAt?: true;
+  isFavorite?: true;
+  status?: true;
+  settings?: true;
+  revision?: true;
+  archivedAt?: true;
+  deletedAt?: true;
   createdAt?: true;
   updatedAt?: true;
   _all?: true;
@@ -135,6 +227,18 @@ export type SpaceAggregateArgs<
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    *
+   * Select which fields to average
+   **/
+  _avg?: SpaceAvgAggregateInputType;
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
+   * Select which fields to sum
+   **/
+  _sum?: SpaceSumAggregateInputType;
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
    * Select which fields to find the minimum value
    **/
   _min?: SpaceMinAggregateInputType;
@@ -167,6 +271,8 @@ export type SpaceGroupByArgs<
   take?: number;
   skip?: number;
   _count?: SpaceCountAggregateInputType | true;
+  _avg?: SpaceAvgAggregateInputType;
+  _sum?: SpaceSumAggregateInputType;
   _min?: SpaceMinAggregateInputType;
   _max?: SpaceMaxAggregateInputType;
 };
@@ -174,13 +280,28 @@ export type SpaceGroupByArgs<
 export type SpaceGroupByOutputType = {
   id: string;
   workspaceId: string;
+  parentId: string | null;
+  createdById: string;
+  updatedById: string | null;
+  slug: string;
   name: string;
-  type: $Enums.SpaceType;
-  color: string | null;
+  description: string | null;
   icon: string | null;
+  emoji: string | null;
+  cover: string | null;
+  color: string | null;
+  pinnedAt: Date | null;
+  isFavorite: boolean;
+  status: $Enums.SpaceStatus;
+  settings: runtime.JsonValue | null;
+  revision: number;
+  archivedAt: Date | null;
+  deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   _count: SpaceCountAggregateOutputType | null;
+  _avg: SpaceAvgAggregateOutputType | null;
+  _sum: SpaceSumAggregateOutputType | null;
   _min: SpaceMinAggregateOutputType | null;
   _max: SpaceMaxAggregateOutputType | null;
 };
@@ -204,29 +325,72 @@ export type SpaceWhereInput = {
   NOT?: Prisma.SpaceWhereInput | Prisma.SpaceWhereInput[];
   id?: Prisma.UuidFilter<'Space'> | string;
   workspaceId?: Prisma.UuidFilter<'Space'> | string;
+  parentId?: Prisma.UuidNullableFilter<'Space'> | string | null;
+  createdById?: Prisma.UuidFilter<'Space'> | string;
+  updatedById?: Prisma.UuidNullableFilter<'Space'> | string | null;
+  slug?: Prisma.StringFilter<'Space'> | string;
   name?: Prisma.StringFilter<'Space'> | string;
-  type?: Prisma.EnumSpaceTypeFilter<'Space'> | $Enums.SpaceType;
-  color?: Prisma.StringNullableFilter<'Space'> | string | null;
+  description?: Prisma.StringNullableFilter<'Space'> | string | null;
   icon?: Prisma.StringNullableFilter<'Space'> | string | null;
+  emoji?: Prisma.StringNullableFilter<'Space'> | string | null;
+  cover?: Prisma.StringNullableFilter<'Space'> | string | null;
+  color?: Prisma.StringNullableFilter<'Space'> | string | null;
+  pinnedAt?: Prisma.DateTimeNullableFilter<'Space'> | Date | string | null;
+  isFavorite?: Prisma.BoolFilter<'Space'> | boolean;
+  status?: Prisma.EnumSpaceStatusFilter<'Space'> | $Enums.SpaceStatus;
+  settings?: Prisma.JsonNullableFilter<'Space'>;
+  revision?: Prisma.IntFilter<'Space'> | number;
+  archivedAt?: Prisma.DateTimeNullableFilter<'Space'> | Date | string | null;
+  deletedAt?: Prisma.DateTimeNullableFilter<'Space'> | Date | string | null;
   createdAt?: Prisma.DateTimeFilter<'Space'> | Date | string;
   updatedAt?: Prisma.DateTimeFilter<'Space'> | Date | string;
   workspace?: Prisma.XOR<
     Prisma.WorkspaceScalarRelationFilter,
     Prisma.WorkspaceWhereInput
   >;
+  parent?: Prisma.XOR<
+    Prisma.SpaceNullableScalarRelationFilter,
+    Prisma.SpaceWhereInput
+  > | null;
+  children?: Prisma.SpaceListRelationFilter;
+  createdBy?: Prisma.XOR<
+    Prisma.UserScalarRelationFilter,
+    Prisma.UserWhereInput
+  >;
+  updatedBy?: Prisma.XOR<
+    Prisma.UserNullableScalarRelationFilter,
+    Prisma.UserWhereInput
+  > | null;
   objects?: Prisma.ObjectListRelationFilter;
 };
 
 export type SpaceOrderByWithRelationInput = {
   id?: Prisma.SortOrder;
   workspaceId?: Prisma.SortOrder;
+  parentId?: Prisma.SortOrderInput | Prisma.SortOrder;
+  createdById?: Prisma.SortOrder;
+  updatedById?: Prisma.SortOrderInput | Prisma.SortOrder;
+  slug?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
-  type?: Prisma.SortOrder;
-  color?: Prisma.SortOrderInput | Prisma.SortOrder;
+  description?: Prisma.SortOrderInput | Prisma.SortOrder;
   icon?: Prisma.SortOrderInput | Prisma.SortOrder;
+  emoji?: Prisma.SortOrderInput | Prisma.SortOrder;
+  cover?: Prisma.SortOrderInput | Prisma.SortOrder;
+  color?: Prisma.SortOrderInput | Prisma.SortOrder;
+  pinnedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+  isFavorite?: Prisma.SortOrder;
+  status?: Prisma.SortOrder;
+  settings?: Prisma.SortOrderInput | Prisma.SortOrder;
+  revision?: Prisma.SortOrder;
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
   workspace?: Prisma.WorkspaceOrderByWithRelationInput;
+  parent?: Prisma.SpaceOrderByWithRelationInput;
+  children?: Prisma.SpaceOrderByRelationAggregateInput;
+  createdBy?: Prisma.UserOrderByWithRelationInput;
+  updatedBy?: Prisma.UserOrderByWithRelationInput;
   objects?: Prisma.ObjectOrderByRelationAggregateInput;
 };
 
@@ -237,16 +401,42 @@ export type SpaceWhereUniqueInput = Prisma.AtLeast<
     OR?: Prisma.SpaceWhereInput[];
     NOT?: Prisma.SpaceWhereInput | Prisma.SpaceWhereInput[];
     workspaceId?: Prisma.UuidFilter<'Space'> | string;
+    parentId?: Prisma.UuidNullableFilter<'Space'> | string | null;
+    createdById?: Prisma.UuidFilter<'Space'> | string;
+    updatedById?: Prisma.UuidNullableFilter<'Space'> | string | null;
+    slug?: Prisma.StringFilter<'Space'> | string;
     name?: Prisma.StringFilter<'Space'> | string;
-    type?: Prisma.EnumSpaceTypeFilter<'Space'> | $Enums.SpaceType;
-    color?: Prisma.StringNullableFilter<'Space'> | string | null;
+    description?: Prisma.StringNullableFilter<'Space'> | string | null;
     icon?: Prisma.StringNullableFilter<'Space'> | string | null;
+    emoji?: Prisma.StringNullableFilter<'Space'> | string | null;
+    cover?: Prisma.StringNullableFilter<'Space'> | string | null;
+    color?: Prisma.StringNullableFilter<'Space'> | string | null;
+    pinnedAt?: Prisma.DateTimeNullableFilter<'Space'> | Date | string | null;
+    isFavorite?: Prisma.BoolFilter<'Space'> | boolean;
+    status?: Prisma.EnumSpaceStatusFilter<'Space'> | $Enums.SpaceStatus;
+    settings?: Prisma.JsonNullableFilter<'Space'>;
+    revision?: Prisma.IntFilter<'Space'> | number;
+    archivedAt?: Prisma.DateTimeNullableFilter<'Space'> | Date | string | null;
+    deletedAt?: Prisma.DateTimeNullableFilter<'Space'> | Date | string | null;
     createdAt?: Prisma.DateTimeFilter<'Space'> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<'Space'> | Date | string;
     workspace?: Prisma.XOR<
       Prisma.WorkspaceScalarRelationFilter,
       Prisma.WorkspaceWhereInput
     >;
+    parent?: Prisma.XOR<
+      Prisma.SpaceNullableScalarRelationFilter,
+      Prisma.SpaceWhereInput
+    > | null;
+    children?: Prisma.SpaceListRelationFilter;
+    createdBy?: Prisma.XOR<
+      Prisma.UserScalarRelationFilter,
+      Prisma.UserWhereInput
+    >;
+    updatedBy?: Prisma.XOR<
+      Prisma.UserNullableScalarRelationFilter,
+      Prisma.UserWhereInput
+    > | null;
     objects?: Prisma.ObjectListRelationFilter;
   },
   'id'
@@ -255,15 +445,30 @@ export type SpaceWhereUniqueInput = Prisma.AtLeast<
 export type SpaceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder;
   workspaceId?: Prisma.SortOrder;
+  parentId?: Prisma.SortOrderInput | Prisma.SortOrder;
+  createdById?: Prisma.SortOrder;
+  updatedById?: Prisma.SortOrderInput | Prisma.SortOrder;
+  slug?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
-  type?: Prisma.SortOrder;
-  color?: Prisma.SortOrderInput | Prisma.SortOrder;
+  description?: Prisma.SortOrderInput | Prisma.SortOrder;
   icon?: Prisma.SortOrderInput | Prisma.SortOrder;
+  emoji?: Prisma.SortOrderInput | Prisma.SortOrder;
+  cover?: Prisma.SortOrderInput | Prisma.SortOrder;
+  color?: Prisma.SortOrderInput | Prisma.SortOrder;
+  pinnedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+  isFavorite?: Prisma.SortOrder;
+  status?: Prisma.SortOrder;
+  settings?: Prisma.SortOrderInput | Prisma.SortOrder;
+  revision?: Prisma.SortOrder;
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
+  deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
   _count?: Prisma.SpaceCountOrderByAggregateInput;
+  _avg?: Prisma.SpaceAvgOrderByAggregateInput;
   _max?: Prisma.SpaceMaxOrderByAggregateInput;
   _min?: Prisma.SpaceMinOrderByAggregateInput;
+  _sum?: Prisma.SpaceSumOrderByAggregateInput;
 };
 
 export type SpaceScalarWhereWithAggregatesInput = {
@@ -276,79 +481,189 @@ export type SpaceScalarWhereWithAggregatesInput = {
     | Prisma.SpaceScalarWhereWithAggregatesInput[];
   id?: Prisma.UuidWithAggregatesFilter<'Space'> | string;
   workspaceId?: Prisma.UuidWithAggregatesFilter<'Space'> | string;
+  parentId?: Prisma.UuidNullableWithAggregatesFilter<'Space'> | string | null;
+  createdById?: Prisma.UuidWithAggregatesFilter<'Space'> | string;
+  updatedById?:
+    Prisma.UuidNullableWithAggregatesFilter<'Space'> | string | null;
+  slug?: Prisma.StringWithAggregatesFilter<'Space'> | string;
   name?: Prisma.StringWithAggregatesFilter<'Space'> | string;
-  type?: Prisma.EnumSpaceTypeWithAggregatesFilter<'Space'> | $Enums.SpaceType;
-  color?: Prisma.StringNullableWithAggregatesFilter<'Space'> | string | null;
+  description?:
+    Prisma.StringNullableWithAggregatesFilter<'Space'> | string | null;
   icon?: Prisma.StringNullableWithAggregatesFilter<'Space'> | string | null;
+  emoji?: Prisma.StringNullableWithAggregatesFilter<'Space'> | string | null;
+  cover?: Prisma.StringNullableWithAggregatesFilter<'Space'> | string | null;
+  color?: Prisma.StringNullableWithAggregatesFilter<'Space'> | string | null;
+  pinnedAt?:
+    Prisma.DateTimeNullableWithAggregatesFilter<'Space'> | Date | string | null;
+  isFavorite?: Prisma.BoolWithAggregatesFilter<'Space'> | boolean;
+  status?:
+    Prisma.EnumSpaceStatusWithAggregatesFilter<'Space'> | $Enums.SpaceStatus;
+  settings?: Prisma.JsonNullableWithAggregatesFilter<'Space'>;
+  revision?: Prisma.IntWithAggregatesFilter<'Space'> | number;
+  archivedAt?:
+    Prisma.DateTimeNullableWithAggregatesFilter<'Space'> | Date | string | null;
+  deletedAt?:
+    Prisma.DateTimeNullableWithAggregatesFilter<'Space'> | Date | string | null;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<'Space'> | Date | string;
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<'Space'> | Date | string;
 };
 
 export type SpaceCreateInput = {
   id?: string;
+  slug: string;
   name: string;
-  type: $Enums.SpaceType;
-  color?: string | null;
+  description?: string | null;
   icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   workspace: Prisma.WorkspaceCreateNestedOneWithoutSpacesInput;
+  parent?: Prisma.SpaceCreateNestedOneWithoutChildrenInput;
+  children?: Prisma.SpaceCreateNestedManyWithoutParentInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutSpacesCreatedInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutSpacesUpdatedInput;
   objects?: Prisma.ObjectCreateNestedManyWithoutSpaceInput;
 };
 
 export type SpaceUncheckedCreateInput = {
   id?: string;
   workspaceId: string;
+  parentId?: string | null;
+  createdById: string;
+  updatedById?: string | null;
+  slug: string;
   name: string;
-  type: $Enums.SpaceType;
-  color?: string | null;
+  description?: string | null;
   icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  children?: Prisma.SpaceUncheckedCreateNestedManyWithoutParentInput;
   objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutSpaceInput;
 };
 
 export type SpaceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
-  type?: Prisma.EnumSpaceTypeFieldUpdateOperationsInput | $Enums.SpaceType;
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutSpacesNestedInput;
+  parent?: Prisma.SpaceUpdateOneWithoutChildrenNestedInput;
+  children?: Prisma.SpaceUpdateManyWithoutParentNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutSpacesCreatedNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutSpacesUpdatedNestedInput;
   objects?: Prisma.ObjectUpdateManyWithoutSpaceNestedInput;
 };
 
 export type SpaceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
-  type?: Prisma.EnumSpaceTypeFieldUpdateOperationsInput | $Enums.SpaceType;
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  children?: Prisma.SpaceUncheckedUpdateManyWithoutParentNestedInput;
   objects?: Prisma.ObjectUncheckedUpdateManyWithoutSpaceNestedInput;
 };
 
 export type SpaceCreateManyInput = {
   id?: string;
   workspaceId: string;
+  parentId?: string | null;
+  createdById: string;
+  updatedById?: string | null;
+  slug: string;
   name: string;
-  type: $Enums.SpaceType;
-  color?: string | null;
+  description?: string | null;
   icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };
 
 export type SpaceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
-  type?: Prisma.EnumSpaceTypeFieldUpdateOperationsInput | $Enums.SpaceType;
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -356,10 +671,27 @@ export type SpaceUpdateManyMutationInput = {
 export type SpaceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
-  type?: Prisma.EnumSpaceTypeFieldUpdateOperationsInput | $Enums.SpaceType;
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -374,24 +706,58 @@ export type SpaceOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder;
 };
 
+export type SpaceNullableScalarRelationFilter = {
+  is?: Prisma.SpaceWhereInput | null;
+  isNot?: Prisma.SpaceWhereInput | null;
+};
+
 export type SpaceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder;
   workspaceId?: Prisma.SortOrder;
+  parentId?: Prisma.SortOrder;
+  createdById?: Prisma.SortOrder;
+  updatedById?: Prisma.SortOrder;
+  slug?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
-  type?: Prisma.SortOrder;
-  color?: Prisma.SortOrder;
+  description?: Prisma.SortOrder;
   icon?: Prisma.SortOrder;
+  emoji?: Prisma.SortOrder;
+  cover?: Prisma.SortOrder;
+  color?: Prisma.SortOrder;
+  pinnedAt?: Prisma.SortOrder;
+  isFavorite?: Prisma.SortOrder;
+  status?: Prisma.SortOrder;
+  settings?: Prisma.SortOrder;
+  revision?: Prisma.SortOrder;
+  archivedAt?: Prisma.SortOrder;
+  deletedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+};
+
+export type SpaceAvgOrderByAggregateInput = {
+  revision?: Prisma.SortOrder;
 };
 
 export type SpaceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder;
   workspaceId?: Prisma.SortOrder;
+  parentId?: Prisma.SortOrder;
+  createdById?: Prisma.SortOrder;
+  updatedById?: Prisma.SortOrder;
+  slug?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
-  type?: Prisma.SortOrder;
-  color?: Prisma.SortOrder;
+  description?: Prisma.SortOrder;
   icon?: Prisma.SortOrder;
+  emoji?: Prisma.SortOrder;
+  cover?: Prisma.SortOrder;
+  color?: Prisma.SortOrder;
+  pinnedAt?: Prisma.SortOrder;
+  isFavorite?: Prisma.SortOrder;
+  status?: Prisma.SortOrder;
+  revision?: Prisma.SortOrder;
+  archivedAt?: Prisma.SortOrder;
+  deletedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
 };
@@ -399,17 +765,200 @@ export type SpaceMaxOrderByAggregateInput = {
 export type SpaceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder;
   workspaceId?: Prisma.SortOrder;
+  parentId?: Prisma.SortOrder;
+  createdById?: Prisma.SortOrder;
+  updatedById?: Prisma.SortOrder;
+  slug?: Prisma.SortOrder;
   name?: Prisma.SortOrder;
-  type?: Prisma.SortOrder;
-  color?: Prisma.SortOrder;
+  description?: Prisma.SortOrder;
   icon?: Prisma.SortOrder;
+  emoji?: Prisma.SortOrder;
+  cover?: Prisma.SortOrder;
+  color?: Prisma.SortOrder;
+  pinnedAt?: Prisma.SortOrder;
+  isFavorite?: Prisma.SortOrder;
+  status?: Prisma.SortOrder;
+  revision?: Prisma.SortOrder;
+  archivedAt?: Prisma.SortOrder;
+  deletedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
 };
 
-export type SpaceNullableScalarRelationFilter = {
-  is?: Prisma.SpaceWhereInput | null;
-  isNot?: Prisma.SpaceWhereInput | null;
+export type SpaceSumOrderByAggregateInput = {
+  revision?: Prisma.SortOrder;
+};
+
+export type SpaceCreateNestedManyWithoutCreatedByInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutCreatedByInput,
+        Prisma.SpaceUncheckedCreateWithoutCreatedByInput
+      >
+    | Prisma.SpaceCreateWithoutCreatedByInput[]
+    | Prisma.SpaceUncheckedCreateWithoutCreatedByInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutCreatedByInput
+    | Prisma.SpaceCreateOrConnectWithoutCreatedByInput[];
+  createMany?: Prisma.SpaceCreateManyCreatedByInputEnvelope;
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+};
+
+export type SpaceCreateNestedManyWithoutUpdatedByInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutUpdatedByInput,
+        Prisma.SpaceUncheckedCreateWithoutUpdatedByInput
+      >
+    | Prisma.SpaceCreateWithoutUpdatedByInput[]
+    | Prisma.SpaceUncheckedCreateWithoutUpdatedByInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutUpdatedByInput
+    | Prisma.SpaceCreateOrConnectWithoutUpdatedByInput[];
+  createMany?: Prisma.SpaceCreateManyUpdatedByInputEnvelope;
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+};
+
+export type SpaceUncheckedCreateNestedManyWithoutCreatedByInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutCreatedByInput,
+        Prisma.SpaceUncheckedCreateWithoutCreatedByInput
+      >
+    | Prisma.SpaceCreateWithoutCreatedByInput[]
+    | Prisma.SpaceUncheckedCreateWithoutCreatedByInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutCreatedByInput
+    | Prisma.SpaceCreateOrConnectWithoutCreatedByInput[];
+  createMany?: Prisma.SpaceCreateManyCreatedByInputEnvelope;
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+};
+
+export type SpaceUncheckedCreateNestedManyWithoutUpdatedByInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutUpdatedByInput,
+        Prisma.SpaceUncheckedCreateWithoutUpdatedByInput
+      >
+    | Prisma.SpaceCreateWithoutUpdatedByInput[]
+    | Prisma.SpaceUncheckedCreateWithoutUpdatedByInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutUpdatedByInput
+    | Prisma.SpaceCreateOrConnectWithoutUpdatedByInput[];
+  createMany?: Prisma.SpaceCreateManyUpdatedByInputEnvelope;
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+};
+
+export type SpaceUpdateManyWithoutCreatedByNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutCreatedByInput,
+        Prisma.SpaceUncheckedCreateWithoutCreatedByInput
+      >
+    | Prisma.SpaceCreateWithoutCreatedByInput[]
+    | Prisma.SpaceUncheckedCreateWithoutCreatedByInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutCreatedByInput
+    | Prisma.SpaceCreateOrConnectWithoutCreatedByInput[];
+  upsert?:
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutCreatedByInput
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutCreatedByInput[];
+  createMany?: Prisma.SpaceCreateManyCreatedByInputEnvelope;
+  set?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  disconnect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  delete?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  update?:
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutCreatedByInput
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutCreatedByInput[];
+  updateMany?:
+    | Prisma.SpaceUpdateManyWithWhereWithoutCreatedByInput
+    | Prisma.SpaceUpdateManyWithWhereWithoutCreatedByInput[];
+  deleteMany?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
+};
+
+export type SpaceUpdateManyWithoutUpdatedByNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutUpdatedByInput,
+        Prisma.SpaceUncheckedCreateWithoutUpdatedByInput
+      >
+    | Prisma.SpaceCreateWithoutUpdatedByInput[]
+    | Prisma.SpaceUncheckedCreateWithoutUpdatedByInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutUpdatedByInput
+    | Prisma.SpaceCreateOrConnectWithoutUpdatedByInput[];
+  upsert?:
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutUpdatedByInput
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutUpdatedByInput[];
+  createMany?: Prisma.SpaceCreateManyUpdatedByInputEnvelope;
+  set?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  disconnect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  delete?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  update?:
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutUpdatedByInput
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutUpdatedByInput[];
+  updateMany?:
+    | Prisma.SpaceUpdateManyWithWhereWithoutUpdatedByInput
+    | Prisma.SpaceUpdateManyWithWhereWithoutUpdatedByInput[];
+  deleteMany?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
+};
+
+export type SpaceUncheckedUpdateManyWithoutCreatedByNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutCreatedByInput,
+        Prisma.SpaceUncheckedCreateWithoutCreatedByInput
+      >
+    | Prisma.SpaceCreateWithoutCreatedByInput[]
+    | Prisma.SpaceUncheckedCreateWithoutCreatedByInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutCreatedByInput
+    | Prisma.SpaceCreateOrConnectWithoutCreatedByInput[];
+  upsert?:
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutCreatedByInput
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutCreatedByInput[];
+  createMany?: Prisma.SpaceCreateManyCreatedByInputEnvelope;
+  set?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  disconnect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  delete?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  update?:
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutCreatedByInput
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutCreatedByInput[];
+  updateMany?:
+    | Prisma.SpaceUpdateManyWithWhereWithoutCreatedByInput
+    | Prisma.SpaceUpdateManyWithWhereWithoutCreatedByInput[];
+  deleteMany?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
+};
+
+export type SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutUpdatedByInput,
+        Prisma.SpaceUncheckedCreateWithoutUpdatedByInput
+      >
+    | Prisma.SpaceCreateWithoutUpdatedByInput[]
+    | Prisma.SpaceUncheckedCreateWithoutUpdatedByInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutUpdatedByInput
+    | Prisma.SpaceCreateOrConnectWithoutUpdatedByInput[];
+  upsert?:
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutUpdatedByInput
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutUpdatedByInput[];
+  createMany?: Prisma.SpaceCreateManyUpdatedByInputEnvelope;
+  set?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  disconnect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  delete?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  update?:
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutUpdatedByInput
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutUpdatedByInput[];
+  updateMany?:
+    | Prisma.SpaceUpdateManyWithWhereWithoutUpdatedByInput
+    | Prisma.SpaceUpdateManyWithWhereWithoutUpdatedByInput[];
+  deleteMany?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
 };
 
 export type SpaceCreateNestedManyWithoutWorkspaceInput = {
@@ -498,8 +1047,122 @@ export type SpaceUncheckedUpdateManyWithoutWorkspaceNestedInput = {
   deleteMany?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
 };
 
-export type EnumSpaceTypeFieldUpdateOperationsInput = {
-  set?: $Enums.SpaceType;
+export type SpaceCreateNestedOneWithoutChildrenInput = {
+  create?: Prisma.XOR<
+    Prisma.SpaceCreateWithoutChildrenInput,
+    Prisma.SpaceUncheckedCreateWithoutChildrenInput
+  >;
+  connectOrCreate?: Prisma.SpaceCreateOrConnectWithoutChildrenInput;
+  connect?: Prisma.SpaceWhereUniqueInput;
+};
+
+export type SpaceCreateNestedManyWithoutParentInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutParentInput,
+        Prisma.SpaceUncheckedCreateWithoutParentInput
+      >
+    | Prisma.SpaceCreateWithoutParentInput[]
+    | Prisma.SpaceUncheckedCreateWithoutParentInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutParentInput
+    | Prisma.SpaceCreateOrConnectWithoutParentInput[];
+  createMany?: Prisma.SpaceCreateManyParentInputEnvelope;
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+};
+
+export type SpaceUncheckedCreateNestedManyWithoutParentInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutParentInput,
+        Prisma.SpaceUncheckedCreateWithoutParentInput
+      >
+    | Prisma.SpaceCreateWithoutParentInput[]
+    | Prisma.SpaceUncheckedCreateWithoutParentInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutParentInput
+    | Prisma.SpaceCreateOrConnectWithoutParentInput[];
+  createMany?: Prisma.SpaceCreateManyParentInputEnvelope;
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+};
+
+export type EnumSpaceStatusFieldUpdateOperationsInput = {
+  set?: $Enums.SpaceStatus;
+};
+
+export type SpaceUpdateOneWithoutChildrenNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.SpaceCreateWithoutChildrenInput,
+    Prisma.SpaceUncheckedCreateWithoutChildrenInput
+  >;
+  connectOrCreate?: Prisma.SpaceCreateOrConnectWithoutChildrenInput;
+  upsert?: Prisma.SpaceUpsertWithoutChildrenInput;
+  disconnect?: Prisma.SpaceWhereInput | boolean;
+  delete?: Prisma.SpaceWhereInput | boolean;
+  connect?: Prisma.SpaceWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.SpaceUpdateToOneWithWhereWithoutChildrenInput,
+      Prisma.SpaceUpdateWithoutChildrenInput
+    >,
+    Prisma.SpaceUncheckedUpdateWithoutChildrenInput
+  >;
+};
+
+export type SpaceUpdateManyWithoutParentNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutParentInput,
+        Prisma.SpaceUncheckedCreateWithoutParentInput
+      >
+    | Prisma.SpaceCreateWithoutParentInput[]
+    | Prisma.SpaceUncheckedCreateWithoutParentInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutParentInput
+    | Prisma.SpaceCreateOrConnectWithoutParentInput[];
+  upsert?:
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutParentInput
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutParentInput[];
+  createMany?: Prisma.SpaceCreateManyParentInputEnvelope;
+  set?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  disconnect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  delete?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  update?:
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutParentInput
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutParentInput[];
+  updateMany?:
+    | Prisma.SpaceUpdateManyWithWhereWithoutParentInput
+    | Prisma.SpaceUpdateManyWithWhereWithoutParentInput[];
+  deleteMany?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
+};
+
+export type SpaceUncheckedUpdateManyWithoutParentNestedInput = {
+  create?:
+    | Prisma.XOR<
+        Prisma.SpaceCreateWithoutParentInput,
+        Prisma.SpaceUncheckedCreateWithoutParentInput
+      >
+    | Prisma.SpaceCreateWithoutParentInput[]
+    | Prisma.SpaceUncheckedCreateWithoutParentInput[];
+  connectOrCreate?:
+    | Prisma.SpaceCreateOrConnectWithoutParentInput
+    | Prisma.SpaceCreateOrConnectWithoutParentInput[];
+  upsert?:
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutParentInput
+    | Prisma.SpaceUpsertWithWhereUniqueWithoutParentInput[];
+  createMany?: Prisma.SpaceCreateManyParentInputEnvelope;
+  set?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  disconnect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  delete?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  connect?: Prisma.SpaceWhereUniqueInput | Prisma.SpaceWhereUniqueInput[];
+  update?:
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutParentInput
+    | Prisma.SpaceUpdateWithWhereUniqueWithoutParentInput[];
+  updateMany?:
+    | Prisma.SpaceUpdateManyWithWhereWithoutParentInput
+    | Prisma.SpaceUpdateManyWithWhereWithoutParentInput[];
+  deleteMany?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
 };
 
 export type SpaceCreateNestedOneWithoutObjectsInput = {
@@ -530,25 +1193,266 @@ export type SpaceUpdateOneWithoutObjectsNestedInput = {
   >;
 };
 
-export type SpaceCreateWithoutWorkspaceInput = {
+export type SpaceCreateWithoutCreatedByInput = {
   id?: string;
+  slug: string;
   name: string;
-  type: $Enums.SpaceType;
-  color?: string | null;
+  description?: string | null;
   icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutSpacesInput;
+  parent?: Prisma.SpaceCreateNestedOneWithoutChildrenInput;
+  children?: Prisma.SpaceCreateNestedManyWithoutParentInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutSpacesUpdatedInput;
+  objects?: Prisma.ObjectCreateNestedManyWithoutSpaceInput;
+};
+
+export type SpaceUncheckedCreateWithoutCreatedByInput = {
+  id?: string;
+  workspaceId: string;
+  parentId?: string | null;
+  updatedById?: string | null;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  children?: Prisma.SpaceUncheckedCreateNestedManyWithoutParentInput;
+  objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutSpaceInput;
+};
+
+export type SpaceCreateOrConnectWithoutCreatedByInput = {
+  where: Prisma.SpaceWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.SpaceCreateWithoutCreatedByInput,
+    Prisma.SpaceUncheckedCreateWithoutCreatedByInput
+  >;
+};
+
+export type SpaceCreateManyCreatedByInputEnvelope = {
+  data:
+    | Prisma.SpaceCreateManyCreatedByInput
+    | Prisma.SpaceCreateManyCreatedByInput[];
+  skipDuplicates?: boolean;
+};
+
+export type SpaceCreateWithoutUpdatedByInput = {
+  id?: string;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutSpacesInput;
+  parent?: Prisma.SpaceCreateNestedOneWithoutChildrenInput;
+  children?: Prisma.SpaceCreateNestedManyWithoutParentInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutSpacesCreatedInput;
+  objects?: Prisma.ObjectCreateNestedManyWithoutSpaceInput;
+};
+
+export type SpaceUncheckedCreateWithoutUpdatedByInput = {
+  id?: string;
+  workspaceId: string;
+  parentId?: string | null;
+  createdById: string;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  children?: Prisma.SpaceUncheckedCreateNestedManyWithoutParentInput;
+  objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutSpaceInput;
+};
+
+export type SpaceCreateOrConnectWithoutUpdatedByInput = {
+  where: Prisma.SpaceWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.SpaceCreateWithoutUpdatedByInput,
+    Prisma.SpaceUncheckedCreateWithoutUpdatedByInput
+  >;
+};
+
+export type SpaceCreateManyUpdatedByInputEnvelope = {
+  data:
+    | Prisma.SpaceCreateManyUpdatedByInput
+    | Prisma.SpaceCreateManyUpdatedByInput[];
+  skipDuplicates?: boolean;
+};
+
+export type SpaceUpsertWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.SpaceWhereUniqueInput;
+  update: Prisma.XOR<
+    Prisma.SpaceUpdateWithoutCreatedByInput,
+    Prisma.SpaceUncheckedUpdateWithoutCreatedByInput
+  >;
+  create: Prisma.XOR<
+    Prisma.SpaceCreateWithoutCreatedByInput,
+    Prisma.SpaceUncheckedCreateWithoutCreatedByInput
+  >;
+};
+
+export type SpaceUpdateWithWhereUniqueWithoutCreatedByInput = {
+  where: Prisma.SpaceWhereUniqueInput;
+  data: Prisma.XOR<
+    Prisma.SpaceUpdateWithoutCreatedByInput,
+    Prisma.SpaceUncheckedUpdateWithoutCreatedByInput
+  >;
+};
+
+export type SpaceUpdateManyWithWhereWithoutCreatedByInput = {
+  where: Prisma.SpaceScalarWhereInput;
+  data: Prisma.XOR<
+    Prisma.SpaceUpdateManyMutationInput,
+    Prisma.SpaceUncheckedUpdateManyWithoutCreatedByInput
+  >;
+};
+
+export type SpaceScalarWhereInput = {
+  AND?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
+  OR?: Prisma.SpaceScalarWhereInput[];
+  NOT?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
+  id?: Prisma.UuidFilter<'Space'> | string;
+  workspaceId?: Prisma.UuidFilter<'Space'> | string;
+  parentId?: Prisma.UuidNullableFilter<'Space'> | string | null;
+  createdById?: Prisma.UuidFilter<'Space'> | string;
+  updatedById?: Prisma.UuidNullableFilter<'Space'> | string | null;
+  slug?: Prisma.StringFilter<'Space'> | string;
+  name?: Prisma.StringFilter<'Space'> | string;
+  description?: Prisma.StringNullableFilter<'Space'> | string | null;
+  icon?: Prisma.StringNullableFilter<'Space'> | string | null;
+  emoji?: Prisma.StringNullableFilter<'Space'> | string | null;
+  cover?: Prisma.StringNullableFilter<'Space'> | string | null;
+  color?: Prisma.StringNullableFilter<'Space'> | string | null;
+  pinnedAt?: Prisma.DateTimeNullableFilter<'Space'> | Date | string | null;
+  isFavorite?: Prisma.BoolFilter<'Space'> | boolean;
+  status?: Prisma.EnumSpaceStatusFilter<'Space'> | $Enums.SpaceStatus;
+  settings?: Prisma.JsonNullableFilter<'Space'>;
+  revision?: Prisma.IntFilter<'Space'> | number;
+  archivedAt?: Prisma.DateTimeNullableFilter<'Space'> | Date | string | null;
+  deletedAt?: Prisma.DateTimeNullableFilter<'Space'> | Date | string | null;
+  createdAt?: Prisma.DateTimeFilter<'Space'> | Date | string;
+  updatedAt?: Prisma.DateTimeFilter<'Space'> | Date | string;
+};
+
+export type SpaceUpsertWithWhereUniqueWithoutUpdatedByInput = {
+  where: Prisma.SpaceWhereUniqueInput;
+  update: Prisma.XOR<
+    Prisma.SpaceUpdateWithoutUpdatedByInput,
+    Prisma.SpaceUncheckedUpdateWithoutUpdatedByInput
+  >;
+  create: Prisma.XOR<
+    Prisma.SpaceCreateWithoutUpdatedByInput,
+    Prisma.SpaceUncheckedCreateWithoutUpdatedByInput
+  >;
+};
+
+export type SpaceUpdateWithWhereUniqueWithoutUpdatedByInput = {
+  where: Prisma.SpaceWhereUniqueInput;
+  data: Prisma.XOR<
+    Prisma.SpaceUpdateWithoutUpdatedByInput,
+    Prisma.SpaceUncheckedUpdateWithoutUpdatedByInput
+  >;
+};
+
+export type SpaceUpdateManyWithWhereWithoutUpdatedByInput = {
+  where: Prisma.SpaceScalarWhereInput;
+  data: Prisma.XOR<
+    Prisma.SpaceUpdateManyMutationInput,
+    Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByInput
+  >;
+};
+
+export type SpaceCreateWithoutWorkspaceInput = {
+  id?: string;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  parent?: Prisma.SpaceCreateNestedOneWithoutChildrenInput;
+  children?: Prisma.SpaceCreateNestedManyWithoutParentInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutSpacesCreatedInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutSpacesUpdatedInput;
   objects?: Prisma.ObjectCreateNestedManyWithoutSpaceInput;
 };
 
 export type SpaceUncheckedCreateWithoutWorkspaceInput = {
   id?: string;
+  parentId?: string | null;
+  createdById: string;
+  updatedById?: string | null;
+  slug: string;
   name: string;
-  type: $Enums.SpaceType;
-  color?: string | null;
+  description?: string | null;
   icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  children?: Prisma.SpaceUncheckedCreateNestedManyWithoutParentInput;
   objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutSpaceInput;
 };
 
@@ -595,40 +1499,281 @@ export type SpaceUpdateManyWithWhereWithoutWorkspaceInput = {
   >;
 };
 
-export type SpaceScalarWhereInput = {
-  AND?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
-  OR?: Prisma.SpaceScalarWhereInput[];
-  NOT?: Prisma.SpaceScalarWhereInput | Prisma.SpaceScalarWhereInput[];
-  id?: Prisma.UuidFilter<'Space'> | string;
-  workspaceId?: Prisma.UuidFilter<'Space'> | string;
-  name?: Prisma.StringFilter<'Space'> | string;
-  type?: Prisma.EnumSpaceTypeFilter<'Space'> | $Enums.SpaceType;
-  color?: Prisma.StringNullableFilter<'Space'> | string | null;
-  icon?: Prisma.StringNullableFilter<'Space'> | string | null;
-  createdAt?: Prisma.DateTimeFilter<'Space'> | Date | string;
-  updatedAt?: Prisma.DateTimeFilter<'Space'> | Date | string;
+export type SpaceCreateWithoutChildrenInput = {
+  id?: string;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutSpacesInput;
+  parent?: Prisma.SpaceCreateNestedOneWithoutChildrenInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutSpacesCreatedInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutSpacesUpdatedInput;
+  objects?: Prisma.ObjectCreateNestedManyWithoutSpaceInput;
+};
+
+export type SpaceUncheckedCreateWithoutChildrenInput = {
+  id?: string;
+  workspaceId: string;
+  parentId?: string | null;
+  createdById: string;
+  updatedById?: string | null;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutSpaceInput;
+};
+
+export type SpaceCreateOrConnectWithoutChildrenInput = {
+  where: Prisma.SpaceWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.SpaceCreateWithoutChildrenInput,
+    Prisma.SpaceUncheckedCreateWithoutChildrenInput
+  >;
+};
+
+export type SpaceCreateWithoutParentInput = {
+  id?: string;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutSpacesInput;
+  children?: Prisma.SpaceCreateNestedManyWithoutParentInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutSpacesCreatedInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutSpacesUpdatedInput;
+  objects?: Prisma.ObjectCreateNestedManyWithoutSpaceInput;
+};
+
+export type SpaceUncheckedCreateWithoutParentInput = {
+  id?: string;
+  workspaceId: string;
+  createdById: string;
+  updatedById?: string | null;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  children?: Prisma.SpaceUncheckedCreateNestedManyWithoutParentInput;
+  objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutSpaceInput;
+};
+
+export type SpaceCreateOrConnectWithoutParentInput = {
+  where: Prisma.SpaceWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.SpaceCreateWithoutParentInput,
+    Prisma.SpaceUncheckedCreateWithoutParentInput
+  >;
+};
+
+export type SpaceCreateManyParentInputEnvelope = {
+  data: Prisma.SpaceCreateManyParentInput | Prisma.SpaceCreateManyParentInput[];
+  skipDuplicates?: boolean;
+};
+
+export type SpaceUpsertWithoutChildrenInput = {
+  update: Prisma.XOR<
+    Prisma.SpaceUpdateWithoutChildrenInput,
+    Prisma.SpaceUncheckedUpdateWithoutChildrenInput
+  >;
+  create: Prisma.XOR<
+    Prisma.SpaceCreateWithoutChildrenInput,
+    Prisma.SpaceUncheckedCreateWithoutChildrenInput
+  >;
+  where?: Prisma.SpaceWhereInput;
+};
+
+export type SpaceUpdateToOneWithWhereWithoutChildrenInput = {
+  where?: Prisma.SpaceWhereInput;
+  data: Prisma.XOR<
+    Prisma.SpaceUpdateWithoutChildrenInput,
+    Prisma.SpaceUncheckedUpdateWithoutChildrenInput
+  >;
+};
+
+export type SpaceUpdateWithoutChildrenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutSpacesNestedInput;
+  parent?: Prisma.SpaceUpdateOneWithoutChildrenNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutSpacesCreatedNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutSpacesUpdatedNestedInput;
+  objects?: Prisma.ObjectUpdateManyWithoutSpaceNestedInput;
+};
+
+export type SpaceUncheckedUpdateWithoutChildrenInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  objects?: Prisma.ObjectUncheckedUpdateManyWithoutSpaceNestedInput;
+};
+
+export type SpaceUpsertWithWhereUniqueWithoutParentInput = {
+  where: Prisma.SpaceWhereUniqueInput;
+  update: Prisma.XOR<
+    Prisma.SpaceUpdateWithoutParentInput,
+    Prisma.SpaceUncheckedUpdateWithoutParentInput
+  >;
+  create: Prisma.XOR<
+    Prisma.SpaceCreateWithoutParentInput,
+    Prisma.SpaceUncheckedCreateWithoutParentInput
+  >;
+};
+
+export type SpaceUpdateWithWhereUniqueWithoutParentInput = {
+  where: Prisma.SpaceWhereUniqueInput;
+  data: Prisma.XOR<
+    Prisma.SpaceUpdateWithoutParentInput,
+    Prisma.SpaceUncheckedUpdateWithoutParentInput
+  >;
+};
+
+export type SpaceUpdateManyWithWhereWithoutParentInput = {
+  where: Prisma.SpaceScalarWhereInput;
+  data: Prisma.XOR<
+    Prisma.SpaceUpdateManyMutationInput,
+    Prisma.SpaceUncheckedUpdateManyWithoutParentInput
+  >;
 };
 
 export type SpaceCreateWithoutObjectsInput = {
   id?: string;
+  slug: string;
   name: string;
-  type: $Enums.SpaceType;
-  color?: string | null;
+  description?: string | null;
   icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
   workspace: Prisma.WorkspaceCreateNestedOneWithoutSpacesInput;
+  parent?: Prisma.SpaceCreateNestedOneWithoutChildrenInput;
+  children?: Prisma.SpaceCreateNestedManyWithoutParentInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutSpacesCreatedInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutSpacesUpdatedInput;
 };
 
 export type SpaceUncheckedCreateWithoutObjectsInput = {
   id?: string;
   workspaceId: string;
+  parentId?: string | null;
+  createdById: string;
+  updatedById?: string | null;
+  slug: string;
   name: string;
-  type: $Enums.SpaceType;
-  color?: string | null;
+  description?: string | null;
   icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  children?: Prisma.SpaceUncheckedCreateNestedManyWithoutParentInput;
 };
 
 export type SpaceCreateOrConnectWithoutObjectsInput = {
@@ -661,64 +1806,490 @@ export type SpaceUpdateToOneWithWhereWithoutObjectsInput = {
 
 export type SpaceUpdateWithoutObjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
-  type?: Prisma.EnumSpaceTypeFieldUpdateOperationsInput | $Enums.SpaceType;
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutSpacesNestedInput;
+  parent?: Prisma.SpaceUpdateOneWithoutChildrenNestedInput;
+  children?: Prisma.SpaceUpdateManyWithoutParentNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutSpacesCreatedNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutSpacesUpdatedNestedInput;
 };
 
 export type SpaceUncheckedUpdateWithoutObjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
-  type?: Prisma.EnumSpaceTypeFieldUpdateOperationsInput | $Enums.SpaceType;
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  children?: Prisma.SpaceUncheckedUpdateManyWithoutParentNestedInput;
+};
+
+export type SpaceCreateManyCreatedByInput = {
+  id?: string;
+  workspaceId: string;
+  parentId?: string | null;
+  updatedById?: string | null;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+};
+
+export type SpaceCreateManyUpdatedByInput = {
+  id?: string;
+  workspaceId: string;
+  parentId?: string | null;
+  createdById: string;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+};
+
+export type SpaceUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutSpacesNestedInput;
+  parent?: Prisma.SpaceUpdateOneWithoutChildrenNestedInput;
+  children?: Prisma.SpaceUpdateManyWithoutParentNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutSpacesUpdatedNestedInput;
+  objects?: Prisma.ObjectUpdateManyWithoutSpaceNestedInput;
+};
+
+export type SpaceUncheckedUpdateWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  children?: Prisma.SpaceUncheckedUpdateManyWithoutParentNestedInput;
+  objects?: Prisma.ObjectUncheckedUpdateManyWithoutSpaceNestedInput;
+};
+
+export type SpaceUncheckedUpdateManyWithoutCreatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+
+export type SpaceUpdateWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutSpacesNestedInput;
+  parent?: Prisma.SpaceUpdateOneWithoutChildrenNestedInput;
+  children?: Prisma.SpaceUpdateManyWithoutParentNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutSpacesCreatedNestedInput;
+  objects?: Prisma.ObjectUpdateManyWithoutSpaceNestedInput;
+};
+
+export type SpaceUncheckedUpdateWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  children?: Prisma.SpaceUncheckedUpdateManyWithoutParentNestedInput;
+  objects?: Prisma.ObjectUncheckedUpdateManyWithoutSpaceNestedInput;
+};
+
+export type SpaceUncheckedUpdateManyWithoutUpdatedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 
 export type SpaceCreateManyWorkspaceInput = {
   id?: string;
+  parentId?: string | null;
+  createdById: string;
+  updatedById?: string | null;
+  slug: string;
   name: string;
-  type: $Enums.SpaceType;
-  color?: string | null;
+  description?: string | null;
   icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 };
 
 export type SpaceUpdateWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
-  type?: Prisma.EnumSpaceTypeFieldUpdateOperationsInput | $Enums.SpaceType;
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  parent?: Prisma.SpaceUpdateOneWithoutChildrenNestedInput;
+  children?: Prisma.SpaceUpdateManyWithoutParentNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutSpacesCreatedNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutSpacesUpdatedNestedInput;
   objects?: Prisma.ObjectUpdateManyWithoutSpaceNestedInput;
 };
 
 export type SpaceUncheckedUpdateWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
-  type?: Prisma.EnumSpaceTypeFieldUpdateOperationsInput | $Enums.SpaceType;
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  children?: Prisma.SpaceUncheckedUpdateManyWithoutParentNestedInput;
   objects?: Prisma.ObjectUncheckedUpdateManyWithoutSpaceNestedInput;
 };
 
 export type SpaceUncheckedUpdateManyWithoutWorkspaceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.StringFieldUpdateOperationsInput | string;
-  type?: Prisma.EnumSpaceTypeFieldUpdateOperationsInput | $Enums.SpaceType;
-  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+
+export type SpaceCreateManyParentInput = {
+  id?: string;
+  workspaceId: string;
+  createdById: string;
+  updatedById?: string | null;
+  slug: string;
+  name: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+};
+
+export type SpaceUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutSpacesNestedInput;
+  children?: Prisma.SpaceUpdateManyWithoutParentNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutSpacesCreatedNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutSpacesUpdatedNestedInput;
+  objects?: Prisma.ObjectUpdateManyWithoutSpaceNestedInput;
+};
+
+export type SpaceUncheckedUpdateWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  children?: Prisma.SpaceUncheckedUpdateManyWithoutParentNestedInput;
+  objects?: Prisma.ObjectUncheckedUpdateManyWithoutSpaceNestedInput;
+};
+
+export type SpaceUncheckedUpdateManyWithoutParentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumSpaceStatusFieldUpdateOperationsInput | $Enums.SpaceStatus;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -728,6 +2299,7 @@ export type SpaceUncheckedUpdateManyWithoutWorkspaceInput = {
  */
 
 export type SpaceCountOutputType = {
+  children: number;
   objects: number;
 };
 
@@ -735,6 +2307,7 @@ export type SpaceCountOutputTypeSelect<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
 > = {
+  children?: boolean | SpaceCountOutputTypeCountChildrenArgs;
   objects?: boolean | SpaceCountOutputTypeCountObjectsArgs;
 };
 
@@ -754,6 +2327,16 @@ export type SpaceCountOutputTypeDefaultArgs<
 /**
  * SpaceCountOutputType without action
  */
+export type SpaceCountOutputTypeCountChildrenArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.SpaceWhereInput;
+};
+
+/**
+ * SpaceCountOutputType without action
+ */
 export type SpaceCountOutputTypeCountObjectsArgs<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
@@ -768,13 +2351,30 @@ export type SpaceSelect<
   {
     id?: boolean;
     workspaceId?: boolean;
+    parentId?: boolean;
+    createdById?: boolean;
+    updatedById?: boolean;
+    slug?: boolean;
     name?: boolean;
-    type?: boolean;
-    color?: boolean;
+    description?: boolean;
     icon?: boolean;
+    emoji?: boolean;
+    cover?: boolean;
+    color?: boolean;
+    pinnedAt?: boolean;
+    isFavorite?: boolean;
+    status?: boolean;
+    settings?: boolean;
+    revision?: boolean;
+    archivedAt?: boolean;
+    deletedAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
+    parent?: boolean | Prisma.Space$parentArgs<ExtArgs>;
+    children?: boolean | Prisma.Space$childrenArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    updatedBy?: boolean | Prisma.Space$updatedByArgs<ExtArgs>;
     objects?: boolean | Prisma.Space$objectsArgs<ExtArgs>;
     _count?: boolean | Prisma.SpaceCountOutputTypeDefaultArgs<ExtArgs>;
   },
@@ -788,13 +2388,29 @@ export type SpaceSelectCreateManyAndReturn<
   {
     id?: boolean;
     workspaceId?: boolean;
+    parentId?: boolean;
+    createdById?: boolean;
+    updatedById?: boolean;
+    slug?: boolean;
     name?: boolean;
-    type?: boolean;
-    color?: boolean;
+    description?: boolean;
     icon?: boolean;
+    emoji?: boolean;
+    cover?: boolean;
+    color?: boolean;
+    pinnedAt?: boolean;
+    isFavorite?: boolean;
+    status?: boolean;
+    settings?: boolean;
+    revision?: boolean;
+    archivedAt?: boolean;
+    deletedAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
+    parent?: boolean | Prisma.Space$parentArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    updatedBy?: boolean | Prisma.Space$updatedByArgs<ExtArgs>;
   },
   ExtArgs['result']['space']
 >;
@@ -806,13 +2422,29 @@ export type SpaceSelectUpdateManyAndReturn<
   {
     id?: boolean;
     workspaceId?: boolean;
+    parentId?: boolean;
+    createdById?: boolean;
+    updatedById?: boolean;
+    slug?: boolean;
     name?: boolean;
-    type?: boolean;
-    color?: boolean;
+    description?: boolean;
     icon?: boolean;
+    emoji?: boolean;
+    cover?: boolean;
+    color?: boolean;
+    pinnedAt?: boolean;
+    isFavorite?: boolean;
+    status?: boolean;
+    settings?: boolean;
+    revision?: boolean;
+    archivedAt?: boolean;
+    deletedAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
+    parent?: boolean | Prisma.Space$parentArgs<ExtArgs>;
+    createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+    updatedBy?: boolean | Prisma.Space$updatedByArgs<ExtArgs>;
   },
   ExtArgs['result']['space']
 >;
@@ -820,10 +2452,23 @@ export type SpaceSelectUpdateManyAndReturn<
 export type SpaceSelectScalar = {
   id?: boolean;
   workspaceId?: boolean;
+  parentId?: boolean;
+  createdById?: boolean;
+  updatedById?: boolean;
+  slug?: boolean;
   name?: boolean;
-  type?: boolean;
-  color?: boolean;
+  description?: boolean;
   icon?: boolean;
+  emoji?: boolean;
+  cover?: boolean;
+  color?: boolean;
+  pinnedAt?: boolean;
+  isFavorite?: boolean;
+  status?: boolean;
+  settings?: boolean;
+  revision?: boolean;
+  archivedAt?: boolean;
+  deletedAt?: boolean;
   createdAt?: boolean;
   updatedAt?: boolean;
 };
@@ -834,10 +2479,23 @@ export type SpaceOmit<
 > = runtime.Types.Extensions.GetOmit<
   | 'id'
   | 'workspaceId'
+  | 'parentId'
+  | 'createdById'
+  | 'updatedById'
+  | 'slug'
   | 'name'
-  | 'type'
-  | 'color'
+  | 'description'
   | 'icon'
+  | 'emoji'
+  | 'cover'
+  | 'color'
+  | 'pinnedAt'
+  | 'isFavorite'
+  | 'status'
+  | 'settings'
+  | 'revision'
+  | 'archivedAt'
+  | 'deletedAt'
   | 'createdAt'
   | 'updatedAt',
   ExtArgs['result']['space']
@@ -847,6 +2505,10 @@ export type SpaceInclude<
     runtime.Types.Extensions.DefaultArgs,
 > = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
+  parent?: boolean | Prisma.Space$parentArgs<ExtArgs>;
+  children?: boolean | Prisma.Space$childrenArgs<ExtArgs>;
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+  updatedBy?: boolean | Prisma.Space$updatedByArgs<ExtArgs>;
   objects?: boolean | Prisma.Space$objectsArgs<ExtArgs>;
   _count?: boolean | Prisma.SpaceCountOutputTypeDefaultArgs<ExtArgs>;
 };
@@ -855,12 +2517,18 @@ export type SpaceIncludeCreateManyAndReturn<
     runtime.Types.Extensions.DefaultArgs,
 > = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
+  parent?: boolean | Prisma.Space$parentArgs<ExtArgs>;
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+  updatedBy?: boolean | Prisma.Space$updatedByArgs<ExtArgs>;
 };
 export type SpaceIncludeUpdateManyAndReturn<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
 > = {
   workspace?: boolean | Prisma.WorkspaceDefaultArgs<ExtArgs>;
+  parent?: boolean | Prisma.Space$parentArgs<ExtArgs>;
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
+  updatedBy?: boolean | Prisma.Space$updatedByArgs<ExtArgs>;
 };
 
 export type $SpacePayload<
@@ -870,16 +2538,33 @@ export type $SpacePayload<
   name: 'Space';
   objects: {
     workspace: Prisma.$WorkspacePayload<ExtArgs>;
+    parent: Prisma.$SpacePayload<ExtArgs> | null;
+    children: Prisma.$SpacePayload<ExtArgs>[];
+    createdBy: Prisma.$UserPayload<ExtArgs>;
+    updatedBy: Prisma.$UserPayload<ExtArgs> | null;
     objects: Prisma.$ObjectPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
       id: string;
       workspaceId: string;
+      parentId: string | null;
+      createdById: string;
+      updatedById: string | null;
+      slug: string;
       name: string;
-      type: $Enums.SpaceType;
-      color: string | null;
+      description: string | null;
       icon: string | null;
+      emoji: string | null;
+      cover: string | null;
+      color: string | null;
+      pinnedAt: Date | null;
+      isFavorite: boolean;
+      status: $Enums.SpaceStatus;
+      settings: runtime.JsonValue | null;
+      revision: number;
+      archivedAt: Date | null;
+      deletedAt: Date | null;
       createdAt: Date;
       updatedAt: Date;
     },
@@ -1446,6 +3131,57 @@ export interface Prisma__SpaceClient<
     ExtArgs,
     GlobalOmitOptions
   >;
+  parent<T extends Prisma.Space$parentArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.Space$parentArgs<ExtArgs>>,
+  ): Prisma.Prisma__SpaceClient<
+    runtime.Types.Result.GetResult<
+      Prisma.$SpacePayload<ExtArgs>,
+      T,
+      'findUniqueOrThrow',
+      GlobalOmitOptions
+    > | null,
+    null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
+  children<T extends Prisma.Space$childrenArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.Space$childrenArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$SpacePayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>,
+  ): Prisma.Prisma__UserClient<
+    | runtime.Types.Result.GetResult<
+        Prisma.$UserPayload<ExtArgs>,
+        T,
+        'findUniqueOrThrow',
+        GlobalOmitOptions
+      >
+    | Null,
+    Null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
+  updatedBy<T extends Prisma.Space$updatedByArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.Space$updatedByArgs<ExtArgs>>,
+  ): Prisma.Prisma__UserClient<
+    runtime.Types.Result.GetResult<
+      Prisma.$UserPayload<ExtArgs>,
+      T,
+      'findUniqueOrThrow',
+      GlobalOmitOptions
+    > | null,
+    null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
   objects<T extends Prisma.Space$objectsArgs<ExtArgs> = {}>(
     args?: Prisma.Subset<T, Prisma.Space$objectsArgs<ExtArgs>>,
   ): Prisma.PrismaPromise<
@@ -1495,10 +3231,23 @@ export interface Prisma__SpaceClient<
 export interface SpaceFieldRefs {
   readonly id: Prisma.FieldRef<'Space', 'String'>;
   readonly workspaceId: Prisma.FieldRef<'Space', 'String'>;
+  readonly parentId: Prisma.FieldRef<'Space', 'String'>;
+  readonly createdById: Prisma.FieldRef<'Space', 'String'>;
+  readonly updatedById: Prisma.FieldRef<'Space', 'String'>;
+  readonly slug: Prisma.FieldRef<'Space', 'String'>;
   readonly name: Prisma.FieldRef<'Space', 'String'>;
-  readonly type: Prisma.FieldRef<'Space', 'SpaceType'>;
-  readonly color: Prisma.FieldRef<'Space', 'String'>;
+  readonly description: Prisma.FieldRef<'Space', 'String'>;
   readonly icon: Prisma.FieldRef<'Space', 'String'>;
+  readonly emoji: Prisma.FieldRef<'Space', 'String'>;
+  readonly cover: Prisma.FieldRef<'Space', 'String'>;
+  readonly color: Prisma.FieldRef<'Space', 'String'>;
+  readonly pinnedAt: Prisma.FieldRef<'Space', 'DateTime'>;
+  readonly isFavorite: Prisma.FieldRef<'Space', 'Boolean'>;
+  readonly status: Prisma.FieldRef<'Space', 'SpaceStatus'>;
+  readonly settings: Prisma.FieldRef<'Space', 'Json'>;
+  readonly revision: Prisma.FieldRef<'Space', 'Int'>;
+  readonly archivedAt: Prisma.FieldRef<'Space', 'DateTime'>;
+  readonly deletedAt: Prisma.FieldRef<'Space', 'DateTime'>;
   readonly createdAt: Prisma.FieldRef<'Space', 'DateTime'>;
   readonly updatedAt: Prisma.FieldRef<'Space', 'DateTime'>;
 }
@@ -1952,6 +3701,79 @@ export type SpaceDeleteManyArgs<
    * Limit how many Spaces to delete.
    */
   limit?: number;
+};
+
+/**
+ * Space.parent
+ */
+export type Space$parentArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Space
+   */
+  select?: Prisma.SpaceSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Space
+   */
+  omit?: Prisma.SpaceOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SpaceInclude<ExtArgs> | null;
+  where?: Prisma.SpaceWhereInput;
+};
+
+/**
+ * Space.children
+ */
+export type Space$childrenArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Space
+   */
+  select?: Prisma.SpaceSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Space
+   */
+  omit?: Prisma.SpaceOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SpaceInclude<ExtArgs> | null;
+  where?: Prisma.SpaceWhereInput;
+  orderBy?:
+    | Prisma.SpaceOrderByWithRelationInput
+    | Prisma.SpaceOrderByWithRelationInput[];
+  cursor?: Prisma.SpaceWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.SpaceScalarFieldEnum | Prisma.SpaceScalarFieldEnum[];
+};
+
+/**
+ * Space.updatedBy
+ */
+export type Space$updatedByArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null;
+  where?: Prisma.UserWhereInput;
 };
 
 /**
