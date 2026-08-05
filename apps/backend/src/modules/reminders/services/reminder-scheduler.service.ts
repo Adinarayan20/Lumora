@@ -1,4 +1,5 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { rrulestr } from 'rrule';
 import { EventRepository } from '../../auth/repositories/event.repository';
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
@@ -23,7 +24,26 @@ export class ReminderSchedulerService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventRepository: EventRepository,
+    private readonly configService: ConfigService,
   ) {}
+
+  getSchedulerConfig() {
+    return {
+      batchSize: this.configService.get<number>(
+        'REMINDER_SCHEDULER_BATCH_SIZE',
+        100,
+      ),
+      missedGraceMinutes: this.configService.get<number>(
+        'REMINDER_MISSED_GRACE_MINUTES',
+        60,
+      ),
+      defaultSnoozeMinutes: this.configService.get<number>(
+        'REMINDER_DEFAULT_SNOOZE_MINUTES',
+        15,
+      ),
+      retryLimit: this.configService.get<number>('REMINDER_RETRY_LIMIT', 3),
+    };
+  }
 
   validateRecurrenceRule(recurrenceRule: string): void {
     if (!recurrenceRule || !recurrenceRule.trim()) {
@@ -49,7 +69,12 @@ export class ReminderSchedulerService {
       const rule = rrulestr(recurrenceRule, { dtstart: remindAt });
       const nextDates = rule.after(remindAt, false);
       return nextDates ?? null;
-    } catch {
+    } catch (err: unknown) {
+      this.logger.error(
+        `Failed to calculate next occurrence for rule "${recurrenceRule}": ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
       return null;
     }
   }
@@ -63,8 +88,9 @@ export class ReminderSchedulerService {
       return target;
     }
 
+    const config = this.getSchedulerConfig();
     const now = Date.now();
-    let offsetMs = 15 * 60 * 1000;
+    let offsetMs = config.defaultSnoozeMinutes * 60 * 1000;
 
     switch (duration) {
       case SnoozeDuration.FIVE_MINUTES:
@@ -80,7 +106,7 @@ export class ReminderSchedulerService {
         offsetMs = 24 * 60 * 60 * 1000;
         break;
       default:
-        offsetMs = 15 * 60 * 1000;
+        offsetMs = config.defaultSnoozeMinutes * 60 * 1000;
     }
 
     return new Date(now + offsetMs);
@@ -97,7 +123,7 @@ export class ReminderSchedulerService {
 
     if (existingExecution) {
       this.logger.warn(
-        `Idempotency check: Execution ${executionId} already processed. Skipping.`,
+        `Idempotency check: Execution ${executionId} for reminder ${reminderId} already processed. Skipping.`,
       );
       return { executed: false, duplicate: true };
     }
@@ -107,6 +133,9 @@ export class ReminderSchedulerService {
     });
 
     if (!reminder || reminder.status !== ReminderStatus.ACTIVE) {
+      this.logger.warn(
+        `Execution bypassed: Reminder ${reminderId} is not ACTIVE (status: ${reminder?.status}).`,
+      );
       return { executed: false, duplicate: false };
     }
 
@@ -117,42 +146,77 @@ export class ReminderSchedulerService {
       reminder.recurrenceRule,
     );
 
-    await this.prisma.$transaction(async (tx) => {
-      await tx.reminderExecution.create({
-        data: {
-          reminderId,
-          scheduledFor,
-          executedAt: triggeredAt,
-          status: ReminderExecutionStatus.TRIGGERED,
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        await tx.reminderExecution.create({
+          data: {
+            reminderId,
+            scheduledFor,
+            executedAt: triggeredAt,
+            status: ReminderExecutionStatus.TRIGGERED,
+            executionId,
+            durationMs: Date.now() - startTime,
+          },
+        });
+
+        await tx.reminder.update({
+          where: { id: reminderId },
+          data: {
+            lastExecutionId: executionId,
+            lastTriggeredAt: triggeredAt,
+            nextOccurrenceAt,
+            executionStatus: ReminderExecutionStatus.TRIGGERED,
+            revision: { increment: 1 },
+          },
+        });
+      });
+
+      await this.publishTriggered(
+        new ReminderTriggeredEvent(
+          reminder.id,
+          reminder.workspaceId,
+          reminder.objectId,
           executionId,
-          durationMs: Date.now() - startTime,
-        },
-      });
-
-      await tx.reminder.update({
-        where: { id: reminderId },
-        data: {
-          lastExecutionId: executionId,
-          lastTriggeredAt: triggeredAt,
+          triggeredAt,
           nextOccurrenceAt,
-          executionStatus: ReminderExecutionStatus.TRIGGERED,
-          revision: { increment: 1 },
-        },
-      });
-    });
+        ),
+      );
 
-    await this.publishTriggered(
-      new ReminderTriggeredEvent(
-        reminder.id,
-        reminder.workspaceId,
-        reminder.objectId,
-        executionId,
-        triggeredAt,
-        nextOccurrenceAt,
-      ),
-    );
+      this.logger.log(
+        `Reminder ${reminderId} executed successfully in ${Date.now() - startTime}ms (Execution: ${executionId}).`,
+      );
 
-    return { executed: true, duplicate: false };
+      return { executed: true, duplicate: false };
+    } catch (err: unknown) {
+      const durationMs = Date.now() - startTime;
+      const errorMessage =
+        err instanceof Error ? err.message : 'Unknown database error';
+      this.logger.error(
+        `Execution failed for reminder ${reminderId} (Execution: ${executionId}) after ${durationMs}ms: ${errorMessage}`,
+      );
+
+      try {
+        await this.prisma.reminderExecution.create({
+          data: {
+            reminderId,
+            scheduledFor,
+            executedAt: triggeredAt,
+            status: ReminderExecutionStatus.MISSED,
+            executionId,
+            errorMessage,
+            durationMs,
+          },
+        });
+      } catch (logErr: unknown) {
+        this.logger.error(
+          `Failed to persist error log for execution ${executionId}: ${
+            logErr instanceof Error ? logErr.message : String(logErr)
+          }`,
+        );
+      }
+
+      throw err;
+    }
   }
 
   async publishCreated(event: ReminderCreatedEvent): Promise<void> {
