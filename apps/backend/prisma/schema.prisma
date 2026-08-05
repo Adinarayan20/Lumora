@@ -99,6 +99,8 @@ model User {
   uploadedFiles FileAsset[]
   auditLogs     AuditLog[]
   events        Event[]
+  objectsCreated Object[] @relation("ObjectAuthor")
+  objectsUpdated Object[] @relation("ObjectModifier")
 
   @@index([email])
   @@index([username])
@@ -154,6 +156,8 @@ model Workspace {
   spaces Space[]
 
   invitations WorkspaceInvitation[]
+
+  objects Object[]
 }
 
 //////////////////////////////////////////////////////
@@ -329,6 +333,12 @@ enum ObjectType {
   TASK
   REMINDER
   EVENT
+}
+
+enum ObjectStatus {
+  ACTIVE
+  ARCHIVED
+  DELETED
 }
 
 enum ReminderStatus {
@@ -551,27 +561,70 @@ model Space {
 model Object {
   id String @id @default(uuid()) @db.Uuid
 
-  spaceId String @db.Uuid
+  workspaceId String @db.Uuid
+
+  spaceId String? @db.Uuid
+
+  createdById String @db.Uuid
+
+  updatedById String? @db.Uuid
+
+  objectKey String @default(uuid())
+
+  typeKey String
 
   title String
 
   description String?
 
-  type ObjectType
+  icon String?
 
-  archived Boolean @default(false)
+  emoji String?
+
+  cover String?
+
+  color String?
+
+  pinnedAt DateTime?
+
+  isFavorite Boolean @default(false)
+
+  status ObjectStatus @default(ACTIVE)
+
+  systemData Json? @default("{}")
+
+  attributes Json? @default("{}")
+
+  revision Int @default(1)
+
+  archivedAt DateTime?
+
+  deletedAt DateTime?
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
 
-  space Space @relation(fields: [spaceId], references: [id])
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+
+  space Space? @relation(fields: [spaceId], references: [id])
+
+  createdBy User @relation("ObjectAuthor", fields: [createdById], references: [id])
+
+  updatedBy User? @relation("ObjectModifier", fields: [updatedById], references: [id])
 
   reminder Reminder?
 
   timeline Timeline?
 
+  @@index([workspaceId, objectKey])
+  @@index([workspaceId, status])
+  @@index([workspaceId, typeKey])
+  @@index([workspaceId, isFavorite])
+  @@index([workspaceId, pinnedAt])
   @@index([spaceId])
+  @@index([createdById])
+  @@index([updatedById])
 }
 
 model Reminder {

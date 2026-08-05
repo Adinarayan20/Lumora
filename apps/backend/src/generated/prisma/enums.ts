@@ -150,6 +150,14 @@ export const ObjectType = {
 
 export type ObjectType = (typeof ObjectType)[keyof typeof ObjectType];
 
+export const ObjectStatus = {
+  ACTIVE: 'ACTIVE',
+  ARCHIVED: 'ARCHIVED',
+  DELETED: 'DELETED',
+} as const;
+
+export type ObjectStatus = (typeof ObjectStatus)[keyof typeof ObjectStatus];
+
 export const ReminderStatus = {
   ACTIVE: 'ACTIVE',
   COMPLETED: 'COMPLETED',

@@ -2194,11 +2194,26 @@ export type SpaceScalarFieldEnum =
 
 export const ObjectScalarFieldEnum = {
   id: 'id',
+  workspaceId: 'workspaceId',
   spaceId: 'spaceId',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
+  objectKey: 'objectKey',
+  typeKey: 'typeKey',
   title: 'title',
   description: 'description',
-  type: 'type',
-  archived: 'archived',
+  icon: 'icon',
+  emoji: 'emoji',
+  cover: 'cover',
+  color: 'color',
+  pinnedAt: 'pinnedAt',
+  isFavorite: 'isFavorite',
+  status: 'status',
+  systemData: 'systemData',
+  attributes: 'attributes',
+  revision: 'revision',
+  archivedAt: 'archivedAt',
+  deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
 } as const;
@@ -2568,19 +2583,19 @@ export type ListEnumSpaceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
 >;
 
 /**
- * Reference to a field of type 'ObjectType'
+ * Reference to a field of type 'ObjectStatus'
  */
-export type EnumObjectTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
+export type EnumObjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
   $PrismaModel,
-  'ObjectType'
+  'ObjectStatus'
 >;
 
 /**
- * Reference to a field of type 'ObjectType[]'
+ * Reference to a field of type 'ObjectStatus[]'
  */
-export type ListEnumObjectTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
+export type ListEnumObjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
   $PrismaModel,
-  'ObjectType[]'
+  'ObjectStatus[]'
 >;
 
 /**

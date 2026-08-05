@@ -258,6 +258,8 @@ export type UserWhereInput = {
   uploadedFiles?: Prisma.FileAssetListRelationFilter;
   auditLogs?: Prisma.AuditLogListRelationFilter;
   events?: Prisma.EventListRelationFilter;
+  objectsCreated?: Prisma.ObjectListRelationFilter;
+  objectsUpdated?: Prisma.ObjectListRelationFilter;
 };
 
 export type UserOrderByWithRelationInput = {
@@ -283,6 +285,8 @@ export type UserOrderByWithRelationInput = {
   uploadedFiles?: Prisma.FileAssetOrderByRelationAggregateInput;
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput;
   events?: Prisma.EventOrderByRelationAggregateInput;
+  objectsCreated?: Prisma.ObjectOrderByRelationAggregateInput;
+  objectsUpdated?: Prisma.ObjectOrderByRelationAggregateInput;
 };
 
 export type UserWhereUniqueInput = Prisma.AtLeast<
@@ -312,6 +316,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<
     uploadedFiles?: Prisma.FileAssetListRelationFilter;
     auditLogs?: Prisma.AuditLogListRelationFilter;
     events?: Prisma.EventListRelationFilter;
+    objectsCreated?: Prisma.ObjectListRelationFilter;
+    objectsUpdated?: Prisma.ObjectListRelationFilter;
   },
   'id' | 'email' | 'username'
 >;
@@ -382,6 +388,8 @@ export type UserCreateInput = {
   uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
   events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateInput = {
@@ -407,6 +415,8 @@ export type UserUncheckedCreateInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
   events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUpdateInput = {
@@ -432,6 +442,8 @@ export type UserUpdateInput = {
   uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateInput = {
@@ -457,6 +469,8 @@ export type UserUncheckedUpdateInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateManyInput = {
@@ -558,6 +572,11 @@ export type UserMinOrderByAggregateInput = {
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput;
   isNot?: Prisma.UserWhereInput;
+};
+
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null;
+  isNot?: Prisma.UserWhereInput | null;
 };
 
 export type StringFieldUpdateOperationsInput = {
@@ -814,6 +833,60 @@ export type UserUpdateOneRequiredWithoutEventsNestedInput = {
   >;
 };
 
+export type UserCreateNestedOneWithoutObjectsCreatedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutObjectsCreatedInput,
+    Prisma.UserUncheckedCreateWithoutObjectsCreatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutObjectsCreatedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserCreateNestedOneWithoutObjectsUpdatedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutObjectsUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutObjectsUpdatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutObjectsUpdatedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutObjectsCreatedNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutObjectsCreatedInput,
+    Prisma.UserUncheckedCreateWithoutObjectsCreatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutObjectsCreatedInput;
+  upsert?: Prisma.UserUpsertWithoutObjectsCreatedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutObjectsCreatedInput,
+      Prisma.UserUpdateWithoutObjectsCreatedInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutObjectsCreatedInput
+  >;
+};
+
+export type UserUpdateOneWithoutObjectsUpdatedNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutObjectsUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutObjectsUpdatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutObjectsUpdatedInput;
+  upsert?: Prisma.UserUpsertWithoutObjectsUpdatedInput;
+  disconnect?: Prisma.UserWhereInput | boolean;
+  delete?: Prisma.UserWhereInput | boolean;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutObjectsUpdatedInput,
+      Prisma.UserUpdateWithoutObjectsUpdatedInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutObjectsUpdatedInput
+  >;
+};
+
 export type UserCreateWithoutOwnedWorkspacesInput = {
   id?: string;
   email: string;
@@ -836,6 +909,8 @@ export type UserCreateWithoutOwnedWorkspacesInput = {
   uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
   events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
@@ -860,6 +935,8 @@ export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
   events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutOwnedWorkspacesInput = {
@@ -912,6 +989,8 @@ export type UserUpdateWithoutOwnedWorkspacesInput = {
   uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
@@ -936,6 +1015,8 @@ export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutWorkspaceMembershipsInput = {
@@ -960,6 +1041,8 @@ export type UserCreateWithoutWorkspaceMembershipsInput = {
   uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
   events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
@@ -984,6 +1067,8 @@ export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
   events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
@@ -1036,6 +1121,8 @@ export type UserUpdateWithoutWorkspaceMembershipsInput = {
   uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
@@ -1060,6 +1147,8 @@ export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutSentInvitationsInput = {
@@ -1084,6 +1173,8 @@ export type UserCreateWithoutSentInvitationsInput = {
   uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
   events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutSentInvitationsInput = {
@@ -1108,6 +1199,8 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
   events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutSentInvitationsInput = {
@@ -1160,6 +1253,8 @@ export type UserUpdateWithoutSentInvitationsInput = {
   uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSentInvitationsInput = {
@@ -1184,6 +1279,8 @@ export type UserUncheckedUpdateWithoutSentInvitationsInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutDevicesInput = {
@@ -1208,6 +1305,8 @@ export type UserCreateWithoutDevicesInput = {
   uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
   events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutDevicesInput = {
@@ -1232,6 +1331,8 @@ export type UserUncheckedCreateWithoutDevicesInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
   events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutDevicesInput = {
@@ -1284,6 +1385,8 @@ export type UserUpdateWithoutDevicesInput = {
   uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutDevicesInput = {
@@ -1308,6 +1411,8 @@ export type UserUncheckedUpdateWithoutDevicesInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutSessionsInput = {
@@ -1332,6 +1437,8 @@ export type UserCreateWithoutSessionsInput = {
   uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
   events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1356,6 +1463,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
   events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1408,6 +1517,8 @@ export type UserUpdateWithoutSessionsInput = {
   uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1432,6 +1543,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutOauthAccountsInput = {
@@ -1456,6 +1569,8 @@ export type UserCreateWithoutOauthAccountsInput = {
   uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
   events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutOauthAccountsInput = {
@@ -1480,6 +1595,8 @@ export type UserUncheckedCreateWithoutOauthAccountsInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
   events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutOauthAccountsInput = {
@@ -1532,6 +1649,8 @@ export type UserUpdateWithoutOauthAccountsInput = {
   uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutOauthAccountsInput = {
@@ -1556,6 +1675,8 @@ export type UserUncheckedUpdateWithoutOauthAccountsInput = {
   uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutUploadedFilesInput = {
@@ -1580,6 +1701,8 @@ export type UserCreateWithoutUploadedFilesInput = {
   oauthAccounts?: Prisma.OAuthAccountCreateNestedManyWithoutUserInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
   events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutUploadedFilesInput = {
@@ -1604,6 +1727,8 @@ export type UserUncheckedCreateWithoutUploadedFilesInput = {
   oauthAccounts?: Prisma.OAuthAccountUncheckedCreateNestedManyWithoutUserInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
   events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutUploadedFilesInput = {
@@ -1656,6 +1781,8 @@ export type UserUpdateWithoutUploadedFilesInput = {
   oauthAccounts?: Prisma.OAuthAccountUpdateManyWithoutUserNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutUploadedFilesInput = {
@@ -1680,6 +1807,8 @@ export type UserUncheckedUpdateWithoutUploadedFilesInput = {
   oauthAccounts?: Prisma.OAuthAccountUncheckedUpdateManyWithoutUserNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
   events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -1704,6 +1833,8 @@ export type UserCreateWithoutAuditLogsInput = {
   oauthAccounts?: Prisma.OAuthAccountCreateNestedManyWithoutUserInput;
   uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
   events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -1728,6 +1859,8 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   oauthAccounts?: Prisma.OAuthAccountUncheckedCreateNestedManyWithoutUserInput;
   uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
   events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -1780,6 +1913,8 @@ export type UserUpdateWithoutAuditLogsInput = {
   oauthAccounts?: Prisma.OAuthAccountUpdateManyWithoutUserNestedInput;
   uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
   events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -1804,6 +1939,8 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   oauthAccounts?: Prisma.OAuthAccountUncheckedUpdateManyWithoutUserNestedInput;
   uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
   events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutEventsInput = {
@@ -1828,6 +1965,8 @@ export type UserCreateWithoutEventsInput = {
   oauthAccounts?: Prisma.OAuthAccountCreateNestedManyWithoutUserInput;
   uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutEventsInput = {
@@ -1852,6 +1991,8 @@ export type UserUncheckedCreateWithoutEventsInput = {
   oauthAccounts?: Prisma.OAuthAccountUncheckedCreateNestedManyWithoutUserInput;
   uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutEventsInput = {
@@ -1904,6 +2045,8 @@ export type UserUpdateWithoutEventsInput = {
   oauthAccounts?: Prisma.OAuthAccountUpdateManyWithoutUserNestedInput;
   uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutEventsInput = {
@@ -1928,6 +2071,272 @@ export type UserUncheckedUpdateWithoutEventsInput = {
   oauthAccounts?: Prisma.OAuthAccountUncheckedUpdateManyWithoutUserNestedInput;
   uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
+};
+
+export type UserCreateWithoutObjectsCreatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
+};
+
+export type UserUncheckedCreateWithoutObjectsCreatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
+};
+
+export type UserCreateOrConnectWithoutObjectsCreatedInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutObjectsCreatedInput,
+    Prisma.UserUncheckedCreateWithoutObjectsCreatedInput
+  >;
+};
+
+export type UserCreateWithoutObjectsUpdatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+};
+
+export type UserUncheckedCreateWithoutObjectsUpdatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+};
+
+export type UserCreateOrConnectWithoutObjectsUpdatedInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutObjectsUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutObjectsUpdatedInput
+  >;
+};
+
+export type UserUpsertWithoutObjectsCreatedInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutObjectsCreatedInput,
+    Prisma.UserUncheckedUpdateWithoutObjectsCreatedInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutObjectsCreatedInput,
+    Prisma.UserUncheckedCreateWithoutObjectsCreatedInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutObjectsCreatedInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutObjectsCreatedInput,
+    Prisma.UserUncheckedUpdateWithoutObjectsCreatedInput
+  >;
+};
+
+export type UserUpdateWithoutObjectsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutObjectsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
+};
+
+export type UserUpsertWithoutObjectsUpdatedInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutObjectsUpdatedInput,
+    Prisma.UserUncheckedUpdateWithoutObjectsUpdatedInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutObjectsUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutObjectsUpdatedInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutObjectsUpdatedInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutObjectsUpdatedInput,
+    Prisma.UserUncheckedUpdateWithoutObjectsUpdatedInput
+  >;
+};
+
+export type UserUpdateWithoutObjectsUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutObjectsUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
 };
 
 /**
@@ -1944,6 +2353,8 @@ export type UserCountOutputType = {
   uploadedFiles: number;
   auditLogs: number;
   events: number;
+  objectsCreated: number;
+  objectsUpdated: number;
 };
 
 export type UserCountOutputTypeSelect<
@@ -1960,6 +2371,8 @@ export type UserCountOutputTypeSelect<
   uploadedFiles?: boolean | UserCountOutputTypeCountUploadedFilesArgs;
   auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs;
   events?: boolean | UserCountOutputTypeCountEventsArgs;
+  objectsCreated?: boolean | UserCountOutputTypeCountObjectsCreatedArgs;
+  objectsUpdated?: boolean | UserCountOutputTypeCountObjectsUpdatedArgs;
 };
 
 /**
@@ -2065,6 +2478,26 @@ export type UserCountOutputTypeCountEventsArgs<
   where?: Prisma.EventWhereInput;
 };
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountObjectsCreatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.ObjectWhereInput;
+};
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountObjectsUpdatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.ObjectWhereInput;
+};
+
 export type UserSelect<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
@@ -2093,6 +2526,8 @@ export type UserSelect<
     uploadedFiles?: boolean | Prisma.User$uploadedFilesArgs<ExtArgs>;
     auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>;
     events?: boolean | Prisma.User$eventsArgs<ExtArgs>;
+    objectsCreated?: boolean | Prisma.User$objectsCreatedArgs<ExtArgs>;
+    objectsUpdated?: boolean | Prisma.User$objectsUpdatedArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['user']
@@ -2191,6 +2626,8 @@ export type UserInclude<
   uploadedFiles?: boolean | Prisma.User$uploadedFilesArgs<ExtArgs>;
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>;
   events?: boolean | Prisma.User$eventsArgs<ExtArgs>;
+  objectsCreated?: boolean | Prisma.User$objectsCreatedArgs<ExtArgs>;
+  objectsUpdated?: boolean | Prisma.User$objectsUpdatedArgs<ExtArgs>;
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type UserIncludeCreateManyAndReturn<
@@ -2217,6 +2654,8 @@ export type $UserPayload<
     uploadedFiles: Prisma.$FileAssetPayload<ExtArgs>[];
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[];
     events: Prisma.$EventPayload<ExtArgs>[];
+    objectsCreated: Prisma.$ObjectPayload<ExtArgs>[];
+    objectsUpdated: Prisma.$ObjectPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -2878,6 +3317,28 @@ export interface Prisma__UserClient<
   ): Prisma.PrismaPromise<
     | runtime.Types.Result.GetResult<
         Prisma.$EventPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  objectsCreated<T extends Prisma.User$objectsCreatedArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$objectsCreatedArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$ObjectPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  objectsUpdated<T extends Prisma.User$objectsUpdatedArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$objectsUpdatedArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$ObjectPayload<ExtArgs>,
         T,
         'findMany',
         GlobalOmitOptions
@@ -3641,6 +4102,64 @@ export type User$eventsArgs<
   take?: number;
   skip?: number;
   distinct?: Prisma.EventScalarFieldEnum | Prisma.EventScalarFieldEnum[];
+};
+
+/**
+ * User.objectsCreated
+ */
+export type User$objectsCreatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Object
+   */
+  select?: Prisma.ObjectSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Object
+   */
+  omit?: Prisma.ObjectOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ObjectInclude<ExtArgs> | null;
+  where?: Prisma.ObjectWhereInput;
+  orderBy?:
+    | Prisma.ObjectOrderByWithRelationInput
+    | Prisma.ObjectOrderByWithRelationInput[];
+  cursor?: Prisma.ObjectWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.ObjectScalarFieldEnum | Prisma.ObjectScalarFieldEnum[];
+};
+
+/**
+ * User.objectsUpdated
+ */
+export type User$objectsUpdatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Object
+   */
+  select?: Prisma.ObjectSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Object
+   */
+  omit?: Prisma.ObjectOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ObjectInclude<ExtArgs> | null;
+  where?: Prisma.ObjectWhereInput;
+  orderBy?:
+    | Prisma.ObjectOrderByWithRelationInput
+    | Prisma.ObjectOrderByWithRelationInput[];
+  cursor?: Prisma.ObjectWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.ObjectScalarFieldEnum | Prisma.ObjectScalarFieldEnum[];
 };
 
 /**

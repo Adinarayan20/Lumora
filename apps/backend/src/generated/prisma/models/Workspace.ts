@@ -294,6 +294,7 @@ export type WorkspaceWhereInput = {
   roles?: Prisma.RoleListRelationFilter;
   spaces?: Prisma.SpaceListRelationFilter;
   invitations?: Prisma.WorkspaceInvitationListRelationFilter;
+  objects?: Prisma.ObjectListRelationFilter;
 };
 
 export type WorkspaceOrderByWithRelationInput = {
@@ -320,6 +321,7 @@ export type WorkspaceOrderByWithRelationInput = {
   roles?: Prisma.RoleOrderByRelationAggregateInput;
   spaces?: Prisma.SpaceOrderByRelationAggregateInput;
   invitations?: Prisma.WorkspaceInvitationOrderByRelationAggregateInput;
+  objects?: Prisma.ObjectOrderByRelationAggregateInput;
 };
 
 export type WorkspaceWhereUniqueInput = Prisma.AtLeast<
@@ -354,6 +356,7 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<
     roles?: Prisma.RoleListRelationFilter;
     spaces?: Prisma.SpaceListRelationFilter;
     invitations?: Prisma.WorkspaceInvitationListRelationFilter;
+    objects?: Prisma.ObjectListRelationFilter;
   },
   'id' | 'slug'
 >;
@@ -450,6 +453,7 @@ export type WorkspaceCreateInput = {
   roles?: Prisma.RoleCreateNestedManyWithoutWorkspaceInput;
   spaces?: Prisma.SpaceCreateNestedManyWithoutWorkspaceInput;
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceUncheckedCreateInput = {
@@ -475,6 +479,7 @@ export type WorkspaceUncheckedCreateInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutWorkspaceInput;
   spaces?: Prisma.SpaceUncheckedCreateNestedManyWithoutWorkspaceInput;
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceUpdateInput = {
@@ -507,6 +512,7 @@ export type WorkspaceUpdateInput = {
   roles?: Prisma.RoleUpdateManyWithoutWorkspaceNestedInput;
   spaces?: Prisma.SpaceUpdateManyWithoutWorkspaceNestedInput;
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceUncheckedUpdateInput = {
@@ -539,6 +545,7 @@ export type WorkspaceUncheckedUpdateInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutWorkspaceNestedInput;
   spaces?: Prisma.SpaceUncheckedUpdateManyWithoutWorkspaceNestedInput;
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUncheckedUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceCreateManyInput = {
@@ -913,6 +920,32 @@ export type WorkspaceUpdateOneRequiredWithoutSpacesNestedInput = {
   >;
 };
 
+export type WorkspaceCreateNestedOneWithoutObjectsInput = {
+  create?: Prisma.XOR<
+    Prisma.WorkspaceCreateWithoutObjectsInput,
+    Prisma.WorkspaceUncheckedCreateWithoutObjectsInput
+  >;
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutObjectsInput;
+  connect?: Prisma.WorkspaceWhereUniqueInput;
+};
+
+export type WorkspaceUpdateOneRequiredWithoutObjectsNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.WorkspaceCreateWithoutObjectsInput,
+    Prisma.WorkspaceUncheckedCreateWithoutObjectsInput
+  >;
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutObjectsInput;
+  upsert?: Prisma.WorkspaceUpsertWithoutObjectsInput;
+  connect?: Prisma.WorkspaceWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.WorkspaceUpdateToOneWithWhereWithoutObjectsInput,
+      Prisma.WorkspaceUpdateWithoutObjectsInput
+    >,
+    Prisma.WorkspaceUncheckedUpdateWithoutObjectsInput
+  >;
+};
+
 export type WorkspaceCreateWithoutOwnerInput = {
   id?: string;
   name: string;
@@ -935,6 +968,7 @@ export type WorkspaceCreateWithoutOwnerInput = {
   roles?: Prisma.RoleCreateNestedManyWithoutWorkspaceInput;
   spaces?: Prisma.SpaceCreateNestedManyWithoutWorkspaceInput;
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceUncheckedCreateWithoutOwnerInput = {
@@ -959,6 +993,7 @@ export type WorkspaceUncheckedCreateWithoutOwnerInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutWorkspaceInput;
   spaces?: Prisma.SpaceUncheckedCreateNestedManyWithoutWorkspaceInput;
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceCreateOrConnectWithoutOwnerInput = {
@@ -1053,6 +1088,7 @@ export type WorkspaceCreateWithoutMembersInput = {
   roles?: Prisma.RoleCreateNestedManyWithoutWorkspaceInput;
   spaces?: Prisma.SpaceCreateNestedManyWithoutWorkspaceInput;
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceUncheckedCreateWithoutMembersInput = {
@@ -1077,6 +1113,7 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutWorkspaceInput;
   spaces?: Prisma.SpaceUncheckedCreateNestedManyWithoutWorkspaceInput;
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceCreateOrConnectWithoutMembersInput = {
@@ -1136,6 +1173,7 @@ export type WorkspaceUpdateWithoutMembersInput = {
   roles?: Prisma.RoleUpdateManyWithoutWorkspaceNestedInput;
   spaces?: Prisma.SpaceUpdateManyWithoutWorkspaceNestedInput;
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceUncheckedUpdateWithoutMembersInput = {
@@ -1167,6 +1205,7 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutWorkspaceNestedInput;
   spaces?: Prisma.SpaceUncheckedUpdateManyWithoutWorkspaceNestedInput;
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUncheckedUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceCreateWithoutInvitationsInput = {
@@ -1191,6 +1230,7 @@ export type WorkspaceCreateWithoutInvitationsInput = {
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput;
   roles?: Prisma.RoleCreateNestedManyWithoutWorkspaceInput;
   spaces?: Prisma.SpaceCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceUncheckedCreateWithoutInvitationsInput = {
@@ -1215,6 +1255,7 @@ export type WorkspaceUncheckedCreateWithoutInvitationsInput = {
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput;
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutWorkspaceInput;
   spaces?: Prisma.SpaceUncheckedCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceCreateOrConnectWithoutInvitationsInput = {
@@ -1274,6 +1315,7 @@ export type WorkspaceUpdateWithoutInvitationsInput = {
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput;
   roles?: Prisma.RoleUpdateManyWithoutWorkspaceNestedInput;
   spaces?: Prisma.SpaceUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceUncheckedUpdateWithoutInvitationsInput = {
@@ -1305,6 +1347,7 @@ export type WorkspaceUncheckedUpdateWithoutInvitationsInput = {
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput;
   roles?: Prisma.RoleUncheckedUpdateManyWithoutWorkspaceNestedInput;
   spaces?: Prisma.SpaceUncheckedUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUncheckedUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceCreateWithoutRolesInput = {
@@ -1329,6 +1372,7 @@ export type WorkspaceCreateWithoutRolesInput = {
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput;
   spaces?: Prisma.SpaceCreateNestedManyWithoutWorkspaceInput;
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceUncheckedCreateWithoutRolesInput = {
@@ -1353,6 +1397,7 @@ export type WorkspaceUncheckedCreateWithoutRolesInput = {
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput;
   spaces?: Prisma.SpaceUncheckedCreateNestedManyWithoutWorkspaceInput;
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceCreateOrConnectWithoutRolesInput = {
@@ -1412,6 +1457,7 @@ export type WorkspaceUpdateWithoutRolesInput = {
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput;
   spaces?: Prisma.SpaceUpdateManyWithoutWorkspaceNestedInput;
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceUncheckedUpdateWithoutRolesInput = {
@@ -1443,6 +1489,7 @@ export type WorkspaceUncheckedUpdateWithoutRolesInput = {
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput;
   spaces?: Prisma.SpaceUncheckedUpdateManyWithoutWorkspaceNestedInput;
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUncheckedUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceCreateWithoutSpacesInput = {
@@ -1467,6 +1514,7 @@ export type WorkspaceCreateWithoutSpacesInput = {
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput;
   roles?: Prisma.RoleCreateNestedManyWithoutWorkspaceInput;
   invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceUncheckedCreateWithoutSpacesInput = {
@@ -1491,6 +1539,7 @@ export type WorkspaceUncheckedCreateWithoutSpacesInput = {
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput;
   roles?: Prisma.RoleUncheckedCreateNestedManyWithoutWorkspaceInput;
   invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput;
+  objects?: Prisma.ObjectUncheckedCreateNestedManyWithoutWorkspaceInput;
 };
 
 export type WorkspaceCreateOrConnectWithoutSpacesInput = {
@@ -1550,6 +1599,7 @@ export type WorkspaceUpdateWithoutSpacesInput = {
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput;
   roles?: Prisma.RoleUpdateManyWithoutWorkspaceNestedInput;
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceUncheckedUpdateWithoutSpacesInput = {
@@ -1580,6 +1630,149 @@ export type WorkspaceUncheckedUpdateWithoutSpacesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput;
   roles?: Prisma.RoleUncheckedUpdateManyWithoutWorkspaceNestedInput;
+  invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUncheckedUpdateManyWithoutWorkspaceNestedInput;
+};
+
+export type WorkspaceCreateWithoutObjectsInput = {
+  id?: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  type?: $Enums.WorkspaceType;
+  visibility?: $Enums.WorkspaceVisibility;
+  status?: $Enums.WorkspaceStatus;
+  plan?: $Enums.WorkspacePlan;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  billingId?: string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  owner: Prisma.UserCreateNestedOneWithoutOwnedWorkspacesInput;
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput;
+  roles?: Prisma.RoleCreateNestedManyWithoutWorkspaceInput;
+  spaces?: Prisma.SpaceCreateNestedManyWithoutWorkspaceInput;
+  invitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutWorkspaceInput;
+};
+
+export type WorkspaceUncheckedCreateWithoutObjectsInput = {
+  id?: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  type?: $Enums.WorkspaceType;
+  visibility?: $Enums.WorkspaceVisibility;
+  status?: $Enums.WorkspaceStatus;
+  plan?: $Enums.WorkspacePlan;
+  ownerId: string;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  billingId?: string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput;
+  roles?: Prisma.RoleUncheckedCreateNestedManyWithoutWorkspaceInput;
+  spaces?: Prisma.SpaceUncheckedCreateNestedManyWithoutWorkspaceInput;
+  invitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutWorkspaceInput;
+};
+
+export type WorkspaceCreateOrConnectWithoutObjectsInput = {
+  where: Prisma.WorkspaceWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.WorkspaceCreateWithoutObjectsInput,
+    Prisma.WorkspaceUncheckedCreateWithoutObjectsInput
+  >;
+};
+
+export type WorkspaceUpsertWithoutObjectsInput = {
+  update: Prisma.XOR<
+    Prisma.WorkspaceUpdateWithoutObjectsInput,
+    Prisma.WorkspaceUncheckedUpdateWithoutObjectsInput
+  >;
+  create: Prisma.XOR<
+    Prisma.WorkspaceCreateWithoutObjectsInput,
+    Prisma.WorkspaceUncheckedCreateWithoutObjectsInput
+  >;
+  where?: Prisma.WorkspaceWhereInput;
+};
+
+export type WorkspaceUpdateToOneWithWhereWithoutObjectsInput = {
+  where?: Prisma.WorkspaceWhereInput;
+  data: Prisma.XOR<
+    Prisma.WorkspaceUpdateWithoutObjectsInput,
+    Prisma.WorkspaceUncheckedUpdateWithoutObjectsInput
+  >;
+};
+
+export type WorkspaceUpdateWithoutObjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  type?:
+    Prisma.EnumWorkspaceTypeFieldUpdateOperationsInput | $Enums.WorkspaceType;
+  visibility?:
+    | Prisma.EnumWorkspaceVisibilityFieldUpdateOperationsInput
+    | $Enums.WorkspaceVisibility;
+  status?:
+    | Prisma.EnumWorkspaceStatusFieldUpdateOperationsInput
+    | $Enums.WorkspaceStatus;
+  plan?:
+    Prisma.EnumWorkspacePlanFieldUpdateOperationsInput | $Enums.WorkspacePlan;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  billingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  owner?: Prisma.UserUpdateOneRequiredWithoutOwnedWorkspacesNestedInput;
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput;
+  roles?: Prisma.RoleUpdateManyWithoutWorkspaceNestedInput;
+  spaces?: Prisma.SpaceUpdateManyWithoutWorkspaceNestedInput;
+  invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput;
+};
+
+export type WorkspaceUncheckedUpdateWithoutObjectsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  slug?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  type?:
+    Prisma.EnumWorkspaceTypeFieldUpdateOperationsInput | $Enums.WorkspaceType;
+  visibility?:
+    | Prisma.EnumWorkspaceVisibilityFieldUpdateOperationsInput
+    | $Enums.WorkspaceVisibility;
+  status?:
+    | Prisma.EnumWorkspaceStatusFieldUpdateOperationsInput
+    | $Enums.WorkspaceStatus;
+  plan?:
+    Prisma.EnumWorkspacePlanFieldUpdateOperationsInput | $Enums.WorkspacePlan;
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string;
+  settings?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  billingId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput;
+  roles?: Prisma.RoleUncheckedUpdateManyWithoutWorkspaceNestedInput;
+  spaces?: Prisma.SpaceUncheckedUpdateManyWithoutWorkspaceNestedInput;
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput;
 };
 
@@ -1632,6 +1825,7 @@ export type WorkspaceUpdateWithoutOwnerInput = {
   roles?: Prisma.RoleUpdateManyWithoutWorkspaceNestedInput;
   spaces?: Prisma.SpaceUpdateManyWithoutWorkspaceNestedInput;
   invitations?: Prisma.WorkspaceInvitationUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceUncheckedUpdateWithoutOwnerInput = {
@@ -1663,6 +1857,7 @@ export type WorkspaceUncheckedUpdateWithoutOwnerInput = {
   roles?: Prisma.RoleUncheckedUpdateManyWithoutWorkspaceNestedInput;
   spaces?: Prisma.SpaceUncheckedUpdateManyWithoutWorkspaceNestedInput;
   invitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutWorkspaceNestedInput;
+  objects?: Prisma.ObjectUncheckedUpdateManyWithoutWorkspaceNestedInput;
 };
 
 export type WorkspaceUncheckedUpdateManyWithoutOwnerInput = {
@@ -1701,6 +1896,7 @@ export type WorkspaceCountOutputType = {
   roles: number;
   spaces: number;
   invitations: number;
+  objects: number;
 };
 
 export type WorkspaceCountOutputTypeSelect<
@@ -1711,6 +1907,7 @@ export type WorkspaceCountOutputTypeSelect<
   roles?: boolean | WorkspaceCountOutputTypeCountRolesArgs;
   spaces?: boolean | WorkspaceCountOutputTypeCountSpacesArgs;
   invitations?: boolean | WorkspaceCountOutputTypeCountInvitationsArgs;
+  objects?: boolean | WorkspaceCountOutputTypeCountObjectsArgs;
 };
 
 /**
@@ -1766,6 +1963,16 @@ export type WorkspaceCountOutputTypeCountInvitationsArgs<
   where?: Prisma.WorkspaceInvitationWhereInput;
 };
 
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountObjectsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.ObjectWhereInput;
+};
+
 export type WorkspaceSelect<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
@@ -1794,6 +2001,7 @@ export type WorkspaceSelect<
     roles?: boolean | Prisma.Workspace$rolesArgs<ExtArgs>;
     spaces?: boolean | Prisma.Workspace$spacesArgs<ExtArgs>;
     invitations?: boolean | Prisma.Workspace$invitationsArgs<ExtArgs>;
+    objects?: boolean | Prisma.Workspace$objectsArgs<ExtArgs>;
     _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['workspace']
@@ -1909,6 +2117,7 @@ export type WorkspaceInclude<
   roles?: boolean | Prisma.Workspace$rolesArgs<ExtArgs>;
   spaces?: boolean | Prisma.Workspace$spacesArgs<ExtArgs>;
   invitations?: boolean | Prisma.Workspace$invitationsArgs<ExtArgs>;
+  objects?: boolean | Prisma.Workspace$objectsArgs<ExtArgs>;
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type WorkspaceIncludeCreateManyAndReturn<
@@ -1935,6 +2144,7 @@ export type $WorkspacePayload<
     roles: Prisma.$RolePayload<ExtArgs>[];
     spaces: Prisma.$SpacePayload<ExtArgs>[];
     invitations: Prisma.$WorkspaceInvitationPayload<ExtArgs>[];
+    objects: Prisma.$ObjectPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -2558,6 +2768,17 @@ export interface Prisma__WorkspaceClient<
   ): Prisma.PrismaPromise<
     | runtime.Types.Result.GetResult<
         Prisma.$WorkspaceInvitationPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  objects<T extends Prisma.Workspace$objectsArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.Workspace$objectsArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$ObjectPayload<ExtArgs>,
         T,
         'findMany',
         GlobalOmitOptions
@@ -3203,6 +3424,35 @@ export type Workspace$invitationsArgs<
   distinct?:
     | Prisma.WorkspaceInvitationScalarFieldEnum
     | Prisma.WorkspaceInvitationScalarFieldEnum[];
+};
+
+/**
+ * Workspace.objects
+ */
+export type Workspace$objectsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Object
+   */
+  select?: Prisma.ObjectSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Object
+   */
+  omit?: Prisma.ObjectOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ObjectInclude<ExtArgs> | null;
+  where?: Prisma.ObjectWhereInput;
+  orderBy?:
+    | Prisma.ObjectOrderByWithRelationInput
+    | Prisma.ObjectOrderByWithRelationInput[];
+  cursor?: Prisma.ObjectWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?: Prisma.ObjectScalarFieldEnum | Prisma.ObjectScalarFieldEnum[];
 };
 
 /**
