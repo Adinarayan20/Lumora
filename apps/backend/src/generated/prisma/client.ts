@@ -125,6 +125,11 @@ export type Object = Prisma.ObjectModel
  */
 export type Reminder = Prisma.ReminderModel
 /**
+ * Model ReminderExecution
+ * 
+ */
+export type ReminderExecution = Prisma.ReminderExecutionModel
+/**
  * Model Notification
  * 
  */

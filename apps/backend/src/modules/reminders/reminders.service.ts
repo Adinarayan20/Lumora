@@ -48,6 +48,10 @@ export class RemindersService {
       );
     }
 
+    if (dto.recurrenceRule) {
+      this.schedulerService.validateRecurrenceRule(dto.recurrenceRule);
+    }
+
     const remindAt = new Date(dto.remindAt);
     if (isNaN(remindAt.getTime())) {
       throw new BadRequestException('Invalid remindAt ISO date string');
@@ -144,6 +148,10 @@ export class RemindersService {
       throw new ConflictException(
         `Reminder revision mismatch: current is ${reminder.revision}, update expected ${dto.revision}`,
       );
+    }
+
+    if (dto.recurrenceRule) {
+      this.schedulerService.validateRecurrenceRule(dto.recurrenceRule);
     }
 
     const remindAt = dto.remindAt ? new Date(dto.remindAt) : undefined;

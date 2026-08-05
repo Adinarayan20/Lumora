@@ -789,12 +789,39 @@ model Reminder {
 
   notifications Notification[]
 
+  executions ReminderExecution[]
+
   @@index([workspaceId, nextOccurrenceAt, executionStatus])
   @@index([executionStatus, nextOccurrenceAt])
   @@index([objectId, status])
   @@index([workspaceId, objectId])
   @@index([workspaceId, createdById])
   @@index([workspaceId, status])
+}
+
+model ReminderExecution {
+  id String @id @default(uuid()) @db.Uuid
+
+  reminderId String @db.Uuid
+
+  scheduledFor DateTime
+
+  executedAt DateTime @default(now())
+
+  status ReminderExecutionStatus @default(TRIGGERED)
+
+  executionId String @unique
+
+  errorMessage String?
+
+  durationMs Int?
+
+  createdAt DateTime @default(now())
+
+  reminder Reminder @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+
+  @@index([reminderId])
+  @@index([status])
 }
 
 model Notification {

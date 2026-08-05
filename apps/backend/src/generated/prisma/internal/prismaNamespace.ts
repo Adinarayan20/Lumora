@@ -414,6 +414,7 @@ export const ModelName = {
   Space: 'Space',
   Object: 'Object',
   Reminder: 'Reminder',
+  ReminderExecution: 'ReminderExecution',
   Notification: 'Notification',
   Timeline: 'Timeline',
   Collection: 'Collection',
@@ -433,7 +434,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "workspace" | "workspaceMember" | "workspaceInvitation" | "role" | "permission" | "rolePermission" | "device" | "session" | "oAuthAccount" | "fileAsset" | "auditLog" | "event" | "searchIndex" | "space" | "object" | "reminder" | "notification" | "timeline" | "collection" | "collectionItem"
+    modelProps: "user" | "workspace" | "workspaceMember" | "workspaceInvitation" | "role" | "permission" | "rolePermission" | "device" | "session" | "oAuthAccount" | "fileAsset" | "auditLog" | "event" | "searchIndex" | "space" | "object" | "reminder" | "reminderExecution" | "notification" | "timeline" | "collection" | "collectionItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1695,6 +1696,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ReminderExecution: {
+      payload: Prisma.$ReminderExecutionPayload<ExtArgs>
+      fields: Prisma.ReminderExecutionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReminderExecutionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReminderExecutionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload>
+        }
+        findFirst: {
+          args: Prisma.ReminderExecutionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReminderExecutionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload>
+        }
+        findMany: {
+          args: Prisma.ReminderExecutionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload>[]
+        }
+        create: {
+          args: Prisma.ReminderExecutionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload>
+        }
+        createMany: {
+          args: Prisma.ReminderExecutionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReminderExecutionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload>[]
+        }
+        delete: {
+          args: Prisma.ReminderExecutionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload>
+        }
+        update: {
+          args: Prisma.ReminderExecutionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ReminderExecutionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReminderExecutionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReminderExecutionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ReminderExecutionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReminderExecutionPayload>
+        }
+        aggregate: {
+          args: Prisma.ReminderExecutionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReminderExecution>
+        }
+        groupBy: {
+          args: Prisma.ReminderExecutionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReminderExecutionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReminderExecutionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReminderExecutionCountAggregateOutputType> | number
+        }
+      }
+    }
     Notification: {
       payload: Prisma.$NotificationPayload<ExtArgs>
       fields: Prisma.NotificationFieldRefs
@@ -2321,6 +2396,21 @@ export const ReminderScalarFieldEnum = {
 } as const
 
 export type ReminderScalarFieldEnum = (typeof ReminderScalarFieldEnum)[keyof typeof ReminderScalarFieldEnum]
+
+
+export const ReminderExecutionScalarFieldEnum = {
+  id: 'id',
+  reminderId: 'reminderId',
+  scheduledFor: 'scheduledFor',
+  executedAt: 'executedAt',
+  status: 'status',
+  executionId: 'executionId',
+  errorMessage: 'errorMessage',
+  durationMs: 'durationMs',
+  createdAt: 'createdAt'
+} as const
+
+export type ReminderExecutionScalarFieldEnum = (typeof ReminderExecutionScalarFieldEnum)[keyof typeof ReminderExecutionScalarFieldEnum]
 
 
 export const NotificationScalarFieldEnum = {
@@ -3006,6 +3096,7 @@ export type GlobalOmitConfig = {
   space?: Prisma.SpaceOmit
   object?: Prisma.ObjectOmit
   reminder?: Prisma.ReminderOmit
+  reminderExecution?: Prisma.ReminderExecutionOmit
   notification?: Prisma.NotificationOmit
   timeline?: Prisma.TimelineOmit
   collection?: Prisma.CollectionOmit

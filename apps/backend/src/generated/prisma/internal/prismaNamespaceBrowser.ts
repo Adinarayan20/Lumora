@@ -68,6 +68,7 @@ export const ModelName = {
   Space: 'Space',
   Object: 'Object',
   Reminder: 'Reminder',
+  ReminderExecution: 'ReminderExecution',
   Notification: 'Notification',
   Timeline: 'Timeline',
   Collection: 'Collection',
@@ -381,6 +382,21 @@ export const ReminderScalarFieldEnum = {
 } as const
 
 export type ReminderScalarFieldEnum = (typeof ReminderScalarFieldEnum)[keyof typeof ReminderScalarFieldEnum]
+
+
+export const ReminderExecutionScalarFieldEnum = {
+  id: 'id',
+  reminderId: 'reminderId',
+  scheduledFor: 'scheduledFor',
+  executedAt: 'executedAt',
+  status: 'status',
+  executionId: 'executionId',
+  errorMessage: 'errorMessage',
+  durationMs: 'durationMs',
+  createdAt: 'createdAt'
+} as const
+
+export type ReminderExecutionScalarFieldEnum = (typeof ReminderExecutionScalarFieldEnum)[keyof typeof ReminderExecutionScalarFieldEnum]
 
 
 export const NotificationScalarFieldEnum = {
