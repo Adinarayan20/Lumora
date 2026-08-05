@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { CollectionsModule } from './modules/collections/collections.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
@@ -15,6 +17,8 @@ import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
     AuthModule,
     UsersModule,
     WorkspacesModule,
