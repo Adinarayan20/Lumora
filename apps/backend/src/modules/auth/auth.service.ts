@@ -139,7 +139,7 @@ export class AuthService {
           deviceId: device.id,
         };
       },
-      { timeout: 20000 },
+      { timeout: 60000 },
     );
   }
 

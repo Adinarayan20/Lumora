@@ -1,0 +1,136 @@
+import { Permissions } from '../../src/modules/rbac/constants/permissions';
+
+export interface PermissionSeedData {
+  key: string;
+  resource: string;
+  action: string;
+  description: string;
+}
+
+export const GLOBAL_PERMISSIONS_SEED: PermissionSeedData[] = [
+  // Workspace
+  {
+    key: Permissions.Workspace.Read,
+    resource: 'workspace',
+    action: 'read',
+    description: 'Read workspace details',
+  },
+  {
+    key: Permissions.Workspace.Update,
+    resource: 'workspace',
+    action: 'update',
+    description: 'Update workspace metadata and settings',
+  },
+  {
+    key: Permissions.Workspace.Delete,
+    resource: 'workspace',
+    action: 'delete',
+    description: 'Delete workspace (Owner only)',
+  },
+  {
+    key: Permissions.Workspace.TransferOwnership,
+    resource: 'workspace',
+    action: 'transfer_ownership',
+    description: 'Transfer workspace ownership (Owner only)',
+  },
+  // Member
+  {
+    key: Permissions.Member.List,
+    resource: 'workspace.member',
+    action: 'list',
+    description: 'List workspace members',
+  },
+  {
+    key: Permissions.Member.Invite,
+    resource: 'workspace.member',
+    action: 'invite',
+    description: 'Invite new member to workspace',
+  },
+  {
+    key: Permissions.Member.Remove,
+    resource: 'workspace.member',
+    action: 'remove',
+    description: 'Remove member from workspace',
+  },
+  {
+    key: Permissions.Member.RoleUpdate,
+    resource: 'workspace.member',
+    action: 'role_update',
+    description: 'Update member role in workspace',
+  },
+  // Role
+  {
+    key: Permissions.Role.List,
+    resource: 'workspace.role',
+    action: 'list',
+    description: 'List workspace roles',
+  },
+  {
+    key: Permissions.Role.Create,
+    resource: 'workspace.role',
+    action: 'create',
+    description: 'Create custom workspace role',
+  },
+  {
+    key: Permissions.Role.Update,
+    resource: 'workspace.role',
+    action: 'update',
+    description: 'Update workspace role permissions',
+  },
+  {
+    key: Permissions.Role.Delete,
+    resource: 'workspace.role',
+    action: 'delete',
+    description: 'Delete custom workspace role',
+  },
+  // Space
+  {
+    key: Permissions.Space.Create,
+    resource: 'workspace.space',
+    action: 'create',
+    description: 'Create spaces within workspace',
+  },
+  {
+    key: Permissions.Space.Read,
+    resource: 'workspace.space',
+    action: 'read',
+    description: 'Read spaces within workspace',
+  },
+  {
+    key: Permissions.Space.Update,
+    resource: 'workspace.space',
+    action: 'update',
+    description: 'Update spaces within workspace',
+  },
+  {
+    key: Permissions.Space.Delete,
+    resource: 'workspace.space',
+    action: 'delete',
+    description: 'Delete spaces within workspace',
+  },
+  // Object
+  {
+    key: Permissions.Object.Create,
+    resource: 'workspace.object',
+    action: 'create',
+    description: 'Create universal objects within workspace',
+  },
+  {
+    key: Permissions.Object.Read,
+    resource: 'workspace.object',
+    action: 'read',
+    description: 'Read universal objects within workspace',
+  },
+  {
+    key: Permissions.Object.Update,
+    resource: 'workspace.object',
+    action: 'update',
+    description: 'Update universal objects within workspace',
+  },
+  {
+    key: Permissions.Object.Delete,
+    resource: 'workspace.object',
+    action: 'delete',
+    description: 'Delete universal objects within workspace',
+  },
+];

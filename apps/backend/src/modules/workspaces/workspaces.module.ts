@@ -9,9 +9,10 @@ import { WorkspaceRepository } from './repositories/workspace.repository';
 import { WorkspaceMemberRepository } from './repositories/workspace-member.repository';
 import { WorkspaceInvitationRepository } from './repositories/workspace-invitation.repository';
 import { AuthModule } from '../auth/auth.module';
+import { RbacModule } from '../rbac/rbac.module';
 
 @Module({
-  imports: [forwardRef(() => AuthModule)],
+  imports: [forwardRef(() => AuthModule), RbacModule],
   controllers: [WorkspacesController],
   providers: [
     WorkspacesService,

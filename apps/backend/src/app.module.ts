@@ -14,6 +14,7 @@ import { SpacesModule } from './modules/spaces/spaces.module';
 import { TimelineModule } from './modules/timeline/timeline.module';
 import { UsersModule } from './modules/users/users.module';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module';
+import { RbacModule } from './modules/rbac/rbac.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { WorkspacesModule } from './modules/workspaces/workspaces.module';
     AuthModule,
     UsersModule,
     WorkspacesModule,
+    RbacModule,
     CatalogModule,
     SpacesModule,
     CollectionsModule,

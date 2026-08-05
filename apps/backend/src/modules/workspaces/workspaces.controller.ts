@@ -18,8 +18,11 @@ import { AcceptInvitationDto } from './dto/accept-invitation.dto';
 import { TransferOwnershipDto } from './dto/transfer-ownership.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { PermissionsGuard } from '../rbac/guards/permissions.guard';
+import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator';
+import { Permissions } from '../rbac/constants/permissions';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('workspaces')
 export class WorkspacesController {
   constructor(private readonly workspacesService: WorkspacesService) {}
@@ -47,6 +50,7 @@ export class WorkspacesController {
   }
 
   @Get(':idOrSlug')
+  @RequirePermissions(Permissions.Workspace.Read)
   async getWorkspaceByIdOrSlug(
     @Param('idOrSlug') idOrSlug: string,
     @CurrentUser('id') userId: string,
@@ -55,6 +59,7 @@ export class WorkspacesController {
   }
 
   @Patch(':id')
+  @RequirePermissions(Permissions.Workspace.Update)
   async updateWorkspace(
     @Param('id') workspaceId: string,
     @CurrentUser('id') userId: string,
@@ -64,6 +69,7 @@ export class WorkspacesController {
   }
 
   @Delete(':id')
+  @RequirePermissions(Permissions.Workspace.Delete)
   async softDeleteWorkspace(
     @Param('id') workspaceId: string,
     @CurrentUser('id') userId: string,
@@ -73,6 +79,7 @@ export class WorkspacesController {
 
   @Post(':id/transfer-ownership')
   @HttpCode(HttpStatus.OK)
+  @RequirePermissions(Permissions.Workspace.TransferOwnership)
   async transferOwnership(
     @Param('id') workspaceId: string,
     @CurrentUser('id') currentOwnerId: string,
@@ -86,11 +93,13 @@ export class WorkspacesController {
   }
 
   @Get(':id/members')
+  @RequirePermissions(Permissions.Member.List)
   async getMembers(@Param('id') workspaceId: string) {
     return this.workspacesService.getMembers(workspaceId);
   }
 
   @Delete(':id/members/:userId')
+  @RequirePermissions(Permissions.Member.Remove)
   async removeMember(
     @Param('id') workspaceId: string,
     @Param('userId') targetUserId: string,
@@ -104,6 +113,7 @@ export class WorkspacesController {
   }
 
   @Post(':id/invitations')
+  @RequirePermissions(Permissions.Member.Invite)
   async inviteMember(
     @Param('id') workspaceId: string,
     @CurrentUser('id') inviterId: string,
@@ -113,11 +123,13 @@ export class WorkspacesController {
   }
 
   @Get(':id/invitations')
+  @RequirePermissions(Permissions.Member.List)
   async getInvitations(@Param('id') workspaceId: string) {
     return this.workspacesService.getInvitations(workspaceId);
   }
 
   @Delete(':id/invitations/:invitationId')
+  @RequirePermissions(Permissions.Member.Invite)
   async revokeInvitation(
     @Param('id') workspaceId: string,
     @Param('invitationId') invitationId: string,

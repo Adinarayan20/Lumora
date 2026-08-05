@@ -31,6 +31,8 @@ import {
   WorkspaceOwnershipTransferredEvent,
 } from './events/workspace.events';
 
+import { RbacService } from '../rbac/rbac.service';
+
 @Injectable()
 export class WorkspacesService {
   constructor(
@@ -42,6 +44,7 @@ export class WorkspacesService {
     private readonly invitationService: WorkspaceInvitationService,
     private readonly eventPublisher: WorkspaceEventPublisherService,
     private readonly auditLogRepository: AuditLogRepository,
+    private readonly rbacService: RbacService,
   ) {}
 
   async createPersonalWorkspace(
@@ -67,6 +70,8 @@ export class WorkspacesService {
       { workspaceId: workspace.id, userId: ownerId },
       tx,
     );
+    await this.rbacService.seedDefaultWorkspaceRoles(workspace.id, ownerId, tx);
+
     await this.auditLogRepository.create(
       {
         userId: ownerId,
@@ -123,6 +128,12 @@ export class WorkspacesService {
           { workspaceId: workspace.id, userId: ownerId },
           tx,
         );
+        await this.rbacService.seedDefaultWorkspaceRoles(
+          workspace.id,
+          ownerId,
+          tx,
+        );
+
         await this.auditLogRepository.create(
           {
             userId: ownerId,
@@ -207,18 +218,15 @@ export class WorkspacesService {
       entity: 'Workspace',
       entityId: workspaceId,
       action: AuditAction.UPDATE,
-      newData: JSON.parse(
-        JSON.stringify({
-          name: dto.name,
-          description: dto.description,
-          icon: dto.icon,
-          emoji: dto.emoji,
-          cover: dto.cover,
-          color: dto.color,
-          visibility: dto.visibility,
-          settings: dto.settings,
-        }),
-      ),
+      newData: {
+        name: dto.name,
+        description: dto.description,
+        icon: dto.icon,
+        emoji: dto.emoji,
+        cover: dto.cover,
+        color: dto.color,
+        visibility: dto.visibility,
+      },
     });
 
     await this.eventPublisher.publishWorkspaceUpdated(
