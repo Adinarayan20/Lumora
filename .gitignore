@@ -40,6 +40,7 @@ Thumbs.db
 build/
 tmp/
 .cache/
+.turbo/
 
 # TypeScript
 *.tsbuildinfo

@@ -4,6 +4,6 @@ import { RemindersController } from './reminders.controller';
 
 @Module({
   providers: [RemindersService],
-  controllers: [RemindersController]
+  controllers: [RemindersController],
 })
 export class RemindersModule {}
