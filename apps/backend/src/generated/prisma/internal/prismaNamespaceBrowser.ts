@@ -73,6 +73,8 @@ export const ModelName = {
   Reminder: 'Reminder',
   Notification: 'Notification',
   Timeline: 'Timeline',
+  Collection: 'Collection',
+  CollectionItem: 'CollectionItem',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -389,6 +391,45 @@ export const TimelineScalarFieldEnum = {
 
 export type TimelineScalarFieldEnum =
   (typeof TimelineScalarFieldEnum)[keyof typeof TimelineScalarFieldEnum];
+
+export const CollectionScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
+  slug: 'slug',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  query: 'query',
+  icon: 'icon',
+  emoji: 'emoji',
+  cover: 'cover',
+  color: 'color',
+  pinnedAt: 'pinnedAt',
+  isFavorite: 'isFavorite',
+  status: 'status',
+  settings: 'settings',
+  revision: 'revision',
+  archivedAt: 'archivedAt',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type CollectionScalarFieldEnum =
+  (typeof CollectionScalarFieldEnum)[keyof typeof CollectionScalarFieldEnum];
+
+export const CollectionItemScalarFieldEnum = {
+  id: 'id',
+  collectionId: 'collectionId',
+  objectId: 'objectId',
+  order: 'order',
+  addedAt: 'addedAt',
+} as const;
+
+export type CollectionItemScalarFieldEnum =
+  (typeof CollectionItemScalarFieldEnum)[keyof typeof CollectionItemScalarFieldEnum];
 
 export const SortOrder = {
   asc: 'asc',

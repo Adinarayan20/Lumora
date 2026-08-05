@@ -446,6 +446,8 @@ export const ModelName = {
   Reminder: 'Reminder',
   Notification: 'Notification',
   Timeline: 'Timeline',
+  Collection: 'Collection',
+  CollectionItem: 'CollectionItem',
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -486,7 +488,9 @@ export type TypeMap<
       | 'object'
       | 'reminder'
       | 'notification'
-      | 'timeline';
+      | 'timeline'
+      | 'collection'
+      | 'collectionItem';
     txIsolationLevel: TransactionIsolationLevel;
   };
   model: {
@@ -1934,6 +1938,158 @@ export type TypeMap<
         };
       };
     };
+    Collection: {
+      payload: Prisma.$CollectionPayload<ExtArgs>;
+      fields: Prisma.CollectionFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.CollectionFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.CollectionFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload>;
+        };
+        findFirst: {
+          args: Prisma.CollectionFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.CollectionFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload>;
+        };
+        findMany: {
+          args: Prisma.CollectionFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload>[];
+        };
+        create: {
+          args: Prisma.CollectionCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload>;
+        };
+        createMany: {
+          args: Prisma.CollectionCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.CollectionCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload>[];
+        };
+        delete: {
+          args: Prisma.CollectionDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload>;
+        };
+        update: {
+          args: Prisma.CollectionUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload>;
+        };
+        deleteMany: {
+          args: Prisma.CollectionDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.CollectionUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.CollectionUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload>[];
+        };
+        upsert: {
+          args: Prisma.CollectionUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionPayload>;
+        };
+        aggregate: {
+          args: Prisma.CollectionAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCollection>;
+        };
+        groupBy: {
+          args: Prisma.CollectionGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.CollectionGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.CollectionCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.CollectionCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
+    CollectionItem: {
+      payload: Prisma.$CollectionItemPayload<ExtArgs>;
+      fields: Prisma.CollectionItemFieldRefs;
+      operations: {
+        findUnique: {
+          args: Prisma.CollectionItemFindUniqueArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload> | null;
+        };
+        findUniqueOrThrow: {
+          args: Prisma.CollectionItemFindUniqueOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload>;
+        };
+        findFirst: {
+          args: Prisma.CollectionItemFindFirstArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload> | null;
+        };
+        findFirstOrThrow: {
+          args: Prisma.CollectionItemFindFirstOrThrowArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload>;
+        };
+        findMany: {
+          args: Prisma.CollectionItemFindManyArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload>[];
+        };
+        create: {
+          args: Prisma.CollectionItemCreateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload>;
+        };
+        createMany: {
+          args: Prisma.CollectionItemCreateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        createManyAndReturn: {
+          args: Prisma.CollectionItemCreateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload>[];
+        };
+        delete: {
+          args: Prisma.CollectionItemDeleteArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload>;
+        };
+        update: {
+          args: Prisma.CollectionItemUpdateArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload>;
+        };
+        deleteMany: {
+          args: Prisma.CollectionItemDeleteManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateMany: {
+          args: Prisma.CollectionItemUpdateManyArgs<ExtArgs>;
+          result: BatchPayload;
+        };
+        updateManyAndReturn: {
+          args: Prisma.CollectionItemUpdateManyAndReturnArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload>[];
+        };
+        upsert: {
+          args: Prisma.CollectionItemUpsertArgs<ExtArgs>;
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CollectionItemPayload>;
+        };
+        aggregate: {
+          args: Prisma.CollectionItemAggregateArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCollectionItem>;
+        };
+        groupBy: {
+          args: Prisma.CollectionItemGroupByArgs<ExtArgs>;
+          result: runtime.Types.Utils.Optional<Prisma.CollectionItemGroupByOutputType>[];
+        };
+        count: {
+          args: Prisma.CollectionItemCountArgs<ExtArgs>;
+          result:
+            | runtime.Types.Utils.Optional<Prisma.CollectionItemCountAggregateOutputType>
+            | number;
+        };
+      };
+    };
   };
 } & {
   other: {
@@ -2271,6 +2427,45 @@ export const TimelineScalarFieldEnum = {
 
 export type TimelineScalarFieldEnum =
   (typeof TimelineScalarFieldEnum)[keyof typeof TimelineScalarFieldEnum];
+
+export const CollectionScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
+  slug: 'slug',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  query: 'query',
+  icon: 'icon',
+  emoji: 'emoji',
+  cover: 'cover',
+  color: 'color',
+  pinnedAt: 'pinnedAt',
+  isFavorite: 'isFavorite',
+  status: 'status',
+  settings: 'settings',
+  revision: 'revision',
+  archivedAt: 'archivedAt',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type CollectionScalarFieldEnum =
+  (typeof CollectionScalarFieldEnum)[keyof typeof CollectionScalarFieldEnum];
+
+export const CollectionItemScalarFieldEnum = {
+  id: 'id',
+  collectionId: 'collectionId',
+  objectId: 'objectId',
+  order: 'order',
+  addedAt: 'addedAt',
+} as const;
+
+export type CollectionItemScalarFieldEnum =
+  (typeof CollectionItemScalarFieldEnum)[keyof typeof CollectionItemScalarFieldEnum];
 
 export const SortOrder = {
   asc: 'asc',
@@ -2652,6 +2847,34 @@ export type ListEnumNotificationStatusFieldRefInput<$PrismaModel> =
   FieldRefInputType<$PrismaModel, 'NotificationStatus[]'>;
 
 /**
+ * Reference to a field of type 'CollectionType'
+ */
+export type EnumCollectionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'CollectionType'
+>;
+
+/**
+ * Reference to a field of type 'CollectionType[]'
+ */
+export type ListEnumCollectionTypeFieldRefInput<$PrismaModel> =
+  FieldRefInputType<$PrismaModel, 'CollectionType[]'>;
+
+/**
+ * Reference to a field of type 'CollectionStatus'
+ */
+export type EnumCollectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
+  $PrismaModel,
+  'CollectionStatus'
+>;
+
+/**
+ * Reference to a field of type 'CollectionStatus[]'
+ */
+export type ListEnumCollectionStatusFieldRefInput<$PrismaModel> =
+  FieldRefInputType<$PrismaModel, 'CollectionStatus[]'>;
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<
@@ -2843,6 +3066,8 @@ export type GlobalOmitConfig = {
   reminder?: Prisma.ReminderOmit;
   notification?: Prisma.NotificationOmit;
   timeline?: Prisma.TimelineOmit;
+  collection?: Prisma.CollectionOmit;
+  collectionItem?: Prisma.CollectionItemOmit;
 };
 
 /* Types for Logging */

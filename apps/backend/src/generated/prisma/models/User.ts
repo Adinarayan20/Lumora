@@ -262,6 +262,8 @@ export type UserWhereInput = {
   objectsUpdated?: Prisma.ObjectListRelationFilter;
   spacesCreated?: Prisma.SpaceListRelationFilter;
   spacesUpdated?: Prisma.SpaceListRelationFilter;
+  collectionsCreated?: Prisma.CollectionListRelationFilter;
+  collectionsUpdated?: Prisma.CollectionListRelationFilter;
 };
 
 export type UserOrderByWithRelationInput = {
@@ -291,6 +293,8 @@ export type UserOrderByWithRelationInput = {
   objectsUpdated?: Prisma.ObjectOrderByRelationAggregateInput;
   spacesCreated?: Prisma.SpaceOrderByRelationAggregateInput;
   spacesUpdated?: Prisma.SpaceOrderByRelationAggregateInput;
+  collectionsCreated?: Prisma.CollectionOrderByRelationAggregateInput;
+  collectionsUpdated?: Prisma.CollectionOrderByRelationAggregateInput;
 };
 
 export type UserWhereUniqueInput = Prisma.AtLeast<
@@ -324,6 +328,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<
     objectsUpdated?: Prisma.ObjectListRelationFilter;
     spacesCreated?: Prisma.SpaceListRelationFilter;
     spacesUpdated?: Prisma.SpaceListRelationFilter;
+    collectionsCreated?: Prisma.CollectionListRelationFilter;
+    collectionsUpdated?: Prisma.CollectionListRelationFilter;
   },
   'id' | 'email' | 'username'
 >;
@@ -398,6 +404,8 @@ export type UserCreateInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateInput = {
@@ -427,6 +435,8 @@ export type UserUncheckedCreateInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUpdateInput = {
@@ -456,6 +466,8 @@ export type UserUpdateInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateInput = {
@@ -485,6 +497,8 @@ export type UserUncheckedUpdateInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateManyInput = {
@@ -955,6 +969,60 @@ export type UserUpdateOneWithoutObjectsUpdatedNestedInput = {
   >;
 };
 
+export type UserCreateNestedOneWithoutCollectionsCreatedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutCollectionsCreatedInput,
+    Prisma.UserUncheckedCreateWithoutCollectionsCreatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCollectionsCreatedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserCreateNestedOneWithoutCollectionsUpdatedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutCollectionsUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutCollectionsUpdatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCollectionsUpdatedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutCollectionsCreatedNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutCollectionsCreatedInput,
+    Prisma.UserUncheckedCreateWithoutCollectionsCreatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCollectionsCreatedInput;
+  upsert?: Prisma.UserUpsertWithoutCollectionsCreatedInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutCollectionsCreatedInput,
+      Prisma.UserUpdateWithoutCollectionsCreatedInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutCollectionsCreatedInput
+  >;
+};
+
+export type UserUpdateOneWithoutCollectionsUpdatedNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutCollectionsUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutCollectionsUpdatedInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCollectionsUpdatedInput;
+  upsert?: Prisma.UserUpsertWithoutCollectionsUpdatedInput;
+  disconnect?: Prisma.UserWhereInput | boolean;
+  delete?: Prisma.UserWhereInput | boolean;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutCollectionsUpdatedInput,
+      Prisma.UserUpdateWithoutCollectionsUpdatedInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutCollectionsUpdatedInput
+  >;
+};
+
 export type UserCreateWithoutOwnedWorkspacesInput = {
   id?: string;
   email: string;
@@ -981,6 +1049,8 @@ export type UserCreateWithoutOwnedWorkspacesInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
@@ -1009,6 +1079,8 @@ export type UserUncheckedCreateWithoutOwnedWorkspacesInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutOwnedWorkspacesInput = {
@@ -1065,6 +1137,8 @@ export type UserUpdateWithoutOwnedWorkspacesInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
@@ -1093,6 +1167,8 @@ export type UserUncheckedUpdateWithoutOwnedWorkspacesInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutWorkspaceMembershipsInput = {
@@ -1121,6 +1197,8 @@ export type UserCreateWithoutWorkspaceMembershipsInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
@@ -1149,6 +1227,8 @@ export type UserUncheckedCreateWithoutWorkspaceMembershipsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutWorkspaceMembershipsInput = {
@@ -1205,6 +1285,8 @@ export type UserUpdateWithoutWorkspaceMembershipsInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
@@ -1233,6 +1315,8 @@ export type UserUncheckedUpdateWithoutWorkspaceMembershipsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutSentInvitationsInput = {
@@ -1261,6 +1345,8 @@ export type UserCreateWithoutSentInvitationsInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutSentInvitationsInput = {
@@ -1289,6 +1375,8 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutSentInvitationsInput = {
@@ -1345,6 +1433,8 @@ export type UserUpdateWithoutSentInvitationsInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSentInvitationsInput = {
@@ -1373,6 +1463,8 @@ export type UserUncheckedUpdateWithoutSentInvitationsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutDevicesInput = {
@@ -1401,6 +1493,8 @@ export type UserCreateWithoutDevicesInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutDevicesInput = {
@@ -1429,6 +1523,8 @@ export type UserUncheckedCreateWithoutDevicesInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutDevicesInput = {
@@ -1485,6 +1581,8 @@ export type UserUpdateWithoutDevicesInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutDevicesInput = {
@@ -1513,6 +1611,8 @@ export type UserUncheckedUpdateWithoutDevicesInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutSessionsInput = {
@@ -1541,6 +1641,8 @@ export type UserCreateWithoutSessionsInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -1569,6 +1671,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -1625,6 +1729,8 @@ export type UserUpdateWithoutSessionsInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -1653,6 +1759,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutOauthAccountsInput = {
@@ -1681,6 +1789,8 @@ export type UserCreateWithoutOauthAccountsInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutOauthAccountsInput = {
@@ -1709,6 +1819,8 @@ export type UserUncheckedCreateWithoutOauthAccountsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutOauthAccountsInput = {
@@ -1765,6 +1877,8 @@ export type UserUpdateWithoutOauthAccountsInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutOauthAccountsInput = {
@@ -1793,6 +1907,8 @@ export type UserUncheckedUpdateWithoutOauthAccountsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutUploadedFilesInput = {
@@ -1821,6 +1937,8 @@ export type UserCreateWithoutUploadedFilesInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutUploadedFilesInput = {
@@ -1849,6 +1967,8 @@ export type UserUncheckedCreateWithoutUploadedFilesInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutUploadedFilesInput = {
@@ -1905,6 +2025,8 @@ export type UserUpdateWithoutUploadedFilesInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutUploadedFilesInput = {
@@ -1933,6 +2055,8 @@ export type UserUncheckedUpdateWithoutUploadedFilesInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -1961,6 +2085,8 @@ export type UserCreateWithoutAuditLogsInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -1989,6 +2115,8 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -2045,6 +2173,8 @@ export type UserUpdateWithoutAuditLogsInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -2073,6 +2203,8 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutEventsInput = {
@@ -2101,6 +2233,8 @@ export type UserCreateWithoutEventsInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutEventsInput = {
@@ -2129,6 +2263,8 @@ export type UserUncheckedCreateWithoutEventsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutEventsInput = {
@@ -2185,6 +2321,8 @@ export type UserUpdateWithoutEventsInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutEventsInput = {
@@ -2213,6 +2351,8 @@ export type UserUncheckedUpdateWithoutEventsInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutSpacesCreatedInput = {
@@ -2241,6 +2381,8 @@ export type UserCreateWithoutSpacesCreatedInput = {
   objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutSpacesCreatedInput = {
@@ -2269,6 +2411,8 @@ export type UserUncheckedCreateWithoutSpacesCreatedInput = {
   objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutSpacesCreatedInput = {
@@ -2305,6 +2449,8 @@ export type UserCreateWithoutSpacesUpdatedInput = {
   objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutSpacesUpdatedInput = {
@@ -2333,6 +2479,8 @@ export type UserUncheckedCreateWithoutSpacesUpdatedInput = {
   objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutSpacesUpdatedInput = {
@@ -2389,6 +2537,8 @@ export type UserUpdateWithoutSpacesCreatedInput = {
   objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSpacesCreatedInput = {
@@ -2417,6 +2567,8 @@ export type UserUncheckedUpdateWithoutSpacesCreatedInput = {
   objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUpsertWithoutSpacesUpdatedInput = {
@@ -2465,6 +2617,8 @@ export type UserUpdateWithoutSpacesUpdatedInput = {
   objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutSpacesUpdatedInput = {
@@ -2493,6 +2647,8 @@ export type UserUncheckedUpdateWithoutSpacesUpdatedInput = {
   objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserCreateWithoutObjectsCreatedInput = {
@@ -2521,6 +2677,8 @@ export type UserCreateWithoutObjectsCreatedInput = {
   objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutObjectsCreatedInput = {
@@ -2549,6 +2707,8 @@ export type UserUncheckedCreateWithoutObjectsCreatedInput = {
   objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutObjectsCreatedInput = {
@@ -2585,6 +2745,8 @@ export type UserCreateWithoutObjectsUpdatedInput = {
   objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
   spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserUncheckedCreateWithoutObjectsUpdatedInput = {
@@ -2613,6 +2775,8 @@ export type UserUncheckedCreateWithoutObjectsUpdatedInput = {
   objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
   spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
 };
 
 export type UserCreateOrConnectWithoutObjectsUpdatedInput = {
@@ -2669,6 +2833,8 @@ export type UserUpdateWithoutObjectsCreatedInput = {
   objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutObjectsCreatedInput = {
@@ -2697,6 +2863,8 @@ export type UserUncheckedUpdateWithoutObjectsCreatedInput = {
   objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUpsertWithoutObjectsUpdatedInput = {
@@ -2745,6 +2913,8 @@ export type UserUpdateWithoutObjectsUpdatedInput = {
   objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
   spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutObjectsUpdatedInput = {
@@ -2773,6 +2943,304 @@ export type UserUncheckedUpdateWithoutObjectsUpdatedInput = {
   objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
   spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+};
+
+export type UserCreateWithoutCollectionsCreatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
+  spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
+  spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsUpdated?: Prisma.CollectionCreateNestedManyWithoutUpdatedByInput;
+};
+
+export type UserUncheckedCreateWithoutCollectionsCreatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
+  spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
+  spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedCreateNestedManyWithoutUpdatedByInput;
+};
+
+export type UserCreateOrConnectWithoutCollectionsCreatedInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutCollectionsCreatedInput,
+    Prisma.UserUncheckedCreateWithoutCollectionsCreatedInput
+  >;
+};
+
+export type UserCreateWithoutCollectionsUpdatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectCreateNestedManyWithoutUpdatedByInput;
+  spacesCreated?: Prisma.SpaceCreateNestedManyWithoutCreatedByInput;
+  spacesUpdated?: Prisma.SpaceCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionCreateNestedManyWithoutCreatedByInput;
+};
+
+export type UserUncheckedCreateWithoutCollectionsUpdatedInput = {
+  id?: string;
+  email: string;
+  username: string;
+  displayName: string;
+  passwordHash: string;
+  avatarUrl?: string | null;
+  timezone?: string;
+  locale?: string;
+  emailVerified?: boolean;
+  onboardingDone?: boolean;
+  status?: $Enums.UserStatus;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutOwnerInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedCreateNestedManyWithoutInvitedByInput;
+  devices?: Prisma.DeviceUncheckedCreateNestedManyWithoutUserInput;
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedCreateNestedManyWithoutUserInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedCreateNestedManyWithoutUploadedByInput;
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutUserInput;
+  objectsCreated?: Prisma.ObjectUncheckedCreateNestedManyWithoutCreatedByInput;
+  objectsUpdated?: Prisma.ObjectUncheckedCreateNestedManyWithoutUpdatedByInput;
+  spacesCreated?: Prisma.SpaceUncheckedCreateNestedManyWithoutCreatedByInput;
+  spacesUpdated?: Prisma.SpaceUncheckedCreateNestedManyWithoutUpdatedByInput;
+  collectionsCreated?: Prisma.CollectionUncheckedCreateNestedManyWithoutCreatedByInput;
+};
+
+export type UserCreateOrConnectWithoutCollectionsUpdatedInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutCollectionsUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutCollectionsUpdatedInput
+  >;
+};
+
+export type UserUpsertWithoutCollectionsCreatedInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutCollectionsCreatedInput,
+    Prisma.UserUncheckedUpdateWithoutCollectionsCreatedInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutCollectionsCreatedInput,
+    Prisma.UserUncheckedCreateWithoutCollectionsCreatedInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutCollectionsCreatedInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutCollectionsCreatedInput,
+    Prisma.UserUncheckedUpdateWithoutCollectionsCreatedInput
+  >;
+};
+
+export type UserUpdateWithoutCollectionsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
+  spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
+  spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUpdateManyWithoutUpdatedByNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutCollectionsCreatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
+  spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsUpdated?: Prisma.CollectionUncheckedUpdateManyWithoutUpdatedByNestedInput;
+};
+
+export type UserUpsertWithoutCollectionsUpdatedInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutCollectionsUpdatedInput,
+    Prisma.UserUncheckedUpdateWithoutCollectionsUpdatedInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutCollectionsUpdatedInput,
+    Prisma.UserUncheckedCreateWithoutCollectionsUpdatedInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutCollectionsUpdatedInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutCollectionsUpdatedInput,
+    Prisma.UserUncheckedUpdateWithoutCollectionsUpdatedInput
+  >;
+};
+
+export type UserUpdateWithoutCollectionsUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUpdateManyWithoutUpdatedByNestedInput;
+  spacesCreated?: Prisma.SpaceUpdateManyWithoutCreatedByNestedInput;
+  spacesUpdated?: Prisma.SpaceUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUpdateManyWithoutCreatedByNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutCollectionsUpdatedInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  username?: Prisma.StringFieldUpdateOperationsInput | string;
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string;
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string;
+  locale?: Prisma.StringFieldUpdateOperationsInput | string;
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  onboardingDone?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspaceMemberships?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput;
+  ownedWorkspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutOwnerNestedInput;
+  sentInvitations?: Prisma.WorkspaceInvitationUncheckedUpdateManyWithoutInvitedByNestedInput;
+  devices?: Prisma.DeviceUncheckedUpdateManyWithoutUserNestedInput;
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
+  oauthAccounts?: Prisma.OAuthAccountUncheckedUpdateManyWithoutUserNestedInput;
+  uploadedFiles?: Prisma.FileAssetUncheckedUpdateManyWithoutUploadedByNestedInput;
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
+  events?: Prisma.EventUncheckedUpdateManyWithoutUserNestedInput;
+  objectsCreated?: Prisma.ObjectUncheckedUpdateManyWithoutCreatedByNestedInput;
+  objectsUpdated?: Prisma.ObjectUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  spacesCreated?: Prisma.SpaceUncheckedUpdateManyWithoutCreatedByNestedInput;
+  spacesUpdated?: Prisma.SpaceUncheckedUpdateManyWithoutUpdatedByNestedInput;
+  collectionsCreated?: Prisma.CollectionUncheckedUpdateManyWithoutCreatedByNestedInput;
 };
 
 /**
@@ -2793,6 +3261,8 @@ export type UserCountOutputType = {
   objectsUpdated: number;
   spacesCreated: number;
   spacesUpdated: number;
+  collectionsCreated: number;
+  collectionsUpdated: number;
 };
 
 export type UserCountOutputTypeSelect<
@@ -2813,6 +3283,8 @@ export type UserCountOutputTypeSelect<
   objectsUpdated?: boolean | UserCountOutputTypeCountObjectsUpdatedArgs;
   spacesCreated?: boolean | UserCountOutputTypeCountSpacesCreatedArgs;
   spacesUpdated?: boolean | UserCountOutputTypeCountSpacesUpdatedArgs;
+  collectionsCreated?: boolean | UserCountOutputTypeCountCollectionsCreatedArgs;
+  collectionsUpdated?: boolean | UserCountOutputTypeCountCollectionsUpdatedArgs;
 };
 
 /**
@@ -2958,6 +3430,26 @@ export type UserCountOutputTypeCountSpacesUpdatedArgs<
   where?: Prisma.SpaceWhereInput;
 };
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCollectionsCreatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.CollectionWhereInput;
+};
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCollectionsUpdatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.CollectionWhereInput;
+};
+
 export type UserSelect<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
     runtime.Types.Extensions.DefaultArgs,
@@ -2990,6 +3482,8 @@ export type UserSelect<
     objectsUpdated?: boolean | Prisma.User$objectsUpdatedArgs<ExtArgs>;
     spacesCreated?: boolean | Prisma.User$spacesCreatedArgs<ExtArgs>;
     spacesUpdated?: boolean | Prisma.User$spacesUpdatedArgs<ExtArgs>;
+    collectionsCreated?: boolean | Prisma.User$collectionsCreatedArgs<ExtArgs>;
+    collectionsUpdated?: boolean | Prisma.User$collectionsUpdatedArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['user']
@@ -3092,6 +3586,8 @@ export type UserInclude<
   objectsUpdated?: boolean | Prisma.User$objectsUpdatedArgs<ExtArgs>;
   spacesCreated?: boolean | Prisma.User$spacesCreatedArgs<ExtArgs>;
   spacesUpdated?: boolean | Prisma.User$spacesUpdatedArgs<ExtArgs>;
+  collectionsCreated?: boolean | Prisma.User$collectionsCreatedArgs<ExtArgs>;
+  collectionsUpdated?: boolean | Prisma.User$collectionsUpdatedArgs<ExtArgs>;
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type UserIncludeCreateManyAndReturn<
@@ -3122,6 +3618,8 @@ export type $UserPayload<
     objectsUpdated: Prisma.$ObjectPayload<ExtArgs>[];
     spacesCreated: Prisma.$SpacePayload<ExtArgs>[];
     spacesUpdated: Prisma.$SpacePayload<ExtArgs>[];
+    collectionsCreated: Prisma.$CollectionPayload<ExtArgs>[];
+    collectionsUpdated: Prisma.$CollectionPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -3827,6 +4325,32 @@ export interface Prisma__UserClient<
   ): Prisma.PrismaPromise<
     | runtime.Types.Result.GetResult<
         Prisma.$SpacePayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  collectionsCreated<
+    T extends Prisma.User$collectionsCreatedArgs<ExtArgs> = {},
+  >(
+    args?: Prisma.Subset<T, Prisma.User$collectionsCreatedArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$CollectionPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
+  collectionsUpdated<
+    T extends Prisma.User$collectionsUpdatedArgs<ExtArgs> = {},
+  >(
+    args?: Prisma.Subset<T, Prisma.User$collectionsUpdatedArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$CollectionPayload<ExtArgs>,
         T,
         'findMany',
         GlobalOmitOptions
@@ -4706,6 +5230,66 @@ export type User$spacesUpdatedArgs<
   take?: number;
   skip?: number;
   distinct?: Prisma.SpaceScalarFieldEnum | Prisma.SpaceScalarFieldEnum[];
+};
+
+/**
+ * User.collectionsCreated
+ */
+export type User$collectionsCreatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Collection
+   */
+  select?: Prisma.CollectionSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Collection
+   */
+  omit?: Prisma.CollectionOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CollectionInclude<ExtArgs> | null;
+  where?: Prisma.CollectionWhereInput;
+  orderBy?:
+    | Prisma.CollectionOrderByWithRelationInput
+    | Prisma.CollectionOrderByWithRelationInput[];
+  cursor?: Prisma.CollectionWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?:
+    Prisma.CollectionScalarFieldEnum | Prisma.CollectionScalarFieldEnum[];
+};
+
+/**
+ * User.collectionsUpdated
+ */
+export type User$collectionsUpdatedArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the Collection
+   */
+  select?: Prisma.CollectionSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the Collection
+   */
+  omit?: Prisma.CollectionOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CollectionInclude<ExtArgs> | null;
+  where?: Prisma.CollectionWhereInput;
+  orderBy?:
+    | Prisma.CollectionOrderByWithRelationInput
+    | Prisma.CollectionOrderByWithRelationInput[];
+  cursor?: Prisma.CollectionWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?:
+    Prisma.CollectionScalarFieldEnum | Prisma.CollectionScalarFieldEnum[];
 };
 
 /**

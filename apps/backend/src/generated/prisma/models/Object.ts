@@ -380,6 +380,7 @@ export type ObjectWhereInput = {
     Prisma.TimelineNullableScalarRelationFilter,
     Prisma.TimelineWhereInput
   > | null;
+  collectionItems?: Prisma.CollectionItemListRelationFilter;
 };
 
 export type ObjectOrderByWithRelationInput = {
@@ -412,6 +413,7 @@ export type ObjectOrderByWithRelationInput = {
   updatedBy?: Prisma.UserOrderByWithRelationInput;
   reminder?: Prisma.ReminderOrderByWithRelationInput;
   timeline?: Prisma.TimelineOrderByWithRelationInput;
+  collectionItems?: Prisma.CollectionItemOrderByRelationAggregateInput;
 };
 
 export type ObjectWhereUniqueInput = Prisma.AtLeast<
@@ -466,6 +468,7 @@ export type ObjectWhereUniqueInput = Prisma.AtLeast<
       Prisma.TimelineNullableScalarRelationFilter,
       Prisma.TimelineWhereInput
     > | null;
+    collectionItems?: Prisma.CollectionItemListRelationFilter;
   },
   'id'
 >;
@@ -575,6 +578,7 @@ export type ObjectCreateInput = {
   updatedBy?: Prisma.UserCreateNestedOneWithoutObjectsUpdatedInput;
   reminder?: Prisma.ReminderCreateNestedOneWithoutObjectInput;
   timeline?: Prisma.TimelineCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectUncheckedCreateInput = {
@@ -603,6 +607,7 @@ export type ObjectUncheckedCreateInput = {
   updatedAt?: Date | string;
   reminder?: Prisma.ReminderUncheckedCreateNestedOneWithoutObjectInput;
   timeline?: Prisma.TimelineUncheckedCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectUpdateInput = {
@@ -635,6 +640,7 @@ export type ObjectUpdateInput = {
   updatedBy?: Prisma.UserUpdateOneWithoutObjectsUpdatedNestedInput;
   reminder?: Prisma.ReminderUpdateOneWithoutObjectNestedInput;
   timeline?: Prisma.TimelineUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateInput = {
@@ -667,6 +673,7 @@ export type ObjectUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   reminder?: Prisma.ReminderUncheckedUpdateOneWithoutObjectNestedInput;
   timeline?: Prisma.TimelineUncheckedUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUncheckedUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectCreateManyInput = {
@@ -1248,6 +1255,32 @@ export type ObjectUpdateOneRequiredWithoutTimelineNestedInput = {
   >;
 };
 
+export type ObjectCreateNestedOneWithoutCollectionItemsInput = {
+  create?: Prisma.XOR<
+    Prisma.ObjectCreateWithoutCollectionItemsInput,
+    Prisma.ObjectUncheckedCreateWithoutCollectionItemsInput
+  >;
+  connectOrCreate?: Prisma.ObjectCreateOrConnectWithoutCollectionItemsInput;
+  connect?: Prisma.ObjectWhereUniqueInput;
+};
+
+export type ObjectUpdateOneRequiredWithoutCollectionItemsNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.ObjectCreateWithoutCollectionItemsInput,
+    Prisma.ObjectUncheckedCreateWithoutCollectionItemsInput
+  >;
+  connectOrCreate?: Prisma.ObjectCreateOrConnectWithoutCollectionItemsInput;
+  upsert?: Prisma.ObjectUpsertWithoutCollectionItemsInput;
+  connect?: Prisma.ObjectWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.ObjectUpdateToOneWithWhereWithoutCollectionItemsInput,
+      Prisma.ObjectUpdateWithoutCollectionItemsInput
+    >,
+    Prisma.ObjectUncheckedUpdateWithoutCollectionItemsInput
+  >;
+};
+
 export type ObjectCreateWithoutCreatedByInput = {
   id?: string;
   objectKey?: string;
@@ -1273,6 +1306,7 @@ export type ObjectCreateWithoutCreatedByInput = {
   updatedBy?: Prisma.UserCreateNestedOneWithoutObjectsUpdatedInput;
   reminder?: Prisma.ReminderCreateNestedOneWithoutObjectInput;
   timeline?: Prisma.TimelineCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectUncheckedCreateWithoutCreatedByInput = {
@@ -1300,6 +1334,7 @@ export type ObjectUncheckedCreateWithoutCreatedByInput = {
   updatedAt?: Date | string;
   reminder?: Prisma.ReminderUncheckedCreateNestedOneWithoutObjectInput;
   timeline?: Prisma.TimelineUncheckedCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectCreateOrConnectWithoutCreatedByInput = {
@@ -1342,6 +1377,7 @@ export type ObjectCreateWithoutUpdatedByInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutObjectsCreatedInput;
   reminder?: Prisma.ReminderCreateNestedOneWithoutObjectInput;
   timeline?: Prisma.TimelineCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectUncheckedCreateWithoutUpdatedByInput = {
@@ -1369,6 +1405,7 @@ export type ObjectUncheckedCreateWithoutUpdatedByInput = {
   updatedAt?: Date | string;
   reminder?: Prisma.ReminderUncheckedCreateNestedOneWithoutObjectInput;
   timeline?: Prisma.TimelineUncheckedCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectCreateOrConnectWithoutUpdatedByInput = {
@@ -1496,6 +1533,7 @@ export type ObjectCreateWithoutWorkspaceInput = {
   updatedBy?: Prisma.UserCreateNestedOneWithoutObjectsUpdatedInput;
   reminder?: Prisma.ReminderCreateNestedOneWithoutObjectInput;
   timeline?: Prisma.TimelineCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectUncheckedCreateWithoutWorkspaceInput = {
@@ -1523,6 +1561,7 @@ export type ObjectUncheckedCreateWithoutWorkspaceInput = {
   updatedAt?: Date | string;
   reminder?: Prisma.ReminderUncheckedCreateNestedOneWithoutObjectInput;
   timeline?: Prisma.TimelineUncheckedCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectCreateOrConnectWithoutWorkspaceInput = {
@@ -1593,6 +1632,7 @@ export type ObjectCreateWithoutSpaceInput = {
   updatedBy?: Prisma.UserCreateNestedOneWithoutObjectsUpdatedInput;
   reminder?: Prisma.ReminderCreateNestedOneWithoutObjectInput;
   timeline?: Prisma.TimelineCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectUncheckedCreateWithoutSpaceInput = {
@@ -1620,6 +1660,7 @@ export type ObjectUncheckedCreateWithoutSpaceInput = {
   updatedAt?: Date | string;
   reminder?: Prisma.ReminderUncheckedCreateNestedOneWithoutObjectInput;
   timeline?: Prisma.TimelineUncheckedCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectCreateOrConnectWithoutSpaceInput = {
@@ -1688,6 +1729,7 @@ export type ObjectCreateWithoutReminderInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutObjectsCreatedInput;
   updatedBy?: Prisma.UserCreateNestedOneWithoutObjectsUpdatedInput;
   timeline?: Prisma.TimelineCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectUncheckedCreateWithoutReminderInput = {
@@ -1715,6 +1757,7 @@ export type ObjectUncheckedCreateWithoutReminderInput = {
   createdAt?: Date | string;
   updatedAt?: Date | string;
   timeline?: Prisma.TimelineUncheckedCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectCreateOrConnectWithoutReminderInput = {
@@ -1774,6 +1817,7 @@ export type ObjectUpdateWithoutReminderInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutObjectsCreatedNestedInput;
   updatedBy?: Prisma.UserUpdateOneWithoutObjectsUpdatedNestedInput;
   timeline?: Prisma.TimelineUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateWithoutReminderInput = {
@@ -1805,6 +1849,7 @@ export type ObjectUncheckedUpdateWithoutReminderInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   timeline?: Prisma.TimelineUncheckedUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUncheckedUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectCreateWithoutTimelineInput = {
@@ -1832,6 +1877,7 @@ export type ObjectCreateWithoutTimelineInput = {
   createdBy: Prisma.UserCreateNestedOneWithoutObjectsCreatedInput;
   updatedBy?: Prisma.UserCreateNestedOneWithoutObjectsUpdatedInput;
   reminder?: Prisma.ReminderCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectUncheckedCreateWithoutTimelineInput = {
@@ -1859,6 +1905,7 @@ export type ObjectUncheckedCreateWithoutTimelineInput = {
   createdAt?: Date | string;
   updatedAt?: Date | string;
   reminder?: Prisma.ReminderUncheckedCreateNestedOneWithoutObjectInput;
+  collectionItems?: Prisma.CollectionItemUncheckedCreateNestedManyWithoutObjectInput;
 };
 
 export type ObjectCreateOrConnectWithoutTimelineInput = {
@@ -1918,6 +1965,7 @@ export type ObjectUpdateWithoutTimelineInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutObjectsCreatedNestedInput;
   updatedBy?: Prisma.UserUpdateOneWithoutObjectsUpdatedNestedInput;
   reminder?: Prisma.ReminderUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateWithoutTimelineInput = {
@@ -1949,6 +1997,155 @@ export type ObjectUncheckedUpdateWithoutTimelineInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   reminder?: Prisma.ReminderUncheckedUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUncheckedUpdateManyWithoutObjectNestedInput;
+};
+
+export type ObjectCreateWithoutCollectionItemsInput = {
+  id?: string;
+  objectKey?: string;
+  typeKey: string;
+  title: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.ObjectStatus;
+  systemData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  workspace: Prisma.WorkspaceCreateNestedOneWithoutObjectsInput;
+  space?: Prisma.SpaceCreateNestedOneWithoutObjectsInput;
+  createdBy: Prisma.UserCreateNestedOneWithoutObjectsCreatedInput;
+  updatedBy?: Prisma.UserCreateNestedOneWithoutObjectsUpdatedInput;
+  reminder?: Prisma.ReminderCreateNestedOneWithoutObjectInput;
+  timeline?: Prisma.TimelineCreateNestedOneWithoutObjectInput;
+};
+
+export type ObjectUncheckedCreateWithoutCollectionItemsInput = {
+  id?: string;
+  workspaceId: string;
+  spaceId?: string | null;
+  createdById: string;
+  updatedById?: string | null;
+  objectKey?: string;
+  typeKey: string;
+  title: string;
+  description?: string | null;
+  icon?: string | null;
+  emoji?: string | null;
+  cover?: string | null;
+  color?: string | null;
+  pinnedAt?: Date | string | null;
+  isFavorite?: boolean;
+  status?: $Enums.ObjectStatus;
+  systemData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: number;
+  archivedAt?: Date | string | null;
+  deletedAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  reminder?: Prisma.ReminderUncheckedCreateNestedOneWithoutObjectInput;
+  timeline?: Prisma.TimelineUncheckedCreateNestedOneWithoutObjectInput;
+};
+
+export type ObjectCreateOrConnectWithoutCollectionItemsInput = {
+  where: Prisma.ObjectWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.ObjectCreateWithoutCollectionItemsInput,
+    Prisma.ObjectUncheckedCreateWithoutCollectionItemsInput
+  >;
+};
+
+export type ObjectUpsertWithoutCollectionItemsInput = {
+  update: Prisma.XOR<
+    Prisma.ObjectUpdateWithoutCollectionItemsInput,
+    Prisma.ObjectUncheckedUpdateWithoutCollectionItemsInput
+  >;
+  create: Prisma.XOR<
+    Prisma.ObjectCreateWithoutCollectionItemsInput,
+    Prisma.ObjectUncheckedCreateWithoutCollectionItemsInput
+  >;
+  where?: Prisma.ObjectWhereInput;
+};
+
+export type ObjectUpdateToOneWithWhereWithoutCollectionItemsInput = {
+  where?: Prisma.ObjectWhereInput;
+  data: Prisma.XOR<
+    Prisma.ObjectUpdateWithoutCollectionItemsInput,
+    Prisma.ObjectUncheckedUpdateWithoutCollectionItemsInput
+  >;
+};
+
+export type ObjectUpdateWithoutCollectionItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  objectKey?: Prisma.StringFieldUpdateOperationsInput | string;
+  typeKey?: Prisma.StringFieldUpdateOperationsInput | string;
+  title?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumObjectStatusFieldUpdateOperationsInput | $Enums.ObjectStatus;
+  systemData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  workspace?: Prisma.WorkspaceUpdateOneRequiredWithoutObjectsNestedInput;
+  space?: Prisma.SpaceUpdateOneWithoutObjectsNestedInput;
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutObjectsCreatedNestedInput;
+  updatedBy?: Prisma.UserUpdateOneWithoutObjectsUpdatedNestedInput;
+  reminder?: Prisma.ReminderUpdateOneWithoutObjectNestedInput;
+  timeline?: Prisma.TimelineUpdateOneWithoutObjectNestedInput;
+};
+
+export type ObjectUncheckedUpdateWithoutCollectionItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  workspaceId?: Prisma.StringFieldUpdateOperationsInput | string;
+  spaceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  createdById?: Prisma.StringFieldUpdateOperationsInput | string;
+  updatedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  objectKey?: Prisma.StringFieldUpdateOperationsInput | string;
+  typeKey?: Prisma.StringFieldUpdateOperationsInput | string;
+  title?: Prisma.StringFieldUpdateOperationsInput | string;
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  cover?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  pinnedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  isFavorite?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  status?:
+    Prisma.EnumObjectStatusFieldUpdateOperationsInput | $Enums.ObjectStatus;
+  systemData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  attributes?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  revision?: Prisma.IntFieldUpdateOperationsInput | number;
+  archivedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  deletedAt?:
+    Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  reminder?: Prisma.ReminderUncheckedUpdateOneWithoutObjectNestedInput;
+  timeline?: Prisma.TimelineUncheckedUpdateOneWithoutObjectNestedInput;
 };
 
 export type ObjectCreateManyCreatedByInput = {
@@ -2030,6 +2227,7 @@ export type ObjectUpdateWithoutCreatedByInput = {
   updatedBy?: Prisma.UserUpdateOneWithoutObjectsUpdatedNestedInput;
   reminder?: Prisma.ReminderUpdateOneWithoutObjectNestedInput;
   timeline?: Prisma.TimelineUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateWithoutCreatedByInput = {
@@ -2061,6 +2259,7 @@ export type ObjectUncheckedUpdateWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   reminder?: Prisma.ReminderUncheckedUpdateOneWithoutObjectNestedInput;
   timeline?: Prisma.TimelineUncheckedUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUncheckedUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateManyWithoutCreatedByInput = {
@@ -2121,6 +2320,7 @@ export type ObjectUpdateWithoutUpdatedByInput = {
   createdBy?: Prisma.UserUpdateOneRequiredWithoutObjectsCreatedNestedInput;
   reminder?: Prisma.ReminderUpdateOneWithoutObjectNestedInput;
   timeline?: Prisma.TimelineUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateWithoutUpdatedByInput = {
@@ -2152,6 +2352,7 @@ export type ObjectUncheckedUpdateWithoutUpdatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   reminder?: Prisma.ReminderUncheckedUpdateOneWithoutObjectNestedInput;
   timeline?: Prisma.TimelineUncheckedUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUncheckedUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateManyWithoutUpdatedByInput = {
@@ -2237,6 +2438,7 @@ export type ObjectUpdateWithoutWorkspaceInput = {
   updatedBy?: Prisma.UserUpdateOneWithoutObjectsUpdatedNestedInput;
   reminder?: Prisma.ReminderUpdateOneWithoutObjectNestedInput;
   timeline?: Prisma.TimelineUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateWithoutWorkspaceInput = {
@@ -2268,6 +2470,7 @@ export type ObjectUncheckedUpdateWithoutWorkspaceInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   reminder?: Prisma.ReminderUncheckedUpdateOneWithoutObjectNestedInput;
   timeline?: Prisma.TimelineUncheckedUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUncheckedUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateManyWithoutWorkspaceInput = {
@@ -2353,6 +2556,7 @@ export type ObjectUpdateWithoutSpaceInput = {
   updatedBy?: Prisma.UserUpdateOneWithoutObjectsUpdatedNestedInput;
   reminder?: Prisma.ReminderUpdateOneWithoutObjectNestedInput;
   timeline?: Prisma.TimelineUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateWithoutSpaceInput = {
@@ -2384,6 +2588,7 @@ export type ObjectUncheckedUpdateWithoutSpaceInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   reminder?: Prisma.ReminderUncheckedUpdateOneWithoutObjectNestedInput;
   timeline?: Prisma.TimelineUncheckedUpdateOneWithoutObjectNestedInput;
+  collectionItems?: Prisma.CollectionItemUncheckedUpdateManyWithoutObjectNestedInput;
 };
 
 export type ObjectUncheckedUpdateManyWithoutSpaceInput = {
@@ -2413,6 +2618,44 @@ export type ObjectUncheckedUpdateManyWithoutSpaceInput = {
     Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+
+/**
+ * Count Type ObjectCountOutputType
+ */
+
+export type ObjectCountOutputType = {
+  collectionItems: number;
+};
+
+export type ObjectCountOutputTypeSelect<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  collectionItems?: boolean | ObjectCountOutputTypeCountCollectionItemsArgs;
+};
+
+/**
+ * ObjectCountOutputType without action
+ */
+export type ObjectCountOutputTypeDefaultArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the ObjectCountOutputType
+   */
+  select?: Prisma.ObjectCountOutputTypeSelect<ExtArgs> | null;
+};
+
+/**
+ * ObjectCountOutputType without action
+ */
+export type ObjectCountOutputTypeCountCollectionItemsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  where?: Prisma.CollectionItemWhereInput;
 };
 
 export type ObjectSelect<
@@ -2449,6 +2692,8 @@ export type ObjectSelect<
     updatedBy?: boolean | Prisma.Object$updatedByArgs<ExtArgs>;
     reminder?: boolean | Prisma.Object$reminderArgs<ExtArgs>;
     timeline?: boolean | Prisma.Object$timelineArgs<ExtArgs>;
+    collectionItems?: boolean | Prisma.Object$collectionItemsArgs<ExtArgs>;
+    _count?: boolean | Prisma.ObjectCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['object']
 >;
@@ -2590,6 +2835,8 @@ export type ObjectInclude<
   updatedBy?: boolean | Prisma.Object$updatedByArgs<ExtArgs>;
   reminder?: boolean | Prisma.Object$reminderArgs<ExtArgs>;
   timeline?: boolean | Prisma.Object$timelineArgs<ExtArgs>;
+  collectionItems?: boolean | Prisma.Object$collectionItemsArgs<ExtArgs>;
+  _count?: boolean | Prisma.ObjectCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type ObjectIncludeCreateManyAndReturn<
   ExtArgs extends runtime.Types.Extensions.InternalArgs =
@@ -2622,6 +2869,7 @@ export type $ObjectPayload<
     updatedBy: Prisma.$UserPayload<ExtArgs> | null;
     reminder: Prisma.$ReminderPayload<ExtArgs> | null;
     timeline: Prisma.$TimelinePayload<ExtArgs> | null;
+    collectionItems: Prisma.$CollectionItemPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -3278,6 +3526,17 @@ export interface Prisma__ObjectClient<
     ExtArgs,
     GlobalOmitOptions
   >;
+  collectionItems<T extends Prisma.Object$collectionItemsArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.Object$collectionItemsArgs<ExtArgs>>,
+  ): Prisma.PrismaPromise<
+    | runtime.Types.Result.GetResult<
+        Prisma.$CollectionItemPayload<ExtArgs>,
+        T,
+        'findMany',
+        GlobalOmitOptions
+      >
+    | Null
+  >;
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3882,6 +4141,37 @@ export type Object$timelineArgs<
    */
   include?: Prisma.TimelineInclude<ExtArgs> | null;
   where?: Prisma.TimelineWhereInput;
+};
+
+/**
+ * Object.collectionItems
+ */
+export type Object$collectionItemsArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs =
+    runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the CollectionItem
+   */
+  select?: Prisma.CollectionItemSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the CollectionItem
+   */
+  omit?: Prisma.CollectionItemOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CollectionItemInclude<ExtArgs> | null;
+  where?: Prisma.CollectionItemWhereInput;
+  orderBy?:
+    | Prisma.CollectionItemOrderByWithRelationInput
+    | Prisma.CollectionItemOrderByWithRelationInput[];
+  cursor?: Prisma.CollectionItemWhereUniqueInput;
+  take?: number;
+  skip?: number;
+  distinct?:
+    | Prisma.CollectionItemScalarFieldEnum
+    | Prisma.CollectionItemScalarFieldEnum[];
 };
 
 /**

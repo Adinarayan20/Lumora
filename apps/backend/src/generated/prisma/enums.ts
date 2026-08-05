@@ -149,6 +149,23 @@ export const SpaceStatus = {
 
 export type SpaceStatus = (typeof SpaceStatus)[keyof typeof SpaceStatus];
 
+export const CollectionType = {
+  STATIC: 'STATIC',
+  DYNAMIC: 'DYNAMIC',
+} as const;
+
+export type CollectionType =
+  (typeof CollectionType)[keyof typeof CollectionType];
+
+export const CollectionStatus = {
+  ACTIVE: 'ACTIVE',
+  ARCHIVED: 'ARCHIVED',
+  DELETED: 'DELETED',
+} as const;
+
+export type CollectionStatus =
+  (typeof CollectionStatus)[keyof typeof CollectionStatus];
+
 export const ObjectType = {
   NOTE: 'NOTE',
   TASK: 'TASK',

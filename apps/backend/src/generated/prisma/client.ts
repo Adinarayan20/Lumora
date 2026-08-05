@@ -139,3 +139,13 @@ export type Notification = Prisma.NotificationModel;
  *
  */
 export type Timeline = Prisma.TimelineModel;
+/**
+ * Model Collection
+ *
+ */
+export type Collection = Prisma.CollectionModel;
+/**
+ * Model CollectionItem
+ *
+ */
+export type CollectionItem = Prisma.CollectionItemModel;

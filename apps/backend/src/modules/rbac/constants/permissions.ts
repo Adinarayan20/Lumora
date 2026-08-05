@@ -29,6 +29,12 @@ export const Permissions = {
     Update: 'workspace.object.update',
     Delete: 'workspace.object.delete',
   },
+  Collection: {
+    Create: 'workspace.collection.create',
+    Read: 'workspace.collection.read',
+    Update: 'workspace.collection.update',
+    Delete: 'workspace.collection.delete',
+  },
 } as const;
 
 type NestedValues<T> = T extends string

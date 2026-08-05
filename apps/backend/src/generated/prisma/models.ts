@@ -26,4 +26,6 @@ export type * from './models/Object';
 export type * from './models/Reminder';
 export type * from './models/Notification';
 export type * from './models/Timeline';
+export type * from './models/Collection';
+export type * from './models/CollectionItem';
 export type * from './commonInputTypes';

@@ -103,6 +103,8 @@ model User {
   objectsUpdated Object[] @relation("ObjectModifier")
   spacesCreated  Space[]  @relation("SpaceAuthor")
   spacesUpdated  Space[]  @relation("SpaceModifier")
+  collectionsCreated Collection[] @relation("CollectionAuthor")
+  collectionsUpdated Collection[] @relation("CollectionModifier")
 
   @@index([email])
   @@index([username])
@@ -160,6 +162,8 @@ model Workspace {
   invitations WorkspaceInvitation[]
 
   objects Object[]
+
+  collections Collection[]
 }
 
 //////////////////////////////////////////////////////
@@ -331,6 +335,17 @@ enum SpaceType {
 }
 
 enum SpaceStatus {
+  ACTIVE
+  ARCHIVED
+  DELETED
+}
+
+enum CollectionType {
+  STATIC
+  DYNAMIC
+}
+
+enum CollectionStatus {
   ACTIVE
   ARCHIVED
   DELETED
@@ -664,6 +679,8 @@ model Object {
 
   timeline Timeline?
 
+  collectionItems CollectionItem[]
+
   @@index([workspaceId, objectKey])
   @@index([workspaceId, status])
   @@index([workspaceId, typeKey])
@@ -728,4 +745,84 @@ model Timeline {
   timezone String
 
   object Object @relation(fields: [objectId], references: [id])
+}
+
+model Collection {
+  id String @id @default(uuid()) @db.Uuid
+
+  workspaceId String @db.Uuid
+
+  createdById String @db.Uuid
+
+  updatedById String? @db.Uuid
+
+  slug String
+
+  name String
+
+  description String?
+
+  type CollectionType @default(STATIC)
+
+  query Json?
+
+  icon String?
+
+  emoji String?
+
+  cover String?
+
+  color String?
+
+  pinnedAt DateTime?
+
+  isFavorite Boolean @default(false)
+
+  status CollectionStatus @default(ACTIVE)
+
+  settings Json? @default("{}")
+
+  revision Int @default(1)
+
+  archivedAt DateTime?
+
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+
+  createdBy User @relation("CollectionAuthor", fields: [createdById], references: [id])
+
+  updatedBy User? @relation("CollectionModifier", fields: [updatedById], references: [id])
+
+  items CollectionItem[]
+
+  @@index([workspaceId, slug])
+  @@index([workspaceId, status])
+  @@index([workspaceId, isFavorite])
+  @@index([workspaceId, pinnedAt])
+  @@index([createdById])
+}
+
+model CollectionItem {
+  id String @id @default(uuid()) @db.Uuid
+
+  collectionId String @db.Uuid
+
+  objectId String @db.Uuid
+
+  order Int @default(0)
+
+  addedAt DateTime @default(now())
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  object Object @relation(fields: [objectId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, objectId])
+  @@index([collectionId])
+  @@index([objectId])
 }
