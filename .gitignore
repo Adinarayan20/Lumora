@@ -1,22 +1,27 @@
-# Node
+# Node & Package Managers
 node_modules/
 .pnpm-store/
 
-# Expo
-.expo/
-.expo-shared/
-dist/
-
-# Next.js
-.next/
-out/
-
-# NestJS
-coverage/
+# Turbo & Build Caches
+.turbo/
+*.tsbuildinfo
+.cache/
 
 # Prisma Generated Output
 src/generated/
 apps/backend/src/generated/
+**/generated/
+
+# Expo
+.expo/
+.expo-shared/
+
+# Build Outputs & Coverage
+dist/
+out/
+build/
+coverage/
+.next/
 
 # Logs
 *.log
@@ -29,16 +34,10 @@ yarn-error.log*
 .env.*
 !.env.example
 
-# OS
+# OS & Editor
 .DS_Store
 Thumbs.db
-
-# IDE
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
-
 .idea/
-
-# Build
-build/
