@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DeviceRepository } from '../repositories/device.repository';
-import { Device, DevicePlatform } from '../../../generated/prisma/client';
+import { Device, DevicePlatform } from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from '../repositories/audit-log.repository';
 import { EventPublisherService } from './event-publisher.service';
 import { DeviceTrustedEvent } from '../events/identity.events';

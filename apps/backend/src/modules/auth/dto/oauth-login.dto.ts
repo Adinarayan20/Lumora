@@ -2,7 +2,7 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import {
   DevicePlatform,
   OAuthProvider,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 
 export class OAuthLoginDto {
   @IsEnum(OAuthProvider)

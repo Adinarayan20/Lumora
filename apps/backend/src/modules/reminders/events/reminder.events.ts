@@ -1,7 +1,7 @@
 import {
   ReminderSource,
   ReminderTriggerType,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 
 export class ReminderCreatedEvent {
   static readonly EVENT_NAME = 'reminder.created';

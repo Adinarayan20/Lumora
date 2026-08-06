@@ -8,7 +8,7 @@ import {
 import {
   ReminderStatus,
   ReminderExecutionStatus,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 
 export class UpdateReminderDto {
   @IsOptional()

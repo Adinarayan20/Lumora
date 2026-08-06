@@ -3,7 +3,7 @@ import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
 import {
   WorkspaceMember,
   WorkspaceMemberStatus,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from '../../auth/repositories/audit-log.repository';
 
 export interface CreateWorkspaceMemberData {

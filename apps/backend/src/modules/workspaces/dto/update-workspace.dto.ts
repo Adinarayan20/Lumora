@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
-import { WorkspaceVisibility } from '../../../generated/prisma/client';
+import { WorkspaceVisibility } from '../../../generated/prisma/client.js';
 
 export class UpdateWorkspaceDto {
   @IsOptional()

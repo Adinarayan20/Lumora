@@ -8,7 +8,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { CollectionType } from '../../../generated/prisma/client';
+import { CollectionType } from '../../../generated/prisma/client.js';
 
 export class CreateCollectionDto {
   @IsString()

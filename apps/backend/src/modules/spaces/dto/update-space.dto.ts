@@ -8,7 +8,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { SpaceStatus } from '../../../generated/prisma/client';
+import { SpaceStatus } from '../../../generated/prisma/client.js';
 import { SpaceSettings } from './create-space.dto';
 
 export class UpdateSpaceDto {

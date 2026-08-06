@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { OAuthProvider } from '../../../generated/prisma/client';
+import { OAuthProvider } from '../../../generated/prisma/client.js';
 import {
   IOAuthProvider,
   OAuthUserData,

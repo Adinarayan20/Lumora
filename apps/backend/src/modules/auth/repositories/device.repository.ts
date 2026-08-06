@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
-import { Device, DevicePlatform } from '../../../generated/prisma/client';
+import { Device, DevicePlatform } from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from './audit-log.repository';
 
 export interface CreateDeviceData {

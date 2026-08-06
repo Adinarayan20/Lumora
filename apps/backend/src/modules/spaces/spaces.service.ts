@@ -13,7 +13,7 @@ import {
   Space as LumoraSpace,
   AuditAction,
   SpaceStatus,
-} from '../../generated/prisma/client';
+} from '../../generated/prisma/client.js';
 
 @Injectable()
 export class SpacesService {

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { SessionRepository } from '../repositories/session.repository';
 import { TokenService, JwtPayload } from './token.service';
-import { Session, SessionStatus } from '../../../generated/prisma/client';
+import { Session, SessionStatus } from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from '../repositories/audit-log.repository';
 import { EventPublisherService } from './event-publisher.service';
 import {

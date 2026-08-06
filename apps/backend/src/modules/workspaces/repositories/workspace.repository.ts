@@ -7,7 +7,7 @@ import {
   WorkspaceStatus,
   WorkspacePlan,
   Prisma,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from '../../auth/repositories/audit-log.repository';
 
 export type WorkspaceWithMembers = Prisma.WorkspaceGetPayload<{

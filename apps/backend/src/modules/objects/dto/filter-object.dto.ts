@@ -1,6 +1,6 @@
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { ObjectStatus } from '../../../generated/prisma/client';
+import { ObjectStatus } from '../../../generated/prisma/client.js';
 
 export class FilterObjectDto {
   @IsOptional()

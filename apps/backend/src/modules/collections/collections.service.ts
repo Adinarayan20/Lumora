@@ -16,7 +16,7 @@ import {
   AuditAction,
   CollectionStatus,
   CollectionType,
-} from '../../generated/prisma/client';
+} from '../../generated/prisma/client.js';
 
 @Injectable()
 export class CollectionsService {

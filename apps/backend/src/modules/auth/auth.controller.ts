@@ -19,7 +19,7 @@ import { OAuthLoginDto } from './dto/oauth-login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { DeviceMetadata } from './services/device.service';
-import { OAuthProvider } from '../../generated/prisma/client';
+import { OAuthProvider } from '../../generated/prisma/client.js';
 
 @Controller('auth')
 export class AuthController {

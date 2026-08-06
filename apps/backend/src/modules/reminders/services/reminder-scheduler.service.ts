@@ -7,7 +7,7 @@ import { SnoozeDuration } from '../dto/snooze-reminder.dto';
 import {
   ReminderExecutionStatus,
   ReminderStatus,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 import {
   ReminderCreatedEvent,
   ReminderTriggeredEvent,

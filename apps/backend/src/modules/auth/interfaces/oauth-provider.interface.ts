@@ -1,4 +1,4 @@
-import { OAuthProvider } from '../../../generated/prisma/client';
+import { OAuthProvider } from '../../../generated/prisma/client.js';
 
 export interface OAuthUserData {
   providerAccountId: string;

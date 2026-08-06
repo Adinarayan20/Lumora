@@ -1,4 +1,4 @@
-import { Prisma } from '../../../generated/prisma/index.js';
+import { Prisma } from '../../../generated/prisma/client.js';
 
 /**
  * Prisma Client Extension enforcing automated soft-delete query scoping.

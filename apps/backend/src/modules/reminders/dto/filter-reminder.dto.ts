@@ -3,7 +3,7 @@ import { Transform } from 'class-transformer';
 import {
   ReminderExecutionStatus,
   ReminderStatus,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 
 export class FilterReminderDto {
   @IsOptional()

@@ -12,7 +12,7 @@ import {
   Object as LumoraObject,
   AuditAction,
   ObjectStatus,
-} from '../../generated/prisma/client';
+} from '../../generated/prisma/client.js';
 
 @Injectable()
 export class ObjectsService {
