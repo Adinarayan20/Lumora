@@ -182,6 +182,11 @@ export class PrismaNotificationRepository implements INotificationRepository {
   }
 
   private toDomain(record: NotificationWithReminderPayload): NotificationAggregate {
+    /**
+     * Note: Current Prisma Notification schema persists id, reminderId, title, body, scheduledFor, deliveredAt, status.
+     * Advanced delivery metrics (readAt, failureReason, attempts log) are maintained in-memory on the aggregate root
+     * and will be rehydrated from a dedicated NotificationAttempt table in schema migration v2.
+     */
     return NotificationAggregate.reconstitute({
       id: new UniqueEntityId(record.id),
       workspaceId: new UniqueEntityId(record.reminder.workspaceId),
@@ -197,8 +202,8 @@ export class PrismaNotificationRepository implements INotificationRepository {
       readAt: undefined,
       failureReason: undefined,
       attempts: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: record.scheduledFor,
+      updatedAt: record.deliveredAt ?? record.scheduledFor,
     });
   }
 }

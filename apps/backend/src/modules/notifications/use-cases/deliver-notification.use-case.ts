@@ -3,10 +3,9 @@ import { Result, UniqueEntityId, EntityNotFoundException } from '@lumora/shared'
 import { NotificationChannel, NotificationStatus } from '../../../domain/notifications/value-objects/notification-enums.js';
 import { NotificationDeliveryAttempt } from '../../../domain/notifications/value-objects/notification-attempt.vo.js';
 import type { INotificationRepository } from '../../../domain/notifications/repositories/notification.repository.interface.js';
+import { NOTIFICATION_REPOSITORY_TOKEN } from '../notifications.tokens.js';
 import { NotificationResponseDto } from '../dto/notification-response.dto.js';
 import { NotificationResponseMapper } from '../mappers/notification-response.mapper.js';
-
-export const NOTIFICATION_REPOSITORY_TOKEN = 'INotificationRepository';
 
 export interface DeliverNotificationCommand {
   notificationId: string;

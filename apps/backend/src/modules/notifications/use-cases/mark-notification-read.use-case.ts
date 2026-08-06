@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Result, UniqueEntityId, EntityNotFoundException, DomainValidationException } from '@lumora/shared';
 import type { INotificationRepository } from '../../../domain/notifications/repositories/notification.repository.interface.js';
+import { NOTIFICATION_REPOSITORY_TOKEN } from '../notifications.tokens.js';
 import { NotificationResponseDto } from '../dto/notification-response.dto.js';
 import { NotificationResponseMapper } from '../mappers/notification-response.mapper.js';
-import { NOTIFICATION_REPOSITORY_TOKEN } from './deliver-notification.use-case.js';
 
 export interface MarkNotificationAsReadCommand {
   notificationId: string;
