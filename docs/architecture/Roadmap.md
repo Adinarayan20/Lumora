@@ -37,13 +37,14 @@ Phase 4: Global Production, Compliance & Multi-Region Enterprise (PLANNED)
 - [x] Domain aggregate response DTOs and mappers
 - [x] Comprehensive domain unit tests & repository integration tests
 
-### Unit 3: Stub & Bounded Context Implementations (Active Unit)
-- [x] Batch 1: Notifications Delivery Bounded Context
-- [x] Batch 2: Media & File Asset Management Bounded Context
-- [x] Batch 3: Universal Search Indexing Bounded Context (`SearchIndexEntity` read-side projection, `PrismaSearchRepository`, `IndexEntityUseCase`, `SearchObjectsQuery`)
-- [ ] Batch 4: Timeline Temporal Engine module
-- [ ] Batch 5: User & Workspace Settings module
-- [ ] Controller CQRS migration & final integration verification
+### Unit 3: Stub & Bounded Context Implementations (Completed)
+- [x] Batch 1: Notifications Delivery Bounded Context (`NotificationAggregate`, `NotificationPolicy`, `PrismaNotificationRepository`, `DeliverNotificationUseCase`, `MarkNotificationAsReadUseCase`)
+- [x] Batch 2: Media & File Asset Management Bounded Context (`FileAssetAggregate`, `StorageQuotaPolicy`, `FileValidationPolicy`, `LocalStorageProvider`, `PrismaFileAssetRepository`, Use Cases)
+- [x] Batch 3: Universal Search Indexing Bounded Context (`SearchIndexEntity` projection, `PrismaSearchRepository`, `IndexEntityUseCase`, `SearchObjectsQuery`)
+- [x] Batch 4: Timeline Temporal Engine Bounded Context (`TimelineRecordEntity`, `PrismaTimelineRepository`, `RecordTimelineActivityUseCase`, `GetWorkspaceTimelineQuery`)
+- [x] Batch 5: User & Workspace Settings Bounded Context (`UserSettingsAggregate`, `WorkspaceSettingsAggregate`, `PrismaUserSettingsRepository`, `PrismaWorkspaceSettingsRepository`, `UpdateUserSettingsUseCase`)
+- [x] Batch 6: Controller CQRS Migration (Migrated 11 HTTP Transport Controllers to CQRS Use Cases/Queries)
+- [x] Batch 7: Final Integration, Verification & Production Readiness Cleanup (DI Audit, E2E Verification, Dead Code Pruning, Quality Gates)
 
 ---
 

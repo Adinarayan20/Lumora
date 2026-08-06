@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator, UniqueEntityId, DomainValidationException } from '@lumora/shared';
+import {
+  IdGenerator,
+  UniqueEntityId,
+  DomainValidationException,
+} from '@lumora/shared';
 import { SearchIndexEntity } from '../entities/search-index.entity.js';
 import { SearchEntityCategory } from '../value-objects/search-entity-category.js';
 

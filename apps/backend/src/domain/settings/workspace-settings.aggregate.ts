@@ -29,17 +29,15 @@ export class WorkspaceSettingsAggregate extends AggregateRoot<UniqueEntityId> {
     this.updatedAt = props.updatedAt ?? new Date();
   }
 
-  public static create(
-    props: {
-      id?: UniqueEntityId;
-      workspaceId: UniqueEntityId;
-      defaultRole?: string;
-      allowGuestAccess?: boolean;
-      retentionDays?: RetentionDays | number;
-      enforceMfa?: boolean;
-      updatedAt?: Date;
-    },
-  ): WorkspaceSettingsAggregate {
+  public static create(props: {
+    id?: UniqueEntityId;
+    workspaceId: UniqueEntityId;
+    defaultRole?: string;
+    allowGuestAccess?: boolean;
+    retentionDays?: RetentionDays | number;
+    enforceMfa?: boolean;
+    updatedAt?: Date;
+  }): WorkspaceSettingsAggregate {
     const wsGuard = Guard.againstNullOrUndefined(
       props.workspaceId,
       'workspaceId',
