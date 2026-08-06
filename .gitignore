@@ -14,6 +14,10 @@ out/
 # NestJS
 coverage/
 
+# Prisma Generated Output
+src/generated/
+apps/backend/src/generated/
+
 # Logs
 *.log
 npm-debug.log*
@@ -38,9 +42,3 @@ Thumbs.db
 
 # Build
 build/
-tmp/
-.cache/
-.turbo/
-
-# TypeScript
-*.tsbuildinfo

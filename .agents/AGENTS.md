@@ -54,6 +54,7 @@ For every implementation unit, present all 4 steps together in a single response
 8. **Direct Query Prohibition**: Never allow controllers, services, or use cases to execute Prisma queries directly.
 9. **Repository Access Only**: All database access must go through repository implementations.
 10. **Infrastructure Replaceability**: `PrismaService` is infrastructure-only and must remain replaceable without changing domain code.
+11. **Strict Layer Dependency Direction**: Dependency flow must strictly follow: `UI → Application → Domain → Infrastructure`. Infrastructure may depend on Domain; Domain must NEVER depend on Infrastructure.
 
 ## Engineering Performance & Quality Standards
 
