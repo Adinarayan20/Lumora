@@ -16,9 +16,12 @@ import { UsersModule } from './modules/users/users.module';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 import { RbacModule } from './modules/rbac/rbac.module';
 
+import { LoggerModule } from './infrastructure/logger/logger.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    LoggerModule,
     PrismaModule,
     AuthModule,
     UsersModule,

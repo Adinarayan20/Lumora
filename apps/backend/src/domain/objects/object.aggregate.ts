@@ -95,8 +95,11 @@ export class ObjectAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public static create(props: ObjectAggregateProps): ObjectAggregate {
-    Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
-    Guard.againstNullOrUndefined(props.createdById, 'createdById');
+    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    if (wsGuard.isFailure) throw wsGuard.getError();
+
+    const userGuard = Guard.againstNullOrUndefined(props.createdById, 'createdById');
+    if (userGuard.isFailure) throw userGuard.getError();
 
     if (!ObjectCatalogRegistry.has(props.typeKey)) {
       throw new DomainValidationException(

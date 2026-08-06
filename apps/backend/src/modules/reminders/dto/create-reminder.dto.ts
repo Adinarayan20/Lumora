@@ -11,9 +11,13 @@ import {
 } from '../../../generated/prisma/client.js';
 
 export class CreateReminderDto {
+  @IsString()
+  @IsNotEmpty()
+  objectId!: string;
+
   @IsDateString()
   @IsNotEmpty()
-  remindAt: string;
+  remindAt!: string;
 
   @IsOptional()
   @IsString()
@@ -22,6 +26,10 @@ export class CreateReminderDto {
   @IsOptional()
   @IsString()
   recurrenceRule?: string;
+
+  @IsOptional()
+  @IsString()
+  priority?: string;
 
   @IsOptional()
   @IsEnum(ReminderSource)
