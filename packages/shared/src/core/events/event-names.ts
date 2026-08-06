@@ -100,6 +100,23 @@ export const TimelineEventName = {
 export type TimelineEventName =
   (typeof TimelineEventName)[keyof typeof TimelineEventName];
 
+export const SettingsEventName = {
+  USER_SETTINGS_UPDATED: "settings.user_updated",
+  WORKSPACE_SETTINGS_UPDATED: "settings.workspace_updated",
+} as const;
+
+export type SettingsEventName =
+  (typeof SettingsEventName)[keyof typeof SettingsEventName];
+
+export const HouseholdEventName = {
+  CREATED: "household.created",
+  MEMBER_ADDED: "household.member_added",
+  MEMBER_REMOVED: "household.member_removed",
+} as const;
+
+export type HouseholdEventName =
+  (typeof HouseholdEventName)[keyof typeof HouseholdEventName];
+
 /**
  * Union type representing all valid domain event name string literals.
  */
@@ -113,4 +130,6 @@ export type DomainEventName =
   | NotificationEventName
   | MediaEventName
   | SearchEventName
-  | TimelineEventName;
+  | TimelineEventName
+  | SettingsEventName
+  | HouseholdEventName;
