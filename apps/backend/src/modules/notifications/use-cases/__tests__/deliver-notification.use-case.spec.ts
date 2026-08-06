@@ -22,6 +22,7 @@ describe('DeliverNotificationUseCase', () => {
 
     const mockRepo: INotificationRepository = {
       findById: vi.fn().mockResolvedValue(aggregate),
+      exists: vi.fn().mockResolvedValue(true),
       save: vi.fn().mockResolvedValue(undefined),
       delete: vi.fn(),
       findPaginated: vi.fn(),
@@ -47,6 +48,7 @@ describe('DeliverNotificationUseCase', () => {
 
     const mockRepo: INotificationRepository = {
       findById: vi.fn().mockResolvedValue(null),
+      exists: vi.fn().mockResolvedValue(false),
       save: vi.fn(),
       delete: vi.fn(),
       findPaginated: vi.fn(),

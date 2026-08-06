@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator } from '@lumora/shared';
+import { IdGenerator, DomainValidationException } from '@lumora/shared';
 import { NotificationAggregate } from '../notification.aggregate.js';
 import { NotificationChannel, NotificationStatus } from '../value-objects/notification-enums.js';
 
-describe('NotificationAggregate', () => {
+describe('NotificationAggregate Invariants & Rules', () => {
   it('should successfully create a valid NotificationAggregate and emit initial state', () => {
     const wsId = IdGenerator.generate();
     const userId = IdGenerator.generate();
@@ -18,7 +18,7 @@ describe('NotificationAggregate', () => {
 
     expect(notif.workspaceId.toString()).toBe(wsId.toString());
     expect(notif.userId.toString()).toBe(userId.toString());
-    expect(notif.title).toBe('Reminder Due');
+    expect(notif.title.getValue()).toBe('Reminder Due');
     expect(notif.status).toBe(NotificationStatus.PENDING);
   });
 
@@ -41,29 +41,46 @@ describe('NotificationAggregate', () => {
     expect(notif.pullDomainEvents()).toHaveLength(1);
   });
 
-  it('should mark notification as read and emit NotificationReadEvent', () => {
+  it('should throw DomainValidationException on duplicate delivery attempt', () => {
     const wsId = IdGenerator.generate();
     const userId = IdGenerator.generate();
 
     const notif = NotificationAggregate.create({
       workspaceId: wsId,
       userId: userId,
-      title: 'Reminder Due',
-      body: 'Your scheduled reminder is ready.',
+      title: 'Alert',
+      body: 'Body text',
       scheduledFor: new Date(),
     });
 
     notif.markAsDelivered(NotificationChannel.IN_APP);
-    notif.pullDomainEvents(); // Clear delivered event
 
-    notif.markAsRead();
-
-    expect(notif.status).toBe(NotificationStatus.READ);
-    expect(notif.readAt).toBeDefined();
-    expect(notif.pullDomainEvents()).toHaveLength(1);
+    expect(() => notif.markAsDelivered(NotificationChannel.IN_APP)).toThrow(
+      DomainValidationException,
+    );
   });
 
-  it('should throw DomainValidationException on empty title or body', () => {
+  it('should throw DomainValidationException when attempting to modify a CANCELLED notification', () => {
+    const wsId = IdGenerator.generate();
+    const userId = IdGenerator.generate();
+
+    const notif = NotificationAggregate.create({
+      workspaceId: wsId,
+      userId: userId,
+      title: 'Alert',
+      body: 'Body text',
+      scheduledFor: new Date(),
+    });
+
+    notif.cancel();
+    expect(notif.status).toBe(NotificationStatus.CANCELLED);
+
+    expect(() => notif.markAsDelivered(NotificationChannel.PUSH)).toThrow(
+      DomainValidationException,
+    );
+  });
+
+  it('should throw DomainValidationException when creating notification with invalid channel', () => {
     const wsId = IdGenerator.generate();
     const userId = IdGenerator.generate();
 
@@ -71,10 +88,11 @@ describe('NotificationAggregate', () => {
       NotificationAggregate.create({
         workspaceId: wsId,
         userId: userId,
-        title: '',
-        body: 'Body text',
+        title: 'Title',
+        body: 'Body',
+        channel: 'INVALID_CHANNEL' as any,
         scheduledFor: new Date(),
       }),
-    ).toThrow();
+    ).toThrow(DomainValidationException);
   });
 });

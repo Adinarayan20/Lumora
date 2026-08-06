@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UniqueEntityId, PaginatedResult, PaginationParams } from '@lumora/shared';
+import {
+  UniqueEntityId,
+  PaginatedResult,
+  PaginationParams,
+  DomainValidationException,
+} from '@lumora/shared';
+import { Prisma, Notification as PrismaNotification } from '../../../generated/prisma/client.js';
 import { PrismaService } from '../prisma.service.js';
 import { PrismaExceptionMapper } from '../mappers/prisma-exception.mapper.js';
 import type {
@@ -7,11 +13,17 @@ import type {
   NotificationFilter,
 } from '../../../domain/notifications/repositories/notification.repository.interface.js';
 import { NotificationAggregate } from '../../../domain/notifications/notification.aggregate.js';
+import { NotificationTitle } from '../../../domain/notifications/value-objects/notification-title.js';
+import { NotificationBody } from '../../../domain/notifications/value-objects/notification-body.js';
 import {
   NotificationChannel,
   NotificationStatus,
   NotificationType,
 } from '../../../domain/notifications/value-objects/notification-enums.js';
+
+export type NotificationWithReminderPayload = Prisma.NotificationGetPayload<{
+  include: { reminder: true };
+}>;
 
 @Injectable()
 export class PrismaNotificationRepository implements INotificationRepository {
@@ -45,25 +57,34 @@ export class PrismaNotificationRepository implements INotificationRepository {
 
   public async save(aggregate: NotificationAggregate): Promise<void> {
     try {
-      const data = {
-        title: aggregate.title,
-        body: aggregate.body,
+      if (!aggregate.reminderId) {
+        throw new DomainValidationException(
+          'Notification persistence requires an associated reminderId.',
+          { reminderId: ['Notification model requires a valid reminderId relation.'] },
+        );
+      }
+
+      const data: Prisma.NotificationUncheckedCreateInput = {
+        id: aggregate.id.toString(),
+        reminderId: aggregate.reminderId.toString(),
+        title: aggregate.title.getValue(),
+        body: aggregate.body.getValue(),
         scheduledFor: aggregate.scheduledFor,
-        deliveredAt: aggregate.deliveredAt,
-        status: aggregate.status as any,
+        deliveredAt: aggregate.deliveredAt ?? null,
+        status: aggregate.status as PrismaNotification['status'],
       };
 
-      if (aggregate.reminderId) {
-        await this.prisma.notification.upsert({
-          where: { id: aggregate.id.toString() },
-          create: {
-            id: aggregate.id.toString(),
-            reminderId: aggregate.reminderId.toString(),
-            ...data,
-          },
-          update: data,
-        });
-      }
+      await this.prisma.notification.upsert({
+        where: { id: aggregate.id.toString() },
+        create: data,
+        update: {
+          title: data.title,
+          body: data.body,
+          scheduledFor: data.scheduledFor,
+          deliveredAt: data.deliveredAt,
+          status: data.status,
+        },
+      });
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error);
     }
@@ -85,8 +106,11 @@ export class PrismaNotificationRepository implements INotificationRepository {
   ): Promise<PaginatedResult<NotificationAggregate>> {
     try {
       const take = params.first ?? 20;
-      const where: any = {};
-      if (filter?.status) where.status = filter.status;
+      const where: Prisma.NotificationWhereInput = {};
+
+      if (filter?.status) {
+        where.status = filter.status as PrismaNotification['status'];
+      }
       if (filter?.workspaceId) {
         where.reminder = { workspaceId: filter.workspaceId.toString() };
       }
@@ -119,14 +143,16 @@ export class PrismaNotificationRepository implements INotificationRepository {
     filter?: NotificationFilter,
   ): Promise<NotificationAggregate[]> {
     try {
-      const where: any = {
+      const where: Prisma.NotificationWhereInput = {
         reminder: {
           workspaceId: workspaceId.toString(),
           createdById: userId.toString(),
         },
       };
 
-      if (filter?.status) where.status = filter.status;
+      if (filter?.status) {
+        where.status = filter.status as PrismaNotification['status'];
+      }
 
       const records = await this.prisma.notification.findMany({
         where,
@@ -155,19 +181,24 @@ export class PrismaNotificationRepository implements INotificationRepository {
     }
   }
 
-  private toDomain(record: any): NotificationAggregate {
+  private toDomain(record: NotificationWithReminderPayload): NotificationAggregate {
     return NotificationAggregate.reconstitute({
       id: new UniqueEntityId(record.id),
       workspaceId: new UniqueEntityId(record.reminder.workspaceId),
       userId: new UniqueEntityId(record.reminder.createdById),
       reminderId: new UniqueEntityId(record.reminderId),
-      title: record.title,
-      body: record.body,
+      title: NotificationTitle.create(record.title),
+      body: NotificationBody.create(record.body),
       type: NotificationType.REMINDER_TRIGGER,
       channel: NotificationChannel.IN_APP,
       status: record.status as NotificationStatus,
       scheduledFor: record.scheduledFor,
       deliveredAt: record.deliveredAt ?? undefined,
+      readAt: undefined,
+      failureReason: undefined,
+      attempts: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
   }
 }

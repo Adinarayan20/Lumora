@@ -17,23 +17,30 @@ export class NotificationPolicy {
   }
 
   /**
-   * Validates delivery status transition rules.
+   * Validates status transition rules and prevents invalid state mutations (e.g. duplicate delivery, terminal read/cancelled mutations).
    */
   public static validateStatusTransition(
     currentStatus: NotificationStatus,
     targetStatus: NotificationStatus,
   ): void {
+    if (currentStatus === NotificationStatus.DELIVERED && targetStatus === NotificationStatus.DELIVERED) {
+      throw new DomainValidationException(
+        'Notification has already been delivered.',
+        { status: ['Duplicate delivery attempt on an already delivered notification.'] },
+      );
+    }
+
     if (currentStatus === NotificationStatus.READ && targetStatus !== NotificationStatus.READ) {
       throw new DomainValidationException(
         `Cannot transition notification status from READ to ${targetStatus}.`,
-        { status: [`Status READ is terminal for notification activity.`] },
+        { status: ['Status READ is terminal for notification activity.'] },
       );
     }
 
     if (currentStatus === NotificationStatus.CANCELLED) {
       throw new DomainValidationException(
         `Cannot alter status of a CANCELLED notification.`,
-        { status: [`Cancelled notifications cannot change status.`] },
+        { status: ['Cancelled notifications cannot change status.'] },
       );
     }
   }

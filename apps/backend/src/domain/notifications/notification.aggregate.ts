@@ -4,7 +4,9 @@ import {
   NotificationStatus,
   NotificationType,
 } from './value-objects/notification-enums.js';
-import { NotificationDeliveryAttemptEntity } from './entities/notification-attempt.entity.js';
+import { NotificationTitle } from './value-objects/notification-title.js';
+import { NotificationBody } from './value-objects/notification-body.js';
+import { NotificationDeliveryAttempt } from './value-objects/notification-attempt.vo.js';
 import { NotificationPolicy } from './policies/notification.policy.js';
 import {
   NotificationDeliveredEvent,
@@ -17,8 +19,8 @@ export interface NotificationAggregateProps {
   workspaceId: UniqueEntityId;
   userId: UniqueEntityId;
   reminderId?: UniqueEntityId;
-  title: string;
-  body: string;
+  title: NotificationTitle;
+  body: NotificationBody;
   type?: NotificationType;
   channel?: NotificationChannel;
   status?: NotificationStatus;
@@ -26,7 +28,7 @@ export interface NotificationAggregateProps {
   deliveredAt?: Date;
   readAt?: Date;
   failureReason?: string;
-  attempts?: NotificationDeliveryAttemptEntity[];
+  attempts?: NotificationDeliveryAttempt[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -38,8 +40,8 @@ export class NotificationAggregate extends AggregateRoot<UniqueEntityId> {
   public readonly workspaceId: UniqueEntityId;
   public readonly userId: UniqueEntityId;
   public readonly reminderId?: UniqueEntityId | undefined;
-  public title: string;
-  public body: string;
+  public title: NotificationTitle;
+  public body: NotificationBody;
   public readonly type: NotificationType;
   public channel: NotificationChannel;
   public status: NotificationStatus;
@@ -47,7 +49,7 @@ export class NotificationAggregate extends AggregateRoot<UniqueEntityId> {
   public deliveredAt?: Date | undefined;
   public readAt?: Date | undefined;
   public failureReason?: string | undefined;
-  private readonly _attempts: NotificationDeliveryAttemptEntity[];
+  private readonly _attempts: NotificationDeliveryAttempt[];
   public readonly createdAt: Date;
   public updatedAt: Date;
 
@@ -70,36 +72,42 @@ export class NotificationAggregate extends AggregateRoot<UniqueEntityId> {
     this.updatedAt = props.updatedAt ?? new Date();
   }
 
-  public get attempts(): readonly NotificationDeliveryAttemptEntity[] {
+  public get attempts(): readonly NotificationDeliveryAttempt[] {
     return Object.freeze([...this._attempts]);
   }
 
-  public static create(props: NotificationAggregateProps): NotificationAggregate {
+  public static create(
+    props: Omit<NotificationAggregateProps, 'title' | 'body'> & {
+      title: NotificationTitle | string;
+      body: NotificationBody | string;
+    },
+  ): NotificationAggregate {
     const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
     if (wsGuard.isFailure) throw wsGuard.getError();
 
     const userGuard = Guard.againstNullOrUndefined(props.userId, 'userId');
     if (userGuard.isFailure) throw userGuard.getError();
 
-    const titleGuard = Guard.againstEmptyString(props.title, 'title');
-    if (titleGuard.isFailure) throw titleGuard.getError();
-
-    const bodyGuard = Guard.againstEmptyString(props.body, 'body');
-    if (bodyGuard.isFailure) throw bodyGuard.getError();
-
     const schedGuard = Guard.againstNullOrUndefined(props.scheduledFor, 'scheduledFor');
     if (schedGuard.isFailure) throw schedGuard.getError();
 
+    const titleObj = typeof props.title === 'string' ? NotificationTitle.create(props.title) : props.title;
+    const bodyObj = typeof props.body === 'string' ? NotificationBody.create(props.body) : props.body;
+
     NotificationPolicy.validateChannel(props.channel ?? NotificationChannel.IN_APP);
 
-    return new NotificationAggregate(props);
+    return new NotificationAggregate({
+      ...props,
+      title: titleObj,
+      body: bodyObj,
+    });
   }
 
   public static reconstitute(props: NotificationAggregateProps): NotificationAggregate {
     return new NotificationAggregate(props);
   }
 
-  public recordAttempt(attempt: NotificationDeliveryAttemptEntity): void {
+  public recordAttempt(attempt: NotificationDeliveryAttempt): void {
     NotificationPolicy.validateAttemptCount(this._attempts.length);
     this._attempts.push(attempt);
     this.updatedAt = new Date();
@@ -155,5 +163,11 @@ export class NotificationAggregate extends AggregateRoot<UniqueEntityId> {
         readAt,
       ),
     );
+  }
+
+  public cancel(): void {
+    NotificationPolicy.validateStatusTransition(this.status, NotificationStatus.CANCELLED);
+    this.status = NotificationStatus.CANCELLED;
+    this.updatedAt = new Date();
   }
 }

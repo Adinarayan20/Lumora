@@ -23,6 +23,7 @@ describe('MarkNotificationAsReadUseCase', () => {
 
     const mockRepo: INotificationRepository = {
       findById: vi.fn().mockResolvedValue(aggregate),
+      exists: vi.fn().mockResolvedValue(true),
       save: vi.fn().mockResolvedValue(undefined),
       delete: vi.fn(),
       findPaginated: vi.fn(),
@@ -42,7 +43,7 @@ describe('MarkNotificationAsReadUseCase', () => {
     expect(mockRepo.save).toHaveBeenCalled();
   });
 
-  it('should fail if user does not match notification recipient', async () => {
+  it('should fail if user does not match notification recipient (tenant/user isolation)', async () => {
     const wsId = IdGenerator.generate();
     const userId = IdGenerator.generate();
     const otherUserId = IdGenerator.generate();
@@ -59,6 +60,7 @@ describe('MarkNotificationAsReadUseCase', () => {
 
     const mockRepo: INotificationRepository = {
       findById: vi.fn().mockResolvedValue(aggregate),
+      exists: vi.fn().mockResolvedValue(true),
       save: vi.fn(),
       delete: vi.fn(),
       findPaginated: vi.fn(),

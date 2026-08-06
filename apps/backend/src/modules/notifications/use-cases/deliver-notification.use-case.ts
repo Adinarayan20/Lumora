@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Result, UniqueEntityId, EntityNotFoundException } from '@lumora/shared';
 import { NotificationChannel, NotificationStatus } from '../../../domain/notifications/value-objects/notification-enums.js';
-import { NotificationDeliveryAttemptEntity } from '../../../domain/notifications/entities/notification-attempt.entity.js';
+import { NotificationDeliveryAttempt } from '../../../domain/notifications/value-objects/notification-attempt.vo.js';
 import type { INotificationRepository } from '../../../domain/notifications/repositories/notification.repository.interface.js';
 import { NotificationResponseDto } from '../dto/notification-response.dto.js';
 import { NotificationResponseMapper } from '../mappers/notification-response.mapper.js';
@@ -38,7 +38,7 @@ export class DeliverNotificationUseCase {
 
       const startTime = Date.now();
 
-      const attempt = NotificationDeliveryAttemptEntity.create({
+      const attempt = NotificationDeliveryAttempt.create({
         notificationId: aggregate.id,
         channel,
         status: NotificationStatus.DELIVERED,
