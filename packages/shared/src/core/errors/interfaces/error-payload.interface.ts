@@ -1,4 +1,4 @@
-import type { ErrorCode } from '../error-code.enum.js';
+import type { ErrorCode } from '../error-code.js';
 
 /**
  * Standardized JSON payload interface for application exceptions.
@@ -9,5 +9,4 @@ export interface ApplicationErrorPayload {
   readonly code: ErrorCode;
   readonly message: string;
   readonly details?: Record<string, unknown>;
-  readonly timestamp: string;
 }

@@ -1,4 +1,4 @@
-import { ErrorCode } from './error-code.enum.js';
+import type { ErrorCode } from './error-code.js';
 import type { ApplicationErrorPayload } from './interfaces/error-payload.interface.js';
 
 /**
@@ -7,19 +7,17 @@ import type { ApplicationErrorPayload } from './interfaces/error-payload.interfa
  */
 export abstract class ApplicationException extends Error {
   public readonly code: ErrorCode;
-  public readonly details?: Record<string, unknown>;
-  public readonly timestamp: string;
+  public readonly details?: Record<string, unknown> | undefined;
 
   constructor(
     message: string,
     code: ErrorCode,
-    details?: Record<string, unknown>,
+    details?: Record<string, unknown> | undefined,
   ) {
     super(message);
     this.name = this.constructor.name;
     this.code = code;
-    this.details = details ? Object.freeze({ ...details }) : undefined;
-    this.timestamp = new Date().toISOString();
+    this.details = details !== undefined ? Object.freeze({ ...details }) : undefined;
 
     // Restore prototype chain for TypeScript/ES5 compatibility
     Object.setPrototypeOf(this, new.target.prototype);
@@ -41,8 +39,7 @@ export abstract class ApplicationException extends Error {
       success: false,
       code: this.code,
       message: this.message,
-      ...(this.details && { details: this.details }),
-      timestamp: this.timestamp,
+      ...(this.details !== undefined && { details: this.details }),
     };
   }
 }

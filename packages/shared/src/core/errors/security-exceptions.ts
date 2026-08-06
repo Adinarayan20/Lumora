@@ -1,5 +1,5 @@
 import { ApplicationException } from './application-exception.js';
-import { ErrorCode } from './error-code.enum.js';
+import { ErrorCode } from './error-code.js';
 
 /**
  * Abstract base class for access control and security exception failures.

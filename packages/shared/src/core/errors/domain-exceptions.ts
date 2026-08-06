@@ -1,5 +1,5 @@
 import { ApplicationException } from './application-exception.js';
-import { ErrorCode } from './error-code.enum.js';
+import { ErrorCode } from './error-code.js';
 
 /**
  * Abstract base class for all domain rule violations.
@@ -25,14 +25,14 @@ export class EntityNotFoundException extends DomainException {
  * Thrown when domain constraint rules or property validations fail.
  */
 export class DomainValidationException extends DomainException {
-  public readonly validationErrors?: Record<string, string[]>;
+  public readonly validationErrors?: Record<string, string[]> | undefined;
 
   constructor(
     message: string,
-    validationErrors?: Record<string, string[]>,
+    validationErrors?: Record<string, string[]> | undefined,
   ) {
     super(message, ErrorCode.DOMAIN_VALIDATION_ERROR, {
-      ...(validationErrors && { validationErrors }),
+      ...(validationErrors !== undefined && { validationErrors }),
     });
     this.validationErrors = validationErrors;
   }

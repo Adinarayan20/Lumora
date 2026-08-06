@@ -7,7 +7,7 @@ import {
   ConflictException,
   UnauthorizedException,
   ForbiddenException,
-  InfrastructureException,
+  SystemException,
 } from '../index.js';
 
 describe('Standardized Error Architecture', () => {
@@ -23,7 +23,7 @@ describe('Standardized Error Architecture', () => {
       expect(exception).toBeInstanceOf(EntityNotFoundException);
     });
 
-    it('should serialize cleanly to ApplicationErrorPayload', () => {
+    it('should serialize cleanly to ApplicationErrorPayload without timestamp', () => {
       const exception = new EntityNotFoundException('Space', 'space-99');
       const payload = exception.toPayload();
 
@@ -31,7 +31,7 @@ describe('Standardized Error Architecture', () => {
       expect(payload.code).toBe(ErrorCode.ENTITY_NOT_FOUND);
       expect(payload.message).toBe("Space with identifier 'space-99' was not found.");
       expect(payload.details).toEqual({ entityName: 'Space', entityId: 'space-99' });
-      expect(typeof payload.timestamp).toBe('string');
+      expect('timestamp' in payload).toBe(false);
     });
   });
 
@@ -75,12 +75,12 @@ describe('Standardized Error Architecture', () => {
     });
   });
 
-  describe('InfrastructureException', () => {
-    it('should capture underlying cause message', () => {
+  describe('SystemException', () => {
+    it('should capture underlying cause message and system error code', () => {
       const cause = new Error('Database connection timeout');
-      const exception = new InfrastructureException('Storage read failure', cause);
+      const exception = new SystemException('Storage read failure', cause);
 
-      expect(exception.code).toBe(ErrorCode.INTERNAL_INFRASTRUCTURE_ERROR);
+      expect(exception.code).toBe(ErrorCode.SYSTEM_ERROR);
       expect(exception.originalError).toBe(cause);
       expect(exception.toPayload().details).toEqual({ causeMessage: 'Database connection timeout' });
     });
