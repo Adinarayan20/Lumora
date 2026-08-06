@@ -15,10 +15,13 @@ export class CursorEncoder {
    * Encodes a record ID or cursor value into an opaque base64url cursor token.
    */
   public static encode(value: unknown): string {
-    const strValue = value instanceof Date ? value.toISOString() : String(value ?? '');
+    const strValue =
+      value instanceof Date ? value.toISOString() : String(value ?? '');
 
     if (!strValue || strValue.trim().length === 0) {
-      throw new DomainValidationException('Cannot encode an empty ID into a pagination cursor.');
+      throw new DomainValidationException(
+        'Cannot encode an empty ID into a pagination cursor.',
+      );
     }
 
     const json = JSON.stringify({ id: strValue, timestamp: Date.now() });
@@ -34,7 +37,9 @@ export class CursorEncoder {
    */
   public static decode(cursor: string): string {
     if (!cursor || cursor.trim().length === 0) {
-      throw new DomainValidationException('Cannot decode an empty pagination cursor string.');
+      throw new DomainValidationException(
+        'Cannot decode an empty pagination cursor string.',
+      );
     }
 
     try {
@@ -60,7 +65,9 @@ export class CursorEncoder {
       }
       throw new DomainValidationException(
         'Malformed or corrupted pagination cursor string.',
-        { cursor: ['Cursor string failed base64url decoding or JSON parsing.'] },
+        {
+          cursor: ['Cursor string failed base64url decoding or JSON parsing.'],
+        },
       );
     }
   }

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
-import { OAuthAccount, OAuthProvider } from '../../../generated/prisma/client.js';
+import {
+  OAuthAccount,
+  OAuthProvider,
+} from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from './audit-log.repository';
 
 export interface CreateOAuthAccountData {

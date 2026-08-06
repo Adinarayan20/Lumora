@@ -5,7 +5,7 @@ import { PermissionKey, OWNER_ONLY_PERMISSIONS } from './constants/permissions';
 import {
   SYSTEM_ROLE_NAMES,
   SYSTEM_ROLES_PERMISSIONS_MAP,
-} from '../../../prisma/data/roles.seed';
+} from '../../domain/rbac/role-permissions.constants.js';
 import { PrismaTransaction } from '../auth/repositories/audit-log.repository';
 
 export interface ResourceContext {

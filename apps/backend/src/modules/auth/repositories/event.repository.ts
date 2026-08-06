@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
-import { Event, EventStatus, Prisma } from '../../../generated/prisma/client.js';
+import {
+  Event,
+  EventStatus,
+  Prisma,
+} from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from './audit-log.repository';
 
 @Injectable()
