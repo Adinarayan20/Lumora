@@ -11,7 +11,7 @@ describe('PrismaTimelineRepository Unit Tests', () => {
   beforeEach(() => {
     mockPrisma = {
       timeline: {
-        upsert: vi.fn(),
+        create: vi.fn(),
         findMany: vi.fn(),
       },
     };
@@ -19,7 +19,7 @@ describe('PrismaTimelineRepository Unit Tests', () => {
     repository = new PrismaTimelineRepository(mockPrisma as unknown as PrismaService);
   });
 
-  it('should save timeline record to database', async () => {
+  it('should save timeline record to database using append-only create semantics', async () => {
     const record = TimelineRecordEntity.create({
       workspaceId: new UniqueEntityId(),
       userId: new UniqueEntityId(),
@@ -28,7 +28,7 @@ describe('PrismaTimelineRepository Unit Tests', () => {
       action: 'OBJECT_CREATED',
     });
 
-    mockPrisma.timeline.upsert.mockResolvedValue({
+    mockPrisma.timeline.create.mockResolvedValue({
       id: record.id.toString(),
       objectId: record.entityId.toString(),
       startedAt: record.timestamp,
@@ -38,10 +38,9 @@ describe('PrismaTimelineRepository Unit Tests', () => {
 
     await repository.save(record);
 
-    expect(mockPrisma.timeline.upsert).toHaveBeenCalledWith(
+    expect(mockPrisma.timeline.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: record.id.toString() },
-        create: expect.objectContaining({
+        data: expect.objectContaining({
           id: record.id.toString(),
           objectId: record.entityId.toString(),
         }),

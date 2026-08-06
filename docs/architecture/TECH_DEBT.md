@@ -21,6 +21,7 @@ This document records architectural recommendations, infrastructure components, 
 | **TD-011** | **Automated Multi-Region Disaster Recovery (DR)** | Medium | Phase 4 (Infrastructure) | `Deferred` | Database point-in-time recovery and snapshot backups provide initial recovery capability. Automated multi-region DR failover deferred to Phase 4. | 2 Sprints |
 | **TD-012** | **Kubernetes Auto-Scaling (HPA / KEDA)** | Medium | Phase 3 (DevOps) | `Deferred` | Containerized monorepo deploys cleanly on single node / Docker Compose for development and staging. K8s HPA deferred to Phase 3 infrastructure setup. | 2 Sprints |
 | **TD-013** | **Dynamic Micro-Kernel Plugin Architecture** | Low | Phase 4 (Extensibility) | `Deferred` | Universal Object Catalog supports custom types via JSON attributes. Dynamic third-party plugin loading deferred to prevent premature architectural complexity. | 4 Sprints |
+| **TD-014** | **Timeline Schema Migration v2 Audit Columns** | Medium | Phase 2 (Unit 3) | `Tracked` | Current Prisma Timeline schema model persists id, objectId, startedAt, endedAt, timezone. Dedicated columns for workspaceId, userId, action, metadata will be added in database migration v2. | 1 Sprint |
 
 ---
 

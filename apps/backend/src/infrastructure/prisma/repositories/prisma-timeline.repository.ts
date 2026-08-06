@@ -12,18 +12,16 @@ import { TimelineCategory } from '../../../domain/timeline/value-objects/timelin
 export class PrismaTimelineRepository implements ITimelineRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Appends an immutable timeline ledger record to persistence.
+   * Uses append-only create semantics to enforce strict ledger audit trail integrity.
+   */
   public async save(record: TimelineRecordEntity): Promise<void> {
     try {
       const data = this.toPersistence(record);
 
-      await this.prisma.timeline.upsert({
-        where: { id: record.id.toString() },
-        create: data as Prisma.TimelineUncheckedCreateInput,
-        update: {
-          startedAt: data.startedAt,
-          endedAt: data.endedAt,
-          timezone: data.timezone,
-        } as Prisma.TimelineUncheckedUpdateInput,
+      await this.prisma.timeline.create({
+        data: data as Prisma.TimelineUncheckedCreateInput,
       });
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error);
@@ -66,10 +64,12 @@ export class PrismaTimelineRepository implements ITimelineRepository {
   /**
    * Explicit mapping converting database Timeline model to TimelineRecordEntity domain object.
    * 
-   * SCHEMA BOUNDARY DOCUMENTATION:
+   * WARNING / ARCHITECTURAL LIMITATION NOTICE (TD-014):
    * Current Prisma Timeline schema model persists id, objectId, startedAt, endedAt, timezone.
-   * Workspace and user audit association (workspaceId, userId, action, metadata) are maintained on the domain
-   * entity layer and will be fully persisted upon schema migration v2 adding dedicated TimelineRecord columns.
+   * Workspace and user audit association (workspaceId, userId, action, metadata) are synthesized
+   * as temporary placeholders in this legacy adapter.
+   * THIS ADAPTER IS TEMPORARY: Full audit properties will be rehydrated from dedicated columns
+   * added in schema migration v2 (TD-014).
    */
   public toDomain(model: PrismaTimeline): TimelineRecordEntity {
     return TimelineRecordEntity.reconstitute({
