@@ -1,0 +1,43 @@
+{
+  "name": "@lumora/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./core/errors": {
+      "types": "./dist/core/errors/index.d.ts",
+      "import": "./dist/core/errors/index.js"
+    },
+    "./core/primitives": {
+      "types": "./dist/core/primitives/index.d.ts",
+      "import": "./dist/core/primitives/index.js"
+    },
+    "./core/pagination": {
+      "types": "./dist/core/pagination/index.d.ts",
+      "import": "./dist/core/pagination/index.js"
+    },
+    "./core/catalog": {
+      "types": "./dist/core/catalog/index.d.ts",
+      "import": "./dist/core/catalog/index.js"
+    },
+    "./core/events": {
+      "types": "./dist/core/events/index.d.ts",
+      "import": "./dist/core/events/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\"",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vitest": "^3.0.0"
+  }
+}

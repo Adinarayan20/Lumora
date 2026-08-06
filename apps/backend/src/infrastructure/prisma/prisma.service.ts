@@ -1,25 +1,25 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../../generated/prisma/client';
+import { PrismaClient } from '../../generated/prisma/index.js';
+import { softDeleteExtension } from './extensions/soft-delete.extension.js';
 
+/**
+ * Infrastructure service managing PostgreSQL connection lifecycle via Prisma Client.
+ * Encapsulates database initialization, shutdown signals, and client extensions.
+ */
 @Injectable()
 export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  constructor() {
-    const connectionString =
-      process.env.DATABASE_URL ||
-      'postgresql://neondb_owner:npg_96SLNpxPXteZ@ep-silent-poetry-ayc8mmx1-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-    const adapter = new PrismaPg({ connectionString });
-    super({ adapter });
+  public get client() {
+    return this.$extends(softDeleteExtension);
   }
 
-  async onModuleInit() {
+  async onModuleInit(): Promise<void> {
     await this.$connect();
   }
 
-  async onModuleDestroy() {
+  async onModuleDestroy(): Promise<void> {
     await this.$disconnect();
   }
 }
