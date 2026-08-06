@@ -93,6 +93,13 @@ export const SearchEventName = {
 export type SearchEventName =
   (typeof SearchEventName)[keyof typeof SearchEventName];
 
+export const TimelineEventName = {
+  RECORDED: "timeline.recorded",
+} as const;
+
+export type TimelineEventName =
+  (typeof TimelineEventName)[keyof typeof TimelineEventName];
+
 /**
  * Union type representing all valid domain event name string literals.
  */
@@ -105,4 +112,5 @@ export type DomainEventName =
   | CollectionEventName
   | NotificationEventName
   | MediaEventName
-  | SearchEventName;
+  | SearchEventName
+  | TimelineEventName;
