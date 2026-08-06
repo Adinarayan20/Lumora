@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator, UniqueEntityId, DomainValidationException } from '@lumora/shared';
+import {
+  IdGenerator,
+  UniqueEntityId,
+  DomainValidationException,
+} from '@lumora/shared';
 import { UserSettingsAggregate } from '../user-settings.aggregate.js';
 
 describe('UserSettingsAggregate Invariants & Rules', () => {

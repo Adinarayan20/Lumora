@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator, UniqueEntityId, DomainValidationException } from '@lumora/shared';
+import {
+  IdGenerator,
+  UniqueEntityId,
+  DomainValidationException,
+} from '@lumora/shared';
 import { FileAssetAggregate } from '../file-asset.aggregate.js';
 import { FileProvider } from '../value-objects/file-provider.enum.js';
 

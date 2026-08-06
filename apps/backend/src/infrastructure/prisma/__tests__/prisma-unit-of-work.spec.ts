@@ -4,7 +4,6 @@ import {
   PrismaTransactionContext,
 } from '../prisma-unit-of-work.js';
 import { PrismaService } from '../prisma.service.js';
-import { ApplicationException } from '@lumora/shared';
 
 describe('PrismaUnitOfWork Infrastructure Adapter', () => {
   it('should execute work callback within transaction context successfully', async () => {

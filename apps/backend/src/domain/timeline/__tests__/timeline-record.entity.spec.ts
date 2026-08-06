@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator, UniqueEntityId, DomainValidationException } from '@lumora/shared';
+import {
+  IdGenerator,
+  UniqueEntityId,
+  DomainValidationException,
+} from '@lumora/shared';
 import { TimelineRecordEntity } from '../entities/timeline-record.entity.js';
 
 describe('TimelineRecordEntity Invariants & Ledger Rules', () => {

@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator, UniqueEntityId, DomainValidationException } from '@lumora/shared';
+import {
+  IdGenerator,
+  UniqueEntityId,
+  DomainValidationException,
+} from '@lumora/shared';
 import { WorkspaceSettingsAggregate } from '../workspace-settings.aggregate.js';
 
 describe('WorkspaceSettingsAggregate', () => {
