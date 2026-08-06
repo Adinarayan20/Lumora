@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId, ObjectTypeKey } from '@lumora/shared';
+import { Result, UniqueEntityId, ObjectTypeKey, IdGenerator } from '@lumora/shared';
 import { ObjectAggregate } from '../../../domain/objects/object.aggregate.js';
 import { ObjectTitle } from '../../../domain/objects/value-objects/object-title.js';
 import { ObjectKey } from '../../../domain/objects/value-objects/object-key.js';
@@ -31,7 +31,7 @@ export class CreateObjectUseCase {
 
       let keyStr = dto.objectKey?.trim();
       if (!keyStr) {
-        const randomSuffix = Math.random().toString(36).substring(2, 8);
+        const randomSuffix = IdGenerator.generate().substring(0, 8);
         keyStr = `${dto.typeKey.toLowerCase()}-${randomSuffix}`;
       }
 

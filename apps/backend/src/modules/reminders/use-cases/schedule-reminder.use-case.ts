@@ -30,6 +30,11 @@ export class ScheduleReminderUseCase {
     try {
       const { workspaceId, createdById, dto } = command;
 
+      const remindDate = new Date(dto.remindAt);
+      if (isNaN(remindDate.getTime())) {
+        return Result.fail(new Error(`Invalid remindAt date string '${dto.remindAt}'. Must be valid ISO date.`));
+      }
+
       const recurrence = dto.recurrenceRule ? RecurrenceRule.create(dto.recurrenceRule) : undefined;
       const tz = dto.timezone ? TimezoneId.create(dto.timezone) : undefined;
 
@@ -37,7 +42,7 @@ export class ScheduleReminderUseCase {
         workspaceId: new UniqueEntityId(workspaceId),
         objectId: new UniqueEntityId(dto.objectId),
         createdById: new UniqueEntityId(createdById),
-        remindAt: new Date(dto.remindAt),
+        remindAt: remindDate,
         priority: dto.priority ? (dto.priority as ReminderPriority) : undefined,
         recurrenceRule: recurrence,
         timezone: tz,

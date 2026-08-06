@@ -36,6 +36,7 @@ Phase 4: Global Production, Compliance & Multi-Region Enterprise (PLANNED)
 - [x] Application Use Cases (`CreateObjectUseCase`, `ScheduleReminderUseCase`, `SnoozeReminderUseCase`, `CompleteReminderUseCase`)
 - [x] Domain aggregate response DTOs and mappers
 - [x] Comprehensive domain unit tests & repository integration tests
+- [ ] Migrate transport controllers completely from legacy services (`ObjectsService`, `RemindersService`) to CQRS Use Cases during the next application-layer refactoring batch
 
 ### Unit 3 & Beyond: Stub Module Implementations
 - [ ] Notifications Delivery module
