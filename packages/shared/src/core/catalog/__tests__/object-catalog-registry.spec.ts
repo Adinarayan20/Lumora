@@ -5,11 +5,13 @@ import { BehaviorExtensionKey } from '../behavior-extension-key.js';
 import { DomainValidationException } from '../../errors/domain-exceptions.js';
 
 describe('ObjectCatalogRegistry', () => {
-  it('should retrieve metadata for built-in object types', () => {
+  it('should retrieve metadata for built-in object types with stable i18n and icon keys', () => {
     const taskMeta = ObjectCatalogRegistry.get(ObjectTypeKey.TASK);
 
     expect(taskMeta).toBeDefined();
-    expect(taskMeta?.displayName).toBe('Task');
+    expect(taskMeta?.displayNameKey).toBe('object.type.task.name');
+    expect(taskMeta?.descriptionKey).toBe('object.type.task.description');
+    expect(taskMeta?.iconKey).toBe('task');
     expect(taskMeta?.supportedExtensions).toContain(BehaviorExtensionKey.REMINDER);
   });
 

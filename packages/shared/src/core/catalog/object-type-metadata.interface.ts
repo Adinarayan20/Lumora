@@ -3,6 +3,7 @@ import type { BehaviorExtensionKey } from './behavior-extension-key.js';
 
 /**
  * Immutable metadata definition for a Lumora universal object type.
+ * Stores stable i18n translation keys and icon tokens for domain separation.
  */
 export interface ObjectTypeMetadata {
   /**
@@ -11,19 +12,19 @@ export interface ObjectTypeMetadata {
   readonly typeKey: ObjectTypeKey;
 
   /**
-   * Human-readable display title.
+   * Stable i18n translation key for display name.
    */
-  readonly displayName: string;
+  readonly displayNameKey: string;
 
   /**
-   * Detailed functional description of the object type.
+   * Stable i18n translation key for functional description.
    */
-  readonly description: string;
+  readonly descriptionKey: string;
 
   /**
-   * Default icon token string for UI rendering.
+   * Stable abstract icon key token for UI resolution.
    */
-  readonly icon?: string | undefined;
+  readonly iconKey?: string | undefined;
 
   /**
    * List of domain behavior extension keys supported by this object type.
