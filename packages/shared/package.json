@@ -13,6 +13,10 @@
     "./core/errors": {
       "types": "./dist/core/errors/index.d.ts",
       "import": "./dist/core/errors/index.js"
+    },
+    "./core/primitives": {
+      "types": "./dist/core/primitives/index.d.ts",
+      "import": "./dist/core/primitives/index.js"
     }
   },
   "scripts": {
