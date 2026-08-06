@@ -1,17 +1,13 @@
-import type { IDomainEvent } from './domain-event.interface.js';
+import type { DomainEvent } from './domain-event.interface.js';
 
 /**
  * Pure contract interface for domain event publishing abstractions.
- * Concrete dispatching, queues, and outbox transports belong in infrastructure layers.
+ * Accepts a read-only list of DomainEvent data contracts.
+ * Concrete dispatchers, outbox persistence, and background queues belong in infrastructure layers.
  */
 export interface IDomainEventPublisher {
   /**
-   * Publishes a single domain event contract.
+   * Publishes one or more domain event contracts.
    */
-  publish(event: IDomainEvent<any>): Promise<void>;
-
-  /**
-   * Publishes a batch of domain event contracts atomically.
-   */
-  publishAll(events: readonly IDomainEvent<any>[]): Promise<void>;
+  publish(events: readonly DomainEvent<any, any>[]): Promise<void>;
 }
