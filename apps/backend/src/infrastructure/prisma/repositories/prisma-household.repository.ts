@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UniqueEntityId } from '@lumora/shared';
-import { Prisma, Workspace as PrismaWorkspace } from '../../../generated/prisma/client.js';
+import { Prisma } from '../../../generated/prisma/client.js';
 import { PrismaService } from '../prisma.service.js';
 import { PrismaExceptionMapper } from '../mappers/prisma-exception.mapper.js';
 import type { IHouseholdRepository } from '../../../domain/households/repositories/household.repository.interface.js';
@@ -16,7 +16,9 @@ export type WorkspaceWithMembersPayload = Prisma.WorkspaceGetPayload<{
 export class PrismaHouseholdRepository implements IHouseholdRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  public async findById(id: UniqueEntityId): Promise<HouseholdAggregate | null> {
+  public async findById(
+    id: UniqueEntityId,
+  ): Promise<HouseholdAggregate | null> {
     try {
       const workspace = await this.prisma.workspace.findFirst({
         where: { id: id.toString(), type: 'FAMILY' },
@@ -31,7 +33,9 @@ export class PrismaHouseholdRepository implements IHouseholdRepository {
     }
   }
 
-  public async findByWorkspaceId(workspaceId: UniqueEntityId): Promise<HouseholdAggregate | null> {
+  public async findByWorkspaceId(
+    workspaceId: UniqueEntityId,
+  ): Promise<HouseholdAggregate | null> {
     return this.findById(workspaceId);
   }
 

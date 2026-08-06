@@ -15,8 +15,18 @@ export class CursorEncoder {
    * Encodes a record ID or cursor value into an opaque base64url cursor token.
    */
   public static encode(value: unknown): string {
-    const strValue =
-      value instanceof Date ? value.toISOString() : String(value ?? '');
+    let strValue: string;
+    if (value instanceof Date) {
+      strValue = value.toISOString();
+    } else if (typeof value === 'string') {
+      strValue = value;
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      strValue = String(value);
+    } else if (value !== null && value !== undefined) {
+      strValue = JSON.stringify(value);
+    } else {
+      strValue = '';
+    }
 
     if (!strValue || strValue.trim().length === 0) {
       throw new DomainValidationException(

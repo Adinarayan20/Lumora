@@ -30,8 +30,13 @@ export class WorkspaceMemberEntity {
     this.joinedAt = props.joinedAt ?? new Date();
   }
 
-  public static create(props: WorkspaceMemberEntityProps): WorkspaceMemberEntity {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+  public static create(
+    props: WorkspaceMemberEntityProps,
+  ): WorkspaceMemberEntity {
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
     const userGuard = Guard.againstNullOrUndefined(props.userId, 'userId');

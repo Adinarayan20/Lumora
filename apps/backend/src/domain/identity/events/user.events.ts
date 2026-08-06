@@ -19,7 +19,7 @@ export class UserRegisteredEvent implements DomainEvent<UserEventName> {
   constructor(userId: UniqueEntityId, email: string, username: string) {
     this.eventId = new UniqueEntityId();
     this.aggregateId = userId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({ email, username });
   }
 }
@@ -37,7 +37,7 @@ export class UserLoggedInEvent implements DomainEvent<UserEventName> {
   constructor(userId: UniqueEntityId, deviceId: UniqueEntityId) {
     this.eventId = new UniqueEntityId();
     this.aggregateId = userId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({ deviceId: deviceId.toValue() });
   }
 }

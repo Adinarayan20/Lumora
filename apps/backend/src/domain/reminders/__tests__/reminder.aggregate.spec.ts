@@ -26,14 +26,19 @@ describe('ReminderAggregate Domain Root', () => {
 
   it('should calculate next occurrence for valid RRULE', () => {
     const rule = RecurrenceRule.create('FREQ=DAILY;INTERVAL=1');
-    const nextDate = ReminderSchedulingPolicy.calculateNextOccurrence(remindAt, rule);
+    const nextDate = ReminderSchedulingPolicy.calculateNextOccurrence(
+      remindAt,
+      rule,
+    );
 
     expect(nextDate).toBeDefined();
     expect(nextDate?.toISOString()).toBe('2026-08-11T10:00:00.000Z');
   });
 
   it('should reject invalid RFC 5545 RRULE string', () => {
-    expect(() => RecurrenceRule.create('INVALID_RRULE_STRING')).toThrow(DomainValidationException);
+    expect(() => RecurrenceRule.create('INVALID_RRULE_STRING')).toThrow(
+      DomainValidationException,
+    );
   });
 
   it('should trigger execution and update status', () => {
@@ -49,6 +54,8 @@ describe('ReminderAggregate Domain Root', () => {
 
     expect(reminder.lastExecutionId).toBe('exec-1001');
     expect(reminder.executionStatus).toBe('TRIGGERED');
-    expect(reminder.domainEvents.some((e) => e.eventName === 'reminder.triggered')).toBe(true);
+    expect(
+      reminder.domainEvents.some((e) => e.eventName === 'reminder.triggered'),
+    ).toBe(true);
   });
 });

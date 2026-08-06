@@ -1,5 +1,8 @@
 import { IsEnum, IsOptional } from 'class-validator';
-import { NotificationChannel, NotificationStatus } from '../../../domain/notifications/value-objects/notification-enums.js';
+import {
+  NotificationChannel,
+  NotificationStatus,
+} from '../../../domain/notifications/value-objects/notification-enums.js';
 
 export class ListNotificationsFilterDto {
   @IsOptional()

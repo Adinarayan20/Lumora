@@ -27,7 +27,10 @@ export class CollectionItemEntity {
   }
 
   public static create(props: CollectionItemEntityProps): CollectionItemEntity {
-    const colGuard = Guard.againstNullOrUndefined(props.collectionId, 'collectionId');
+    const colGuard = Guard.againstNullOrUndefined(
+      props.collectionId,
+      'collectionId',
+    );
     if (colGuard.isFailure) throw colGuard.getError();
 
     const objGuard = Guard.againstNullOrUndefined(props.objectId, 'objectId');

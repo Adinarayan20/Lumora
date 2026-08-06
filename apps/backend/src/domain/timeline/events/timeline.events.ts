@@ -30,7 +30,7 @@ export class TimelineRecordRecordedEvent implements DomainEvent<TimelineEventNam
     this.eventId = new UniqueEntityId();
     this.aggregateId = timelineRecordId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       userId: userId.toString(),
       entityCategory,

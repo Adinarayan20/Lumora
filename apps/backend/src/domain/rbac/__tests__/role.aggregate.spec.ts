@@ -30,7 +30,11 @@ describe('RoleAggregate Domain Root', () => {
       permissions: new Set(['workspace.delete']),
     });
 
-    expect(() => systemRole.grantPermission('workspace.update')).toThrow(DomainValidationException);
-    expect(() => systemRole.revokePermission('workspace.delete')).toThrow(DomainValidationException);
+    expect(() => systemRole.grantPermission('workspace.update')).toThrow(
+      DomainValidationException,
+    );
+    expect(() => systemRole.revokePermission('workspace.delete')).toThrow(
+      DomainValidationException,
+    );
   });
 });

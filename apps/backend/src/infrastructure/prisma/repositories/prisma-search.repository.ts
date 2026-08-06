@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UniqueEntityId } from '@lumora/shared';
-import { Prisma, SearchIndex as PrismaSearchIndex } from '../../../generated/prisma/client.js';
+import {
+  Prisma,
+  SearchIndex as PrismaSearchIndex,
+} from '../../../generated/prisma/client.js';
 import { PrismaService } from '../prisma.service.js';
 import { PrismaExceptionMapper } from '../mappers/prisma-exception.mapper.js';
 import type { ISearchRepository } from '../../../domain/search/repositories/search.repository.interface.js';
@@ -10,12 +13,12 @@ import { SearchEntityCategory } from '../../../domain/search/value-objects/searc
 
 /**
  * Concrete Prisma implementation of ISearchRepository.
- * 
+ *
  * SEARCH ARCHITECTURE & EVENT PROJECTION:
  * Search projections are populated asynchronously from Domain Events (ObjectCreatedEvent, SpaceCreatedEvent, etc.)
  * dispatched via Outbox Workers. In current PostgreSQL infrastructure, search queries execute via indexed keyword
  * matching.
- * 
+ *
  * FUTURE INFRASTRUCTURE ROADMAP:
  * - Full-Text Search Engine: PostgreSQL tsvector & tsquery indexes
  * - Relevance Ranking & Stemming: ts_rank relevance scoring

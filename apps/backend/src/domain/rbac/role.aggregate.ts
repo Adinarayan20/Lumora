@@ -1,4 +1,9 @@
-import { AggregateRoot, UniqueEntityId, Guard, DomainValidationException } from '@lumora/shared';
+import {
+  AggregateRoot,
+  UniqueEntityId,
+  Guard,
+  DomainValidationException,
+} from '@lumora/shared';
 
 export interface RoleAggregateProps {
   id?: UniqueEntityId;
@@ -39,7 +44,10 @@ export class RoleAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public static create(props: RoleAggregateProps): RoleAggregate {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
     const nameGuard = Guard.againstEmptyString(props.name, 'name');

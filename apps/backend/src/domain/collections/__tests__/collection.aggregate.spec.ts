@@ -38,7 +38,9 @@ describe('CollectionAggregate Domain Root', () => {
     });
 
     const objectId = new UniqueEntityId();
-    expect(() => collection.addItem(objectId)).toThrow(DomainValidationException);
+    expect(() => collection.addItem(objectId)).toThrow(
+      DomainValidationException,
+    );
   });
 
   it('should prevent adding duplicate object items', () => {
@@ -53,6 +55,8 @@ describe('CollectionAggregate Domain Root', () => {
     const objectId = new UniqueEntityId();
     collection.addItem(objectId);
 
-    expect(() => collection.addItem(objectId)).toThrow(DomainValidationException);
+    expect(() => collection.addItem(objectId)).toThrow(
+      DomainValidationException,
+    );
   });
 });

@@ -25,7 +25,11 @@ export class FileValidationPolicy {
     if (!this.ALLOWED_MIME_TYPES.includes(mimeType.getValue())) {
       throw new DomainValidationException(
         `Disallowed file type '${mimeType.getValue()}'.`,
-        { mimeType: [`MIME type ${mimeType.getValue()} is not permitted for upload.`] },
+        {
+          mimeType: [
+            `MIME type ${mimeType.getValue()} is not permitted for upload.`,
+          ],
+        },
       );
     }
   }

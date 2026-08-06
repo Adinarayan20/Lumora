@@ -29,7 +29,7 @@ export class NotificationDeliveredEvent implements DomainEvent<NotificationEvent
     this.eventId = new UniqueEntityId();
     this.aggregateId = notificationId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       userId: userId.toString(),
       channel,
@@ -61,7 +61,7 @@ export class NotificationFailedEvent implements DomainEvent<NotificationEventNam
     this.eventId = new UniqueEntityId();
     this.aggregateId = notificationId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       userId: userId.toString(),
       channel,
@@ -91,7 +91,7 @@ export class NotificationReadEvent implements DomainEvent<NotificationEventName>
     this.eventId = new UniqueEntityId();
     this.aggregateId = notificationId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       userId: userId.toString(),
       readAt: readAt.toISOString(),

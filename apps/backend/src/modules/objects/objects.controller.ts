@@ -8,21 +8,35 @@ import {
   Param,
   Query,
   UseGuards,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { ObjectsService } from './objects.service';
-import { CreateObjectDto } from './dto/create-object.dto';
-import { UpdateObjectDto } from './dto/update-object.dto';
-import { FilterObjectDto } from './dto/filter-object.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../rbac/guards/permissions.guard';
 import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator';
 import { Permissions } from '../rbac/constants/permissions';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { CreateObjectFacadeUseCase } from './use-cases/create-object-facade.use-case.js';
+import { GetWorkspaceObjectsQuery } from './use-cases/get-workspace-objects.query.js';
+import { GetObjectQuery } from './use-cases/get-object.query.js';
+import { UpdateObjectUseCase } from './use-cases/update-object.use-case.js';
+import { DeleteObjectUseCase } from './use-cases/delete-object.use-case.js';
+import { CreateObjectDto } from './dto/create-object.dto';
+import { UpdateObjectDto } from './dto/update-object.dto';
+import { FilterObjectDto } from './dto/filter-object.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('workspaces/:workspaceId/objects')
 export class ObjectsController {
-  constructor(private readonly objectsService: ObjectsService) {}
+  constructor(
+    private readonly createObjectUseCase: CreateObjectFacadeUseCase,
+    private readonly getWorkspaceObjectsQuery: GetWorkspaceObjectsQuery,
+    private readonly getObjectQuery: GetObjectQuery,
+    private readonly updateObjectUseCase: UpdateObjectUseCase,
+    private readonly deleteObjectUseCase: DeleteObjectUseCase,
+  ) {}
 
   @Post()
   @RequirePermissions(Permissions.Object.Create)
@@ -31,7 +45,19 @@ export class ObjectsController {
     @CurrentUser('id') userId: string,
     @Body() dto: CreateObjectDto,
   ) {
-    return this.objectsService.createObject(workspaceId, userId, dto);
+    const result = await this.createObjectUseCase.execute({
+      workspaceId,
+      createdById: userId,
+      dto,
+    });
+    if (result.isFailure) {
+      const errMessage = result.getError().message;
+      if (errMessage.includes('already exists')) {
+        throw new ConflictException(errMessage);
+      }
+      throw new BadRequestException(errMessage);
+    }
+    return result.getValue();
   }
 
   @Get()
@@ -40,7 +66,14 @@ export class ObjectsController {
     @Param('workspaceId') workspaceId: string,
     @Query() filter: FilterObjectDto,
   ) {
-    return this.objectsService.getWorkspaceObjects(workspaceId, filter);
+    const result = await this.getWorkspaceObjectsQuery.execute({
+      workspaceId,
+      filter,
+    });
+    if (result.isFailure) {
+      throw new InternalServerErrorException(result.getError().message);
+    }
+    return result.getValue();
   }
 
   @Get(':idOrKey')
@@ -49,7 +82,13 @@ export class ObjectsController {
     @Param('workspaceId') workspaceId: string,
     @Param('idOrKey') idOrKey: string,
   ) {
-    return this.objectsService.getObjectByIdOrKey(workspaceId, idOrKey);
+    const result = await this.getObjectQuery.execute({ workspaceId, idOrKey });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new InternalServerErrorException(msg);
+    }
+    return result.getValue();
   }
 
   @Patch(':id')
@@ -60,7 +99,19 @@ export class ObjectsController {
     @CurrentUser('id') userId: string,
     @Body() dto: UpdateObjectDto,
   ) {
-    return this.objectsService.updateObject(workspaceId, objectId, userId, dto);
+    const result = await this.updateObjectUseCase.execute({
+      workspaceId,
+      objectId,
+      userId,
+      dto,
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      if (msg.includes('mismatch')) throw new ConflictException(msg);
+      throw new BadRequestException(msg);
+    }
+    return result.getValue();
   }
 
   @Delete(':id')
@@ -70,6 +121,16 @@ export class ObjectsController {
     @Param('id') objectId: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.objectsService.softDeleteObject(workspaceId, objectId, userId);
+    const result = await this.deleteObjectUseCase.execute({
+      workspaceId,
+      objectId,
+      userId,
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new InternalServerErrorException(msg);
+    }
+    return result.getValue();
   }
 }

@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UniqueEntityId, IdGenerator } from '@lumora/shared';
 import { PrismaTimelineRepository } from '../prisma-timeline.repository.js';
 import { TimelineRecordEntity } from '../../../../domain/timeline/entities/timeline-record.entity.js';
-import { PrismaService } from '../../prisma.service.js';
 
 describe('PrismaTimelineRepository Unit Tests', () => {
   let repository: PrismaTimelineRepository;
@@ -16,7 +16,7 @@ describe('PrismaTimelineRepository Unit Tests', () => {
       },
     };
 
-    repository = new PrismaTimelineRepository(mockPrisma as unknown as PrismaService);
+    repository = new PrismaTimelineRepository(mockPrisma);
   });
 
   it('should save timeline record to database using append-only create semantics', async () => {

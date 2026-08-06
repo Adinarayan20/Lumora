@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UniqueEntityId } from '@lumora/shared';
-import { Prisma, FileAsset as PrismaFileAsset, FileProvider as PrismaFileProvider } from '../../../generated/prisma/client.js';
+import {
+  Prisma,
+  FileAsset as PrismaFileAsset,
+} from '../../../generated/prisma/client.js';
 import { PrismaService } from '../prisma.service.js';
 import { PrismaExceptionMapper } from '../mappers/prisma-exception.mapper.js';
 import type { IFileAssetRepository } from '../../../domain/media/repositories/file-asset.repository.interface.js';
@@ -16,7 +19,9 @@ import { FileChecksum } from '../../../domain/media/value-objects/file-checksum.
 export class PrismaFileAssetRepository implements IFileAssetRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  public async findById(id: UniqueEntityId): Promise<FileAssetAggregate | null> {
+  public async findById(
+    id: UniqueEntityId,
+  ): Promise<FileAssetAggregate | null> {
     try {
       const record = await this.prisma.fileAsset.findUnique({
         where: { id: id.toString() },
@@ -48,7 +53,7 @@ export class PrismaFileAssetRepository implements IFileAssetRepository {
       await this.prisma.fileAsset.upsert({
         where: { id: aggregate.id.toString() },
         create: data as Prisma.FileAssetUncheckedCreateInput,
-        update: data as Prisma.FileAssetUncheckedUpdateInput,
+        update: data,
       });
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error);
@@ -65,7 +70,9 @@ export class PrismaFileAssetRepository implements IFileAssetRepository {
     }
   }
 
-  public async findByUploadedUserId(uploadedById: UniqueEntityId): Promise<FileAssetAggregate[]> {
+  public async findByUploadedUserId(
+    uploadedById: UniqueEntityId,
+  ): Promise<FileAssetAggregate[]> {
     try {
       const records = await this.prisma.fileAsset.findMany({
         where: { uploadedById: uploadedById.toString() },
@@ -78,7 +85,9 @@ export class PrismaFileAssetRepository implements IFileAssetRepository {
     }
   }
 
-  public async calculateUserTotalStorageBytes(uploadedById: UniqueEntityId): Promise<number> {
+  public async calculateUserTotalStorageBytes(
+    uploadedById: UniqueEntityId,
+  ): Promise<number> {
     try {
       const aggregateResult = await this.prisma.fileAsset.aggregate({
         where: { uploadedById: uploadedById.toString() },
@@ -106,7 +115,9 @@ export class PrismaFileAssetRepository implements IFileAssetRepository {
       filename: FileName.create(model.filename),
       mimeType: MimeType.create(model.mimeType),
       size: FileSize.create(model.size),
-      checksum: model.checksum ? FileChecksum.create(model.checksum) : undefined,
+      checksum: model.checksum
+        ? FileChecksum.create(model.checksum)
+        : undefined,
       createdAt: model.createdAt,
       deletedAt: undefined,
     });
@@ -119,7 +130,7 @@ export class PrismaFileAssetRepository implements IFileAssetRepository {
     return {
       id: aggregate.id.toString(),
       uploadedById: aggregate.uploadedById.toString(),
-      provider: aggregate.provider as PrismaFileProvider,
+      provider: aggregate.provider,
       bucket: aggregate.bucket ?? null,
       path: aggregate.path.getValue(),
       filename: aggregate.filename.getValue(),

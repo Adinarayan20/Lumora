@@ -1,6 +1,14 @@
-import { AggregateRoot, UniqueEntityId, Guard, DomainValidationException } from '@lumora/shared';
+import {
+  AggregateRoot,
+  UniqueEntityId,
+  Guard,
+  DomainValidationException,
+} from '@lumora/shared';
 import { CollectionSlug } from './value-objects/collection-slug.js';
-import { CollectionType, CollectionStatus } from './value-objects/collection-enums.js';
+import {
+  CollectionType,
+  CollectionStatus,
+} from './value-objects/collection-enums.js';
 import { CollectionItemEntity } from './entities/collection-item.entity.js';
 import { CollectionCreatedEvent } from './events/collection.events.js';
 
@@ -95,10 +103,16 @@ export class CollectionAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public static create(props: CollectionAggregateProps): CollectionAggregate {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
-    const userGuard = Guard.againstNullOrUndefined(props.createdById, 'createdById');
+    const userGuard = Guard.againstNullOrUndefined(
+      props.createdById,
+      'createdById',
+    );
     if (userGuard.isFailure) throw userGuard.getError();
 
     const nameGuard = Guard.againstEmptyString(props.name, 'name');
@@ -119,11 +133,16 @@ export class CollectionAggregate extends AggregateRoot<UniqueEntityId> {
     return collection;
   }
 
-  public static reconstitute(props: CollectionAggregateProps): CollectionAggregate {
+  public static reconstitute(
+    props: CollectionAggregateProps,
+  ): CollectionAggregate {
     return new CollectionAggregate(props);
   }
 
-  public addItem(objectId: UniqueEntityId, order: number = 0): CollectionItemEntity {
+  public addItem(
+    objectId: UniqueEntityId,
+    order: number = 0,
+  ): CollectionItemEntity {
     if (this.type !== CollectionType.STATIC) {
       throw new DomainValidationException(
         `Cannot add explicit items to dynamic query collection.`,

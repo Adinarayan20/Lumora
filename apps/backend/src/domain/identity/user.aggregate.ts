@@ -3,7 +3,10 @@ import { EmailAddress } from './value-objects/email-address.js';
 import { Username } from './value-objects/username.js';
 import { HashedPassword } from './value-objects/hashed-password.js';
 import { UserStatus } from './value-objects/user-status.js';
-import { UserRegisteredEvent, UserLoggedInEvent } from './events/user.events.js';
+import {
+  UserRegisteredEvent,
+  UserLoggedInEvent,
+} from './events/user.events.js';
 
 export interface UserAggregateProps {
   id?: UniqueEntityId;
@@ -58,7 +61,10 @@ export class UserAggregate extends AggregateRoot<UniqueEntityId> {
    * Factory method creating a new UserAggregate instance and emitting UserRegisteredEvent.
    */
   public static create(props: UserAggregateProps): UserAggregate {
-    const displayGuard = Guard.againstEmptyString(props.displayName, 'displayName');
+    const displayGuard = Guard.againstEmptyString(
+      props.displayName,
+      'displayName',
+    );
     if (displayGuard.isFailure) throw displayGuard.getError();
 
     const user = new UserAggregate(props);

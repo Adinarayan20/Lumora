@@ -10,6 +10,20 @@ import { WorkspaceMemberRepository } from './repositories/workspace-member.repos
 import { WorkspaceInvitationRepository } from './repositories/workspace-invitation.repository';
 import { AuthModule } from '../auth/auth.module';
 import { RbacModule } from '../rbac/rbac.module';
+import {
+  CreateWorkspaceUseCase,
+  GetUserWorkspacesQuery,
+  GetWorkspaceQuery,
+  UpdateWorkspaceUseCase,
+  DeleteWorkspaceUseCase,
+  TransferOwnershipUseCase,
+  GetMembersQuery,
+  RemoveMemberUseCase,
+  InviteMemberUseCase,
+  GetInvitationsQuery,
+  RevokeInvitationUseCase,
+  AcceptInvitationUseCase,
+} from './use-cases/workspace-use-cases';
 
 @Module({
   imports: [forwardRef(() => AuthModule), RbacModule],
@@ -23,6 +37,19 @@ import { RbacModule } from '../rbac/rbac.module';
     WorkspaceRepository,
     WorkspaceMemberRepository,
     WorkspaceInvitationRepository,
+    // CQRS Use Cases
+    CreateWorkspaceUseCase,
+    GetUserWorkspacesQuery,
+    GetWorkspaceQuery,
+    UpdateWorkspaceUseCase,
+    DeleteWorkspaceUseCase,
+    TransferOwnershipUseCase,
+    GetMembersQuery,
+    RemoveMemberUseCase,
+    InviteMemberUseCase,
+    GetInvitationsQuery,
+    RevokeInvitationUseCase,
+    AcceptInvitationUseCase,
   ],
   exports: [
     WorkspacesService,

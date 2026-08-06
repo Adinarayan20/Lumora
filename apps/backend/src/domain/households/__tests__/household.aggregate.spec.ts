@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator, DomainValidationException } from '@lumora/shared';
+import { IdGenerator, UniqueEntityId, DomainValidationException } from '@lumora/shared';
 import { HouseholdAggregate } from '../household.aggregate.js';
 
 describe('HouseholdAggregate Invariants & Rules', () => {
   it('should create HouseholdAggregate with owner member', () => {
-    const wsId = IdGenerator.generate();
-    const ownerId = IdGenerator.generate();
+    const wsId = new UniqueEntityId(IdGenerator.generate());
+    const ownerId = new UniqueEntityId(IdGenerator.generate());
 
     const household = HouseholdAggregate.create({
       workspaceId: wsId,
@@ -19,9 +19,9 @@ describe('HouseholdAggregate Invariants & Rules', () => {
   });
 
   it('should add members and prevent duplicate members', () => {
-    const wsId = IdGenerator.generate();
-    const ownerId = IdGenerator.generate();
-    const memberId = IdGenerator.generate();
+    const wsId = new UniqueEntityId(IdGenerator.generate());
+    const ownerId = new UniqueEntityId(IdGenerator.generate());
+    const memberId = new UniqueEntityId(IdGenerator.generate());
 
     const household = HouseholdAggregate.create({
       workspaceId: wsId,
@@ -32,6 +32,8 @@ describe('HouseholdAggregate Invariants & Rules', () => {
     household.addMember(memberId, 'MEMBER');
 
     expect(household.members).toHaveLength(2);
-    expect(() => household.addMember(memberId, 'MEMBER')).toThrow(DomainValidationException);
+    expect(() => household.addMember(memberId, 'MEMBER')).toThrow(
+      DomainValidationException,
+    );
   });
 });

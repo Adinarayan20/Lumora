@@ -82,19 +82,33 @@ export class NotificationAggregate extends AggregateRoot<UniqueEntityId> {
       body: NotificationBody | string;
     },
   ): NotificationAggregate {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
     const userGuard = Guard.againstNullOrUndefined(props.userId, 'userId');
     if (userGuard.isFailure) throw userGuard.getError();
 
-    const schedGuard = Guard.againstNullOrUndefined(props.scheduledFor, 'scheduledFor');
+    const schedGuard = Guard.againstNullOrUndefined(
+      props.scheduledFor,
+      'scheduledFor',
+    );
     if (schedGuard.isFailure) throw schedGuard.getError();
 
-    const titleObj = typeof props.title === 'string' ? NotificationTitle.create(props.title) : props.title;
-    const bodyObj = typeof props.body === 'string' ? NotificationBody.create(props.body) : props.body;
+    const titleObj =
+      typeof props.title === 'string'
+        ? NotificationTitle.create(props.title)
+        : props.title;
+    const bodyObj =
+      typeof props.body === 'string'
+        ? NotificationBody.create(props.body)
+        : props.body;
 
-    NotificationPolicy.validateChannel(props.channel ?? NotificationChannel.IN_APP);
+    NotificationPolicy.validateChannel(
+      props.channel ?? NotificationChannel.IN_APP,
+    );
 
     return new NotificationAggregate({
       ...props,
@@ -103,7 +117,9 @@ export class NotificationAggregate extends AggregateRoot<UniqueEntityId> {
     });
   }
 
-  public static reconstitute(props: NotificationAggregateProps): NotificationAggregate {
+  public static reconstitute(
+    props: NotificationAggregateProps,
+  ): NotificationAggregate {
     return new NotificationAggregate(props);
   }
 
@@ -113,8 +129,14 @@ export class NotificationAggregate extends AggregateRoot<UniqueEntityId> {
     this.updatedAt = new Date();
   }
 
-  public markAsDelivered(channel: NotificationChannel, deliveredAt: Date = new Date()): void {
-    NotificationPolicy.validateStatusTransition(this.status, NotificationStatus.DELIVERED);
+  public markAsDelivered(
+    channel: NotificationChannel,
+    deliveredAt: Date = new Date(),
+  ): void {
+    NotificationPolicy.validateStatusTransition(
+      this.status,
+      NotificationStatus.DELIVERED,
+    );
     this.status = NotificationStatus.DELIVERED;
     this.deliveredAt = deliveredAt;
     this.channel = channel;
@@ -132,7 +154,10 @@ export class NotificationAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public markAsFailed(channel: NotificationChannel, reason: string): void {
-    NotificationPolicy.validateStatusTransition(this.status, NotificationStatus.FAILED);
+    NotificationPolicy.validateStatusTransition(
+      this.status,
+      NotificationStatus.FAILED,
+    );
     this.status = NotificationStatus.FAILED;
     this.failureReason = reason;
     this.channel = channel;
@@ -150,23 +175,24 @@ export class NotificationAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public markAsRead(readAt: Date = new Date()): void {
-    NotificationPolicy.validateStatusTransition(this.status, NotificationStatus.READ);
+    NotificationPolicy.validateStatusTransition(
+      this.status,
+      NotificationStatus.READ,
+    );
     this.status = NotificationStatus.READ;
     this.readAt = readAt;
     this.updatedAt = new Date();
 
     this.addDomainEvent(
-      new NotificationReadEvent(
-        this.id,
-        this.workspaceId,
-        this.userId,
-        readAt,
-      ),
+      new NotificationReadEvent(this.id, this.workspaceId, this.userId, readAt),
     );
   }
 
   public cancel(): void {
-    NotificationPolicy.validateStatusTransition(this.status, NotificationStatus.CANCELLED);
+    NotificationPolicy.validateStatusTransition(
+      this.status,
+      NotificationStatus.CANCELLED,
+    );
     this.status = NotificationStatus.CANCELLED;
     this.updatedAt = new Date();
   }

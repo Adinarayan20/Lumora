@@ -13,7 +13,7 @@ export interface SearchIndexEntityProps {
 
 /**
  * Read-Side Projection Entity (CQRS Read Model) representing an indexed search document.
- * 
+ *
  * ARCHITECTURE DESIGN DECISION:
  * SearchIndex is strictly a READ-SIDE PROJECTION ENTITY, not an Aggregate Root.
  * It carries no state-transition business invariants or domain events.

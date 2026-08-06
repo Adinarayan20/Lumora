@@ -8,7 +8,9 @@ import { DomainValidationException, UniqueEntityId } from '@lumora/shared';
 describe('UserAggregate Domain Root', () => {
   const validEmail = EmailAddress.create('user@example.com');
   const validUsername = Username.create('valid_user');
-  const validHash = HashedPassword.create('$2b$10$abcdefghijklmnopqrstuvwxyz123456');
+  const validHash = HashedPassword.create(
+    '$2b$10$abcdefghijklmnopqrstuvwxyz123456',
+  );
 
   it('should create user aggregate and record UserRegisteredEvent', () => {
     const user = UserAggregate.create({
@@ -37,11 +39,15 @@ describe('UserAggregate Domain Root', () => {
   });
 
   it('should reject invalid email format', () => {
-    expect(() => EmailAddress.create('invalid-email')).toThrow(DomainValidationException);
+    expect(() => EmailAddress.create('invalid-email')).toThrow(
+      DomainValidationException,
+    );
   });
 
   it('should reject invalid username', () => {
     expect(() => Username.create('a')).toThrow(DomainValidationException);
-    expect(() => Username.create('user with spaces')).toThrow(DomainValidationException);
+    expect(() => Username.create('user with spaces')).toThrow(
+      DomainValidationException,
+    );
   });
 });

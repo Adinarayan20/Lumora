@@ -43,7 +43,10 @@ export class TimelineRecordEntity {
       action: TimelineAction | string;
     },
   ): TimelineRecordEntity {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
     const userGuard = Guard.againstNullOrUndefined(props.userId, 'userId');
@@ -66,7 +69,9 @@ export class TimelineRecordEntity {
     });
   }
 
-  public static reconstitute(props: TimelineRecordEntityProps): TimelineRecordEntity {
+  public static reconstitute(
+    props: TimelineRecordEntityProps,
+  ): TimelineRecordEntity {
     return new TimelineRecordEntity(props);
   }
 }

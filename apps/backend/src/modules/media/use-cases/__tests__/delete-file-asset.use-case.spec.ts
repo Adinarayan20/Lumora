@@ -43,7 +43,9 @@ describe('DeleteFileAssetUseCase', () => {
     });
 
     expect(result.isSuccess).toBe(true);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockStorage.delete).toHaveBeenCalled();
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.delete).toHaveBeenCalled();
   });
 

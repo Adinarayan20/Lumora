@@ -11,14 +11,14 @@ export interface SpaceFilter extends Record<string, unknown> {
   isFavorite?: boolean;
 }
 
-export interface ISpaceRepository
-  extends IPaginatedRepository<SpaceAggregate, UniqueEntityId, SpaceFilter> {
+export interface ISpaceRepository extends IPaginatedRepository<
+  SpaceAggregate,
+  UniqueEntityId,
+  SpaceFilter
+> {
   findBySlug(
     workspaceId: UniqueEntityId,
     slug: SpaceSlug,
   ): Promise<SpaceAggregate | null>;
-  existsBySlug(
-    workspaceId: UniqueEntityId,
-    slug: SpaceSlug,
-  ): Promise<boolean>;
+  existsBySlug(workspaceId: UniqueEntityId, slug: SpaceSlug): Promise<boolean>;
 }

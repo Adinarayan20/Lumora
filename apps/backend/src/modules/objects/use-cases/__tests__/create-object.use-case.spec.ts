@@ -12,10 +12,17 @@ describe('CreateObjectUseCase', () => {
       save: vi.fn().mockResolvedValue(undefined),
       findById: vi.fn().mockResolvedValue(null),
       findByObjectKey: vi.fn().mockResolvedValue(null),
-      doesObjectKeyExist: vi.fn().mockResolvedValue(false),
+      existsByObjectKey: vi.fn().mockResolvedValue(false),
+      exists: vi.fn().mockResolvedValue(true),
       delete: vi.fn().mockResolvedValue(undefined),
-      findWorkspaceObjects: vi.fn().mockResolvedValue([]),
-      findPaginated: vi.fn().mockResolvedValue({ items: [], pageInfo: { totalCount: 0, hasNextPage: false, hasPreviousPage: false } }),
+      findPaginated: vi.fn().mockResolvedValue({
+        items: [],
+        pageInfo: {
+          totalCount: 0,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      }),
     };
 
     useCase = new CreateObjectUseCase(mockObjectRepository);
@@ -41,6 +48,7 @@ describe('CreateObjectUseCase', () => {
     expect(dto.createdById).toBe(userId);
     expect(dto.title).toBe('Project Architecture Plan');
     expect(dto.typeKey).toBe('NOTE');
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockObjectRepository.save).toHaveBeenCalledTimes(1);
   });
 
@@ -58,6 +66,7 @@ describe('CreateObjectUseCase', () => {
     });
 
     expect(result.isFailure).toBe(true);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockObjectRepository.save).not.toHaveBeenCalled();
   });
 });

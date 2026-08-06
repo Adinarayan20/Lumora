@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator, DomainValidationException } from '@lumora/shared';
+import { IdGenerator, UniqueEntityId, DomainValidationException } from '@lumora/shared';
 import { SearchIndexEntity } from '../entities/search-index.entity.js';
 import { SearchEntityCategory } from '../value-objects/search-entity-category.js';
 
 describe('SearchIndexEntity Invariants & Projection Rules', () => {
   it('should successfully create a valid SearchIndexEntity', () => {
-    const entityId = IdGenerator.generate();
+    const entityId = new UniqueEntityId(IdGenerator.generate());
     const category = SearchEntityCategory.create('OBJECT');
 
     const index = SearchIndexEntity.create({
@@ -21,7 +21,7 @@ describe('SearchIndexEntity Invariants & Projection Rules', () => {
   });
 
   it('should update content and refresh updatedAt timestamp', () => {
-    const entityId = IdGenerator.generate();
+    const entityId = new UniqueEntityId(IdGenerator.generate());
 
     const index = SearchIndexEntity.create({
       entityCategory: 'SPACE',
@@ -37,7 +37,7 @@ describe('SearchIndexEntity Invariants & Projection Rules', () => {
   });
 
   it('should throw DomainValidationException on invalid entity category string', () => {
-    const entityId = IdGenerator.generate();
+    const entityId = new UniqueEntityId(IdGenerator.generate());
 
     expect(() =>
       SearchIndexEntity.create({

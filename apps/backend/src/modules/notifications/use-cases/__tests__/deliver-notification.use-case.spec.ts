@@ -2,7 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { IdGenerator, UniqueEntityId } from '@lumora/shared';
 import { DeliverNotificationUseCase } from '../deliver-notification.use-case.js';
 import { NotificationAggregate } from '../../../../domain/notifications/notification.aggregate.js';
-import { NotificationChannel, NotificationStatus } from '../../../../domain/notifications/value-objects/notification-enums.js';
+import {
+  NotificationChannel,
+  NotificationStatus,
+} from '../../../../domain/notifications/value-objects/notification-enums.js';
 import type { INotificationRepository } from '../../../../domain/notifications/repositories/notification.repository.interface.js';
 
 describe('DeliverNotificationUseCase', () => {
@@ -40,6 +43,7 @@ describe('DeliverNotificationUseCase', () => {
     const dto = result.getValue();
     expect(dto.status).toBe(NotificationStatus.DELIVERED);
     expect(dto.channel).toBe(NotificationChannel.PUSH);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.save).toHaveBeenCalled();
   });
 

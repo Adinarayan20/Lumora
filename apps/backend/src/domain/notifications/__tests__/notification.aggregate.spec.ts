@@ -1,12 +1,15 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator, DomainValidationException } from '@lumora/shared';
+import { IdGenerator, UniqueEntityId, DomainValidationException } from '@lumora/shared';
 import { NotificationAggregate } from '../notification.aggregate.js';
-import { NotificationChannel, NotificationStatus } from '../value-objects/notification-enums.js';
+import {
+  NotificationChannel,
+  NotificationStatus,
+} from '../value-objects/notification-enums.js';
 
 describe('NotificationAggregate Invariants & Rules', () => {
   it('should successfully create a valid NotificationAggregate and emit initial state', () => {
-    const wsId = IdGenerator.generate();
-    const userId = IdGenerator.generate();
+    const wsId = new UniqueEntityId(IdGenerator.generate());
+    const userId = new UniqueEntityId(IdGenerator.generate());
 
     const notif = NotificationAggregate.create({
       workspaceId: wsId,
@@ -23,8 +26,8 @@ describe('NotificationAggregate Invariants & Rules', () => {
   });
 
   it('should mark notification as delivered and emit NotificationDeliveredEvent', () => {
-    const wsId = IdGenerator.generate();
-    const userId = IdGenerator.generate();
+    const wsId = new UniqueEntityId(IdGenerator.generate());
+    const userId = new UniqueEntityId(IdGenerator.generate());
 
     const notif = NotificationAggregate.create({
       workspaceId: wsId,
@@ -42,8 +45,8 @@ describe('NotificationAggregate Invariants & Rules', () => {
   });
 
   it('should throw DomainValidationException on duplicate delivery attempt', () => {
-    const wsId = IdGenerator.generate();
-    const userId = IdGenerator.generate();
+    const wsId = new UniqueEntityId(IdGenerator.generate());
+    const userId = new UniqueEntityId(IdGenerator.generate());
 
     const notif = NotificationAggregate.create({
       workspaceId: wsId,
@@ -61,8 +64,8 @@ describe('NotificationAggregate Invariants & Rules', () => {
   });
 
   it('should throw DomainValidationException when attempting to modify a CANCELLED notification', () => {
-    const wsId = IdGenerator.generate();
-    const userId = IdGenerator.generate();
+    const wsId = new UniqueEntityId(IdGenerator.generate());
+    const userId = new UniqueEntityId(IdGenerator.generate());
 
     const notif = NotificationAggregate.create({
       workspaceId: wsId,
@@ -81,8 +84,8 @@ describe('NotificationAggregate Invariants & Rules', () => {
   });
 
   it('should throw DomainValidationException when creating notification with invalid channel', () => {
-    const wsId = IdGenerator.generate();
-    const userId = IdGenerator.generate();
+    const wsId = new UniqueEntityId(IdGenerator.generate());
+    const userId = new UniqueEntityId(IdGenerator.generate());
 
     expect(() =>
       NotificationAggregate.create({
@@ -90,7 +93,7 @@ describe('NotificationAggregate Invariants & Rules', () => {
         userId: userId,
         title: 'Title',
         body: 'Body',
-        channel: 'INVALID_CHANNEL' as any,
+        channel: 'INVALID_CHANNEL' as unknown as NotificationChannel,
         scheduledFor: new Date(),
       }),
     ).toThrow(DomainValidationException);

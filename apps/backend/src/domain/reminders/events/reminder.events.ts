@@ -4,7 +4,10 @@ import {
   ReminderEventName,
   DomainEvent,
 } from '@lumora/shared';
-import { ReminderSource, ReminderTriggerType } from '../value-objects/reminder-enums.js';
+import {
+  ReminderSource,
+  ReminderTriggerType,
+} from '../value-objects/reminder-enums.js';
 
 export class ReminderScheduledEvent implements DomainEvent<ReminderEventName> {
   public readonly eventId: UniqueEntityId;
@@ -35,7 +38,7 @@ export class ReminderScheduledEvent implements DomainEvent<ReminderEventName> {
     this.eventId = new UniqueEntityId();
     this.aggregateId = reminderId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       objectId: objectId.toValue(),
       createdById: createdById.toValue(),
@@ -72,7 +75,7 @@ export class ReminderTriggeredEvent implements DomainEvent<ReminderEventName> {
     this.eventId = new UniqueEntityId();
     this.aggregateId = reminderId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       objectId: objectId.toValue(),
       executionId,
@@ -105,7 +108,7 @@ export class ReminderCompletedEvent implements DomainEvent<ReminderEventName> {
     this.eventId = new UniqueEntityId();
     this.aggregateId = reminderId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       objectId: objectId.toValue(),
       completedById: completedById.toValue(),

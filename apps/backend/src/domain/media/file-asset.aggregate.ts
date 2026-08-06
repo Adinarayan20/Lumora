@@ -55,7 +55,10 @@ export class FileAssetAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public static create(
-    props: Omit<FileAssetAggregateProps, 'path' | 'filename' | 'mimeType' | 'size' | 'checksum'> & {
+    props: Omit<
+      FileAssetAggregateProps,
+      'path' | 'filename' | 'mimeType' | 'size' | 'checksum'
+    > & {
       path: StorageKey | string;
       filename: FileName | string;
       mimeType: MimeType | string;
@@ -63,14 +66,30 @@ export class FileAssetAggregate extends AggregateRoot<UniqueEntityId> {
       checksum?: FileChecksum | string;
     },
   ): FileAssetAggregate {
-    const userGuard = Guard.againstNullOrUndefined(props.uploadedById, 'uploadedById');
+    const userGuard = Guard.againstNullOrUndefined(
+      props.uploadedById,
+      'uploadedById',
+    );
     if (userGuard.isFailure) throw userGuard.getError();
 
-    const pathObj = typeof props.path === 'string' ? StorageKey.create(props.path) : props.path;
-    const filenameObj = typeof props.filename === 'string' ? FileName.create(props.filename) : props.filename;
-    const mimeTypeObj = typeof props.mimeType === 'string' ? MimeType.create(props.mimeType) : props.mimeType;
-    const sizeObj = typeof props.size === 'number' ? FileSize.create(props.size) : props.size;
-    const checksumObj = typeof props.checksum === 'string' ? FileChecksum.create(props.checksum) : props.checksum;
+    const pathObj =
+      typeof props.path === 'string'
+        ? StorageKey.create(props.path)
+        : props.path;
+    const filenameObj =
+      typeof props.filename === 'string'
+        ? FileName.create(props.filename)
+        : props.filename;
+    const mimeTypeObj =
+      typeof props.mimeType === 'string'
+        ? MimeType.create(props.mimeType)
+        : props.mimeType;
+    const sizeObj =
+      typeof props.size === 'number' ? FileSize.create(props.size) : props.size;
+    const checksumObj =
+      typeof props.checksum === 'string'
+        ? FileChecksum.create(props.checksum)
+        : props.checksum;
 
     FileValidationPolicy.validateMimeType(mimeTypeObj);
     FileValidationPolicy.validateFileSize(sizeObj);
@@ -97,7 +116,9 @@ export class FileAssetAggregate extends AggregateRoot<UniqueEntityId> {
     return aggregate;
   }
 
-  public static reconstitute(props: FileAssetAggregateProps): FileAssetAggregate {
+  public static reconstitute(
+    props: FileAssetAggregateProps,
+  ): FileAssetAggregate {
     return new FileAssetAggregate(props);
   }
 

@@ -8,22 +8,42 @@ import {
   Param,
   Query,
   UseGuards,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { CollectionsService } from './collections.service';
-import { CreateCollectionDto } from './dto/create-collection.dto';
-import { UpdateCollectionDto } from './dto/update-collection.dto';
-import { FilterCollectionDto } from './dto/filter-collection.dto';
-import { AddCollectionItemDto } from './dto/add-collection-item.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../rbac/guards/permissions.guard';
 import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator';
 import { Permissions } from '../rbac/constants/permissions';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import {
+  CreateCollectionUseCase,
+  GetWorkspaceCollectionsQuery,
+  GetCollectionQuery,
+  UpdateCollectionUseCase,
+  DeleteCollectionUseCase,
+  AddCollectionItemUseCase,
+  RemoveCollectionItemUseCase,
+} from './use-cases/collection-use-cases.js';
+import { CreateCollectionDto } from './dto/create-collection.dto';
+import { UpdateCollectionDto } from './dto/update-collection.dto';
+import { FilterCollectionDto } from './dto/filter-collection.dto';
+import { AddCollectionItemDto } from './dto/add-collection-item.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('workspaces/:workspaceId/collections')
 export class CollectionsController {
-  constructor(private readonly collectionsService: CollectionsService) {}
+  constructor(
+    private readonly createCollectionUseCase: CreateCollectionUseCase,
+    private readonly getWorkspaceCollectionsQuery: GetWorkspaceCollectionsQuery,
+    private readonly getCollectionQuery: GetCollectionQuery,
+    private readonly updateCollectionUseCase: UpdateCollectionUseCase,
+    private readonly deleteCollectionUseCase: DeleteCollectionUseCase,
+    private readonly addCollectionItemUseCase: AddCollectionItemUseCase,
+    private readonly removeCollectionItemUseCase: RemoveCollectionItemUseCase,
+  ) {}
 
   @Post()
   @RequirePermissions(Permissions.Collection.Create)
@@ -32,7 +52,15 @@ export class CollectionsController {
     @CurrentUser('id') userId: string,
     @Body() dto: CreateCollectionDto,
   ) {
-    return this.collectionsService.createCollection(workspaceId, userId, dto);
+    const result = await this.createCollectionUseCase.execute({
+      workspaceId,
+      createdById: userId,
+      dto,
+    });
+    if (result.isFailure) {
+      throw new BadRequestException(result.getError().message);
+    }
+    return result.getValue();
   }
 
   @Get()
@@ -41,7 +69,14 @@ export class CollectionsController {
     @Param('workspaceId') workspaceId: string,
     @Query() filter: FilterCollectionDto,
   ) {
-    return this.collectionsService.getWorkspaceCollections(workspaceId, filter);
+    const result = await this.getWorkspaceCollectionsQuery.execute({
+      workspaceId,
+      filter,
+    });
+    if (result.isFailure) {
+      throw new InternalServerErrorException(result.getError().message);
+    }
+    return result.getValue();
   }
 
   @Get(':idOrSlug')
@@ -50,10 +85,16 @@ export class CollectionsController {
     @Param('workspaceId') workspaceId: string,
     @Param('idOrSlug') idOrSlug: string,
   ) {
-    return this.collectionsService.getCollectionByIdOrSlug(
+    const result = await this.getCollectionQuery.execute({
       workspaceId,
       idOrSlug,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new InternalServerErrorException(msg);
+    }
+    return result.getValue();
   }
 
   @Patch(':id')
@@ -64,12 +105,19 @@ export class CollectionsController {
     @CurrentUser('id') userId: string,
     @Body() dto: UpdateCollectionDto,
   ) {
-    return this.collectionsService.updateCollection(
+    const result = await this.updateCollectionUseCase.execute({
       workspaceId,
       collectionId,
       userId,
       dto,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      if (msg.includes('mismatch')) throw new ConflictException(msg);
+      throw new BadRequestException(msg);
+    }
+    return result.getValue();
   }
 
   @Delete(':id')
@@ -79,11 +127,17 @@ export class CollectionsController {
     @Param('id') collectionId: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.collectionsService.softDeleteCollection(
+    const result = await this.deleteCollectionUseCase.execute({
       workspaceId,
       collectionId,
       userId,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new InternalServerErrorException(msg);
+    }
+    return result.getValue();
   }
 
   @Post(':id/items')
@@ -94,12 +148,19 @@ export class CollectionsController {
     @CurrentUser('id') userId: string,
     @Body() dto: AddCollectionItemDto,
   ) {
-    return this.collectionsService.addCollectionItem(
+    const result = await this.addCollectionItemUseCase.execute({
       workspaceId,
       collectionId,
       userId,
       dto,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      if (msg.includes('already')) throw new ConflictException(msg);
+      throw new BadRequestException(msg);
+    }
+    return result.getValue();
   }
 
   @Delete(':id/items/:objectId')
@@ -110,11 +171,17 @@ export class CollectionsController {
     @Param('objectId') objectId: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.collectionsService.removeCollectionItem(
+    const result = await this.removeCollectionItemUseCase.execute({
       workspaceId,
       collectionId,
       objectId,
       userId,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new InternalServerErrorException(msg);
+    }
+    return result.getValue();
   }
 }

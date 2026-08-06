@@ -28,6 +28,7 @@ describe('IndexEntityUseCase', () => {
     const dto = result.getValue();
     expect(dto.title).toBe('Project Roadmap');
     expect(dto.entityCategory).toBe('OBJECT');
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.save).toHaveBeenCalled();
   });
 });

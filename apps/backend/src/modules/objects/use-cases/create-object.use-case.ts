@@ -1,5 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId, ObjectTypeKey, IdGenerator } from '@lumora/shared';
+import {
+  Result,
+  UniqueEntityId,
+  ObjectTypeKey,
+  IdGenerator,
+} from '@lumora/shared';
 import { ObjectAggregate } from '../../../domain/objects/object.aggregate.js';
 import { ObjectTitle } from '../../../domain/objects/value-objects/object-title.js';
 import { ObjectKey } from '../../../domain/objects/value-objects/object-key.js';
@@ -60,7 +65,9 @@ export class CreateObjectUseCase {
       const responseDto = ObjectResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

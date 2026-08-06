@@ -7,7 +7,8 @@ export const ReminderSource = {
   API: 'API',
 } as const;
 
-export type ReminderSource = (typeof ReminderSource)[keyof typeof ReminderSource];
+export type ReminderSource =
+  (typeof ReminderSource)[keyof typeof ReminderSource];
 
 export const ReminderTriggerType = {
   TIME: 'TIME',
@@ -29,7 +30,8 @@ export const ReminderStatus = {
   DELETED: 'DELETED',
 } as const;
 
-export type ReminderStatus = (typeof ReminderStatus)[keyof typeof ReminderStatus];
+export type ReminderStatus =
+  (typeof ReminderStatus)[keyof typeof ReminderStatus];
 
 export const ReminderExecutionStatus = {
   PENDING: 'PENDING',

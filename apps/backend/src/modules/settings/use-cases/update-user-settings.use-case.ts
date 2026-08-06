@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Result, UniqueEntityId } from '@lumora/shared';
 import { UserSettingsAggregate } from '../../../domain/settings/user-settings.aggregate.js';
-import { UserSettingsUpdatedEvent } from '../../../domain/settings/events/settings.events.js';
 import type { IUserSettingsRepository } from '../../../domain/settings/repositories/user-settings.repository.interface.js';
 import { USER_SETTINGS_REPOSITORY_TOKEN } from '../settings.tokens.js';
 import { UpdateUserSettingsDto } from '../dto/update-user-settings.dto.js';
@@ -51,19 +50,14 @@ export class UpdateUserSettingsUseCase {
         }
       }
 
-      const event = new UserSettingsUpdatedEvent(
-        aggregate.id,
-        aggregate.userId,
-        aggregate.theme.getValue(),
-        aggregate.timezone.getValue(),
-      );
-
       await this.settingsRepository.save(aggregate);
 
       const responseDto = UserSettingsResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

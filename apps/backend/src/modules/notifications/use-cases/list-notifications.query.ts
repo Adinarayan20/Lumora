@@ -25,22 +25,27 @@ export class ListUserNotificationsQuery {
     try {
       const { workspaceId, userId, filter } = input;
 
-      const aggregates = await this.notificationRepository.findUserNotifications(
-        new UniqueEntityId(workspaceId),
-        new UniqueEntityId(userId),
-        filter
-          ? {
-              workspaceId: new UniqueEntityId(workspaceId),
-              status: filter.status,
-              channel: filter.channel,
-            }
-          : undefined,
-      );
+      const aggregates =
+        await this.notificationRepository.findUserNotifications(
+          new UniqueEntityId(workspaceId),
+          new UniqueEntityId(userId),
+          filter
+            ? {
+                workspaceId: new UniqueEntityId(workspaceId),
+                status: filter.status,
+                channel: filter.channel,
+              }
+            : undefined,
+        );
 
-      const dtos = aggregates.map((a) => NotificationResponseMapper.toResponseDto(a));
+      const dtos = aggregates.map((a) =>
+        NotificationResponseMapper.toResponseDto(a),
+      );
       return Result.ok(dtos);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

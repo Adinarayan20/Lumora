@@ -9,9 +9,9 @@ describe('GetWorkspaceTimelineQuery', () => {
     const wsId = IdGenerator.generate().toString();
     const record = TimelineRecordEntity.create({
       workspaceId: new UniqueEntityId(wsId),
-      userId: IdGenerator.generate(),
+      userId: new UniqueEntityId(IdGenerator.generate()),
       entityCategory: 'SPACE',
-      entityId: IdGenerator.generate(),
+      entityId: new UniqueEntityId(IdGenerator.generate()),
       action: 'SPACE_CREATED',
     });
 

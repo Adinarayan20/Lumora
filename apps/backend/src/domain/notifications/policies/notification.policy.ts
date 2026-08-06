@@ -1,5 +1,8 @@
 import { DomainValidationException } from '@lumora/shared';
-import { NotificationChannel, NotificationStatus } from '../value-objects/notification-enums.js';
+import {
+  NotificationChannel,
+  NotificationStatus,
+} from '../value-objects/notification-enums.js';
 
 export class NotificationPolicy {
   public static readonly MAX_DELIVERY_ATTEMPTS = 5;
@@ -11,7 +14,11 @@ export class NotificationPolicy {
     if (attemptCount >= this.MAX_DELIVERY_ATTEMPTS) {
       throw new DomainValidationException(
         `Maximum notification delivery attempt limit of ${this.MAX_DELIVERY_ATTEMPTS} reached.`,
-        { attemptCount: [`Cannot attempt delivery beyond ${this.MAX_DELIVERY_ATTEMPTS} attempts.`] },
+        {
+          attemptCount: [
+            `Cannot attempt delivery beyond ${this.MAX_DELIVERY_ATTEMPTS} attempts.`,
+          ],
+        },
       );
     }
   }
@@ -23,14 +30,24 @@ export class NotificationPolicy {
     currentStatus: NotificationStatus,
     targetStatus: NotificationStatus,
   ): void {
-    if (currentStatus === NotificationStatus.DELIVERED && targetStatus === NotificationStatus.DELIVERED) {
+    if (
+      currentStatus === NotificationStatus.DELIVERED &&
+      targetStatus === NotificationStatus.DELIVERED
+    ) {
       throw new DomainValidationException(
         'Notification has already been delivered.',
-        { status: ['Duplicate delivery attempt on an already delivered notification.'] },
+        {
+          status: [
+            'Duplicate delivery attempt on an already delivered notification.',
+          ],
+        },
       );
     }
 
-    if (currentStatus === NotificationStatus.READ && targetStatus !== NotificationStatus.READ) {
+    if (
+      currentStatus === NotificationStatus.READ &&
+      targetStatus !== NotificationStatus.READ
+    ) {
       throw new DomainValidationException(
         `Cannot transition notification status from READ to ${targetStatus}.`,
         { status: ['Status READ is terminal for notification activity.'] },

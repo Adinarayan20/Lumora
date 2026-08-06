@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UniqueEntityId, IdGenerator } from '@lumora/shared';
 import { PrismaHouseholdRepository } from '../prisma-household.repository.js';
 import { HouseholdAggregate } from '../../../../domain/households/household.aggregate.js';
-import { PrismaService } from '../../prisma.service.js';
 
 describe('PrismaHouseholdRepository Unit Tests', () => {
   let repository: PrismaHouseholdRepository;
@@ -17,7 +17,7 @@ describe('PrismaHouseholdRepository Unit Tests', () => {
       },
     };
 
-    repository = new PrismaHouseholdRepository(mockPrisma as unknown as PrismaService);
+    repository = new PrismaHouseholdRepository(mockPrisma);
   });
 
   it('should find family workspace household and map members', async () => {

@@ -34,10 +34,16 @@ export class HouseholdAggregate extends AggregateRoot<UniqueEntityId> {
       ownerUserId: UniqueEntityId;
     },
   ): HouseholdAggregate {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
-    const nameObj = typeof props.name === 'string' ? HouseholdName.create(props.name) : props.name;
+    const nameObj =
+      typeof props.name === 'string'
+        ? HouseholdName.create(props.name)
+        : props.name;
 
     const ownerMember = HouseholdMemberEntity.create({
       userId: props.ownerUserId,
@@ -51,11 +57,16 @@ export class HouseholdAggregate extends AggregateRoot<UniqueEntityId> {
     });
   }
 
-  public static reconstitute(props: HouseholdAggregateProps): HouseholdAggregate {
+  public static reconstitute(
+    props: HouseholdAggregateProps,
+  ): HouseholdAggregate {
     return new HouseholdAggregate(props);
   }
 
-  public addMember(userId: UniqueEntityId, role: 'MEMBER' | 'CHILD' = 'MEMBER'): void {
+  public addMember(
+    userId: UniqueEntityId,
+    role: 'MEMBER' | 'CHILD' = 'MEMBER',
+  ): void {
     HouseholdPolicy.validateMemberCapacity(this.members.length);
     HouseholdPolicy.validateUniqueMember(this.members, userId.toString());
 
@@ -65,7 +76,9 @@ export class HouseholdAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public removeMember(userId: UniqueEntityId): void {
-    const index = this.members.findIndex((m) => m.userId.toString() === userId.toString());
+    const index = this.members.findIndex(
+      (m) => m.userId.toString() === userId.toString(),
+    );
     if (index !== -1) {
       this.members.splice(index, 1);
       this.updatedAt = new Date();

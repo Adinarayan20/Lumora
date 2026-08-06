@@ -31,7 +31,7 @@ export class CollectionCreatedEvent implements DomainEvent<CollectionEventName> 
     this.eventId = new UniqueEntityId();
     this.aggregateId = collectionId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       slug,
       name,

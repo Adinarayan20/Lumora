@@ -15,7 +15,12 @@ export class CollectionSlug extends ValueObject<CollectionSlugProps> {
   }
 
   public static create(slug: string): CollectionSlug {
-    const lengthGuard = Guard.againstInvalidLength(slug, 2, 63, 'collectionSlug');
+    const lengthGuard = Guard.againstInvalidLength(
+      slug,
+      2,
+      63,
+      'collectionSlug',
+    );
     if (lengthGuard.isFailure) throw lengthGuard.getError();
 
     const trimmed = slug.trim().toLowerCase();

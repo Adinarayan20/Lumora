@@ -30,7 +30,7 @@ export class SpaceCreatedEvent implements DomainEvent<SpaceEventName> {
     this.eventId = new UniqueEntityId();
     this.aggregateId = spaceId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       slug,
       name,

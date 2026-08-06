@@ -20,14 +20,18 @@ export class HouseholdMemberEntity {
     this.joinedAt = props.joinedAt ?? new Date();
   }
 
-  public static create(props: HouseholdMemberEntityProps): HouseholdMemberEntity {
+  public static create(
+    props: HouseholdMemberEntityProps,
+  ): HouseholdMemberEntity {
     const userGuard = Guard.againstNullOrUndefined(props.userId, 'userId');
     if (userGuard.isFailure) throw userGuard.getError();
 
     return new HouseholdMemberEntity(props);
   }
 
-  public static reconstitute(props: HouseholdMemberEntityProps): HouseholdMemberEntity {
+  public static reconstitute(
+    props: HouseholdMemberEntityProps,
+  ): HouseholdMemberEntity {
     return new HouseholdMemberEntity(props);
   }
 }

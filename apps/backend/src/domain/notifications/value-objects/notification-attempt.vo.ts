@@ -1,7 +1,13 @@
 import { ValueObject, UniqueEntityId, Guard } from '@lumora/shared';
-import { NotificationChannel, NotificationStatus } from './notification-enums.js';
+import {
+  NotificationChannel,
+  NotificationStatus,
+} from './notification-enums.js';
 
-export interface NotificationDeliveryAttemptProps extends Record<string, unknown> {
+export interface NotificationDeliveryAttemptProps extends Record<
+  string,
+  unknown
+> {
   attemptId: UniqueEntityId;
   notificationId: UniqueEntityId;
   channel: NotificationChannel;
@@ -60,7 +66,10 @@ export class NotificationDeliveryAttempt extends ValueObject<NotificationDeliver
   public static create(
     props: CreateNotificationDeliveryAttemptProps,
   ): NotificationDeliveryAttempt {
-    const notifGuard = Guard.againstNullOrUndefined(props.notificationId, 'notificationId');
+    const notifGuard = Guard.againstNullOrUndefined(
+      props.notificationId,
+      'notificationId',
+    );
     if (notifGuard.isFailure) throw notifGuard.getError();
 
     return new NotificationDeliveryAttempt({

@@ -33,7 +33,7 @@ export class ObjectCreatedEvent implements DomainEvent<ObjectEventName> {
     this.eventId = new UniqueEntityId();
     this.aggregateId = objectId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       objectKey,
       typeKey,
@@ -63,7 +63,7 @@ export class ObjectUpdatedEvent implements DomainEvent<ObjectEventName> {
     this.eventId = new UniqueEntityId();
     this.aggregateId = objectId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({ updatedById: updatedById.toValue() });
   }
 }
@@ -87,7 +87,7 @@ export class ObjectDeletedEvent implements DomainEvent<ObjectEventName> {
     this.eventId = new UniqueEntityId();
     this.aggregateId = objectId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({ deletedById: deletedById.toValue() });
   }
 }

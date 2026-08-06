@@ -31,6 +31,7 @@ describe('RecordTimelineActivityUseCase', () => {
     const dto = result.getValue();
     expect(dto.workspaceId).toBe(wsId);
     expect(dto.action).toBe('OBJECT_CREATED');
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.save).toHaveBeenCalled();
   });
 });

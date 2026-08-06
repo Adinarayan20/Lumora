@@ -28,9 +28,10 @@ export class RegisterFileAssetUseCase {
       const { uploadedById, dto } = command;
       const userEntityId = new UniqueEntityId(uploadedById);
 
-      const currentUsedBytes = await this.fileAssetRepository.calculateUserTotalStorageBytes(
-        userEntityId,
-      );
+      const currentUsedBytes =
+        await this.fileAssetRepository.calculateUserTotalStorageBytes(
+          userEntityId,
+        );
 
       StorageQuotaPolicy.validateStorageQuota(currentUsedBytes, dto.size);
 
@@ -50,7 +51,9 @@ export class RegisterFileAssetUseCase {
       const responseDto = FileAssetResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

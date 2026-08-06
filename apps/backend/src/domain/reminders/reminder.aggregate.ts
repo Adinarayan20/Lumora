@@ -85,12 +85,16 @@ export class ReminderAggregate extends AggregateRoot<UniqueEntityId> {
     this.source = props.source ?? ReminderSource.MANUAL;
     this.triggerType = props.triggerType ?? ReminderTriggerType.TIME;
     this.status = props.status ?? ReminderStatus.ACTIVE;
-    this.executionStatus = props.executionStatus ?? ReminderExecutionStatus.PENDING;
+    this.executionStatus =
+      props.executionStatus ?? ReminderExecutionStatus.PENDING;
     this.remindAt = props.remindAt;
     this.snoozedUntil = props.snoozedUntil;
     this.nextOccurrenceAt =
       props.nextOccurrenceAt ??
-      ReminderSchedulingPolicy.calculateNextOccurrence(props.remindAt, props.recurrenceRule) ??
+      ReminderSchedulingPolicy.calculateNextOccurrence(
+        props.remindAt,
+        props.recurrenceRule,
+      ) ??
       undefined;
     this.lastTriggeredAt = props.lastTriggeredAt;
     this.completedAt = props.completedAt;
@@ -100,20 +104,28 @@ export class ReminderAggregate extends AggregateRoot<UniqueEntityId> {
     this.timezone = props.timezone ?? TimezoneId.create('UTC');
     this.recurrenceRule = props.recurrenceRule;
     this.priority = props.priority;
-    this.recurrence = props.recurrence ? Object.freeze({ ...props.recurrence }) : undefined;
+    this.recurrence = props.recurrence
+      ? Object.freeze({ ...props.recurrence })
+      : undefined;
     this.revision = props.revision ?? 1;
     this.createdAt = props.createdAt ?? new Date();
     this.updatedAt = props.updatedAt ?? new Date();
   }
 
   public static create(props: ReminderAggregateProps): ReminderAggregate {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
     const objGuard = Guard.againstNullOrUndefined(props.objectId, 'objectId');
     if (objGuard.isFailure) throw objGuard.getError();
 
-    const userGuard = Guard.againstNullOrUndefined(props.createdById, 'createdById');
+    const userGuard = Guard.againstNullOrUndefined(
+      props.createdById,
+      'createdById',
+    );
     if (userGuard.isFailure) throw userGuard.getError();
 
     const dateGuard = Guard.againstNullOrUndefined(props.remindAt, 'remindAt');
@@ -140,13 +152,18 @@ export class ReminderAggregate extends AggregateRoot<UniqueEntityId> {
     return new ReminderAggregate(props);
   }
 
-  public triggerExecution(executionId: string, triggeredAt: Date = new Date()): void {
+  public triggerExecution(
+    executionId: string,
+    triggeredAt: Date = new Date(),
+  ): void {
     this.lastExecutionId = executionId;
     this.lastTriggeredAt = triggeredAt;
     this.executionStatus = ReminderExecutionStatus.TRIGGERED;
     this.nextOccurrenceAt =
-      ReminderSchedulingPolicy.calculateNextOccurrence(this.remindAt, this.recurrenceRule) ??
-      undefined;
+      ReminderSchedulingPolicy.calculateNextOccurrence(
+        this.remindAt,
+        this.recurrenceRule,
+      ) ?? undefined;
     this.revision += 1;
     this.updatedAt = new Date();
 

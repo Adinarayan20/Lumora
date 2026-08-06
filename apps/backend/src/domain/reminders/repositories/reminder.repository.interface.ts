@@ -16,8 +16,11 @@ export interface ReminderFilter extends Record<string, unknown> {
   dueBefore?: Date;
 }
 
-export interface IReminderRepository
-  extends IPaginatedRepository<ReminderAggregate, UniqueEntityId, ReminderFilter> {
+export interface IReminderRepository extends IPaginatedRepository<
+  ReminderAggregate,
+  UniqueEntityId,
+  ReminderFilter
+> {
   findDueReminders(
     dueBefore: Date,
     limit?: number,

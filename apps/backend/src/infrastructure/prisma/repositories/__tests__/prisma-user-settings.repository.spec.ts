@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { UniqueEntityId, IdGenerator } from '@lumora/shared';
+import { UniqueEntityId } from '@lumora/shared';
 import { PrismaUserSettingsRepository } from '../prisma-user-settings.repository.js';
 import { UserSettingsAggregate } from '../../../../domain/settings/user-settings.aggregate.js';
-import { PrismaService } from '../../prisma.service.js';
 
 describe('PrismaUserSettingsRepository Unit Tests', () => {
   let repository: PrismaUserSettingsRepository;
@@ -16,7 +16,7 @@ describe('PrismaUserSettingsRepository Unit Tests', () => {
       },
     };
 
-    repository = new PrismaUserSettingsRepository(mockPrisma as unknown as PrismaService);
+    repository = new PrismaUserSettingsRepository(mockPrisma);
   });
 
   it('should find user settings and reconstitute domain aggregate', async () => {

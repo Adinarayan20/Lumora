@@ -5,7 +5,10 @@ import {
   PaginationParams,
   DomainValidationException,
 } from '@lumora/shared';
-import { Prisma, Notification as PrismaNotification } from '../../../generated/prisma/client.js';
+import {
+  Prisma,
+  Notification as PrismaNotification,
+} from '../../../generated/prisma/client.js';
 import { PrismaService } from '../prisma.service.js';
 import { PrismaExceptionMapper } from '../mappers/prisma-exception.mapper.js';
 import type {
@@ -29,7 +32,9 @@ export type NotificationWithReminderPayload = Prisma.NotificationGetPayload<{
 export class PrismaNotificationRepository implements INotificationRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  public async findById(id: UniqueEntityId): Promise<NotificationAggregate | null> {
+  public async findById(
+    id: UniqueEntityId,
+  ): Promise<NotificationAggregate | null> {
     try {
       const record = await this.prisma.notification.findUnique({
         where: { id: id.toString() },
@@ -60,7 +65,11 @@ export class PrismaNotificationRepository implements INotificationRepository {
       if (!aggregate.reminderId) {
         throw new DomainValidationException(
           'Notification persistence requires an associated reminderId.',
-          { reminderId: ['Notification model requires a valid reminderId relation.'] },
+          {
+            reminderId: [
+              'Notification model requires a valid reminderId relation.',
+            ],
+          },
         );
       }
 
@@ -166,7 +175,9 @@ export class PrismaNotificationRepository implements INotificationRepository {
     }
   }
 
-  public async findPendingNotifications(limit = 50): Promise<NotificationAggregate[]> {
+  public async findPendingNotifications(
+    limit = 50,
+  ): Promise<NotificationAggregate[]> {
     try {
       const records = await this.prisma.notification.findMany({
         where: { status: 'PENDING' },
@@ -181,7 +192,9 @@ export class PrismaNotificationRepository implements INotificationRepository {
     }
   }
 
-  private toDomain(record: NotificationWithReminderPayload): NotificationAggregate {
+  private toDomain(
+    record: NotificationWithReminderPayload,
+  ): NotificationAggregate {
     /**
      * Note: Current Prisma Notification schema persists id, reminderId, title, body, scheduledFor, deliveredAt, status.
      * Advanced delivery metrics (readAt, failureReason, attempts log) are maintained in-memory on the aggregate root

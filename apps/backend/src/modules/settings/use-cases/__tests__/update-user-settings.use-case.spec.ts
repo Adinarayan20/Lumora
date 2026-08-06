@@ -26,6 +26,7 @@ describe('UpdateUserSettingsUseCase', () => {
     const dto = result.getValue();
     expect(dto.theme).toBe('DARK');
     expect(dto.timezone).toBe('America/New_York');
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.save).toHaveBeenCalled();
   });
 });

@@ -2,7 +2,9 @@ import { TimelineRecordEntity } from '../../../domain/timeline/entities/timeline
 import { TimelineRecordResponseDto } from '../dto/timeline-record-response.dto.js';
 
 export class TimelineRecordResponseMapper {
-  public static toResponseDto(entity: TimelineRecordEntity): TimelineRecordResponseDto {
+  public static toResponseDto(
+    entity: TimelineRecordEntity,
+  ): TimelineRecordResponseDto {
     return {
       id: entity.id.toString(),
       workspaceId: entity.workspaceId.toString(),

@@ -39,11 +39,19 @@ export class ReminderExecutionEntity {
     this.createdAt = props.createdAt ?? new Date();
   }
 
-  public static create(props: ReminderExecutionEntityProps): ReminderExecutionEntity {
-    const remGuard = Guard.againstNullOrUndefined(props.reminderId, 'reminderId');
+  public static create(
+    props: ReminderExecutionEntityProps,
+  ): ReminderExecutionEntity {
+    const remGuard = Guard.againstNullOrUndefined(
+      props.reminderId,
+      'reminderId',
+    );
     if (remGuard.isFailure) throw remGuard.getError();
 
-    const execGuard = Guard.againstEmptyString(props.executionId, 'executionId');
+    const execGuard = Guard.againstEmptyString(
+      props.executionId,
+      'executionId',
+    );
     if (execGuard.isFailure) throw execGuard.getError();
 
     return new ReminderExecutionEntity(props);

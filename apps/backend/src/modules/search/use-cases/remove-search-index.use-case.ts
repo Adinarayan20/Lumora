@@ -25,9 +25,11 @@ export class RemoveSearchIndexUseCase {
       const entityIdObj = new UniqueEntityId(entityId);
 
       await this.searchRepository.deleteByEntity(categoryObj, entityIdObj);
-      return Result.ok<void, Error>(undefined as unknown as void);
+      return Result.ok<void, Error>(undefined);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

@@ -27,7 +27,7 @@ export class UserSettingsUpdatedEvent implements DomainEvent<SettingsEventName> 
     this.eventId = new UniqueEntityId();
     this.aggregateId = settingsId;
     this.workspaceId = userId; // Uses user identity for single-user setting scope
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       userId: userId.toString(),
       theme,

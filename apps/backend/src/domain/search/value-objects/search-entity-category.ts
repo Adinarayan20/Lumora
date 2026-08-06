@@ -15,7 +15,7 @@ interface SearchEntityCategoryProps extends Record<string, unknown> {
 
 /**
  * Value Object encapsulating entity categories supported by the Search Indexing engine.
- * 
+ *
  * FUTURE EXTENSIBILITY:
  * As Lumora expands Universal Object Model capabilities, this Value Object registry
  * will be seamlessly expanded to index additional entity categories including:
@@ -40,7 +40,9 @@ export class SearchEntityCategory extends ValueObject<SearchEntityCategoryProps>
     if (!validCategories.includes(upper)) {
       throw new DomainValidationException(
         `Invalid search entity category '${category}'. Must be one of: ${validCategories.join(', ')}.`,
-        { category: [`Category must be one of ${validCategories.join(', ')}.`] },
+        {
+          category: [`Category must be one of ${validCategories.join(', ')}.`],
+        },
       );
     }
 

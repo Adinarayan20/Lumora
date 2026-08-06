@@ -1,6 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId, EntityNotFoundException } from '@lumora/shared';
-import { NotificationChannel, NotificationStatus } from '../../../domain/notifications/value-objects/notification-enums.js';
+import {
+  Result,
+  UniqueEntityId,
+  EntityNotFoundException,
+} from '@lumora/shared';
+import {
+  NotificationChannel,
+  NotificationStatus,
+} from '../../../domain/notifications/value-objects/notification-enums.js';
 import { NotificationDeliveryAttempt } from '../../../domain/notifications/value-objects/notification-attempt.vo.js';
 import type { INotificationRepository } from '../../../domain/notifications/repositories/notification.repository.interface.js';
 import { NOTIFICATION_REPOSITORY_TOKEN } from '../notifications.tokens.js';
@@ -52,7 +59,9 @@ export class DeliverNotificationUseCase {
       const responseDto = NotificationResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

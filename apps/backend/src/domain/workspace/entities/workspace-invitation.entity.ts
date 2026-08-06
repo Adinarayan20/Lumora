@@ -40,8 +40,13 @@ export class WorkspaceInvitationEntity {
     this.createdAt = props.createdAt ?? new Date();
   }
 
-  public static create(props: WorkspaceInvitationEntityProps): WorkspaceInvitationEntity {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+  public static create(
+    props: WorkspaceInvitationEntityProps,
+  ): WorkspaceInvitationEntity {
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
     const emailGuard = Guard.againstNullOrUndefined(props.email, 'email');

@@ -39,7 +39,12 @@ export class UserSettingsAggregate extends AggregateRoot<UniqueEntityId> {
   public static create(
     props: Omit<
       UserSettingsAggregateProps,
-      'theme' | 'timezone' | 'locale' | 'notificationsEnabled' | 'emailNotifications' | 'pushNotifications'
+      | 'theme'
+      | 'timezone'
+      | 'locale'
+      | 'notificationsEnabled'
+      | 'emailNotifications'
+      | 'pushNotifications'
     > & {
       theme?: ThemePreference | string;
       timezone?: TimezonePreference | string;
@@ -55,12 +60,12 @@ export class UserSettingsAggregate extends AggregateRoot<UniqueEntityId> {
     const themeObj =
       typeof props.theme === 'string'
         ? ThemePreference.create(props.theme)
-        : props.theme ?? ThemePreference.create('SYSTEM');
+        : (props.theme ?? ThemePreference.create('SYSTEM'));
 
     const tzObj =
       typeof props.timezone === 'string'
         ? TimezonePreference.create(props.timezone)
-        : props.timezone ?? TimezonePreference.create('UTC');
+        : (props.timezone ?? TimezonePreference.create('UTC'));
 
     return new UserSettingsAggregate({
       ...props,
@@ -73,7 +78,9 @@ export class UserSettingsAggregate extends AggregateRoot<UniqueEntityId> {
     });
   }
 
-  public static reconstitute(props: UserSettingsAggregateProps): UserSettingsAggregate {
+  public static reconstitute(
+    props: UserSettingsAggregateProps,
+  ): UserSettingsAggregate {
     return new UserSettingsAggregate(props);
   }
 
@@ -83,10 +90,14 @@ export class UserSettingsAggregate extends AggregateRoot<UniqueEntityId> {
     locale?: string,
   ): void {
     if (theme) {
-      this.theme = typeof theme === 'string' ? ThemePreference.create(theme) : theme;
+      this.theme =
+        typeof theme === 'string' ? ThemePreference.create(theme) : theme;
     }
     if (timezone) {
-      this.timezone = typeof timezone === 'string' ? TimezonePreference.create(timezone) : timezone;
+      this.timezone =
+        typeof timezone === 'string'
+          ? TimezonePreference.create(timezone)
+          : timezone;
     }
     if (locale) {
       this.locale = locale.trim();

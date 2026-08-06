@@ -18,7 +18,13 @@ export type LogContext = string | Partial<StructuredLogPayload>;
 
 @Injectable()
 export class JsonLoggerService implements LoggerService {
-  private enabledLevels: Set<LogLevel> = new Set(['log', 'error', 'warn', 'debug', 'verbose']);
+  private enabledLevels: Set<LogLevel> = new Set([
+    'log',
+    'error',
+    'warn',
+    'debug',
+    'verbose',
+  ]);
 
   log(message: string, context?: LogContext): void {
     this.writeLog('log', message, context);

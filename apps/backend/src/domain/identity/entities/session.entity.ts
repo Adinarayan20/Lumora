@@ -56,13 +56,22 @@ export class SessionEntity {
     const userGuard = Guard.againstNullOrUndefined(props.userId, 'userId');
     if (userGuard.isFailure) throw userGuard.getError();
 
-    const deviceGuard = Guard.againstNullOrUndefined(props.deviceId, 'deviceId');
+    const deviceGuard = Guard.againstNullOrUndefined(
+      props.deviceId,
+      'deviceId',
+    );
     if (deviceGuard.isFailure) throw deviceGuard.getError();
 
-    const accessGuard = Guard.againstEmptyString(props.accessToken, 'accessToken');
+    const accessGuard = Guard.againstEmptyString(
+      props.accessToken,
+      'accessToken',
+    );
     if (accessGuard.isFailure) throw accessGuard.getError();
 
-    const refreshGuard = Guard.againstEmptyString(props.refreshToken, 'refreshToken');
+    const refreshGuard = Guard.againstEmptyString(
+      props.refreshToken,
+      'refreshToken',
+    );
     if (refreshGuard.isFailure) throw refreshGuard.getError();
 
     return new SessionEntity(props);

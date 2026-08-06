@@ -9,35 +9,96 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { WorkspacesService } from './workspaces.service';
-import { CreateWorkspaceDto } from './dto/create-workspace.dto';
-import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
-import { InviteMemberDto } from './dto/invite-member.dto';
-import { AcceptInvitationDto } from './dto/accept-invitation.dto';
-import { TransferOwnershipDto } from './dto/transfer-ownership.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { PermissionsGuard } from '../rbac/guards/permissions.guard';
 import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator';
 import { Permissions } from '../rbac/constants/permissions';
+import {
+  CreateWorkspaceUseCase,
+  GetUserWorkspacesQuery,
+  GetWorkspaceQuery,
+  UpdateWorkspaceUseCase,
+  DeleteWorkspaceUseCase,
+  TransferOwnershipUseCase,
+  GetMembersQuery,
+  RemoveMemberUseCase,
+  InviteMemberUseCase,
+  GetInvitationsQuery,
+  RevokeInvitationUseCase,
+  AcceptInvitationUseCase,
+} from './use-cases/workspace-use-cases.js';
+import { CreateWorkspaceDto } from './dto/create-workspace.dto';
+import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
+import { InviteMemberDto } from './dto/invite-member.dto';
+import { AcceptInvitationDto } from './dto/accept-invitation.dto';
+import { TransferOwnershipDto } from './dto/transfer-ownership.dto';
+
+/** Translates a Result failure error into the appropriate HTTP exception. */
+function throwWorkspaceError(error: Error): never {
+  const message = error.message;
+  if (message.includes('not found')) throw new NotFoundException(message);
+  if (
+    message.includes('Access denied') ||
+    message.includes('Only the workspace owner') ||
+    message.includes('Only the') ||
+    message.includes('Forbidden')
+  ) {
+    throw new ForbiddenException(message);
+  }
+  if (
+    message.includes('Personal workspace') ||
+    message.includes('must be an active') ||
+    message.includes('Cannot')
+  ) {
+    throw new BadRequestException(message);
+  }
+  throw new InternalServerErrorException(message);
+}
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('workspaces')
 export class WorkspacesController {
-  constructor(private readonly workspacesService: WorkspacesService) {}
+  constructor(
+    private readonly createWorkspaceUseCase: CreateWorkspaceUseCase,
+    private readonly getUserWorkspacesQuery: GetUserWorkspacesQuery,
+    private readonly getWorkspaceQuery: GetWorkspaceQuery,
+    private readonly updateWorkspaceUseCase: UpdateWorkspaceUseCase,
+    private readonly deleteWorkspaceUseCase: DeleteWorkspaceUseCase,
+    private readonly transferOwnershipUseCase: TransferOwnershipUseCase,
+    private readonly getMembersQuery: GetMembersQuery,
+    private readonly removeMemberUseCase: RemoveMemberUseCase,
+    private readonly inviteMemberUseCase: InviteMemberUseCase,
+    private readonly getInvitationsQuery: GetInvitationsQuery,
+    private readonly revokeInvitationUseCase: RevokeInvitationUseCase,
+    private readonly acceptInvitationUseCase: AcceptInvitationUseCase,
+  ) {}
 
   @Post()
   async createWorkspace(
     @CurrentUser('id') userId: string,
     @Body() dto: CreateWorkspaceDto,
   ) {
-    return this.workspacesService.createWorkspace(userId, dto);
+    const result = await this.createWorkspaceUseCase.execute({
+      ownerId: userId,
+      dto,
+    });
+    if (result.isFailure) throwWorkspaceError(result.getError());
+    return result.getValue();
   }
 
   @Get()
   async getUserWorkspaces(@CurrentUser('id') userId: string) {
-    return this.workspacesService.getUserWorkspaces(userId);
+    const result = await this.getUserWorkspacesQuery.execute({ userId });
+    if (result.isFailure) {
+      throw new InternalServerErrorException(result.getError().message);
+    }
+    return result.getValue();
   }
 
   @Post('invitations/accept')
@@ -46,7 +107,12 @@ export class WorkspacesController {
     @CurrentUser() user: { id: string; email: string },
     @Body() dto: AcceptInvitationDto,
   ) {
-    return this.workspacesService.acceptInvitation(dto.token, user);
+    const result = await this.acceptInvitationUseCase.execute({
+      token: dto.token,
+      user,
+    });
+    if (result.isFailure) throwWorkspaceError(result.getError());
+    return result.getValue();
   }
 
   @Get(':idOrSlug')
@@ -55,7 +121,9 @@ export class WorkspacesController {
     @Param('idOrSlug') idOrSlug: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.workspacesService.getWorkspaceByIdOrSlug(idOrSlug, userId);
+    const result = await this.getWorkspaceQuery.execute({ idOrSlug, userId });
+    if (result.isFailure) throwWorkspaceError(result.getError());
+    return result.getValue();
   }
 
   @Patch(':id')
@@ -65,7 +133,13 @@ export class WorkspacesController {
     @CurrentUser('id') userId: string,
     @Body() dto: UpdateWorkspaceDto,
   ) {
-    return this.workspacesService.updateWorkspace(workspaceId, userId, dto);
+    const result = await this.updateWorkspaceUseCase.execute({
+      workspaceId,
+      userId,
+      dto,
+    });
+    if (result.isFailure) throwWorkspaceError(result.getError());
+    return result.getValue();
   }
 
   @Delete(':id')
@@ -74,7 +148,12 @@ export class WorkspacesController {
     @Param('id') workspaceId: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.workspacesService.softDeleteWorkspace(workspaceId, userId);
+    const result = await this.deleteWorkspaceUseCase.execute({
+      workspaceId,
+      userId,
+    });
+    if (result.isFailure) throwWorkspaceError(result.getError());
+    return result.getValue();
   }
 
   @Post(':id/transfer-ownership')
@@ -85,17 +164,23 @@ export class WorkspacesController {
     @CurrentUser('id') currentOwnerId: string,
     @Body() dto: TransferOwnershipDto,
   ) {
-    return this.workspacesService.transferOwnership(
+    const result = await this.transferOwnershipUseCase.execute({
       workspaceId,
       currentOwnerId,
       dto,
-    );
+    });
+    if (result.isFailure) throwWorkspaceError(result.getError());
+    return result.getValue();
   }
 
   @Get(':id/members')
   @RequirePermissions(Permissions.Member.List)
   async getMembers(@Param('id') workspaceId: string) {
-    return this.workspacesService.getMembers(workspaceId);
+    const result = await this.getMembersQuery.execute({ workspaceId });
+    if (result.isFailure) {
+      throw new InternalServerErrorException(result.getError().message);
+    }
+    return result.getValue();
   }
 
   @Delete(':id/members/:userId')
@@ -105,11 +190,13 @@ export class WorkspacesController {
     @Param('userId') targetUserId: string,
     @CurrentUser('id') requesterId: string,
   ) {
-    return this.workspacesService.removeMember(
+    const result = await this.removeMemberUseCase.execute({
       workspaceId,
       targetUserId,
       requesterId,
-    );
+    });
+    if (result.isFailure) throwWorkspaceError(result.getError());
+    return result.getValue();
   }
 
   @Post(':id/invitations')
@@ -119,13 +206,23 @@ export class WorkspacesController {
     @CurrentUser('id') inviterId: string,
     @Body() dto: InviteMemberDto,
   ) {
-    return this.workspacesService.inviteMember(workspaceId, dto, inviterId);
+    const result = await this.inviteMemberUseCase.execute({
+      workspaceId,
+      inviterId,
+      dto,
+    });
+    if (result.isFailure) throwWorkspaceError(result.getError());
+    return result.getValue();
   }
 
   @Get(':id/invitations')
   @RequirePermissions(Permissions.Member.List)
   async getInvitations(@Param('id') workspaceId: string) {
-    return this.workspacesService.getInvitations(workspaceId);
+    const result = await this.getInvitationsQuery.execute({ workspaceId });
+    if (result.isFailure) {
+      throw new InternalServerErrorException(result.getError().message);
+    }
+    return result.getValue();
   }
 
   @Delete(':id/invitations/:invitationId')
@@ -135,10 +232,12 @@ export class WorkspacesController {
     @Param('invitationId') invitationId: string,
     @CurrentUser('id') requesterId: string,
   ) {
-    return this.workspacesService.revokeInvitation(
+    const result = await this.revokeInvitationUseCase.execute({
       workspaceId,
       invitationId,
       requesterId,
-    );
+    });
+    if (result.isFailure) throwWorkspaceError(result.getError());
+    return result.getValue();
   }
 }

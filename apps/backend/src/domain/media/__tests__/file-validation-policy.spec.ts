@@ -12,7 +12,9 @@ describe('FileValidationPolicy', () => {
 
   it('should throw DomainValidationException for disallowed MIME types', () => {
     const mime = MimeType.create('application/x-executable');
-    expect(() => FileValidationPolicy.validateMimeType(mime)).toThrow(DomainValidationException);
+    expect(() => FileValidationPolicy.validateMimeType(mime)).toThrow(
+      DomainValidationException,
+    );
   });
 
   it('should throw DomainValidationException when file size exceeds maximum limit', () => {

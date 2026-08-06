@@ -8,6 +8,8 @@ describe('HouseholdPolicy Capacity Rules', () => {
   });
 
   it('should throw DomainValidationException when capacity reaches 10 members', () => {
-    expect(() => HouseholdPolicy.validateMemberCapacity(10)).toThrow(DomainValidationException);
+    expect(() => HouseholdPolicy.validateMemberCapacity(10)).toThrow(
+      DomainValidationException,
+    );
   });
 });

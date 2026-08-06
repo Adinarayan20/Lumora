@@ -10,22 +10,48 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { RemindersService } from './reminders.service';
-import { CreateReminderDto } from './dto/create-reminder.dto';
-import { UpdateReminderDto } from './dto/update-reminder.dto';
-import { FilterReminderDto } from './dto/filter-reminder.dto';
-import { SnoozeReminderDto } from './dto/snooze-reminder.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../rbac/guards/permissions.guard';
 import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator';
 import { Permissions } from '../rbac/constants/permissions';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import {
+  CreateReminderFacadeUseCase,
+  GetWorkspaceRemindersQuery,
+  GetObjectRemindersQuery,
+  GetReminderQuery,
+  UpdateReminderUseCase,
+  SnoozeReminderUseCase,
+  CompleteReminderUseCase,
+  CancelReminderUseCase,
+  RestoreReminderUseCase,
+  DeleteReminderUseCase,
+} from './use-cases/reminder-use-cases.js';
+import { CreateReminderDto } from './dto/create-reminder.dto';
+import { UpdateReminderDto } from './dto/update-reminder.dto';
+import { FilterReminderDto } from './dto/filter-reminder.dto';
+import { SnoozeReminderDto } from './dto/snooze-reminder.dto';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('workspaces/:workspaceId')
 export class RemindersController {
-  constructor(private readonly remindersService: RemindersService) {}
+  constructor(
+    private readonly createReminderUseCase: CreateReminderFacadeUseCase,
+    private readonly getWorkspaceRemindersQuery: GetWorkspaceRemindersQuery,
+    private readonly getObjectRemindersQuery: GetObjectRemindersQuery,
+    private readonly getReminderQuery: GetReminderQuery,
+    private readonly updateReminderUseCase: UpdateReminderUseCase,
+    private readonly snoozeReminderUseCase: SnoozeReminderUseCase,
+    private readonly completeReminderUseCase: CompleteReminderUseCase,
+    private readonly cancelReminderUseCase: CancelReminderUseCase,
+    private readonly restoreReminderUseCase: RestoreReminderUseCase,
+    private readonly deleteReminderUseCase: DeleteReminderUseCase,
+  ) {}
 
   @Post('objects/:objectId/reminders')
   @RequirePermissions(Permissions.Reminder.Create)
@@ -35,12 +61,18 @@ export class RemindersController {
     @CurrentUser('id') userId: string,
     @Body() dto: CreateReminderDto,
   ) {
-    return this.remindersService.createReminder(
+    const result = await this.createReminderUseCase.execute({
       workspaceId,
       objectId,
       userId,
       dto,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new BadRequestException(msg);
+    }
+    return result.getValue();
   }
 
   @Get('reminders')
@@ -49,7 +81,14 @@ export class RemindersController {
     @Param('workspaceId') workspaceId: string,
     @Query() filter: FilterReminderDto,
   ) {
-    return this.remindersService.getWorkspaceReminders(workspaceId, filter);
+    const result = await this.getWorkspaceRemindersQuery.execute({
+      workspaceId,
+      filter,
+    });
+    if (result.isFailure) {
+      throw new InternalServerErrorException(result.getError().message);
+    }
+    return result.getValue();
   }
 
   @Get('objects/:objectId/reminders')
@@ -58,7 +97,16 @@ export class RemindersController {
     @Param('workspaceId') workspaceId: string,
     @Param('objectId') objectId: string,
   ) {
-    return this.remindersService.getObjectReminders(workspaceId, objectId);
+    const result = await this.getObjectRemindersQuery.execute({
+      workspaceId,
+      objectId,
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new InternalServerErrorException(msg);
+    }
+    return result.getValue();
   }
 
   @Get('reminders/:id')
@@ -67,7 +115,16 @@ export class RemindersController {
     @Param('workspaceId') workspaceId: string,
     @Param('id') reminderId: string,
   ) {
-    return this.remindersService.getReminderById(workspaceId, reminderId);
+    const result = await this.getReminderQuery.execute({
+      workspaceId,
+      reminderId,
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new InternalServerErrorException(msg);
+    }
+    return result.getValue();
   }
 
   @Patch('reminders/:id')
@@ -78,12 +135,19 @@ export class RemindersController {
     @CurrentUser('id') userId: string,
     @Body() dto: UpdateReminderDto,
   ) {
-    return this.remindersService.updateReminder(
+    const result = await this.updateReminderUseCase.execute({
       workspaceId,
       reminderId,
       userId,
       dto,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      if (msg.includes('mismatch')) throw new ConflictException(msg);
+      throw new BadRequestException(msg);
+    }
+    return result.getValue();
   }
 
   @Post('reminders/:id/snooze')
@@ -95,12 +159,19 @@ export class RemindersController {
     @CurrentUser('id') userId: string,
     @Body() dto: SnoozeReminderDto,
   ) {
-    return this.remindersService.snoozeReminder(
+    const result = await this.snoozeReminderUseCase.execute({
       workspaceId,
       reminderId,
       userId,
       dto,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      if (msg.includes('ACTIVE')) throw new ConflictException(msg);
+      throw new BadRequestException(msg);
+    }
+    return result.getValue();
   }
 
   @Post('reminders/:id/complete')
@@ -111,11 +182,17 @@ export class RemindersController {
     @Param('id') reminderId: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.remindersService.completeReminder(
+    const result = await this.completeReminderUseCase.execute({
       workspaceId,
       reminderId,
       userId,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new BadRequestException(msg);
+    }
+    return result.getValue();
   }
 
   @Post('reminders/:id/cancel')
@@ -126,11 +203,17 @@ export class RemindersController {
     @Param('id') reminderId: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.remindersService.cancelReminder(
+    const result = await this.cancelReminderUseCase.execute({
       workspaceId,
       reminderId,
       userId,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new BadRequestException(msg);
+    }
+    return result.getValue();
   }
 
   @Post('reminders/:id/restore')
@@ -141,11 +224,17 @@ export class RemindersController {
     @Param('id') reminderId: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.remindersService.restoreReminder(
+    const result = await this.restoreReminderUseCase.execute({
       workspaceId,
       reminderId,
       userId,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new BadRequestException(msg);
+    }
+    return result.getValue();
   }
 
   @Delete('reminders/:id')
@@ -155,10 +244,16 @@ export class RemindersController {
     @Param('id') reminderId: string,
     @CurrentUser('id') userId: string,
   ) {
-    return this.remindersService.softDeleteReminder(
+    const result = await this.deleteReminderUseCase.execute({
       workspaceId,
       reminderId,
       userId,
-    );
+    });
+    if (result.isFailure) {
+      const msg = result.getError().message;
+      if (msg.includes('not found')) throw new NotFoundException(msg);
+      throw new InternalServerErrorException(msg);
+    }
+    return result.getValue();
   }
 }

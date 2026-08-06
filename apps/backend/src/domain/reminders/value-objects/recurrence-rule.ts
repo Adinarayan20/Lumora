@@ -21,7 +21,8 @@ export class RecurrenceRule extends ValueObject<RecurrenceRuleProps> {
     try {
       rrulestr(trimmed);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Invalid RFC 5545 string';
+      const msg =
+        err instanceof Error ? err.message : 'Invalid RFC 5545 string';
       throw new DomainValidationException(
         `Invalid RFC 5545 recurrence rule '${rule}': ${msg}`,
         { recurrenceRule: [`Rule format is invalid.`] },

@@ -12,9 +12,16 @@ describe('ScheduleReminderUseCase', () => {
       save: vi.fn().mockResolvedValue(undefined),
       findById: vi.fn().mockResolvedValue(null),
       delete: vi.fn().mockResolvedValue(undefined),
-      findWorkspaceReminders: vi.fn().mockResolvedValue([]),
+      exists: vi.fn().mockResolvedValue(true),
       findDueReminders: vi.fn().mockResolvedValue([]),
-      findPaginated: vi.fn().mockResolvedValue({ items: [], pageInfo: { totalCount: 0, hasNextPage: false, hasPreviousPage: false } }),
+      findPaginated: vi.fn().mockResolvedValue({
+        items: [],
+        pageInfo: {
+          totalCount: 0,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      }),
     };
 
     useCase = new ScheduleReminderUseCase(mockReminderRepository);
@@ -41,6 +48,7 @@ describe('ScheduleReminderUseCase', () => {
     expect(dto.workspaceId).toBe(wsId);
     expect(dto.objectId).toBe(objId);
     expect(dto.priority).toBe('HIGH');
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockReminderRepository.save).toHaveBeenCalledTimes(1);
   });
 
@@ -58,6 +66,7 @@ describe('ScheduleReminderUseCase', () => {
     });
 
     expect(result.isFailure).toBe(true);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockReminderRepository.save).not.toHaveBeenCalled();
   });
 });

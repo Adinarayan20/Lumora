@@ -32,10 +32,16 @@ export class ScheduleReminderUseCase {
 
       const remindDate = new Date(dto.remindAt);
       if (isNaN(remindDate.getTime())) {
-        return Result.fail(new Error(`Invalid remindAt date string '${dto.remindAt}'. Must be valid ISO date.`));
+        return Result.fail(
+          new Error(
+            `Invalid remindAt date string '${dto.remindAt}'. Must be valid ISO date.`,
+          ),
+        );
       }
 
-      const recurrence = dto.recurrenceRule ? RecurrenceRule.create(dto.recurrenceRule) : undefined;
+      const recurrence = dto.recurrenceRule
+        ? RecurrenceRule.create(dto.recurrenceRule)
+        : undefined;
       const tz = dto.timezone ? TimezoneId.create(dto.timezone) : undefined;
 
       const aggregate = ReminderAggregate.create({
@@ -53,7 +59,9 @@ export class ScheduleReminderUseCase {
       const responseDto = ReminderResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

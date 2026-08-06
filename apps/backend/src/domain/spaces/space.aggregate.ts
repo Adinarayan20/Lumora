@@ -81,17 +81,27 @@ export class SpaceAggregate extends AggregateRoot<UniqueEntityId> {
     props: SpaceAggregateProps,
     parentDepth: number = 0,
   ): SpaceAggregate {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
-    const userGuard = Guard.againstNullOrUndefined(props.createdById, 'createdById');
+    const userGuard = Guard.againstNullOrUndefined(
+      props.createdById,
+      'createdById',
+    );
     if (userGuard.isFailure) throw userGuard.getError();
 
     const nameGuard = Guard.againstEmptyString(props.name, 'name');
     if (nameGuard.isFailure) throw nameGuard.getError();
 
     const tempId = props.id ?? new UniqueEntityId();
-    SpaceHierarchyPolicy.validateParentAssignment(tempId, props.parentId, parentDepth);
+    SpaceHierarchyPolicy.validateParentAssignment(
+      tempId,
+      props.parentId,
+      parentDepth,
+    );
 
     const space = new SpaceAggregate({ ...props, id: tempId });
     space.addDomainEvent(
@@ -113,7 +123,11 @@ export class SpaceAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public reparent(newParentId?: UniqueEntityId, parentDepth: number = 0): void {
-    SpaceHierarchyPolicy.validateParentAssignment(this.id, newParentId, parentDepth);
+    SpaceHierarchyPolicy.validateParentAssignment(
+      this.id,
+      newParentId,
+      parentDepth,
+    );
     this.parentId = newParentId;
     this.revision += 1;
     this.updatedAt = new Date();

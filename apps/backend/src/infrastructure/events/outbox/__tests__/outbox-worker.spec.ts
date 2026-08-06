@@ -34,7 +34,9 @@ describe('OutboxWorker Engine', () => {
     const processedCount = await worker.processBatch();
 
     expect(processedCount).toBe(1);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockPublisher.publish).toHaveBeenCalled();
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.markAsCompleted).toHaveBeenCalledWith(
       message.id,
       worker.workerId,
@@ -66,6 +68,7 @@ describe('OutboxWorker Engine', () => {
     const worker = new OutboxWorker(mockRepo, mockPublisher);
     await worker.processBatch();
 
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.markAsFailed).toHaveBeenCalledWith(
       message.id,
       worker.workerId,

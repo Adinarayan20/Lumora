@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator, DomainValidationException } from '@lumora/shared';
+import { IdGenerator, UniqueEntityId, DomainValidationException } from '@lumora/shared';
 import { UserSettingsAggregate } from '../user-settings.aggregate.js';
 
 describe('UserSettingsAggregate Invariants & Rules', () => {
   it('should successfully create UserSettingsAggregate with default preferences', () => {
-    const userId = IdGenerator.generate();
+    const userId = new UniqueEntityId(IdGenerator.generate());
 
     const settings = UserSettingsAggregate.create({ userId });
 
@@ -15,7 +15,7 @@ describe('UserSettingsAggregate Invariants & Rules', () => {
   });
 
   it('should update theme and timezone preferences', () => {
-    const userId = IdGenerator.generate();
+    const userId = new UniqueEntityId(IdGenerator.generate());
     const settings = UserSettingsAggregate.create({ userId });
 
     settings.updatePreferences('DARK', 'America/New_York');
@@ -25,7 +25,7 @@ describe('UserSettingsAggregate Invariants & Rules', () => {
   });
 
   it('should throw DomainValidationException for invalid theme string', () => {
-    const userId = IdGenerator.generate();
+    const userId = new UniqueEntityId(IdGenerator.generate());
 
     expect(() =>
       UserSettingsAggregate.create({

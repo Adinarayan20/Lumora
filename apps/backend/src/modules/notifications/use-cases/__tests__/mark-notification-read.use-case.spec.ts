@@ -2,7 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { IdGenerator, UniqueEntityId } from '@lumora/shared';
 import { MarkNotificationAsReadUseCase } from '../mark-notification-read.use-case.js';
 import { NotificationAggregate } from '../../../../domain/notifications/notification.aggregate.js';
-import { NotificationChannel, NotificationStatus } from '../../../../domain/notifications/value-objects/notification-enums.js';
+import {
+  NotificationChannel,
+  NotificationStatus,
+} from '../../../../domain/notifications/value-objects/notification-enums.js';
 import type { INotificationRepository } from '../../../../domain/notifications/repositories/notification.repository.interface.js';
 
 describe('MarkNotificationAsReadUseCase', () => {
@@ -40,6 +43,7 @@ describe('MarkNotificationAsReadUseCase', () => {
     expect(result.isSuccess).toBe(true);
     const dto = result.getValue();
     expect(dto.status).toBe(NotificationStatus.READ);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.save).toHaveBeenCalled();
   });
 

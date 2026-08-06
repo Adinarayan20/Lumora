@@ -29,7 +29,7 @@ export class FileAssetUploadedEvent implements DomainEvent<MediaEventName> {
     this.eventId = new UniqueEntityId();
     this.aggregateId = fileAssetId;
     this.workspaceId = uploadedById; // Uses uploader identity for event correlation
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       uploadedById: uploadedById.toString(),
       filename,
@@ -59,7 +59,7 @@ export class FileAssetDeletedEvent implements DomainEvent<MediaEventName> {
     this.eventId = new UniqueEntityId();
     this.aggregateId = fileAssetId;
     this.workspaceId = uploadedById;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       uploadedById: uploadedById.toString(),
       path,

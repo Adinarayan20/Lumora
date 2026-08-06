@@ -1,5 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId, EntityNotFoundException, DomainValidationException } from '@lumora/shared';
+import {
+  Result,
+  UniqueEntityId,
+  EntityNotFoundException,
+  DomainValidationException,
+} from '@lumora/shared';
 import type { INotificationRepository } from '../../../domain/notifications/repositories/notification.repository.interface.js';
 import { NOTIFICATION_REPOSITORY_TOKEN } from '../notifications.tokens.js';
 import { NotificationResponseDto } from '../dto/notification-response.dto.js';
@@ -35,7 +40,9 @@ export class MarkNotificationAsReadUseCase {
 
       if (aggregate.userId.toString() !== userId) {
         return Result.fail(
-          new DomainValidationException(`User '${userId}' cannot access notification '${notificationId}'.`),
+          new DomainValidationException(
+            `User '${userId}' cannot access notification '${notificationId}'.`,
+          ),
         );
       }
 
@@ -46,7 +53,9 @@ export class MarkNotificationAsReadUseCase {
       const responseDto = NotificationResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

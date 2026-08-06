@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Result, UniqueEntityId } from '@lumora/shared';
 import { TimelineRecordEntity } from '../../../domain/timeline/entities/timeline-record.entity.js';
-import { TimelineRecordRecordedEvent } from '../../../domain/timeline/events/timeline.events.js';
 import type { ITimelineRepository } from '../../../domain/timeline/repositories/timeline.repository.interface.js';
 import { TIMELINE_REPOSITORY_TOKEN } from '../timeline.tokens.js';
 import { RecordTimelineActivityDto } from '../dto/record-timeline-activity.dto.js';
@@ -34,21 +33,14 @@ export class RecordTimelineActivityUseCase {
         metadata: dto.metadata,
       });
 
-      const event = new TimelineRecordRecordedEvent(
-        record.id,
-        record.workspaceId,
-        record.userId,
-        record.entityCategory.getValue(),
-        record.entityId,
-        record.action.getValue(),
-      );
-
       await this.timelineRepository.save(record);
 
       const responseDto = TimelineRecordResponseMapper.toResponseDto(record);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

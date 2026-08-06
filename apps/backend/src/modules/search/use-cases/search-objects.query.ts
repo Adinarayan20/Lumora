@@ -25,14 +25,23 @@ export class SearchObjectsQuery {
     try {
       const { dto } = input;
       const termObj = SearchTerm.create(dto.query);
-      const categoryObj = dto.category ? SearchEntityCategory.create(dto.category) : undefined;
+      const categoryObj = dto.category
+        ? SearchEntityCategory.create(dto.category)
+        : undefined;
 
-      const projections = await this.searchRepository.search(termObj, categoryObj);
+      const projections = await this.searchRepository.search(
+        termObj,
+        categoryObj,
+      );
 
-      const dtos = projections.map((p) => SearchResponseMapper.toResponseDto(p));
+      const dtos = projections.map((p) =>
+        SearchResponseMapper.toResponseDto(p),
+      );
       return Result.ok(dtos);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

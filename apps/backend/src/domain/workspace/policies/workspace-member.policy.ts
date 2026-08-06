@@ -5,13 +5,14 @@ import { WorkspacePlan } from '../value-objects/workspace-enums.js';
  * Domain Policy encapsulating member quota limits and membership invariant rules per Workspace plan.
  */
 export class WorkspaceMemberPolicy {
-  public static readonly PLAN_MEMBER_LIMITS: Readonly<Record<WorkspacePlan, number>> =
-    Object.freeze({
-      [WorkspacePlan.FREE]: 5,
-      [WorkspacePlan.PRO]: 25,
-      [WorkspacePlan.BUSINESS]: 100,
-      [WorkspacePlan.ENTERPRISE]: 10000,
-    });
+  public static readonly PLAN_MEMBER_LIMITS: Readonly<
+    Record<WorkspacePlan, number>
+  > = Object.freeze({
+    [WorkspacePlan.FREE]: 5,
+    [WorkspacePlan.PRO]: 25,
+    [WorkspacePlan.BUSINESS]: 100,
+    [WorkspacePlan.ENTERPRISE]: 10000,
+  });
 
   public static validateMemberAddition(
     currentMemberCount: number,

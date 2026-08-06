@@ -33,7 +33,11 @@ describe('WorkspaceAggregate Domain Root', () => {
     workspace.transferOwnership(newOwnerId);
 
     expect(workspace.ownerId.equals(newOwnerId)).toBe(true);
-    expect(workspace.domainEvents.some((e) => e.eventName === 'workspace.ownership_transferred')).toBe(true);
+    expect(
+      workspace.domainEvents.some(
+        (e) => e.eventName === 'workspace.ownership_transferred',
+      ),
+    ).toBe(true);
   });
 
   it('should enforce member plan quota invariants in policy', () => {

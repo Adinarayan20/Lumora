@@ -1,4 +1,9 @@
-import { AggregateRoot, UniqueEntityId, Guard, DomainValidationException } from '@lumora/shared';
+import {
+  AggregateRoot,
+  UniqueEntityId,
+  Guard,
+  DomainValidationException,
+} from '@lumora/shared';
 import { WorkspaceSlug } from './value-objects/workspace-slug.js';
 import {
   WorkspaceType,
@@ -6,7 +11,10 @@ import {
   WorkspaceStatus,
   WorkspacePlan,
 } from './value-objects/workspace-enums.js';
-import { WorkspaceCreatedEvent, WorkspaceOwnershipTransferredEvent } from './events/workspace.events.js';
+import {
+  WorkspaceCreatedEvent,
+  WorkspaceOwnershipTransferredEvent,
+} from './events/workspace.events.js';
 
 export interface WorkspaceAggregateProps {
   id?: UniqueEntityId;
@@ -88,7 +96,9 @@ export class WorkspaceAggregate extends AggregateRoot<UniqueEntityId> {
     return workspace;
   }
 
-  public static reconstitute(props: WorkspaceAggregateProps): WorkspaceAggregate {
+  public static reconstitute(
+    props: WorkspaceAggregateProps,
+  ): WorkspaceAggregate {
     return new WorkspaceAggregate(props);
   }
 

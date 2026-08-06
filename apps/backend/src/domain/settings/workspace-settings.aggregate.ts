@@ -30,17 +30,26 @@ export class WorkspaceSettingsAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public static create(
-    props: Omit<WorkspaceSettingsAggregateProps, 'retentionDays'> & {
+    props: {
+      id?: UniqueEntityId;
+      workspaceId: UniqueEntityId;
+      defaultRole?: string;
+      allowGuestAccess?: boolean;
       retentionDays?: RetentionDays | number;
+      enforceMfa?: boolean;
+      updatedAt?: Date;
     },
   ): WorkspaceSettingsAggregate {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
     const retentionObj =
       typeof props.retentionDays === 'number'
         ? RetentionDays.create(props.retentionDays)
-        : props.retentionDays ?? RetentionDays.create(365);
+        : (props.retentionDays ?? RetentionDays.create(365));
 
     return new WorkspaceSettingsAggregate({
       ...props,
@@ -51,13 +60,17 @@ export class WorkspaceSettingsAggregate extends AggregateRoot<UniqueEntityId> {
     });
   }
 
-  public static reconstitute(props: WorkspaceSettingsAggregateProps): WorkspaceSettingsAggregate {
+  public static reconstitute(
+    props: WorkspaceSettingsAggregateProps,
+  ): WorkspaceSettingsAggregate {
     return new WorkspaceSettingsAggregate(props);
   }
 
   public updateRetentionPolicy(retentionDays: RetentionDays | number): void {
     this.retentionDays =
-      typeof retentionDays === 'number' ? RetentionDays.create(retentionDays) : retentionDays;
+      typeof retentionDays === 'number'
+        ? RetentionDays.create(retentionDays)
+        : retentionDays;
     this.updatedAt = new Date();
   }
 

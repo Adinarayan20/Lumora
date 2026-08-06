@@ -1,8 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId, EntityNotFoundException } from '@lumora/shared';
+import {
+  Result,
+  UniqueEntityId,
+  EntityNotFoundException,
+} from '@lumora/shared';
 import type { IFileAssetRepository } from '../../../domain/media/repositories/file-asset.repository.interface.js';
 import type { IStorageProvider } from '../../../domain/media/interfaces/storage-provider.interface.js';
-import { MEDIA_REPOSITORY_TOKEN, STORAGE_PROVIDER_TOKEN } from '../media.tokens.js';
+import {
+  MEDIA_REPOSITORY_TOKEN,
+  STORAGE_PROVIDER_TOKEN,
+} from '../media.tokens.js';
 import { FileAssetResponseDto } from '../dto/file-asset-response.dto.js';
 import { FileAssetResponseMapper } from '../mappers/file-asset-response.mapper.js';
 
@@ -40,7 +47,9 @@ export class GetFileAssetQuery {
         );
       }
 
-      const downloadUrl = await this.storageProvider.getSignedUrl(aggregate.path);
+      const downloadUrl = await this.storageProvider.getSignedUrl(
+        aggregate.path,
+      );
       const assetDto = FileAssetResponseMapper.toResponseDto(aggregate);
 
       return Result.ok({
@@ -48,7 +57,9 @@ export class GetFileAssetQuery {
         downloadUrl,
       });
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

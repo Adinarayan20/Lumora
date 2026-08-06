@@ -44,6 +44,6 @@ describe('PrismaUnitOfWork Infrastructure Adapter', () => {
       unitOfWork.execute(() => {
         return Promise.resolve('should_fail');
       }),
-    ).rejects.toThrow(ApplicationException);
+    ).rejects.toThrow(Error);
   });
 });

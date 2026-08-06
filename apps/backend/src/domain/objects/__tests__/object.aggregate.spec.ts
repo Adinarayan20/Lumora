@@ -2,7 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { ObjectAggregate } from '../object.aggregate.js';
 import { ObjectTitle } from '../value-objects/object-title.js';
 import { ObjectKey } from '../value-objects/object-key.js';
-import { UniqueEntityId, ObjectTypeKey, DomainValidationException } from '@lumora/shared';
+import {
+  UniqueEntityId,
+  ObjectTypeKey,
+  DomainValidationException,
+} from '@lumora/shared';
 
 describe('ObjectAggregate Domain Root', () => {
   const workspaceId = new UniqueEntityId();
@@ -50,6 +54,8 @@ describe('ObjectAggregate Domain Root', () => {
     object.softDelete(createdById);
 
     expect(object.status).toBe('DELETED');
-    expect(object.domainEvents.some((e) => e.eventName === 'object.deleted')).toBe(true);
+    expect(
+      object.domainEvents.some((e) => e.eventName === 'object.deleted'),
+    ).toBe(true);
   });
 });

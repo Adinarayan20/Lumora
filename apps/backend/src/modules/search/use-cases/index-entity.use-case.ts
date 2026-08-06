@@ -27,7 +27,10 @@ export class IndexEntityUseCase {
       const categoryObj = SearchEntityCategory.create(dto.entityCategory);
       const entityIdObj = new UniqueEntityId(dto.entityId);
 
-      let projection = await this.searchRepository.findByEntity(categoryObj, entityIdObj);
+      let projection = await this.searchRepository.findByEntity(
+        categoryObj,
+        entityIdObj,
+      );
 
       if (projection) {
         projection.updateContent(dto.title, dto.content);
@@ -45,7 +48,9 @@ export class IndexEntityUseCase {
       const responseDto = SearchResponseMapper.toResponseDto(projection);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

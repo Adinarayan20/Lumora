@@ -16,7 +16,9 @@ export class ObjectResponseMapper {
       emoji: aggregate.emoji,
       cover: aggregate.cover,
       color: aggregate.color,
-      pinnedAt: aggregate.pinnedAt ? aggregate.pinnedAt.toISOString() : undefined,
+      pinnedAt: aggregate.pinnedAt
+        ? aggregate.pinnedAt.toISOString()
+        : undefined,
       isFavorite: aggregate.isFavorite,
       status: aggregate.status,
       attributes: aggregate.attributes,

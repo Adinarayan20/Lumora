@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UniqueEntityId, IdGenerator } from '@lumora/shared';
 import { PrismaSearchRepository } from '../prisma-search.repository.js';
 import { SearchIndexEntity } from '../../../../domain/search/entities/search-index.entity.js';
 import { SearchTerm } from '../../../../domain/search/value-objects/search-term.js';
 import { SearchEntityCategory } from '../../../../domain/search/value-objects/search-entity-category.js';
-import { PrismaService } from '../../prisma.service.js';
 
 describe('PrismaSearchRepository Unit Tests', () => {
   let repository: PrismaSearchRepository;
@@ -20,7 +20,7 @@ describe('PrismaSearchRepository Unit Tests', () => {
       },
     };
 
-    repository = new PrismaSearchRepository(mockPrisma as unknown as PrismaService);
+    repository = new PrismaSearchRepository(mockPrisma);
   });
 
   it('should update existing projection on save duplicate indexing', async () => {

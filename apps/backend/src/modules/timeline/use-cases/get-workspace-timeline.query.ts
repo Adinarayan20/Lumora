@@ -34,13 +34,20 @@ export class GetWorkspaceTimelineQuery {
           limit,
         );
       } else {
-        records = await this.timelineRepository.findWorkspaceTimeline(wsEntityId, limit);
+        records = await this.timelineRepository.findWorkspaceTimeline(
+          wsEntityId,
+          limit,
+        );
       }
 
-      const dtos = records.map((r) => TimelineRecordResponseMapper.toResponseDto(r));
+      const dtos = records.map((r) =>
+        TimelineRecordResponseMapper.toResponseDto(r),
+      );
       return Result.ok(dtos);
     } catch (error) {
-      return Result.fail(error instanceof Error ? error : new Error(String(error)));
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
   }
 }

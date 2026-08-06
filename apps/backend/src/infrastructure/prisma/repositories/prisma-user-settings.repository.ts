@@ -12,7 +12,9 @@ import { TimezonePreference } from '../../../domain/settings/value-objects/timez
 export class PrismaUserSettingsRepository implements IUserSettingsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  public async findByUserId(userId: UniqueEntityId): Promise<UserSettingsAggregate | null> {
+  public async findByUserId(
+    userId: UniqueEntityId,
+  ): Promise<UserSettingsAggregate | null> {
     try {
       const user = await this.prisma.user.findUnique({
         where: { id: userId.toString() },
@@ -44,7 +46,7 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
 
   /**
    * Explicit mapping converting database User model to UserSettingsAggregate domain root.
-   * 
+   *
    * SCHEMA BOUNDARY DOCUMENTATION:
    * Current Prisma User schema model persists id, timezone, locale.
    * Notification preferences (notificationsEnabled, emailNotifications, pushNotifications) are carried
@@ -67,7 +69,9 @@ export class PrismaUserSettingsRepository implements IUserSettingsRepository {
   /**
    * Explicit mapping converting UserSettingsAggregate to database user preference payload.
    */
-  public toPersistence(settings: UserSettingsAggregate): Record<string, unknown> {
+  public toPersistence(
+    settings: UserSettingsAggregate,
+  ): Record<string, unknown> {
     return {
       userId: settings.userId.toString(),
       theme: settings.theme.getValue(),

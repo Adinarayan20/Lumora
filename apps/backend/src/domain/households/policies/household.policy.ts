@@ -11,7 +11,11 @@ export class HouseholdPolicy {
     if (currentMemberCount >= this.MAX_HOUSEHOLD_MEMBERS) {
       throw new DomainValidationException(
         `Household member capacity limit of ${this.MAX_HOUSEHOLD_MEMBERS} exceeded.`,
-        { capacity: [`Household cannot exceed ${this.MAX_HOUSEHOLD_MEMBERS} members.`] },
+        {
+          capacity: [
+            `Household cannot exceed ${this.MAX_HOUSEHOLD_MEMBERS} members.`,
+          ],
+        },
       );
     }
   }

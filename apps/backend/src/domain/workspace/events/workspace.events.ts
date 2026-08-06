@@ -4,7 +4,10 @@ import {
   WorkspaceEventName,
   DomainEvent,
 } from '@lumora/shared';
-import { WorkspaceType, WorkspacePlan } from '../value-objects/workspace-enums.js';
+import {
+  WorkspaceType,
+  WorkspacePlan,
+} from '../value-objects/workspace-enums.js';
 
 export class WorkspaceCreatedEvent implements DomainEvent<WorkspaceEventName> {
   public readonly eventId: UniqueEntityId;
@@ -32,7 +35,7 @@ export class WorkspaceCreatedEvent implements DomainEvent<WorkspaceEventName> {
     this.eventId = new UniqueEntityId();
     this.aggregateId = workspaceId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       ownerId: ownerId.toValue(),
       name,
@@ -43,9 +46,7 @@ export class WorkspaceCreatedEvent implements DomainEvent<WorkspaceEventName> {
   }
 }
 
-export class WorkspaceOwnershipTransferredEvent
-  implements DomainEvent<WorkspaceEventName>
-{
+export class WorkspaceOwnershipTransferredEvent implements DomainEvent<WorkspaceEventName> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = WorkspaceEventName.OWNERSHIP_TRANSFERRED;
   public readonly aggregateId: UniqueEntityId;
@@ -65,7 +66,7 @@ export class WorkspaceOwnershipTransferredEvent
     this.eventId = new UniqueEntityId();
     this.aggregateId = workspaceId;
     this.workspaceId = workspaceId;
-    this.occurredAt = new Date().toISOString() as InstantString;
+    this.occurredAt = new Date().toISOString();
     this.payload = Object.freeze({
       previousOwnerId: previousOwnerId.toValue(),
       newOwnerId: newOwnerId.toValue(),

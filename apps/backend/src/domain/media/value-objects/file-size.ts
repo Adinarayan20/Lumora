@@ -25,7 +25,11 @@ export class FileSize extends ValueObject<FileSizeProps> {
     if (bytes > this.MAX_FILE_SIZE_BYTES) {
       throw new DomainValidationException(
         `File size exceeds maximum allowed limit of ${this.MAX_FILE_SIZE_BYTES / (1024 * 1024)} MB.`,
-        { bytes: [`File size exceeds limit of ${this.MAX_FILE_SIZE_BYTES} bytes.`] },
+        {
+          bytes: [
+            `File size exceeds limit of ${this.MAX_FILE_SIZE_BYTES} bytes.`,
+          ],
+        },
       );
     }
 

@@ -2,7 +2,9 @@ import { HouseholdAggregate } from '../../../domain/households/household.aggrega
 import { HouseholdResponseDto } from '../dto/household-response.dto.js';
 
 export class HouseholdResponseMapper {
-  public static toResponseDto(aggregate: HouseholdAggregate): HouseholdResponseDto {
+  public static toResponseDto(
+    aggregate: HouseholdAggregate,
+  ): HouseholdResponseDto {
     return {
       id: aggregate.id.toString(),
       workspaceId: aggregate.workspaceId.toString(),

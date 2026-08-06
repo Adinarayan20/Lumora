@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { IdGenerator, DomainValidationException } from '@lumora/shared';
+import { IdGenerator, UniqueEntityId, DomainValidationException } from '@lumora/shared';
 import { FileAssetAggregate } from '../file-asset.aggregate.js';
 import { FileProvider } from '../value-objects/file-provider.enum.js';
 
 describe('FileAssetAggregate Invariants & Rules', () => {
   it('should successfully create a valid FileAssetAggregate and emit FileAssetUploadedEvent', () => {
-    const userId = IdGenerator.generate();
+    const userId = new UniqueEntityId(IdGenerator.generate());
 
     const asset = FileAssetAggregate.create({
       uploadedById: userId,
@@ -24,7 +24,7 @@ describe('FileAssetAggregate Invariants & Rules', () => {
   });
 
   it('should mark asset as deleted and emit FileAssetDeletedEvent', () => {
-    const userId = IdGenerator.generate();
+    const userId = new UniqueEntityId(IdGenerator.generate());
 
     const asset = FileAssetAggregate.create({
       uploadedById: userId,
@@ -43,7 +43,7 @@ describe('FileAssetAggregate Invariants & Rules', () => {
   });
 
   it('should throw DomainValidationException on path traversal in storage key', () => {
-    const userId = IdGenerator.generate();
+    const userId = new UniqueEntityId(IdGenerator.generate());
 
     expect(() =>
       FileAssetAggregate.create({

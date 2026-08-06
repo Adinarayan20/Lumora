@@ -3,7 +3,8 @@ export const CollectionType = {
   DYNAMIC: 'DYNAMIC',
 } as const;
 
-export type CollectionType = (typeof CollectionType)[keyof typeof CollectionType];
+export type CollectionType =
+  (typeof CollectionType)[keyof typeof CollectionType];
 
 export const CollectionStatus = {
   ACTIVE: 'ACTIVE',
@@ -11,4 +12,5 @@ export const CollectionStatus = {
   DELETED: 'DELETED',
 } as const;
 
-export type CollectionStatus = (typeof CollectionStatus)[keyof typeof CollectionStatus];
+export type CollectionStatus =
+  (typeof CollectionStatus)[keyof typeof CollectionStatus];

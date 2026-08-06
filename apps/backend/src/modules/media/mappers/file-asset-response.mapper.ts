@@ -2,7 +2,9 @@ import { FileAssetAggregate } from '../../../domain/media/file-asset.aggregate.j
 import { FileAssetResponseDto } from '../dto/file-asset-response.dto.js';
 
 export class FileAssetResponseMapper {
-  public static toResponseDto(aggregate: FileAssetAggregate): FileAssetResponseDto {
+  public static toResponseDto(
+    aggregate: FileAssetAggregate,
+  ): FileAssetResponseDto {
     return {
       id: aggregate.id.toString(),
       uploadedById: aggregate.uploadedById.toString(),
@@ -14,7 +16,9 @@ export class FileAssetResponseMapper {
       sizeBytes: aggregate.size.getBytes(),
       checksum: aggregate.checksum ? aggregate.checksum.getValue() : undefined,
       createdAt: aggregate.createdAt.toISOString(),
-      deletedAt: aggregate.deletedAt ? aggregate.deletedAt.toISOString() : undefined,
+      deletedAt: aggregate.deletedAt
+        ? aggregate.deletedAt.toISOString()
+        : undefined,
     };
   }
 }

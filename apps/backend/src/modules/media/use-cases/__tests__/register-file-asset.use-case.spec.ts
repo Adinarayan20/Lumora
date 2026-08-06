@@ -31,6 +31,7 @@ describe('RegisterFileAssetUseCase', () => {
     const dto = result.getValue();
     expect(dto.filename).toBe('report.pdf');
     expect(dto.mimeType).toBe('application/pdf');
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.save).toHaveBeenCalled();
   });
 
@@ -43,7 +44,9 @@ describe('RegisterFileAssetUseCase', () => {
       save: vi.fn(),
       delete: vi.fn(),
       findByUploadedUserId: vi.fn(),
-      calculateUserTotalStorageBytes: vi.fn().mockResolvedValue(10 * 1024 * 1024 * 1024), // Full 10 GB
+      calculateUserTotalStorageBytes: vi
+        .fn()
+        .mockResolvedValue(10 * 1024 * 1024 * 1024), // Full 10 GB
     };
 
     const useCase = new RegisterFileAssetUseCase(mockRepo);

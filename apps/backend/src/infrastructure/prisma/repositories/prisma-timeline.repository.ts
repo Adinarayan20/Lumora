@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UniqueEntityId } from '@lumora/shared';
-import { Prisma, Timeline as PrismaTimeline } from '../../../generated/prisma/client.js';
+import {
+  Prisma,
+  Timeline as PrismaTimeline,
+} from '../../../generated/prisma/client.js';
 import { PrismaService } from '../prisma.service.js';
 import { PrismaExceptionMapper } from '../mappers/prisma-exception.mapper.js';
 import type { ITimelineRepository } from '../../../domain/timeline/repositories/timeline.repository.interface.js';
@@ -63,7 +66,7 @@ export class PrismaTimelineRepository implements ITimelineRepository {
 
   /**
    * Explicit mapping converting database Timeline model to TimelineRecordEntity domain object.
-   * 
+   *
    * WARNING / ARCHITECTURAL LIMITATION NOTICE (TD-014):
    * Current Prisma Timeline schema model persists id, objectId, startedAt, endedAt, timezone.
    * Workspace and user audit association (workspaceId, userId, action, metadata) are synthesized

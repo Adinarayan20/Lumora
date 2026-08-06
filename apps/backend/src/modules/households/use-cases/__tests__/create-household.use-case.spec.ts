@@ -28,6 +28,7 @@ describe('CreateHouseholdUseCase', () => {
     const dto = result.getValue();
     expect(dto.name).toBe('Johnson Household');
     expect(dto.members).toHaveLength(1);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.save).toHaveBeenCalled();
   });
 });

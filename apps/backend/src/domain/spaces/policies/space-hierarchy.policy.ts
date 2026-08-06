@@ -21,7 +21,11 @@ export class SpaceHierarchyPolicy {
     if (parentDepth >= SpaceHierarchyPolicy.MAX_DEPTH) {
       throw new DomainValidationException(
         `Space hierarchy maximum depth limit (${SpaceHierarchyPolicy.MAX_DEPTH}) exceeded.`,
-        { parentId: [`Hierarchy depth cannot exceed ${SpaceHierarchyPolicy.MAX_DEPTH}.`] },
+        {
+          parentId: [
+            `Hierarchy depth cannot exceed ${SpaceHierarchyPolicy.MAX_DEPTH}.`,
+          ],
+        },
       );
     }
   }

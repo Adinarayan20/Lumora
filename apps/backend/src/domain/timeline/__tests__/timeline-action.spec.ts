@@ -9,6 +9,8 @@ describe('TimelineAction Value Object', () => {
   });
 
   it('should throw DomainValidationException for action names exceeding limit', () => {
-    expect(() => TimelineAction.create('X'.repeat(70))).toThrow(DomainValidationException);
+    expect(() => TimelineAction.create('X'.repeat(70))).toThrow(
+      DomainValidationException,
+    );
   });
 });

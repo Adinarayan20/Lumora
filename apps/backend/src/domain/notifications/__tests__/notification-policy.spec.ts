@@ -6,7 +6,9 @@ import { NotificationStatus } from '../value-objects/notification-enums.js';
 describe('NotificationPolicy', () => {
   it('should throw DomainValidationException when attempt count exceeds max limit', () => {
     expect(() =>
-      NotificationPolicy.validateAttemptCount(NotificationPolicy.MAX_DELIVERY_ATTEMPTS),
+      NotificationPolicy.validateAttemptCount(
+        NotificationPolicy.MAX_DELIVERY_ATTEMPTS,
+      ),
     ).toThrow(DomainValidationException);
   });
 
