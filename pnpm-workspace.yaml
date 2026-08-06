@@ -1,15 +1,12 @@
 packages:
   - "apps/*"
   - "packages/*"
-allowBuilds:
-  '@firebase/util': true
-  '@prisma/engines': false
-  '@scarf/scarf': true
-  bcrypt: false
-  msgpackr-extract: true
-  prisma: false
-  protobufjs: true
-  unrs-resolver: false
+onlyBuiltDependencies:
+  - esbuild
+  - '@firebase/util'
+  - '@scarf/scarf'
+  - msgpackr-extract
+  - protobufjs
 minimumReleaseAgeExclude:
   - '@next/env@16.3.0'
   - '@next/eslint-plugin-next@16.3.0'
