@@ -133,4 +133,54 @@ export const GLOBAL_PERMISSIONS_SEED: PermissionSeedData[] = [
     action: 'delete',
     description: 'Delete universal objects within workspace',
   },
+  // Collection
+  {
+    key: Permissions.Collection.Create,
+    resource: 'workspace.collection',
+    action: 'create',
+    description: 'Create collections within workspace',
+  },
+  {
+    key: Permissions.Collection.Read,
+    resource: 'workspace.collection',
+    action: 'read',
+    description: 'Read collections within workspace',
+  },
+  {
+    key: Permissions.Collection.Update,
+    resource: 'workspace.collection',
+    action: 'update',
+    description: 'Update collections within workspace',
+  },
+  {
+    key: Permissions.Collection.Delete,
+    resource: 'workspace.collection',
+    action: 'delete',
+    description: 'Delete collections within workspace',
+  },
+  // Reminder
+  {
+    key: Permissions.Reminder.Create,
+    resource: 'workspace.reminder',
+    action: 'create',
+    description: 'Create reminders within workspace',
+  },
+  {
+    key: Permissions.Reminder.Read,
+    resource: 'workspace.reminder',
+    action: 'read',
+    description: 'Read reminders within workspace',
+  },
+  {
+    key: Permissions.Reminder.Update,
+    resource: 'workspace.reminder',
+    action: 'update',
+    description: 'Update reminders within workspace',
+  },
+  {
+    key: Permissions.Reminder.Delete,
+    resource: 'workspace.reminder',
+    action: 'delete',
+    description: 'Delete reminders within workspace',
+  },
 ];

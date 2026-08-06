@@ -103,6 +103,11 @@ model User {
   objectsUpdated Object[] @relation("ObjectModifier")
   spacesCreated  Space[]  @relation("SpaceAuthor")
   spacesUpdated  Space[]  @relation("SpaceModifier")
+  collectionsCreated Collection[] @relation("CollectionAuthor")
+  collectionsUpdated Collection[] @relation("CollectionModifier")
+  remindersCreated  Reminder[]   @relation("ReminderAuthor")
+  remindersUpdated  Reminder[]   @relation("ReminderModifier")
+  remindersDismissed Reminder[]  @relation("ReminderDismissedBy")
 
   @@index([email])
   @@index([username])
@@ -160,6 +165,10 @@ model Workspace {
   invitations WorkspaceInvitation[]
 
   objects Object[]
+
+  collections Collection[]
+
+  reminders Reminder[]
 }
 
 //////////////////////////////////////////////////////
@@ -336,6 +345,17 @@ enum SpaceStatus {
   DELETED
 }
 
+enum CollectionType {
+  STATIC
+  DYNAMIC
+}
+
+enum CollectionStatus {
+  ACTIVE
+  ARCHIVED
+  DELETED
+}
+
 enum ObjectType {
   NOTE
   TASK
@@ -349,10 +369,38 @@ enum ObjectStatus {
   DELETED
 }
 
+enum ReminderTriggerType {
+  TIME
+  LOCATION
+  WEBHOOK
+  AI
+  AUTOMATION
+}
+
+enum ReminderSource {
+  MANUAL
+  AI
+  AUTOMATION
+  CALENDAR
+  IMPORT
+  API
+}
+
 enum ReminderStatus {
   ACTIVE
+  SNOOZED
   COMPLETED
   CANCELLED
+  DISMISSED
+  DELETED
+}
+
+enum ReminderExecutionStatus {
+  PENDING
+  TRIGGERED
+  SNOOZED
+  COMPLETED
+  MISSED
 }
 
 enum ReminderPriority {
@@ -660,9 +708,11 @@ model Object {
 
   updatedBy User? @relation("ObjectModifier", fields: [updatedById], references: [id])
 
-  reminder Reminder?
+  reminders Reminder[]
 
   timeline Timeline?
+
+  collectionItems CollectionItem[]
 
   @@index([workspaceId, objectKey])
   @@index([workspaceId, status])
@@ -677,23 +727,101 @@ model Object {
 model Reminder {
   id String @id @default(uuid()) @db.Uuid
 
-  objectId String @unique @db.Uuid
+  workspaceId String @db.Uuid
+
+  objectId String @db.Uuid
+
+  createdById String @db.Uuid
+
+  updatedById String? @db.Uuid
+
+  dismissedById String? @db.Uuid
+
+  lastExecutionId String?
+
+  source ReminderSource @default(MANUAL)
+
+  triggerType ReminderTriggerType @default(TIME)
 
   status ReminderStatus @default(ACTIVE)
 
-  priority ReminderPriority @default(MEDIUM)
+  executionStatus ReminderExecutionStatus @default(PENDING)
 
   remindAt DateTime
 
+  snoozedUntil DateTime?
+
+  nextOccurrenceAt DateTime?
+
+  lastTriggeredAt DateTime?
+
   completedAt DateTime?
+
+  dismissedAt DateTime?
+
+  cancelledAt DateTime?
+
+  deletedAt DateTime?
+
+  timezone String @default("UTC")
+
+  recurrenceRule String?
+
+  priority ReminderPriority?
+
+  recurrence Json?
+
+  revision Int @default(1)
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
 
-  object Object @relation(fields: [objectId], references: [id])
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  object Object @relation(fields: [objectId], references: [id], onDelete: Cascade)
+
+  createdBy User @relation("ReminderAuthor", fields: [createdById], references: [id])
+
+  updatedBy User? @relation("ReminderModifier", fields: [updatedById], references: [id])
+
+  dismissedBy User? @relation("ReminderDismissedBy", fields: [dismissedById], references: [id])
 
   notifications Notification[]
+
+  executions ReminderExecution[]
+
+  @@index([workspaceId, nextOccurrenceAt, executionStatus])
+  @@index([executionStatus, nextOccurrenceAt])
+  @@index([objectId, status])
+  @@index([workspaceId, objectId])
+  @@index([workspaceId, createdById])
+  @@index([workspaceId, status])
+}
+
+model ReminderExecution {
+  id String @id @default(uuid()) @db.Uuid
+
+  reminderId String @db.Uuid
+
+  scheduledFor DateTime
+
+  executedAt DateTime @default(now())
+
+  status ReminderExecutionStatus @default(TRIGGERED)
+
+  executionId String @unique
+
+  errorMessage String?
+
+  durationMs Int?
+
+  createdAt DateTime @default(now())
+
+  reminder Reminder @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+
+  @@index([reminderId])
+  @@index([status])
 }
 
 model Notification {
@@ -728,4 +856,84 @@ model Timeline {
   timezone String
 
   object Object @relation(fields: [objectId], references: [id])
+}
+
+model Collection {
+  id String @id @default(uuid()) @db.Uuid
+
+  workspaceId String @db.Uuid
+
+  createdById String @db.Uuid
+
+  updatedById String? @db.Uuid
+
+  slug String
+
+  name String
+
+  description String?
+
+  type CollectionType @default(STATIC)
+
+  query Json?
+
+  icon String?
+
+  emoji String?
+
+  cover String?
+
+  color String?
+
+  pinnedAt DateTime?
+
+  isFavorite Boolean @default(false)
+
+  status CollectionStatus @default(ACTIVE)
+
+  settings Json? @default("{}")
+
+  revision Int @default(1)
+
+  archivedAt DateTime?
+
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+
+  createdBy User @relation("CollectionAuthor", fields: [createdById], references: [id])
+
+  updatedBy User? @relation("CollectionModifier", fields: [updatedById], references: [id])
+
+  items CollectionItem[]
+
+  @@index([workspaceId, slug])
+  @@index([workspaceId, status])
+  @@index([workspaceId, isFavorite])
+  @@index([workspaceId, pinnedAt])
+  @@index([createdById])
+}
+
+model CollectionItem {
+  id String @id @default(uuid()) @db.Uuid
+
+  collectionId String @db.Uuid
+
+  objectId String @db.Uuid
+
+  order Int @default(0)
+
+  addedAt DateTime @default(now())
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  object Object @relation(fields: [objectId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, objectId])
+  @@index([collectionId])
+  @@index([objectId])
 }
