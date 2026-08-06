@@ -107,10 +107,17 @@ export class ReminderAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public static create(props: ReminderAggregateProps): ReminderAggregate {
-    Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
-    Guard.againstNullOrUndefined(props.objectId, 'objectId');
-    Guard.againstNullOrUndefined(props.createdById, 'createdById');
-    Guard.againstNullOrUndefined(props.remindAt, 'remindAt');
+    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    if (wsGuard.isFailure) throw wsGuard.getError();
+
+    const objGuard = Guard.againstNullOrUndefined(props.objectId, 'objectId');
+    if (objGuard.isFailure) throw objGuard.getError();
+
+    const userGuard = Guard.againstNullOrUndefined(props.createdById, 'createdById');
+    if (userGuard.isFailure) throw userGuard.getError();
+
+    const dateGuard = Guard.againstNullOrUndefined(props.remindAt, 'remindAt');
+    if (dateGuard.isFailure) throw dateGuard.getError();
 
     const reminder = new ReminderAggregate(props);
     reminder.addDomainEvent(

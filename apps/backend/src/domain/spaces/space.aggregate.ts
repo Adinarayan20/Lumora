@@ -81,8 +81,11 @@ export class SpaceAggregate extends AggregateRoot<UniqueEntityId> {
     props: SpaceAggregateProps,
     parentDepth: number = 0,
   ): SpaceAggregate {
-    Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
-    Guard.againstNullOrUndefined(props.createdById, 'createdById');
+    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    if (wsGuard.isFailure) throw wsGuard.getError();
+
+    const userGuard = Guard.againstNullOrUndefined(props.createdById, 'createdById');
+    if (userGuard.isFailure) throw userGuard.getError();
 
     const nameGuard = Guard.againstEmptyString(props.name, 'name');
     if (nameGuard.isFailure) throw nameGuard.getError();
