@@ -85,6 +85,14 @@ export const MediaEventName = {
 export type MediaEventName =
   (typeof MediaEventName)[keyof typeof MediaEventName];
 
+export const SearchEventName = {
+  INDEXED: "search.indexed",
+  REMOVED: "search.removed",
+} as const;
+
+export type SearchEventName =
+  (typeof SearchEventName)[keyof typeof SearchEventName];
+
 /**
  * Union type representing all valid domain event name string literals.
  */
@@ -96,4 +104,5 @@ export type DomainEventName =
   | SpaceEventName
   | CollectionEventName
   | NotificationEventName
-  | MediaEventName;
+  | MediaEventName
+  | SearchEventName;
