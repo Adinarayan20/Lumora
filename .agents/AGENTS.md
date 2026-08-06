@@ -43,6 +43,18 @@ For every implementation unit, present all 4 steps together in a single response
      - Technical Debt
      - Future Improvements
 
+## Locked Infrastructure & Persistence Isolation Rules
+1. **Prisma Infrastructure Boundary**: Prisma must exist ONLY inside the infrastructure layer (`apps/backend/src/infrastructure/prisma/`).
+2. **Shared Package Independence**: `@lumora/shared` must NEVER import Prisma.
+3. **Domain Purity**: Domain entities, repositories, events, value objects, and use cases must NEVER import Prisma types.
+4. **Persistence Model Isolation**: Prisma models are persistence models only.
+5. **Bidirectional Mapping**: Repository implementations are strictly responsible for mapping `Prisma Model ↔ Domain Entity`.
+6. **Client Encapsulation**: Never expose `PrismaClient` outside the infrastructure layer.
+7. **Entity Return Guarantee**: Repositories MUST return domain entities or primitives—NEVER Prisma model instances.
+8. **Direct Query Prohibition**: Never allow controllers, services, or use cases to execute Prisma queries directly.
+9. **Repository Access Only**: All database access must go through repository implementations.
+10. **Infrastructure Replaceability**: `PrismaService` is infrastructure-only and must remain replaceable without changing domain code.
+
 ## Engineering Performance & Quality Standards
 
 ### Performance First
