@@ -7,6 +7,7 @@ import {
   createDomainEvent,
   IDomainEventPublisher,
 } from '../index.js';
+import { DomainValidationException } from '../../errors/domain-exceptions.js';
 import type { DomainEvent } from '../domain-event.interface.js';
 import { UniqueEntityId } from '../../primitives/unique-entity-id.js';
 import type { ObjectCreatedPayload } from '../payloads/object-payloads.js';
@@ -63,6 +64,38 @@ describe('Domain Event Contracts (Data Contract Model)', () => {
       expect(event.eventId.equals(customEventId)).toBe(true);
       expect(event.occurredAt).toBe(customTimestamp);
       expect(event.schemaVersion).toBe(2);
+    });
+
+    it('should throw DomainValidationException for schemaVersion < 1 or non-integer values', () => {
+      const aggregateId = new UniqueEntityId();
+
+      expect(() =>
+        createDomainEvent({
+          eventName: UserEventName.REGISTERED,
+          aggregateId,
+          schemaVersion: 0,
+          payload: {
+            userId: aggregateId,
+            email: 'test@lumora.io',
+            username: 'test',
+            registeredAt: new Date().toISOString(),
+          },
+        }),
+      ).toThrow(DomainValidationException);
+
+      expect(() =>
+        createDomainEvent({
+          eventName: UserEventName.REGISTERED,
+          aggregateId,
+          schemaVersion: 1.5,
+          payload: {
+            userId: aggregateId,
+            email: 'test@lumora.io',
+            username: 'test',
+            registeredAt: new Date().toISOString(),
+          },
+        }),
+      ).toThrow(DomainValidationException);
     });
   });
 

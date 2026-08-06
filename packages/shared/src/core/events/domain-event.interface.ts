@@ -1,12 +1,14 @@
 import type { UniqueEntityId } from '../primitives/unique-entity-id.js';
+import type { DomainEventName } from './event-names.js';
+import type { InstantString } from './instant-string.js';
 
 /**
  * Pure, framework-agnostic data contract representing an immutable domain event.
- * Uses Value Objects for aggregate and workspace identities, ISO-8601 strings for timestamps,
+ * Constrained by DomainEventName, uses Value Objects for aggregate identities, InstantString for ISO timestamps,
  * and explicit schema versioning for long-term platform evolution.
  */
 export interface DomainEvent<
-  TName extends string = string,
+  TName extends DomainEventName = DomainEventName,
   TPayload extends Record<string, unknown> = Record<string, unknown>,
 > {
   /**
@@ -20,7 +22,7 @@ export interface DomainEvent<
   readonly eventName: TName;
 
   /**
-   * Unique entity/aggregate identifier value object emiting the event.
+   * Unique entity/aggregate identifier value object emitting the event.
    */
   readonly aggregateId: UniqueEntityId;
 
@@ -32,7 +34,7 @@ export interface DomainEvent<
   /**
    * ISO-8601 formatted timestamp string when the event occurred.
    */
-  readonly occurredAt: string;
+  readonly occurredAt: InstantString;
 
   /**
    * Schema version number for event payload evolution (default = 1).

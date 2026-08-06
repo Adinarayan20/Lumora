@@ -1,4 +1,5 @@
 export * from './event-names.js';
+export * from './instant-string.js';
 export * from './domain-event.interface.js';
 export * from './domain-event-publisher.interface.js';
 export * from './create-domain-event.js';
