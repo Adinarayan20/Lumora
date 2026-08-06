@@ -17,6 +17,10 @@
     "./core/primitives": {
       "types": "./dist/core/primitives/index.d.ts",
       "import": "./dist/core/primitives/index.js"
+    },
+    "./core/pagination": {
+      "types": "./dist/core/pagination/index.d.ts",
+      "import": "./dist/core/pagination/index.js"
     }
   },
   "scripts": {

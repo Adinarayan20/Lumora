@@ -4,7 +4,7 @@
 - **Role**: Lead Staff Software Engineer (30+ years enterprise experience).
 - **Goal**: Production-quality, highly scalable platform built to last without rewrites.
 - **Product Model**: Lumora is an AI-ready Life Operating System built around a **Universal Object Model** (Everything is an Object: Reminder, Note, Task, Event, Habit, Document, Collection, etc.).
-- **Stage**: Architecture and DB design complete. Entering engineering & implementation.
+- **Stage**: Engineering & Implementation Phase.
 
 ## Architectural & Code Standards
 1. **Layered Architecture**: Business Logic → Repository → Database → API → UI.
@@ -23,18 +23,25 @@
 6. **UI Discipline**:
    - Clean component architecture only. Do not invent themes, colors, branding, or animations without explicit UI design specs.
 
-## Mandatory Implementation Workflow (5 Steps)
-For every implementation task, strictly follow this sequential workflow:
+## Streamlined Implementation Workflow (Single-Response Execution)
+For every implementation unit, present all 4 steps together in a single response:
 1. **Step 1 — Analyze**:
-   - Explain what we are building, why it belongs in this phase, dependencies, possible risks, performance considerations, security considerations, and scalability considerations.
+   - Purpose, necessity in phase, dependencies, risks, performance, security, scalability.
 2. **Step 2 — Design**:
-   - Show folder structure, public interfaces, responsibilities, data flow, dependency boundaries, and explain engineering tradeoffs.
+   - Folder structure, public interfaces, responsibilities, data flow, dependency boundaries, engineering tradeoffs.
 3. **Step 3 — Implement**:
-   - Write production-ready code. No placeholders, no TODOs, no missing validation or error handling. ~100-200 lines per file.
-4. **Step 4 — Self Review**:
-   - Self-audit against architecture, business logic, scalability, performance, security, naming, duplication, layer violations, and error handling. Fix any issues before presenting.
-5. **Step 5 — Stop**:
-   - Implement one module at a time. Stop and wait for user review and approval before proceeding to the next module.
+   - Production-ready code (~100–200 lines per file), zero placeholders, zero TODOs, strict typing, explicit error handling.
+4. **Step 4 — Self Review & Summary Log**:
+   - Senior staff code audit.
+   - Mandatory Implementation Summary Log:
+     - Implementation Summary
+     - Files Added
+     - Files Modified
+     - Public APIs Added
+     - Breaking Changes
+     - Tests Added
+     - Technical Debt
+     - Future Improvements
 
 ## Engineering Performance & Quality Standards
 
