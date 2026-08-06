@@ -1,5 +1,6 @@
 import { UniqueEntityId, InstantString, DomainEventName, DomainEvent } from '@lumora/shared';
 import { OutboxStatus } from './outbox-status.js';
+import { OUTBOX_DEFAULTS } from './outbox-config.constants.js';
 
 export interface OutboxMessageProps {
   readonly id?: UniqueEntityId | undefined;
@@ -21,7 +22,7 @@ export interface OutboxMessageProps {
 }
 
 /**
- * Domain entity representing an outbox message record.
+ * Domain aggregate entity representing a transactional outbox message record.
  */
 export class OutboxMessage {
   public readonly id: UniqueEntityId;
@@ -51,7 +52,7 @@ export class OutboxMessage {
     this.schemaVersion = props.schemaVersion;
     this.status = props.status ?? OutboxStatus.PENDING;
     this.retryCount = props.retryCount ?? 0;
-    this.maxRetries = props.maxRetries ?? 5;
+    this.maxRetries = props.maxRetries ?? OUTBOX_DEFAULTS.DEFAULT_MAX_RETRIES;
     this.lastError = props.lastError;
     this.lockOwnerId = props.lockOwnerId;
     this.lockedAt = props.lockedAt;
@@ -64,8 +65,8 @@ export class OutboxMessage {
    * Factory method constructing an OutboxMessage directly from a DomainEvent contract.
    */
   public static fromDomainEvent(
-    event: DomainEvent<any, any>,
-    maxRetries: number = 5,
+    event: DomainEvent<DomainEventName, Record<string, unknown>>,
+    maxRetries: number = OUTBOX_DEFAULTS.DEFAULT_MAX_RETRIES,
   ): OutboxMessage {
     return new OutboxMessage({
       eventId: event.eventId,

@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { OutboxMessage } from '../outbox-message.entity.js';
-import { OutboxStatus } from '../outbox-status.js';
+import { OutboxMessage, OutboxStatus } from '../../../../domain/common/events/index.js';
 import { UniqueEntityId, createDomainEvent, UserEventName } from '@lumora/shared';
 
 describe('OutboxMessage Entity', () => {

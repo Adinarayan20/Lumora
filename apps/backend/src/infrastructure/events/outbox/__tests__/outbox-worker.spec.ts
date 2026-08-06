@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { OutboxWorker } from '../outbox-worker.js';
-import { OutboxMessage } from '../outbox-message.entity.js';
-import { OutboxStatus } from '../outbox-status.js';
+import { OutboxMessage } from '../../../../domain/common/events/index.js';
 import type { IOutboxRepository } from '../../../../domain/common/repositories/outbox.repository.interface.js';
 import { UniqueEntityId, IDomainEventPublisher, UserEventName } from '@lumora/shared';
 
@@ -64,6 +63,7 @@ describe('OutboxWorker Engine', () => {
       message.id,
       worker.workerId,
       'Event bus unavailable',
+      5,
       expect.any(String),
     );
   });

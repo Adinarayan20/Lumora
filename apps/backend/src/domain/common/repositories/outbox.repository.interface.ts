@@ -1,12 +1,13 @@
 import type { UniqueEntityId } from '@lumora/shared';
-import type { OutboxMessage } from '../../../infrastructure/events/outbox/outbox-message.entity.js';
+import type { OutboxMessage } from '../events/outbox-message.entity.js';
 
 /**
  * Domain repository contract interface for transactional outbox persistence.
+ * Domain interfaces MUST NOT depend on infrastructure implementations.
  */
 export interface IOutboxRepository {
   /**
-   * Persists an outbox message entity (optionally within an active Prisma transaction client).
+   * Persists an outbox message entity (optionally within an active Prisma transaction context).
    */
   save(message: OutboxMessage, transactionContext?: unknown): Promise<void>;
 
@@ -21,12 +22,13 @@ export interface IOutboxRepository {
   markAsCompleted(id: UniqueEntityId, lockOwnerId: string): Promise<void>;
 
   /**
-   * Marks an outbox message as failed and updates retry metadata / error logs.
+   * Marks an outbox message as failed and updates retry metadata / error logs using configured maxRetries limit.
    */
   markAsFailed(
     id: UniqueEntityId,
     lockOwnerId: string,
     error: string,
+    maxRetries?: number | undefined,
     nextRetryAt?: string | undefined,
   ): Promise<void>;
 

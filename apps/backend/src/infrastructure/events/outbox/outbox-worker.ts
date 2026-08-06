@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { IDomainEventPublisher, createDomainEvent } from '@lumora/shared';
+import { IDomainEventPublisher, UniqueEntityId, createDomainEvent } from '@lumora/shared';
 import { IOutboxRepository } from '../../../domain/common/repositories/outbox.repository.interface.js';
-import type { OutboxMessage } from './outbox-message.entity.js';
+import { OutboxMessage, OUTBOX_DEFAULTS } from '../../../domain/common/events/index.js';
 
 export interface OutboxWorkerConfig {
   readonly pollIntervalMs?: number | undefined;
@@ -12,7 +12,7 @@ export interface OutboxWorkerConfig {
 
 /**
  * Background polling worker executing outbox event dispatching and backoff retries.
- * Designed for horizontal scaling across multiple background server nodes.
+ * Designed for horizontal scaling across multiple background server nodes using UniqueEntityId worker IDs.
  */
 @Injectable()
 export class OutboxWorker {
@@ -30,11 +30,12 @@ export class OutboxWorker {
     private readonly eventPublisher: IDomainEventPublisher,
     config?: OutboxWorkerConfig,
   ) {
-    this.workerId = `worker-${Math.random().toString(36).substring(2, 9)}`;
-    this.pollIntervalMs = config?.pollIntervalMs ?? 2000;
-    this.batchSize = config?.batchSize ?? 50;
-    this.maxRetries = config?.maxRetries ?? 5;
-    this.staleLockThresholdMs = config?.staleLockThresholdMs ?? 30000;
+    this.workerId = `worker-${new UniqueEntityId().toValue()}`;
+    this.pollIntervalMs = config?.pollIntervalMs ?? OUTBOX_DEFAULTS.DEFAULT_POLL_INTERVAL_MS;
+    this.batchSize = config?.batchSize ?? OUTBOX_DEFAULTS.DEFAULT_BATCH_SIZE;
+    this.maxRetries = config?.maxRetries ?? OUTBOX_DEFAULTS.DEFAULT_MAX_RETRIES;
+    this.staleLockThresholdMs =
+      config?.staleLockThresholdMs ?? OUTBOX_DEFAULTS.DEFAULT_STALE_LOCK_THRESHOLD_MS;
   }
 
   /**
@@ -99,7 +100,7 @@ export class OutboxWorker {
     try {
       const eventContract = createDomainEvent({
         eventId: message.eventId,
-        eventName: message.eventName as any,
+        eventName: message.eventName,
         aggregateId: message.aggregateId,
         workspaceId: message.workspaceId,
         occurredAt: message.createdAt,
@@ -121,6 +122,7 @@ export class OutboxWorker {
         message.id,
         this.workerId,
         errorMessage,
+        this.maxRetries,
         nextRetryAt,
       );
     }
