@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { UniqueEntityId, SystemException, DomainEventName } from '@lumora/shared';
+import {
+  UniqueEntityId,
+  SystemException,
+  DomainEventName,
+} from '@lumora/shared';
 import { IOutboxRepository } from '../../../domain/common/repositories/outbox.repository.interface.js';
 import {
   OutboxMessage,
@@ -22,8 +26,13 @@ export interface EventPersistenceModel {
 
 @Injectable()
 export class PrismaOutboxRepository
-  extends PrismaBaseRepository<OutboxMessage, UniqueEntityId, EventPersistenceModel>
-  implements IOutboxRepository {
+  extends PrismaBaseRepository<
+    OutboxMessage,
+    UniqueEntityId,
+    EventPersistenceModel
+  >
+  implements IOutboxRepository
+{
   constructor(private readonly prisma: PrismaService) {
     super('OutboxMessage');
   }
@@ -33,23 +42,28 @@ export class PrismaOutboxRepository
       const raw = await this.prisma.client.event.findUnique({
         where: { id: id.toValue() },
       });
-      return raw ? this.toDomain(raw as unknown as EventPersistenceModel) : null;
+      return raw ? this.toDomain(raw) : null;
     });
   }
 
-  public async save(message: OutboxMessage, transactionContext?: unknown): Promise<void> {
+  public async save(
+    message: OutboxMessage,
+    transactionContext?: unknown,
+  ): Promise<void> {
     return this.executeSafely(async () => {
       const client = this.resolveClient(transactionContext);
       const persistenceData = this.toPersistence(message);
 
-      await (client.event as any).upsert({
+      await client.event.upsert({
         where: { id: message.id.toValue() },
         create: persistenceData,
         update: {
           status: message.status as any,
           type: message.eventName,
           payload: message.payload as Prisma.InputJsonValue,
-          processedAt: message.processedAt ? new Date(message.processedAt) : null,
+          processedAt: message.processedAt
+            ? new Date(message.processedAt)
+            : null,
         },
       });
     });
@@ -106,11 +120,16 @@ export class PrismaOutboxRepository
         });
       });
 
-      return lockedRows.map((row) => this.toDomain(row as unknown as EventPersistenceModel));
+      return lockedRows.map((row) =>
+        this.toDomain(row as unknown as EventPersistenceModel),
+      );
     });
   }
 
-  public async markAsCompleted(id: UniqueEntityId, lockOwnerId: string): Promise<void> {
+  public async markAsCompleted(
+    id: UniqueEntityId,
+    lockOwnerId: string,
+  ): Promise<void> {
     void lockOwnerId;
     return this.executeSafely(async () => {
       const now = new Date();
@@ -188,7 +207,9 @@ export class PrismaOutboxRepository
       status: model.status as OutboxStatus,
       retryCount: 0,
       maxRetries: OUTBOX_DEFAULTS.DEFAULT_MAX_RETRIES,
-      processedAt: model.processedAt ? model.processedAt.toISOString() : undefined,
+      processedAt: model.processedAt
+        ? model.processedAt.toISOString()
+        : undefined,
       createdAt: model.createdAt ? model.createdAt.toISOString() : undefined,
     });
   }
@@ -199,7 +220,7 @@ export class PrismaOutboxRepository
       userId: entity.aggregateId.toValue(),
       type: entity.eventName,
       payload: entity.payload,
-      status: entity.status as any,
+      status: entity.status,
       processedAt: entity.processedAt ? new Date(entity.processedAt) : null,
       createdAt: new Date(entity.createdAt),
     };

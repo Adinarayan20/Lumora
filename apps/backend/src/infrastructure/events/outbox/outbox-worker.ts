@@ -1,7 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { IDomainEventPublisher, UniqueEntityId, createDomainEvent } from '@lumora/shared';
+import {
+  IDomainEventPublisher,
+  UniqueEntityId,
+  createDomainEvent,
+} from '@lumora/shared';
 import { IOutboxRepository } from '../../../domain/common/repositories/outbox.repository.interface.js';
-import { OutboxMessage, OUTBOX_DEFAULTS } from '../../../domain/common/events/index.js';
+import {
+  OutboxMessage,
+  OUTBOX_DEFAULTS,
+} from '../../../domain/common/events/index.js';
 
 export interface OutboxWorkerConfig {
   readonly pollIntervalMs?: number | undefined;
@@ -31,11 +38,13 @@ export class OutboxWorker {
     config?: OutboxWorkerConfig,
   ) {
     this.workerId = `worker-${new UniqueEntityId().toValue()}`;
-    this.pollIntervalMs = config?.pollIntervalMs ?? OUTBOX_DEFAULTS.DEFAULT_POLL_INTERVAL_MS;
+    this.pollIntervalMs =
+      config?.pollIntervalMs ?? OUTBOX_DEFAULTS.DEFAULT_POLL_INTERVAL_MS;
     this.batchSize = config?.batchSize ?? OUTBOX_DEFAULTS.DEFAULT_BATCH_SIZE;
     this.maxRetries = config?.maxRetries ?? OUTBOX_DEFAULTS.DEFAULT_MAX_RETRIES;
     this.staleLockThresholdMs =
-      config?.staleLockThresholdMs ?? OUTBOX_DEFAULTS.DEFAULT_STALE_LOCK_THRESHOLD_MS;
+      config?.staleLockThresholdMs ??
+      OUTBOX_DEFAULTS.DEFAULT_STALE_LOCK_THRESHOLD_MS;
   }
 
   /**
@@ -111,7 +120,8 @@ export class OutboxWorker {
       await this.eventPublisher.publish([eventContract]);
       await this.outboxRepository.markAsCompleted(message.id, this.workerId);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       const nextRetryCount = message.retryCount + 1;
 
       // Exponential backoff: 2^retryCount * 1000ms
