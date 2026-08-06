@@ -8,10 +8,18 @@ export class SystemException extends ApplicationException {
   public readonly originalError?: unknown;
 
   constructor(message: string, originalError?: unknown) {
-    const causeMessage = originalError instanceof Error ? originalError.message : String(originalError ?? '');
-    super(message, ErrorCode.SYSTEM_ERROR, {
-      ...(causeMessage && { causeMessage }),
-    });
+    let causeMessage: string | undefined;
+    if (originalError instanceof Error) {
+      causeMessage = originalError.message;
+    } else if (typeof originalError === 'string') {
+      causeMessage = originalError;
+    }
+
+    super(
+      message,
+      ErrorCode.SYSTEM_ERROR,
+      causeMessage !== undefined ? { causeMessage } : undefined,
+    );
     this.originalError = originalError;
   }
 }

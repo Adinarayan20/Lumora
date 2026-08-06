@@ -76,13 +76,28 @@ describe('Standardized Error Architecture', () => {
   });
 
   describe('SystemException', () => {
-    it('should capture underlying cause message and system error code', () => {
+    it('should capture underlying Error cause message', () => {
       const cause = new Error('Database connection timeout');
       const exception = new SystemException('Storage read failure', cause);
 
       expect(exception.code).toBe(ErrorCode.SYSTEM_ERROR);
       expect(exception.originalError).toBe(cause);
       expect(exception.toPayload().details).toEqual({ causeMessage: 'Database connection timeout' });
+    });
+
+    it('should capture underlying string cause', () => {
+      const exception = new SystemException('IO failure', 'Disk space full');
+
+      expect(exception.code).toBe(ErrorCode.SYSTEM_ERROR);
+      expect(exception.toPayload().details).toEqual({ causeMessage: 'Disk space full' });
+    });
+
+    it('should omit causeMessage if originalError is a plain object or unknown type', () => {
+      const exception = new SystemException('System failure', { errCode: 500 });
+
+      expect(exception.code).toBe(ErrorCode.SYSTEM_ERROR);
+      expect(exception.originalError).toEqual({ errCode: 500 });
+      expect(exception.toPayload().details).toBeUndefined();
     });
   });
 });
