@@ -77,6 +77,14 @@ export const NotificationEventName = {
 export type NotificationEventName =
   (typeof NotificationEventName)[keyof typeof NotificationEventName];
 
+export const MediaEventName = {
+  UPLOADED: "media.uploaded",
+  DELETED: "media.deleted",
+} as const;
+
+export type MediaEventName =
+  (typeof MediaEventName)[keyof typeof MediaEventName];
+
 /**
  * Union type representing all valid domain event name string literals.
  */
@@ -87,4 +95,5 @@ export type DomainEventName =
   | ReminderEventName
   | SpaceEventName
   | CollectionEventName
-  | NotificationEventName;
+  | NotificationEventName
+  | MediaEventName;
