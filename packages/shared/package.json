@@ -25,6 +25,10 @@
     "./core/catalog": {
       "types": "./dist/core/catalog/index.d.ts",
       "import": "./dist/core/catalog/index.js"
+    },
+    "./core/events": {
+      "types": "./dist/core/events/index.d.ts",
+      "import": "./dist/core/events/index.js"
     }
   },
   "scripts": {
