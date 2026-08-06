@@ -8,6 +8,19 @@ import { SearchIndexEntity } from '../../../domain/search/entities/search-index.
 import { SearchTerm } from '../../../domain/search/value-objects/search-term.js';
 import { SearchEntityCategory } from '../../../domain/search/value-objects/search-entity-category.js';
 
+/**
+ * Concrete Prisma implementation of ISearchRepository.
+ * 
+ * SEARCH ARCHITECTURE & EVENT PROJECTION:
+ * Search projections are populated asynchronously from Domain Events (ObjectCreatedEvent, SpaceCreatedEvent, etc.)
+ * dispatched via Outbox Workers. In current PostgreSQL infrastructure, search queries execute via indexed keyword
+ * matching.
+ * 
+ * FUTURE INFRASTRUCTURE ROADMAP:
+ * - Full-Text Search Engine: PostgreSQL tsvector & tsquery indexes
+ * - Relevance Ranking & Stemming: ts_rank relevance scoring
+ * - Typo Tolerance & Tokenization: Pg_trgm trigram similarity queries
+ */
 @Injectable()
 export class PrismaSearchRepository implements ISearchRepository {
   constructor(private readonly prisma: PrismaService) {}

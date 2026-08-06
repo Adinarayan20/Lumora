@@ -13,6 +13,18 @@ interface SearchEntityCategoryProps extends Record<string, unknown> {
   value: SearchCategoryType;
 }
 
+/**
+ * Value Object encapsulating entity categories supported by the Search Indexing engine.
+ * 
+ * FUTURE EXTENSIBILITY:
+ * As Lumora expands Universal Object Model capabilities, this Value Object registry
+ * will be seamlessly expanded to index additional entity categories including:
+ * - REMINDER
+ * - NOTE
+ * - HABIT
+ * - DOCUMENT
+ * - FILE_ASSET
+ */
 export class SearchEntityCategory extends ValueObject<SearchEntityCategoryProps> {
   private constructor(props: SearchEntityCategoryProps) {
     super(props);

@@ -4,7 +4,7 @@
 
 ```
 Phase 1: Engineering Foundation & Infrastructure Setup (COMPLETED)
-Phase 2: Core Domain Construction & DDD Tactical Patterns (IN PROGRESS - Unit 1 Done, Unit 2 Active)
+Phase 2: Core Domain Construction & DDD Tactical Patterns (IN PROGRESS - Unit 1 Done, Unit 2 Done, Unit 3 Active)
 Phase 3: High Scale, CQRS, Search & Observability (PLANNED)
 Phase 4: Global Production, Compliance & Multi-Region Enterprise (PLANNED)
 ```
@@ -29,26 +29,32 @@ Phase 4: Global Production, Compliance & Multi-Region Enterprise (PLANNED)
 - [x] Pure domain repository interfaces in `src/domain/*/repositories/`
 - [x] `PrismaUnitOfWork` implementation with `ITransactionContext` abstraction
 
-### Unit 2: Use Cases, Repositories Implementation & Domain Integration (Active Unit)
+### Unit 2: Use Cases, Repositories Implementation & Domain Integration (Completed)
 - [x] `.editorconfig` enforcement across monorepo
 - [x] Correlation ID middleware and JSON structured logger service
 - [x] Concrete Prisma repository implementations with bidirectional mappers (`Prisma Model ↔ Aggregate`)
 - [x] Application Use Cases (`CreateObjectUseCase`, `ScheduleReminderUseCase`, `SnoozeReminderUseCase`, `CompleteReminderUseCase`)
 - [x] Domain aggregate response DTOs and mappers
 - [x] Comprehensive domain unit tests & repository integration tests
-- [ ] Migrate transport controllers completely from legacy services (`ObjectsService`, `RemindersService`) to CQRS Use Cases during the next application-layer refactoring batch
 
-### Unit 3 & Beyond: Stub Module Implementations
-- [ ] Notifications Delivery module
-- [ ] Universal Search & Indexing module
-- [ ] Timeline Temporal Engine module
-- [ ] Media & Asset Management module
-- [ ] User & Workspace Settings module
-- [ ] Household bounded context implementation
+### Unit 3: Stub & Bounded Context Implementations (Active Unit)
+- [x] Batch 1: Notifications Delivery Bounded Context
+- [x] Batch 2: Media & File Asset Management Bounded Context
+- [x] Batch 3: Universal Search Indexing Bounded Context (`SearchIndexEntity` read-side projection, `PrismaSearchRepository`, `IndexEntityUseCase`, `SearchObjectsQuery`)
+- [ ] Batch 4: Timeline Temporal Engine module
+- [ ] Batch 5: User & Workspace Settings module
+- [ ] Controller CQRS migration & final integration verification
 
 ---
 
 ## Phase 3 — Scale, CQRS, Search & Observability (Planned)
+
+### Search Engine Infrastructure Roadmap (PostgreSQL Native Engine)
+- **PostgreSQL Full-Text Search (FTS)**: Upgrade `SearchIndex` query engine to use PostgreSQL native `tsvector` generated columns and GIN indexes for sub-millisecond query execution.
+- **Relevance Ranking & Scoring**: Implement `ts_rank` and `ts_rank_cd` scoring algorithms to rank search results by relevance matching title and content density.
+- **Language Stemming & Lexemes**: Configure `english` and multi-language dictionary stemmers to match word variations (e.g. "planning", "plans", "planned").
+- **Typo Tolerance & Fuzzy Matching**: Integrate PostgreSQL `pg_trgm` trigram similarity matching (`similarity(title, query) > 0.3`) for automatic typo tolerance.
+- **Asynchronous Projection Sync**: Wire Outbox event consumers (`ObjectCreatedEvent`, `SpaceCreatedEvent`, `CollectionCreatedEvent`) to index search projections asynchronously without blocking primary write transactions.
 
 | Capability | Priority | Target Phase | Deferred Reference |
 |---|:---:|:---:|---|

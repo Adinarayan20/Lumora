@@ -12,7 +12,13 @@ export interface SearchIndexEntityProps {
 }
 
 /**
- * Domain projection entity representing a searchable index record for Universal Objects, Spaces, or Collections.
+ * Read-Side Projection Entity (CQRS Read Model) representing an indexed search document.
+ * 
+ * ARCHITECTURE DESIGN DECISION:
+ * SearchIndex is strictly a READ-SIDE PROJECTION ENTITY, not an Aggregate Root.
+ * It carries no state-transition business invariants or domain events.
+ * It is populated asynchronously from Outbox Domain Events (e.g., ObjectCreatedEvent, SpaceCreatedEvent)
+ * to maintain high-performance, decoupled full-text and keyword search capabilities.
  */
 export class SearchIndexEntity {
   public readonly id: UniqueEntityId;
