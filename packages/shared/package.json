@@ -21,6 +21,10 @@
     "./core/pagination": {
       "types": "./dist/core/pagination/index.d.ts",
       "import": "./dist/core/pagination/index.js"
+    },
+    "./core/catalog": {
+      "types": "./dist/core/catalog/index.d.ts",
+      "import": "./dist/core/catalog/index.js"
     }
   },
   "scripts": {
