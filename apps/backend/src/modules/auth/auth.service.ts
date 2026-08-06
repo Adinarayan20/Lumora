@@ -20,7 +20,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { OAuthLoginDto } from './dto/oauth-login.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
-import { AuditAction, User } from '../../generated/prisma/client';
+import { AuditAction, User } from '../../generated/prisma/client.js';
 import {
   UserRegisteredEvent,
   UserLoggedInEvent,

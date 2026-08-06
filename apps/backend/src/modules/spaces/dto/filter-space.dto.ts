@@ -1,6 +1,6 @@
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { SpaceStatus } from '../../../generated/prisma/client';
+import { SpaceStatus } from '../../../generated/prisma/client.js';
 
 export class FilterSpaceDto {
   @IsOptional()

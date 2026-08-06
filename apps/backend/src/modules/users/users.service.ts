@@ -3,7 +3,7 @@ import { UserRepository } from './repositories/user.repository';
 import { DeviceService } from '../auth/services/device.service';
 import { SessionService } from '../auth/services/session.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { User, Device, Session } from '../../generated/prisma/client';
+import { User, Device, Session } from '../../generated/prisma/client.js';
 
 @Injectable()
 export class UsersService {

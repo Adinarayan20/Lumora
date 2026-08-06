@@ -1,4 +1,4 @@
-import { WorkspaceType, WorkspacePlan } from '../../../generated/prisma/client';
+import { WorkspaceType, WorkspacePlan } from '../../../generated/prisma/client.js';
 
 export class WorkspaceCreatedEvent {
   constructor(

@@ -11,7 +11,7 @@ import { WorkspaceMemberService } from './workspace-member.service';
 import {
   WorkspaceInvitation,
   InvitationStatus,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from '../../auth/repositories/audit-log.repository';
 import { WorkspaceEventPublisherService } from './workspace-event-publisher.service';
 import {

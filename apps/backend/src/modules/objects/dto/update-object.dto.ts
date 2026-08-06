@@ -7,7 +7,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { ObjectStatus } from '../../../generated/prisma/client';
+import { ObjectStatus } from '../../../generated/prisma/client.js';
 
 export class UpdateObjectDto {
   @IsOptional()

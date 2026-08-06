@@ -7,7 +7,7 @@ import {
   ReminderStatus,
   ReminderTriggerType,
   Prisma,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from '../../auth/repositories/audit-log.repository';
 import { FilterReminderDto } from '../dto/filter-reminder.dto';
 import { USER_PUBLIC_SELECT } from '../../objects/repositories/object.repository';

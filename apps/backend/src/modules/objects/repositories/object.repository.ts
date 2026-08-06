@@ -4,7 +4,7 @@ import {
   Object as LumoraObject,
   ObjectStatus,
   Prisma,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from '../../auth/repositories/audit-log.repository';
 import { FilterObjectDto } from '../dto/filter-object.dto';
 

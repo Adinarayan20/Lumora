@@ -17,7 +17,7 @@ import {
   AuditAction,
   ReminderExecutionStatus,
   ReminderStatus,
-} from '../../generated/prisma/client';
+} from '../../generated/prisma/client.js';
 import {
   ReminderCreatedEvent,
   ReminderSnoozedEvent,

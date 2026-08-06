@@ -8,7 +8,7 @@ import {
 import {
   WorkspacePlan,
   WorkspaceVisibility,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 
 export class CreateWorkspaceDto {
   @IsString()

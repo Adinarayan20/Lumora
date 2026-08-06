@@ -22,7 +22,7 @@ import {
   WorkspaceMember,
   WorkspaceInvitation,
   AuditAction,
-} from '../../generated/prisma/client';
+} from '../../generated/prisma/client.js';
 import { PrismaTransaction } from '../auth/repositories/audit-log.repository';
 import {
   WorkspaceCreatedEvent,

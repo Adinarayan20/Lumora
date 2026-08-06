@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { DevicePlatform } from '../../../generated/prisma/client';
+import { DevicePlatform } from '../../../generated/prisma/client.js';
 
 export class LoginDto {
   @IsString()

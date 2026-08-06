@@ -1,5 +1,5 @@
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../src/generated/prisma/client';
+import { PrismaClient } from '../src/generated/prisma/client.js';
 import { GLOBAL_PERMISSIONS_SEED } from './data/permissions.seed';
 
 const connectionString =

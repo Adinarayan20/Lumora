@@ -9,7 +9,7 @@ import { WorkspaceRepository } from '../repositories/workspace.repository';
 import {
   WorkspaceMember,
   WorkspaceMemberStatus,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from '../../auth/repositories/audit-log.repository';
 import { WorkspaceEventPublisherService } from './workspace-event-publisher.service';
 import { WorkspaceMemberRemovedEvent } from '../events/workspace.events';

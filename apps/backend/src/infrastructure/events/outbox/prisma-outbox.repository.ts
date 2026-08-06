@@ -8,7 +8,7 @@ import {
 } from '../../../domain/common/events/index.js';
 import { PrismaBaseRepository } from '../../prisma/repositories/prisma-base.repository.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
-import { Prisma } from '../../../generated/prisma/index.js';
+import { Prisma } from '../../../generated/prisma/client.js';
 
 export interface EventPersistenceModel {
   id: string;

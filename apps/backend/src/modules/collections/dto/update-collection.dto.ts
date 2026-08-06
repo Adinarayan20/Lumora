@@ -11,7 +11,7 @@ import {
 import {
   CollectionStatus,
   CollectionType,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 
 export class UpdateCollectionDto {
   @IsOptional()

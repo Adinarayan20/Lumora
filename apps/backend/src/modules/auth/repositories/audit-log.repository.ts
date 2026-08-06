@@ -4,7 +4,7 @@ import {
   AuditAction,
   AuditLog,
   Prisma,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 
 export type PrismaTransaction = Prisma.TransactionClient;
 

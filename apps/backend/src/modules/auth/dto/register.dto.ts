@@ -5,7 +5,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { DevicePlatform } from '../../../generated/prisma/client';
+import { DevicePlatform } from '../../../generated/prisma/client.js';
 
 export class RegisterDto {
   @IsEmail()

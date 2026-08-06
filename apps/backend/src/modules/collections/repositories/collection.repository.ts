@@ -6,7 +6,7 @@ import {
   CollectionStatus,
   CollectionType,
   Prisma,
-} from '../../../generated/prisma/client';
+} from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from '../../auth/repositories/audit-log.repository';
 import { FilterCollectionDto } from '../dto/filter-collection.dto';
 import { USER_PUBLIC_SELECT } from '../../objects/repositories/object.repository';
