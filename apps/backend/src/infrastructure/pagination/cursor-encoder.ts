@@ -1,4 +1,4 @@
-import { DomainValidationException } from '../errors/domain-exceptions.js';
+import { DomainValidationException } from '@lumora/shared';
 
 interface BufferGlobal {
   Buffer?: {
@@ -9,8 +9,8 @@ interface BufferGlobal {
 const BASE64URL_REGEX = /^[A-Za-z0-9_-]+$/;
 
 /**
- * Utility providing opaque base64url serialization for keyset pagination cursors.
- * Hides database column values and formatting details from API consumers.
+ * Infrastructure utility providing opaque base64url transport serialization for keyset pagination cursors.
+ * Converts raw database column values into opaque API cursor strings and back.
  */
 export class CursorEncoder {
   /**
@@ -28,7 +28,7 @@ export class CursorEncoder {
   }
 
   /**
-   * Decodes an opaque base64url cursor string back into its raw value.
+   * Decodes an opaque base64url cursor string back into its raw string value.
    * @throws {DomainValidationException} if the cursor string is invalid or corrupted.
    */
   public static decode(cursor: string): string {

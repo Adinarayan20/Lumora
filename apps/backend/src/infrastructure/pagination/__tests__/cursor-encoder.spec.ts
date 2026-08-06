@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { CursorEncoder } from '../cursor-encoder.js';
-import { DomainValidationException } from '../../errors/domain-exceptions.js';
+import { DomainValidationException } from '@lumora/shared';
 
-describe('CursorEncoder', () => {
+describe('CursorEncoder (Infrastructure Transport)', () => {
   it('should encode and decode string keyset values correctly', () => {
     const rawValue = 'object-id-12345';
     const encoded = CursorEncoder.encode(rawValue);
@@ -33,8 +33,7 @@ describe('CursorEncoder', () => {
     expect(() => CursorEncoder.decode('   ')).toThrow(DomainValidationException);
   });
 
-  it('should throw DomainValidationException for invalid corrupted base64url strings', () => {
-    // Note: atob in node might parse some strings, but invalid characters fail
+  it('should throw DomainValidationException for invalid non-base64url strings', () => {
     expect(() => CursorEncoder.decode('!!!not-base64-url!!!')).toThrow(DomainValidationException);
   });
 });

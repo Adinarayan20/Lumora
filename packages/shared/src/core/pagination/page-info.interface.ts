@@ -23,7 +23,8 @@ export interface PageInfo {
   readonly endCursor?: string | undefined;
 
   /**
-   * Total item count matching the query filter (optional, included when explicitly requested).
+   * Total item count matching the query filter.
+   * @note Optional. Omitted by default during standard keyset queries to prevent expensive COUNT(*) database scans.
    */
   readonly totalCount?: number | undefined;
 }
