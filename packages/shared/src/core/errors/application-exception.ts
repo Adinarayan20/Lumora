@@ -1,5 +1,5 @@
-import type { ErrorCode } from './error-code.js';
-import type { ApplicationErrorPayload } from './interfaces/error-payload.interface.js';
+import type { ErrorCode } from "./error-code.js";
+import type { ApplicationErrorPayload } from "./interfaces/error-payload.interface.js";
 
 /**
  * Abstract root exception class for the application.
@@ -17,16 +17,20 @@ export abstract class ApplicationException extends Error {
     super(message);
     this.name = this.constructor.name;
     this.code = code;
-    this.details = details !== undefined ? Object.freeze({ ...details }) : undefined;
+    this.details =
+      details !== undefined ? Object.freeze({ ...details }) : undefined;
 
     // Restore prototype chain for TypeScript/ES5 compatibility
     Object.setPrototypeOf(this, new.target.prototype);
 
     // Capture clean stack trace if supported by runtime
     const errorConstructor = Error as unknown as {
-      captureStackTrace?: (targetObject: object, constructorOpt?: Function) => void;
+      captureStackTrace?: (
+        targetObject: object,
+        constructorOpt?: Function,
+      ) => void;
     };
-    if (typeof errorConstructor.captureStackTrace === 'function') {
+    if (typeof errorConstructor.captureStackTrace === "function") {
       errorConstructor.captureStackTrace(this, new.target);
     }
   }

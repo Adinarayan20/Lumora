@@ -1,6 +1,6 @@
-import type { UniqueEntityId } from '../primitives/unique-entity-id.js';
-import type { DomainEventName } from './event-names.js';
-import type { InstantString } from './instant-string.js';
+import type { UniqueEntityId } from "../primitives/unique-entity-id.js";
+import type { DomainEventName } from "./event-names.js";
+import type { InstantString } from "./instant-string.js";
 
 /**
  * Pure, framework-agnostic data contract representing an immutable domain event.

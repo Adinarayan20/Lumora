@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 import {
   UserEventName,
   WorkspaceEventName,
@@ -6,46 +6,49 @@ import {
   ReminderEventName,
   createDomainEvent,
   IDomainEventPublisher,
-} from '../index.js';
-import { DomainValidationException } from '../../errors/domain-exceptions.js';
-import type { DomainEvent } from '../domain-event.interface.js';
-import { UniqueEntityId } from '../../primitives/unique-entity-id.js';
-import type { ObjectCreatedPayload } from '../payloads/object-payloads.js';
+} from "../index.js";
+import { DomainValidationException } from "../../errors/domain-exceptions.js";
+import type { DomainEvent } from "../domain-event.interface.js";
+import { UniqueEntityId } from "../../primitives/unique-entity-id.js";
+import type { ObjectCreatedPayload } from "../payloads/object-payloads.js";
 
-describe('Domain Event Contracts (Data Contract Model)', () => {
-  describe('createDomainEvent Factory', () => {
-    it('should create immutable domain event contract with auto-generated eventId and ISO timestamp', () => {
+describe("Domain Event Contracts (Data Contract Model)", () => {
+  describe("createDomainEvent Factory", () => {
+    it("should create immutable domain event contract with auto-generated eventId and ISO timestamp", () => {
       const aggregateId = new UniqueEntityId();
       const workspaceId = new UniqueEntityId();
       const authorId = new UniqueEntityId();
 
-      const event = createDomainEvent<typeof ObjectEventName.CREATED, ObjectCreatedPayload>({
+      const event = createDomainEvent<
+        typeof ObjectEventName.CREATED,
+        ObjectCreatedPayload
+      >({
         eventName: ObjectEventName.CREATED,
         aggregateId,
         workspaceId,
         payload: {
           workspaceId,
           objectId: aggregateId,
-          typeKey: 'TASK',
-          title: 'Master Domain Architecture',
+          typeKey: "TASK",
+          title: "Master Domain Architecture",
           authorId,
           createdAt: new Date().toISOString(),
         },
       });
 
-      expect(event.eventName).toBe('object.created');
+      expect(event.eventName).toBe("object.created");
       expect(event.aggregateId.equals(aggregateId)).toBe(true);
       expect(event.workspaceId?.equals(workspaceId)).toBe(true);
       expect(event.eventId).toBeInstanceOf(UniqueEntityId);
-      expect(typeof event.occurredAt).toBe('string');
+      expect(typeof event.occurredAt).toBe("string");
       expect(event.schemaVersion).toBe(1);
       expect(Object.isFrozen(event.payload)).toBe(true);
     });
 
-    it('should allow custom eventId, custom occurredAt timestamp, and custom schemaVersion for outbox replay', () => {
+    it("should allow custom eventId, custom occurredAt timestamp, and custom schemaVersion for outbox replay", () => {
       const customEventId = new UniqueEntityId();
       const customAggregateId = new UniqueEntityId();
-      const customTimestamp = '2026-01-01T00:00:00.000Z';
+      const customTimestamp = "2026-01-01T00:00:00.000Z";
 
       const event = createDomainEvent({
         eventName: UserEventName.REGISTERED,
@@ -55,8 +58,8 @@ describe('Domain Event Contracts (Data Contract Model)', () => {
         schemaVersion: 2,
         payload: {
           userId: customAggregateId,
-          email: 'admin@lumora.io',
-          username: 'admin',
+          email: "admin@lumora.io",
+          username: "admin",
           registeredAt: customTimestamp,
         },
       });
@@ -66,7 +69,7 @@ describe('Domain Event Contracts (Data Contract Model)', () => {
       expect(event.schemaVersion).toBe(2);
     });
 
-    it('should throw DomainValidationException for schemaVersion < 1 or non-integer values', () => {
+    it("should throw DomainValidationException for schemaVersion < 1 or non-integer values", () => {
       const aggregateId = new UniqueEntityId();
 
       expect(() =>
@@ -76,8 +79,8 @@ describe('Domain Event Contracts (Data Contract Model)', () => {
           schemaVersion: 0,
           payload: {
             userId: aggregateId,
-            email: 'test@lumora.io',
-            username: 'test',
+            email: "test@lumora.io",
+            username: "test",
             registeredAt: new Date().toISOString(),
           },
         }),
@@ -90,8 +93,8 @@ describe('Domain Event Contracts (Data Contract Model)', () => {
           schemaVersion: 1.5,
           payload: {
             userId: aggregateId,
-            email: 'test@lumora.io',
-            username: 'test',
+            email: "test@lumora.io",
+            username: "test",
             registeredAt: new Date().toISOString(),
           },
         }),
@@ -99,8 +102,8 @@ describe('Domain Event Contracts (Data Contract Model)', () => {
     });
   });
 
-  describe('IDomainEventPublisher API Contract', () => {
-    it('should publish a single-method array of DomainEvent contracts', async () => {
+  describe("IDomainEventPublisher API Contract", () => {
+    it("should publish a single-method array of DomainEvent contracts", async () => {
       const publishedEvents: DomainEvent<any, any>[] = [];
 
       const mockPublisher: IDomainEventPublisher = {
@@ -115,8 +118,8 @@ describe('Domain Event Contracts (Data Contract Model)', () => {
         payload: {
           workspaceId: new UniqueEntityId(),
           ownerId: new UniqueEntityId(),
-          name: 'Engineering',
-          slug: 'engineering',
+          name: "Engineering",
+          slug: "engineering",
           createdAt: new Date().toISOString(),
         },
       });
@@ -128,7 +131,7 @@ describe('Domain Event Contracts (Data Contract Model)', () => {
           workspaceId: new UniqueEntityId(),
           reminderId: new UniqueEntityId(),
           objectId: new UniqueEntityId(),
-          executionId: 'exec-123',
+          executionId: "exec-123",
           triggeredAt: new Date().toISOString(),
         },
       });

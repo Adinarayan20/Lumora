@@ -5,8 +5,11 @@ import { PrismaExceptionMapper } from '../mappers/prisma-exception.mapper.js';
  * Abstract base repository for Prisma-backed persistence implementations.
  * Enforces domain repository contracts while mapping database infrastructure errors.
  */
-export abstract class PrismaBaseRepository<TEntity, TId, TPrismaModel>
-  implements IBaseRepository<TEntity, TId> {
+export abstract class PrismaBaseRepository<
+  TEntity,
+  TId,
+  TPrismaModel,
+> implements IBaseRepository<TEntity, TId> {
   protected constructor(protected readonly entityName: string) {}
 
   public abstract findById(id: TId): Promise<TEntity | null>;

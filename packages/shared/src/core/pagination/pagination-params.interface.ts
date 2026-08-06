@@ -25,5 +25,5 @@ export interface PaginationParams {
   /**
    * Sort direction for key-based sorting ('asc' for ascending, 'desc' for descending).
    */
-  readonly sortOrder?: 'asc' | 'desc' | undefined;
+  readonly sortOrder?: "asc" | "desc" | undefined;
 }

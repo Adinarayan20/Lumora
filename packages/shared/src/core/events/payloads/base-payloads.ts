@@ -1,4 +1,4 @@
-import type { UniqueEntityId } from '../../primitives/unique-entity-id.js';
+import type { UniqueEntityId } from "../../primitives/unique-entity-id.js";
 
 /**
  * Common payload base interface for Universal Object events.

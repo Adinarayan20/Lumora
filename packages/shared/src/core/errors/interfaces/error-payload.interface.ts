@@ -1,4 +1,4 @@
-import type { ErrorCode } from '../error-code.js';
+import type { ErrorCode } from "../error-code.js";
 
 /**
  * Standardized JSON payload interface for application exceptions.

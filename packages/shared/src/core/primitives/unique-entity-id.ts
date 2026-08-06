@@ -1,6 +1,6 @@
-import { DomainValidationException } from '../errors/domain-exceptions.js';
-import { IdGenerator } from './id-generator.js';
-import { ValueObject } from './value-object.js';
+import { DomainValidationException } from "../errors/domain-exceptions.js";
+import { IdGenerator } from "./id-generator.js";
+import { ValueObject } from "./value-object.js";
 
 interface UniqueEntityIdProps extends Record<string, unknown> {
   value: string;

@@ -1,6 +1,6 @@
-import type { UniqueEntityId } from '../../primitives/unique-entity-id.js';
-import type { InstantString } from '../instant-string.js';
-import type { BaseObjectPayload } from './base-payloads.js';
+import type { UniqueEntityId } from "../../primitives/unique-entity-id.js";
+import type { InstantString } from "../instant-string.js";
+import type { BaseObjectPayload } from "./base-payloads.js";
 
 export interface ObjectCreatedPayload extends BaseObjectPayload {
   readonly title: string;

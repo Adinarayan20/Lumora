@@ -1,5 +1,5 @@
-import { ApplicationException } from './application-exception.js';
-import { ErrorCode } from './error-code.js';
+import { ApplicationException } from "./application-exception.js";
+import { ErrorCode } from "./error-code.js";
 
 /**
  * Thrown when an underlying database, file system, network, or system process fails unexpectedly.
@@ -11,7 +11,7 @@ export class SystemException extends ApplicationException {
     let causeMessage: string | undefined;
     if (originalError instanceof Error) {
       causeMessage = originalError.message;
-    } else if (typeof originalError === 'string') {
+    } else if (typeof originalError === "string") {
       causeMessage = originalError;
     }
 

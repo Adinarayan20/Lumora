@@ -133,9 +133,10 @@ export class OutboxWorker {
       return;
     }
 
-    this.pollTimer = setTimeout(async () => {
-      await this.processBatch();
-      this.scheduleNextPoll();
+    this.pollTimer = setTimeout(() => {
+      void this.processBatch().then(() => {
+        this.scheduleNextPoll();
+      });
     }, this.pollIntervalMs);
   }
 }

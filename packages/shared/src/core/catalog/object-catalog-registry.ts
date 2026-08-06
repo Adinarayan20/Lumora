@@ -1,16 +1,15 @@
-import { DomainValidationException } from '../errors/domain-exceptions.js';
-import type { ObjectTypeMetadata } from './object-type-metadata.interface.js';
-import type { BehaviorExtensionKey } from './behavior-extension-key.js';
-import { BUILT_IN_CATALOG_DEFINITIONS } from './catalog-definitions.js';
+import { DomainValidationException } from "../errors/domain-exceptions.js";
+import type { ObjectTypeMetadata } from "./object-type-metadata.interface.js";
+import type { BehaviorExtensionKey } from "./behavior-extension-key.js";
+import { BUILT_IN_CATALOG_DEFINITIONS } from "./catalog-definitions.js";
 
 /**
  * Deterministic, lightweight static registry for Lumora Universal Object metadata definitions.
  * Provides O(1) metadata lookups without dynamic code loading or execution bloat.
  */
 export class ObjectCatalogRegistry {
-  private static readonly catalogMap: ReadonlyMap<string, ObjectTypeMetadata> = new Map(
-    BUILT_IN_CATALOG_DEFINITIONS.map((def) => [def.typeKey, def]),
-  );
+  private static readonly catalogMap: ReadonlyMap<string, ObjectTypeMetadata> =
+    new Map(BUILT_IN_CATALOG_DEFINITIONS.map((def) => [def.typeKey, def]));
 
   /**
    * Retrieves type metadata for a given object typeKey string.
@@ -36,7 +35,10 @@ export class ObjectCatalogRegistry {
   /**
    * Evaluates whether an object type supports a given domain behavior extension.
    */
-  public static supportsExtension(typeKey: string, extensionKey: BehaviorExtensionKey): boolean {
+  public static supportsExtension(
+    typeKey: string,
+    extensionKey: BehaviorExtensionKey,
+  ): boolean {
     const metadata = this.get(typeKey);
     if (!metadata) {
       return false;
@@ -52,7 +54,11 @@ export class ObjectCatalogRegistry {
     if (!this.has(typeKey)) {
       throw new DomainValidationException(
         `Invalid object typeKey '${typeKey}'. Type key is not registered in the Object Catalog.`,
-        { typeKey: [`Object type '${typeKey}' is not supported by the platform.`] },
+        {
+          typeKey: [
+            `Object type '${typeKey}' is not supported by the platform.`,
+          ],
+        },
       );
     }
   }

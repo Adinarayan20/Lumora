@@ -1,6 +1,6 @@
-import type { ObjectTypeKey } from './object-type-key.js';
-import type { BehaviorExtensionKey } from './behavior-extension-key.js';
-import type { TranslationKey, IconKey } from './metadata-keys.js';
+import type { ObjectTypeKey } from "./object-type-key.js";
+import type { BehaviorExtensionKey } from "./behavior-extension-key.js";
+import type { TranslationKey, IconKey } from "./metadata-keys.js";
 
 /**
  * Immutable metadata definition for a Lumora universal object type.

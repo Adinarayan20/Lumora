@@ -14,7 +14,10 @@ export interface IOutboxRepository {
   /**
    * Atomically claims a non-overlapping batch of pending outbox messages for worker processing.
    */
-  fetchPendingBatch(batchSize: number, lockOwnerId: string): Promise<readonly OutboxMessage[]>;
+  fetchPendingBatch(
+    batchSize: number,
+    lockOwnerId: string,
+  ): Promise<readonly OutboxMessage[]>;
 
   /**
    * Marks an outbox message as successfully dispatched.
@@ -28,8 +31,8 @@ export interface IOutboxRepository {
     id: UniqueEntityId,
     lockOwnerId: string,
     error: string,
-    maxRetries?: number | undefined,
-    nextRetryAt?: string | undefined,
+    maxRetries?: number,
+    nextRetryAt?: string,
   ): Promise<void>;
 
   /**

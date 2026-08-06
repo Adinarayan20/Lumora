@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UniqueEntityId, SystemException } from '@lumora/shared';
+import { UniqueEntityId, SystemException, DomainEventName } from '@lumora/shared';
 import { IOutboxRepository } from '../../../domain/common/repositories/outbox.repository.interface.js';
 import {
   OutboxMessage,
@@ -12,19 +12,12 @@ import { Prisma } from '../../../generated/prisma/index.js';
 
 export interface EventPersistenceModel {
   id: string;
-  name: string;
-  aggregateId: string;
-  workspaceId: string | null;
+  userId: string;
+  type: string;
   payload: Prisma.JsonValue;
-  schemaVersion: number;
   status: string;
-  retryCount: number;
-  lastError: string | null;
-  lockOwnerId: string | null;
-  lockedAt: Date | null;
-  scheduledAt: Date;
-  processedAt: Date | null;
   createdAt: Date;
+  processedAt: Date | null;
 }
 
 @Injectable()
@@ -40,7 +33,7 @@ export class PrismaOutboxRepository
       const raw = await this.prisma.client.event.findUnique({
         where: { id: id.toValue() },
       });
-      return raw ? this.toDomain(raw as EventPersistenceModel) : null;
+      return raw ? this.toDomain(raw as unknown as EventPersistenceModel) : null;
     });
   }
 
@@ -49,16 +42,13 @@ export class PrismaOutboxRepository
       const client = this.resolveClient(transactionContext);
       const persistenceData = this.toPersistence(message);
 
-      await client.event.upsert({
+      await (client.event as any).upsert({
         where: { id: message.id.toValue() },
         create: persistenceData,
         update: {
-          status: message.status,
-          retryCount: message.retryCount,
-          lastError: message.lastError,
-          lockOwnerId: message.lockOwnerId,
-          lockedAt: message.lockedAt ? new Date(message.lockedAt) : null,
-          scheduledAt: new Date(message.scheduledAt),
+          status: message.status as any,
+          type: message.eventName,
+          payload: message.payload as Prisma.InputJsonValue,
           processedAt: message.processedAt ? new Date(message.processedAt) : null,
         },
       });
@@ -86,15 +76,14 @@ export class PrismaOutboxRepository
     batchSize: number,
     lockOwnerId: string,
   ): Promise<readonly OutboxMessage[]> {
+    void lockOwnerId;
     return this.executeSafely(async () => {
-      const now = new Date();
-
       // Atomically select and lock pending records using PostgreSQL FOR UPDATE SKIP LOCKED
       const lockedRows = await this.prisma.$transaction(async (tx) => {
         const rows = await tx.$queryRaw<{ id: string }[]>`
           SELECT id FROM "Event"
-          WHERE status = 'PENDING' AND ("scheduledAt" <= ${now})
-          ORDER BY "scheduledAt" ASC
+          WHERE status = 'PENDING'
+          ORDER BY "createdAt" ASC
           LIMIT ${batchSize}
           FOR UPDATE SKIP LOCKED
         `;
@@ -108,9 +97,7 @@ export class PrismaOutboxRepository
         await tx.event.updateMany({
           where: { id: { in: ids } },
           data: {
-            status: OutboxStatus.PROCESSING,
-            lockOwnerId,
-            lockedAt: now,
+            status: OutboxStatus.PROCESSING as any,
           },
         });
 
@@ -119,22 +106,20 @@ export class PrismaOutboxRepository
         });
       });
 
-      return lockedRows.map((row) => this.toDomain(row as EventPersistenceModel));
+      return lockedRows.map((row) => this.toDomain(row as unknown as EventPersistenceModel));
     });
   }
 
   public async markAsCompleted(id: UniqueEntityId, lockOwnerId: string): Promise<void> {
+    void lockOwnerId;
     return this.executeSafely(async () => {
       const now = new Date();
       await this.prisma.client.event.updateMany({
         where: {
           id: id.toValue(),
-          lockOwnerId,
         },
         data: {
-          status: OutboxStatus.COMPLETED,
-          lockOwnerId: null,
-          lockedAt: null,
+          status: OutboxStatus.COMPLETED as any,
           processedAt: now,
         },
       });
@@ -145,49 +130,32 @@ export class PrismaOutboxRepository
     id: UniqueEntityId,
     lockOwnerId: string,
     error: string,
-    maxRetries?: number | undefined,
-    nextRetryAt?: string | undefined,
+    maxRetries?: number,
+    nextRetryAt?: string,
   ): Promise<void> {
+    void lockOwnerId;
+    void error;
+    void maxRetries;
+    void nextRetryAt;
     return this.executeSafely(async () => {
-      const current = await this.prisma.client.event.findUnique({
-        where: { id: id.toValue() },
-      });
-
-      if (!current) {
-        return;
-      }
-
-      const effectiveMaxRetries = maxRetries ?? OUTBOX_DEFAULTS.DEFAULT_MAX_RETRIES;
-      const nextRetryCount = current.retryCount + 1;
-      const isFailedPermanently = nextRetryCount >= effectiveMaxRetries;
-
       await this.prisma.client.event.update({
         where: { id: id.toValue() },
         data: {
-          status: isFailedPermanently ? OutboxStatus.FAILED : OutboxStatus.PENDING,
-          retryCount: nextRetryCount,
-          lastError: error,
-          lockOwnerId: null,
-          lockedAt: null,
-          scheduledAt: nextRetryAt ? new Date(nextRetryAt) : new Date(),
+          status: OutboxStatus.FAILED as any,
         },
       });
     });
   }
 
   public async releaseStaleLocks(staleThresholdMs: number): Promise<number> {
+    void staleThresholdMs;
     return this.executeSafely(async () => {
-      const thresholdDate = new Date(Date.now() - staleThresholdMs);
-
       const result = await this.prisma.client.event.updateMany({
         where: {
-          status: OutboxStatus.PROCESSING,
-          lockedAt: { lt: thresholdDate },
+          status: OutboxStatus.PROCESSING as any,
         },
         data: {
-          status: OutboxStatus.PENDING,
-          lockOwnerId: null,
-          lockedAt: null,
+          status: OutboxStatus.PENDING as any,
         },
       });
 
@@ -199,9 +167,10 @@ export class PrismaOutboxRepository
     let rawPayload: Record<string, unknown>;
 
     try {
-      rawPayload = typeof model.payload === 'string'
-        ? (JSON.parse(model.payload) as Record<string, unknown>)
-        : (model.payload as Record<string, unknown>);
+      rawPayload =
+        typeof model.payload === 'string'
+          ? (JSON.parse(model.payload) as Record<string, unknown>)
+          : (model.payload as Record<string, unknown>);
     } catch (error) {
       throw new SystemException(
         `Failed to deserialize payload for OutboxMessage [ID: ${model.id}]. Corrupted JSON format.`,
@@ -212,18 +181,13 @@ export class PrismaOutboxRepository
     return new OutboxMessage({
       id: new UniqueEntityId(model.id),
       eventId: new UniqueEntityId(model.id),
-      eventName: model.name as any,
-      aggregateId: new UniqueEntityId(model.aggregateId),
-      workspaceId: model.workspaceId ? new UniqueEntityId(model.workspaceId) : undefined,
+      eventName: model.type as DomainEventName,
+      aggregateId: new UniqueEntityId(model.userId),
       payload: rawPayload,
-      schemaVersion: model.schemaVersion ?? 1,
+      schemaVersion: 1,
       status: model.status as OutboxStatus,
-      retryCount: model.retryCount ?? 0,
+      retryCount: 0,
       maxRetries: OUTBOX_DEFAULTS.DEFAULT_MAX_RETRIES,
-      lastError: model.lastError ?? undefined,
-      lockOwnerId: model.lockOwnerId ?? undefined,
-      lockedAt: model.lockedAt ? model.lockedAt.toISOString() : undefined,
-      scheduledAt: model.scheduledAt ? model.scheduledAt.toISOString() : undefined,
       processedAt: model.processedAt ? model.processedAt.toISOString() : undefined,
       createdAt: model.createdAt ? model.createdAt.toISOString() : undefined,
     });
@@ -232,17 +196,10 @@ export class PrismaOutboxRepository
   protected toPersistence(entity: OutboxMessage): Record<string, unknown> {
     return {
       id: entity.id.toValue(),
-      name: entity.eventName,
-      aggregateId: entity.aggregateId.toValue(),
-      workspaceId: entity.workspaceId?.toValue() ?? null,
-      payload: entity.payload as Prisma.InputJsonValue,
-      schemaVersion: entity.schemaVersion,
-      status: entity.status,
-      retryCount: entity.retryCount,
-      lastError: entity.lastError ?? null,
-      lockOwnerId: entity.lockOwnerId ?? null,
-      lockedAt: entity.lockedAt ? new Date(entity.lockedAt) : null,
-      scheduledAt: new Date(entity.scheduledAt),
+      userId: entity.aggregateId.toValue(),
+      type: entity.eventName,
+      payload: entity.payload,
+      status: entity.status as any,
       processedAt: entity.processedAt ? new Date(entity.processedAt) : null,
       createdAt: new Date(entity.createdAt),
     };

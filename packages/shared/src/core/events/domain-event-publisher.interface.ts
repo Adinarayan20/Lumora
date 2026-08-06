@@ -1,4 +1,4 @@
-import type { DomainEvent } from './domain-event.interface.js';
+import type { DomainEvent } from "./domain-event.interface.js";
 
 /**
  * Pure contract interface for domain event publishing abstractions.

@@ -4,19 +4,15 @@ import { softDeleteExtension } from './extensions/soft-delete.extension.js';
 
 /**
  * Infrastructure service managing PostgreSQL connection lifecycle via Prisma Client.
- * Encapsulates raw connection management and exposes a single, unified extended client instance.
- * All repository persistence drivers MUST access database operations exclusively through client.
+ * Encapsulates database initialization, shutdown signals, and client extensions.
  */
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  private readonly _extendedClient = this.$extends(softDeleteExtension);
-
-  /**
-   * Unified single entrypoint for database query execution.
-   * Enforces soft-delete query scoping across all repository operations.
-   */
+export class PrismaService
+  extends PrismaClient
+  implements OnModuleInit, OnModuleDestroy
+{
   public get client() {
-    return this._extendedClient;
+    return this.$extends(softDeleteExtension);
   }
 
   async onModuleInit(): Promise<void> {

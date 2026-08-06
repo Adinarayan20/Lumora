@@ -2,7 +2,11 @@ import { describe, it, expect, vi } from 'vitest';
 import { OutboxWorker } from '../outbox-worker.js';
 import { OutboxMessage } from '../../../../domain/common/events/index.js';
 import type { IOutboxRepository } from '../../../../domain/common/repositories/outbox.repository.interface.js';
-import { UniqueEntityId, IDomainEventPublisher, UserEventName } from '@lumora/shared';
+import {
+  UniqueEntityId,
+  IDomainEventPublisher,
+  UserEventName,
+} from '@lumora/shared';
 
 describe('OutboxWorker Engine', () => {
   it('should process pending outbox batch and mark as completed on success', async () => {
@@ -31,7 +35,10 @@ describe('OutboxWorker Engine', () => {
 
     expect(processedCount).toBe(1);
     expect(mockPublisher.publish).toHaveBeenCalled();
-    expect(mockRepo.markAsCompleted).toHaveBeenCalledWith(message.id, worker.workerId);
+    expect(mockRepo.markAsCompleted).toHaveBeenCalledWith(
+      message.id,
+      worker.workerId,
+    );
   });
 
   it('should calculate backoff and mark as failed on dispatch exception', async () => {

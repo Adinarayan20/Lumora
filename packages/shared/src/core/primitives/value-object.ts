@@ -29,7 +29,10 @@ export abstract class ValueObject<T extends Record<string, unknown>> {
     return this.shallowEqual(this.props, vo.props);
   }
 
-  private shallowEqual(objA: Record<string, unknown>, objB: Record<string, unknown>): boolean {
+  private shallowEqual(
+    objA: Record<string, unknown>,
+    objB: Record<string, unknown>,
+  ): boolean {
     const keysA = Object.keys(objA);
     const keysB = Object.keys(objB);
 
@@ -38,7 +41,10 @@ export abstract class ValueObject<T extends Record<string, unknown>> {
     }
 
     for (const key of keysA) {
-      if (!Object.prototype.hasOwnProperty.call(objB, key) || objA[key] !== objB[key]) {
+      if (
+        !Object.prototype.hasOwnProperty.call(objB, key) ||
+        objA[key] !== objB[key]
+      ) {
         return false;
       }
     }

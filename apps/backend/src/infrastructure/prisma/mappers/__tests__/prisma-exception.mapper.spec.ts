@@ -15,7 +15,10 @@ describe('PrismaExceptionMapper', () => {
       meta: { target: ['email'] },
     };
 
-    const domainException = PrismaExceptionMapper.toDomainException(error, 'User');
+    const domainException = PrismaExceptionMapper.toDomainException(
+      error,
+      'User',
+    );
 
     expect(domainException).toBeInstanceOf(ConflictException);
     expect(domainException.message).toContain('User already exists');
@@ -24,10 +27,14 @@ describe('PrismaExceptionMapper', () => {
   it('should map P2025 record not found error to EntityNotFoundException', () => {
     const error = {
       code: 'P2025',
-      message: 'An operation failed because it depends on one or more records that were required but not found.',
+      message:
+        'An operation failed because it depends on one or more records that were required but not found.',
     };
 
-    const domainException = PrismaExceptionMapper.toDomainException(error, 'Object');
+    const domainException = PrismaExceptionMapper.toDomainException(
+      error,
+      'Object',
+    );
 
     expect(domainException).toBeInstanceOf(EntityNotFoundException);
   });
@@ -39,7 +46,10 @@ describe('PrismaExceptionMapper', () => {
       meta: { field_name: 'workspace_id' },
     };
 
-    const domainException = PrismaExceptionMapper.toDomainException(error, 'Object');
+    const domainException = PrismaExceptionMapper.toDomainException(
+      error,
+      'Object',
+    );
 
     expect(domainException).toBeInstanceOf(DomainValidationException);
   });
@@ -47,7 +57,10 @@ describe('PrismaExceptionMapper', () => {
   it('should map unknown errors to SystemException', () => {
     const error = new Error('Database connection lost');
 
-    const domainException = PrismaExceptionMapper.toDomainException(error, 'Reminder');
+    const domainException = PrismaExceptionMapper.toDomainException(
+      error,
+      'Reminder',
+    );
 
     expect(domainException).toBeInstanceOf(SystemException);
   });

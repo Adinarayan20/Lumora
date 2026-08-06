@@ -1,59 +1,67 @@
 import { DomainValidationException } from '@lumora/shared';
 
 interface BufferGlobal {
-  Buffer?: {
-    from(data: string, encoding?: string): { toString(encoding: string): string };
-  } | undefined;
+  from(data: string, encoding: string): { toString(encoding: string): string };
 }
 
-const BASE64URL_REGEX = /^[A-Za-z0-9_-]+$/;
+declare const Buffer: BufferGlobal;
 
 /**
- * Infrastructure utility providing opaque base64url transport serialization for keyset pagination cursors.
- * Converts raw database column values into opaque API cursor strings and back.
+ * Utility for serializing and deserializing cursor strings for keyset pagination.
+ * Encodes cursor data into base64url strings to prevent implementation leakage.
  */
 export class CursorEncoder {
   /**
-   * Encodes a raw keyset value (string, number, or Date) into an opaque base64url cursor string.
+   * Encodes a record ID or cursor value into an opaque base64url cursor token.
    */
-  public static encode(value: string | number | Date): string {
-    const rawString = value instanceof Date ? value.toISOString() : String(value);
-    const nodeBuffer = (globalThis as unknown as BufferGlobal).Buffer;
+  public static encode(value: unknown): string {
+    const strValue = value instanceof Date ? value.toISOString() : String(value ?? '');
 
-    if (nodeBuffer !== undefined) {
-      return nodeBuffer.from(rawString, 'utf-8').toString('base64url');
+    if (!strValue || strValue.trim().length === 0) {
+      throw new DomainValidationException('Cannot encode an empty ID into a pagination cursor.');
     }
 
-    return btoa(rawString).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const json = JSON.stringify({ id: strValue, timestamp: Date.now() });
+    return Buffer.from(json, 'utf-8')
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
   }
 
   /**
-   * Decodes an opaque base64url cursor string back into its raw string value.
-   * @throws {DomainValidationException} if the cursor string is invalid or corrupted.
+   * Decodes an opaque base64url cursor token back into the underlying record ID.
    */
   public static decode(cursor: string): string {
-    if (!cursor || typeof cursor !== 'string' || cursor.trim().length === 0 || !BASE64URL_REGEX.test(cursor)) {
-      throw new DomainValidationException('Pagination cursor must be a valid base64url string.', {
-        cursor: ['Cursor string is required and must be valid base64url.'],
-      });
+    if (!cursor || cursor.trim().length === 0) {
+      throw new DomainValidationException('Cannot decode an empty pagination cursor string.');
     }
 
     try {
-      const nodeBuffer = (globalThis as unknown as BufferGlobal).Buffer;
-      if (nodeBuffer !== undefined) {
-        return nodeBuffer.from(cursor, 'base64url').toString('utf-8');
-      }
-
-      // Base64url to Base64 normalization
       let base64 = cursor.replace(/-/g, '+').replace(/_/g, '/');
+
       while (base64.length % 4 !== 0) {
         base64 += '=';
       }
-      return atob(base64);
-    } catch (error) {
-      throw new DomainValidationException(`Failed to decode pagination cursor '${cursor}'.`, {
-        cursor: ['Invalid or corrupted base64url pagination cursor.'],
-      });
+
+      const json = Buffer.from(base64, 'base64').toString('utf-8');
+      const parsed = JSON.parse(json) as { id?: unknown };
+
+      if (typeof parsed.id !== 'string' || parsed.id.trim().length === 0) {
+        throw new DomainValidationException(
+          'Decoded cursor payload is invalid or missing required ID string.',
+        );
+      }
+
+      return parsed.id;
+    } catch (_error) {
+      if (_error instanceof DomainValidationException) {
+        throw _error;
+      }
+      throw new DomainValidationException(
+        'Malformed or corrupted pagination cursor string.',
+        { cursor: ['Cursor string failed base64url decoding or JSON parsing.'] },
+      );
     }
   }
 }

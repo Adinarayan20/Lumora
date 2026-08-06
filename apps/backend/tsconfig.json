@@ -13,6 +13,10 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@lumora/shared": ["../../packages/shared/src/index.ts"],
+      "@lumora/shared/*": ["../../packages/shared/src/*"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,

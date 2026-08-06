@@ -1,5 +1,5 @@
-import { ApplicationException } from './application-exception.js';
-import { ErrorCode } from './error-code.js';
+import { ApplicationException } from "./application-exception.js";
+import { ErrorCode } from "./error-code.js";
 
 /**
  * Abstract base class for access control and security exception failures.
@@ -10,7 +10,9 @@ export abstract class SecurityException extends ApplicationException {}
  * Thrown when user credentials are missing, invalid, or expired.
  */
 export class UnauthorizedException extends SecurityException {
-  constructor(message: string = 'Authentication credentials are missing or invalid.') {
+  constructor(
+    message: string = "Authentication credentials are missing or invalid.",
+  ) {
     super(message, ErrorCode.UNAUTHENTICATED);
   }
 }

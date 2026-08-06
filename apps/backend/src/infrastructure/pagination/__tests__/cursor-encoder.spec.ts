@@ -30,10 +30,14 @@ describe('CursorEncoder (Infrastructure Transport)', () => {
 
   it('should throw DomainValidationException for empty or whitespace cursor strings', () => {
     expect(() => CursorEncoder.decode('')).toThrow(DomainValidationException);
-    expect(() => CursorEncoder.decode('   ')).toThrow(DomainValidationException);
+    expect(() => CursorEncoder.decode('   ')).toThrow(
+      DomainValidationException,
+    );
   });
 
   it('should throw DomainValidationException for invalid non-base64url strings', () => {
-    expect(() => CursorEncoder.decode('!!!not-base64-url!!!')).toThrow(DomainValidationException);
+    expect(() => CursorEncoder.decode('!!!not-base64-url!!!')).toThrow(
+      DomainValidationException,
+    );
   });
 });

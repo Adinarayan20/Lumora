@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import type { DomainEvent } from '@lumora/shared';
+import type { DomainEvent, DomainEventName } from '@lumora/shared';
 import { PrismaOutboxRepository } from './prisma-outbox.repository.js';
-import { OutboxMessage } from './outbox-message.entity.js';
+import { OutboxMessage } from '../../../domain/common/events/index.js';
 
 /**
  * Helper class for staging DomainEvent instances into the PostgreSQL Outbox table
@@ -15,7 +15,7 @@ export class OutboxPublisher {
    * Stages a list of domain event contracts into the outbox table using the provided transaction context.
    */
   public async stageEvents(
-    events: readonly DomainEvent<any, any>[],
+    events: readonly DomainEvent<DomainEventName, Record<string, unknown>>[],
     transactionContext?: unknown,
   ): Promise<void> {
     for (const event of events) {

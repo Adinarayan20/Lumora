@@ -1,5 +1,5 @@
-import type { InstantString } from '../instant-string.js';
-import type { BaseReminderPayload } from './base-payloads.js';
+import type { InstantString } from "../instant-string.js";
+import type { BaseReminderPayload } from "./base-payloads.js";
 
 export interface ReminderScheduledPayload extends BaseReminderPayload {
   readonly remindAt: InstantString;

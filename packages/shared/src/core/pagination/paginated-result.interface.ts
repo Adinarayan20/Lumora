@@ -1,4 +1,4 @@
-import type { PageInfo } from './page-info.interface.js';
+import type { PageInfo } from "./page-info.interface.js";
 
 /**
  * Generic container interface for paginated query results.

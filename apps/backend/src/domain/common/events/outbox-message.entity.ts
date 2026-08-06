@@ -1,4 +1,9 @@
-import { UniqueEntityId, InstantString, DomainEventName, DomainEvent } from '@lumora/shared';
+import {
+  UniqueEntityId,
+  InstantString,
+  DomainEventName,
+  DomainEvent,
+} from '@lumora/shared';
 import { OutboxStatus } from './outbox-status.js';
 import { OUTBOX_DEFAULTS } from './outbox-config.constants.js';
 
@@ -73,7 +78,7 @@ export class OutboxMessage {
       eventName: event.eventName,
       aggregateId: event.aggregateId,
       workspaceId: event.workspaceId,
-      payload: event.payload as Record<string, unknown>,
+      payload: event.payload,
       schemaVersion: event.schemaVersion,
       maxRetries,
     });

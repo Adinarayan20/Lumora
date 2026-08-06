@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { OutboxMessage, OutboxStatus } from '../../../../domain/common/events/index.js';
-import { UniqueEntityId, createDomainEvent, UserEventName } from '@lumora/shared';
+import {
+  OutboxMessage,
+  OutboxStatus,
+} from '../../../../domain/common/events/index.js';
+import {
+  UniqueEntityId,
+  createDomainEvent,
+  UserEventName,
+} from '@lumora/shared';
 
 describe('OutboxMessage Entity', () => {
   it('should construct OutboxMessage directly from a DomainEvent contract', () => {

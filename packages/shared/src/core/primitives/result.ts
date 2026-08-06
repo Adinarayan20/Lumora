@@ -1,5 +1,5 @@
-import { ApplicationException } from '../errors/application-exception.js';
-import { ErrorCode } from '../errors/error-code.js';
+import { ApplicationException } from "../errors/application-exception.js";
+import { ErrorCode } from "../errors/error-code.js";
 
 /**
  * Type-safe monadic container representing either a successful outcome or a failed outcome.
@@ -11,7 +11,11 @@ export class Result<T, E = ApplicationException> {
   private readonly _value?: T | undefined;
   private readonly _error?: E | undefined;
 
-  private constructor(isSuccess: boolean, value?: T | undefined, error?: E | undefined) {
+  private constructor(
+    isSuccess: boolean,
+    value?: T | undefined,
+    error?: E | undefined,
+  ) {
     this.isSuccess = isSuccess;
     this.isFailure = !isSuccess;
     this._value = value;
@@ -30,7 +34,9 @@ export class Result<T, E = ApplicationException> {
   /**
    * Creates a failure Result instance containing the given error.
    */
-  public static fail<T = never, E = ApplicationException>(error: E): Result<T, E> {
+  public static fail<T = never, E = ApplicationException>(
+    error: E,
+  ): Result<T, E> {
     return new Result<T, E>(false, undefined, error);
   }
 
@@ -40,7 +46,9 @@ export class Result<T, E = ApplicationException> {
    */
   public getValue(): T {
     if (!this.isSuccess) {
-      throw new ResultAccessException('Cannot retrieve value from a failed Result instance.');
+      throw new ResultAccessException(
+        "Cannot retrieve value from a failed Result instance.",
+      );
     }
     return this._value as T;
   }
@@ -51,7 +59,9 @@ export class Result<T, E = ApplicationException> {
    */
   public getError(): E {
     if (this.isSuccess) {
-      throw new ResultAccessException('Cannot retrieve error from a successful Result instance.');
+      throw new ResultAccessException(
+        "Cannot retrieve error from a successful Result instance.",
+      );
     }
     return this._error as E;
   }

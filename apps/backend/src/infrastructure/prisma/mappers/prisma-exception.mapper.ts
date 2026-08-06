@@ -35,63 +35,54 @@ export class PrismaExceptionMapper {
             ? (error.meta['target'] as string[]).join(', ')
             : 'unique field';
           return new ConflictException(
-            `${entityName} already exists with duplicate ${target}.`,
-            { [target]: [`Duplicate entry violates unique constraint.`] },
+            entityName,
+            `${entityName} already exists with duplicate ${target}`,
           );
         }
 
         case 'P2025': {
-          return new EntityNotFoundException(
-            `${entityName} not found in persistence storage.`,
-            entityName,
-          );
+          return new EntityNotFoundException(entityName, 'unknown');
         }
 
         case 'P2003': {
-          const fieldName = typeof error.meta?.['field_name'] === 'string'
-            ? (error.meta['field_name'] as string)
-            : 'foreign key';
+          const field = (error.meta?.['field_name'] as string) ?? 'foreign key';
           return new DomainValidationException(
-            `Foreign key constraint failed on ${entityName} field '${fieldName}'.`,
-            { [fieldName]: [`Referenced relation entity does not exist.`] },
+            `Foreign key constraint failed on field ${field}.`,
+            {
+              [field]: [
+                `Referenced entity in field '${field}' does not exist.`,
+              ],
+            },
           );
         }
 
-        case 'P2000':
-        case 'P2006': {
-          return new DomainValidationException(
-            `Invalid value provided for ${entityName} storage.`,
-            { entity: [`Data value exceeds field bounds or column type spec.`] },
-          );
-        }
-
-        default:
+        default: {
           return new SystemException(
-            `Database operation failed for ${entityName} [Prisma Code: ${error.code}].`,
+            `Database operation failed with error code ${error.code}: ${error.message}`,
             error.message,
           );
+        }
       }
     }
 
     if (error instanceof Error) {
       return new SystemException(
-        `Unexpected persistence infrastructure failure for ${entityName}.`,
-        error.message,
+        `Unexpected persistence error in ${entityName}: ${error.message}`,
+        error.stack,
       );
     }
 
     return new SystemException(
-      `Unknown persistence failure occurred for ${entityName}.`,
+      `An unknown error occurred in ${entityName} persistence layer.`,
+      String(error),
     );
   }
 
   private static isPrismaKnownError(error: unknown): error is PrismaKnownError {
-    return (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      typeof (error as Record<string, unknown>)['code'] === 'string' &&
-      'message' in error
-    );
+    if (typeof error !== 'object' || error === null) {
+      return false;
+    }
+    const errObj = error as Record<string, unknown>;
+    return typeof errObj['code'] === 'string' && errObj['code'].startsWith('P');
   }
 }
