@@ -11,6 +11,7 @@ export abstract class ValueObject<T extends Record<string, unknown>> {
 
   /**
    * Evaluates structural equality against another ValueObject.
+   * Enforces that both value objects are instances of the exact same concrete class.
    */
   public equals(vo?: ValueObject<T> | undefined): boolean {
     if (vo === null || vo === undefined) {
@@ -21,7 +22,7 @@ export abstract class ValueObject<T extends Record<string, unknown>> {
       return true;
     }
 
-    if (!(vo instanceof ValueObject)) {
+    if (this.constructor !== vo.constructor) {
       return false;
     }
 

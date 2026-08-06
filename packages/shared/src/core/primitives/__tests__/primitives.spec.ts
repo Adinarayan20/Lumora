@@ -2,9 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { Result, ResultAccessException } from '../result.js';
 import { ValueObject } from '../value-object.js';
 import { UniqueEntityId } from '../unique-entity-id.js';
+import { IdGenerator } from '../id-generator.js';
 import { DomainValidationException } from '../../errors/domain-exceptions.js';
+import { ErrorCode } from '../../errors/error-code.js';
 
 class SampleValueObject extends ValueObject<{ name: string; age: number }> {}
+class AnotherValueObject extends ValueObject<{ name: string; age: number }> {}
 
 describe('Core Domain Primitives', () => {
   describe('Result Monad', () => {
@@ -16,10 +19,16 @@ describe('Core Domain Primitives', () => {
       expect(result.getValue()).toBe('Success Payload');
     });
 
-    it('should throw ResultAccessException when calling getError on ok Result', () => {
+    it('should throw ResultAccessException with SYSTEM_ERROR code when calling getError on ok Result', () => {
       const result = Result.ok<string>('Success Payload');
 
-      expect(() => result.getError()).toThrow(ResultAccessException);
+      try {
+        result.getError();
+        expect.fail('Expected ResultAccessException to be thrown');
+      } catch (err) {
+        expect(err).toBeInstanceOf(ResultAccessException);
+        expect((err as ResultAccessException).code).toBe(ErrorCode.SYSTEM_ERROR);
+      }
     });
 
     it('should create a failure Result instance', () => {
@@ -31,19 +40,32 @@ describe('Core Domain Primitives', () => {
       expect(result.getError()).toBe(error);
     });
 
-    it('should throw ResultAccessException when calling getValue on fail Result', () => {
+    it('should throw ResultAccessException with SYSTEM_ERROR code when calling getValue on fail Result', () => {
       const result = Result.fail<string, string>('Error Message');
 
-      expect(() => result.getValue()).toThrow(ResultAccessException);
+      try {
+        result.getValue();
+        expect.fail('Expected ResultAccessException to be thrown');
+      } catch (err) {
+        expect(err).toBeInstanceOf(ResultAccessException);
+        expect((err as ResultAccessException).code).toBe(ErrorCode.SYSTEM_ERROR);
+      }
     });
   });
 
   describe('ValueObject Base Class', () => {
-    it('should enforce structural equality for matching properties', () => {
+    it('should enforce structural equality for matching properties of same class', () => {
       const vo1 = new SampleValueObject({ name: 'Alice', age: 30 });
       const vo2 = new SampleValueObject({ name: 'Alice', age: 30 });
 
       expect(vo1.equals(vo2)).toBe(true);
+    });
+
+    it('should return false when comparing instances of different ValueObject classes even with identical props', () => {
+      const vo1 = new SampleValueObject({ name: 'Alice', age: 30 });
+      const vo2 = new AnotherValueObject({ name: 'Alice', age: 30 });
+
+      expect(vo1.equals(vo2 as any)).toBe(false);
     });
 
     it('should return false when comparing non-matching properties', () => {
@@ -64,7 +86,12 @@ describe('Core Domain Primitives', () => {
     });
   });
 
-  describe('UniqueEntityId', () => {
+  describe('IdGenerator & UniqueEntityId', () => {
+    it('should generate valid RFC 4122 v4 UUID using IdGenerator', () => {
+      const generatedId = IdGenerator.generate();
+      expect(IdGenerator.isValid(generatedId)).toBe(true);
+    });
+
     it('should generate a valid RFC 4122 v4 UUID when no argument is provided', () => {
       const id = new UniqueEntityId();
 

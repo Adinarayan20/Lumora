@@ -36,7 +36,7 @@ export class Result<T, E = ApplicationException> {
 
   /**
    * Retrieves the successful value.
-   * @throws {ApplicationException} if called on a failed Result.
+   * @throws {ResultAccessException} if called on a failed Result.
    */
   public getValue(): T {
     if (!this.isSuccess) {
@@ -47,7 +47,7 @@ export class Result<T, E = ApplicationException> {
 
   /**
    * Retrieves the error object.
-   * @throws {ApplicationException} if called on a successful Result.
+   * @throws {ResultAccessException} if called on a successful Result.
    */
   public getError(): E {
     if (this.isSuccess) {
@@ -58,10 +58,11 @@ export class Result<T, E = ApplicationException> {
 }
 
 /**
- * Exception thrown when invalid access attempts are made on Result instances.
+ * Exception thrown when invalid API usage access attempts are made on Result instances.
+ * System error representing developer usage violation rather than business rule failure.
  */
 export class ResultAccessException extends ApplicationException {
   constructor(message: string) {
-    super(message, ErrorCode.DOMAIN_VALIDATION_ERROR);
+    super(message, ErrorCode.SYSTEM_ERROR);
   }
 }

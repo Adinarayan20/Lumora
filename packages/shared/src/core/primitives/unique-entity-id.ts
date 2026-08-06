@@ -1,7 +1,6 @@
 import { DomainValidationException } from '../errors/domain-exceptions.js';
+import { IdGenerator } from './id-generator.js';
 import { ValueObject } from './value-object.js';
-
-const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 interface UniqueEntityIdProps extends Record<string, unknown> {
   value: string;
@@ -12,7 +11,7 @@ interface UniqueEntityIdProps extends Record<string, unknown> {
  */
 export class UniqueEntityId extends ValueObject<UniqueEntityIdProps> {
   constructor(id?: string | undefined) {
-    const rawValue = id ?? crypto.randomUUID();
+    const rawValue = id ?? IdGenerator.generate();
 
     if (!UniqueEntityId.isValid(rawValue)) {
       throw new DomainValidationException(
@@ -28,7 +27,7 @@ export class UniqueEntityId extends ValueObject<UniqueEntityIdProps> {
    * Validates whether a given string is a valid RFC 4122 v4 UUID.
    */
   public static isValid(id: string): boolean {
-    return UUID_V4_REGEX.test(id);
+    return IdGenerator.isValid(id);
   }
 
   /**
@@ -53,7 +52,7 @@ export class UniqueEntityId extends ValueObject<UniqueEntityIdProps> {
       return false;
     }
 
-    if (!(id instanceof UniqueEntityId)) {
+    if (this.constructor !== id.constructor) {
       return false;
     }
 
