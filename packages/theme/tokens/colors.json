@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "Lumora Color System Tokens",
+  "version": "1.0.0",
+  "primitives": {
+    "indigo": {
+      "50": "hsl(225, 100%, 97%)",
+      "100": "hsl(226, 100%, 94%)",
+      "500": "hsl(226, 70%, 55%)",
+      "600": "hsl(226, 70%, 48%)",
+      "900": "hsl(224, 64%, 15%)"
+    },
+    "slate": {
+      "50": "hsl(210, 40%, 98%)",
+      "100": "hsl(214, 32%, 91%)",
+      "500": "hsl(215, 16%, 47%)",
+      "800": "hsl(215, 28%, 17%)",
+      "900": "hsl(222, 47%, 11%)",
+      "950": "hsl(224, 71%, 4%)"
+    },
+    "emerald": {
+      "500": "hsl(158, 64%, 52%)",
+      "600": "hsl(158, 64%, 42%)"
+    },
+    "amber": {
+      "500": "hsl(38, 92%, 50%)"
+    },
+    "rose": {
+      "500": "hsl(350, 89%, 60%)",
+      "600": "hsl(350, 89%, 50%)"
+    }
+  },
+  "semantic": {
+    "light": {
+      "primary": "hsl(226, 70%, 55%)",
+      "primaryHover": "hsl(226, 70%, 48%)",
+      "background": "hsl(210, 40%, 98%)",
+      "surface": "#FFFFFF",
+      "surfaceElevated": "#FFFFFF",
+      "textPrimary": "hsl(222, 47%, 11%)",
+      "textSecondary": "hsl(215, 16%, 47%)",
+      "textMuted": "hsl(214, 32%, 70%)",
+      "border": "hsl(214, 32%, 91%)",
+      "success": "hsl(158, 64%, 42%)",
+      "warning": "hsl(38, 92%, 50%)",
+      "danger": "hsl(350, 89%, 50%)"
+    },
+    "dark": {
+      "primary": "hsl(226, 70%, 55%)",
+      "primaryHover": "hsl(226, 70%, 65%)",
+      "background": "hsl(224, 71%, 4%)",
+      "surface": "hsl(222, 47%, 11%)",
+      "surfaceElevated": "hsl(215, 28%, 17%)",
+      "textPrimary": "hsl(210, 40%, 98%)",
+      "textSecondary": "hsl(214, 32%, 70%)",
+      "textMuted": "hsl(215, 16%, 47%)",
+      "border": "hsl(215, 28%, 17%)",
+      "success": "hsl(158, 64%, 52%)",
+      "warning": "hsl(38, 92%, 50%)",
+      "danger": "hsl(350, 89%, 60%)"
+    }
+  }
+}

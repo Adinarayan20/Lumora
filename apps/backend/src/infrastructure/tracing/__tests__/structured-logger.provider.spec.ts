@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { StructuredLoggerProvider } from '../structured-logger.provider.js';
 import { TraceContextService } from '../trace-context.service.js';
