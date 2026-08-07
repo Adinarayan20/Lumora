@@ -1,5 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import type { RedisClientProvider } from '../redis/redis-client.provider.js';
+import type { MetricsRegistry } from '../metrics/metrics.registry.js';
 import type { SchemaDefinition, ObjectDefinition } from '@lumora/shared';
 
 @Injectable()
@@ -7,7 +8,10 @@ export class RedisSchemaCache {
   private readonly logger = new Logger(RedisSchemaCache.name);
   private readonly DEFAULT_TTL_SECONDS = 86400; // 24 Hours
 
-  constructor(private readonly redisClient: RedisClientProvider) {}
+  constructor(
+    private readonly redisClient: RedisClientProvider,
+    @Optional() private readonly metricsRegistry?: MetricsRegistry,
+  ) {}
 
   private getSchemaKey(workspaceId: string, typeKey: string): string {
     return `lumora:schema:${workspaceId}:${typeKey}`;
@@ -24,7 +28,11 @@ export class RedisSchemaCache {
     try {
       const client = this.redisClient.getClient();
       const raw = await client.get(this.getSchemaKey(workspaceId, typeKey));
-      if (!raw) return null;
+      if (!raw) {
+        this.metricsRegistry?.schemaCacheMissesTotal.inc();
+        return null;
+      }
+      this.metricsRegistry?.schemaCacheHitsTotal.inc();
       return JSON.parse(raw) as SchemaDefinition;
     } catch (error) {
       this.logger.error(
@@ -53,6 +61,20 @@ export class RedisSchemaCache {
     }
   }
 
+  public async invalidateSchema(
+    workspaceId: string,
+    typeKey: string,
+  ): Promise<void> {
+    try {
+      const client = this.redisClient.getClient();
+      await client.del(this.getSchemaKey(workspaceId, typeKey));
+    } catch (error) {
+      this.logger.error(
+        `Failed to invalidate schema in Redis cache: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
   public async getObjectDefinition(
     workspaceId: string,
     typeKey: string,
@@ -60,7 +82,11 @@ export class RedisSchemaCache {
     try {
       const client = this.redisClient.getClient();
       const raw = await client.get(this.getDefinitionKey(workspaceId, typeKey));
-      if (!raw) return null;
+      if (!raw) {
+        this.metricsRegistry?.schemaCacheMissesTotal.inc();
+        return null;
+      }
+      this.metricsRegistry?.schemaCacheHitsTotal.inc();
       return JSON.parse(raw) as ObjectDefinition;
     } catch (error) {
       this.logger.error(
@@ -86,6 +112,15 @@ export class RedisSchemaCache {
       this.logger.error(
         `Failed to write object definition to Redis cache: ${error instanceof Error ? error.message : String(error)}`,
       );
+    }
+  }
+
+  public async warmupWorkspaceSchemas(
+    workspaceId: string,
+    schemas: readonly SchemaDefinition[],
+  ): Promise<void> {
+    for (const schema of schemas) {
+      await this.setSchema(workspaceId, schema.typeKey, schema);
     }
   }
 }

@@ -12,3 +12,7 @@ export * from "./display-formatter.js";
 export * from "./field-schema.js";
 export * from "./schema-definition.js";
 export * from "./object-definition.js";
+export * from "./catalog-events.js";
+export * from "./capability-reference.js";
+export * from "./catalog-snapshot.js";
+export * from "./schema-migration-engine.js";

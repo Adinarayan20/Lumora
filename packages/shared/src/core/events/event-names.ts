@@ -117,6 +117,16 @@ export const HouseholdEventName = {
 export type HouseholdEventName =
   (typeof HouseholdEventName)[keyof typeof HouseholdEventName];
 
+export const CatalogEventName = {
+  SCHEMA_REGISTERED: "catalog.schema_registered",
+  SCHEMA_UPDATED: "catalog.schema_updated",
+  OBJECT_DEFINITION_REGISTERED: "catalog.definition_registered",
+  OBJECT_DEFINITION_UPDATED: "catalog.definition_updated",
+} as const;
+
+export type CatalogEventName =
+  (typeof CatalogEventName)[keyof typeof CatalogEventName];
+
 /**
  * Union type representing all valid domain event name string literals.
  */
@@ -132,4 +142,5 @@ export type DomainEventName =
   | SearchEventName
   | TimelineEventName
   | SettingsEventName
-  | HouseholdEventName;
+  | HouseholdEventName
+  | CatalogEventName;
