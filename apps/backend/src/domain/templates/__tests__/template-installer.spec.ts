@@ -1,9 +1,15 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { UniqueEntityId } from '@lumora/shared';
 import { TemplateInstallerService } from '../services/template-installer.service.js';
-import { InstalledTemplateAggregate, InstalledTemplateStatus } from '../installed-template.aggregate.js';
+import {
+  InstalledTemplateAggregate,
+  InstalledTemplateStatus,
+} from '../installed-template.aggregate.js';
 import { TemplateUpgradeEngine } from '../services/template-upgrade-engine.js';
-import { TemplateUninstallEngine, TemplateUninstallPolicy } from '../services/template-uninstall-engine.js';
+import {
+  TemplateUninstallEngine,
+  TemplateUninstallPolicy,
+} from '../services/template-uninstall-engine.js';
 import { TemplateOperationLock } from '../services/template-operation-lock.js';
 
 describe('Sub-Milestone 3.4: Template Installer, Upgrade & Rollback Engine', () => {
@@ -48,7 +54,11 @@ describe('Sub-Milestone 3.4: Template Installer, Upgrade & Rollback Engine', () 
       isDryRun: false,
     };
 
-    const upgradeResult = await TemplateUpgradeEngine.applyUpgrade(instance, upgradePlan, '1.1.0');
+    const upgradeResult = await TemplateUpgradeEngine.applyUpgrade(
+      instance,
+      upgradePlan,
+      '1.1.0',
+    );
     expect(upgradeResult.isSuccess).toBe(true);
     expect(instance.installedVersion).toBe('1.1.0');
     expect(instance.status).toBe(InstalledTemplateStatus.UPGRADED);

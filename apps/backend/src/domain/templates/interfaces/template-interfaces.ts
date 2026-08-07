@@ -1,4 +1,9 @@
-import type { Result, TemplatePackage, TemplateManifest, UniqueEntityId } from '@lumora/shared';
+import type {
+  Result,
+  TemplatePackage,
+  TemplateManifest,
+  UniqueEntityId,
+} from '@lumora/shared';
 
 export interface PolicyEvaluationResult {
   allowed: boolean;
@@ -7,7 +12,10 @@ export interface PolicyEvaluationResult {
 }
 
 export interface ITemplatePolicyEngine {
-  evaluate(manifest: TemplateManifest, workspaceId: UniqueEntityId): Promise<PolicyEvaluationResult>;
+  evaluate(
+    manifest: TemplateManifest,
+    workspaceId: UniqueEntityId,
+  ): Promise<PolicyEvaluationResult>;
 }
 
 export interface ITemplateSignatureVerifier {
@@ -35,7 +43,10 @@ export interface ITemplatePlanner {
 }
 
 export interface ITemplateInstaller {
-  install(plan: TemplatePlan, contextUserId: UniqueEntityId): Promise<Result<void>>;
+  install(
+    plan: TemplatePlan,
+    contextUserId: UniqueEntityId,
+  ): Promise<Result<void>>;
 }
 
 export interface ITemplateMigrationStrategy {

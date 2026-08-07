@@ -4,12 +4,13 @@ import {
   Guard,
   DomainValidationException,
   TemplateInstalledEvent,
-  TemplateInstallationFailedEvent,
+  TemplateOperationFailedEvent,
   TemplateUpgradedEvent,
   TemplateRollbackStartedEvent,
   TemplateRollbackCompletedEvent,
   TemplateArchivedEvent,
 } from '@lumora/shared';
+import type { DomainEvent, TemplateOperationType } from '@lumora/shared';
 
 export enum InstalledTemplateStatus {
   DRAFT = 'DRAFT',
@@ -35,7 +36,10 @@ export interface InstalledTemplateProps {
   updatedAt?: Date;
 }
 
-const ALLOWED_TRANSITIONS: Record<InstalledTemplateStatus, Set<InstalledTemplateStatus>> = {
+const ALLOWED_TRANSITIONS: Record<
+  InstalledTemplateStatus,
+  Set<InstalledTemplateStatus>
+> = {
   [InstalledTemplateStatus.DRAFT]: new Set([
     InstalledTemplateStatus.VALIDATING,
     InstalledTemplateStatus.FAILED,
@@ -50,7 +54,6 @@ const ALLOWED_TRANSITIONS: Record<InstalledTemplateStatus, Set<InstalledTemplate
     InstalledTemplateStatus.ROLLING_BACK,
     InstalledTemplateStatus.FAILED,
   ]),
-
   [InstalledTemplateStatus.ACTIVE]: new Set([
     InstalledTemplateStatus.INSTALLING,
     InstalledTemplateStatus.UPGRADED,
@@ -84,9 +87,7 @@ const ALLOWED_TRANSITIONS: Record<InstalledTemplateStatus, Set<InstalledTemplate
     InstalledTemplateStatus.ARCHIVED,
     InstalledTemplateStatus.DISABLED,
   ]),
-  [InstalledTemplateStatus.ARCHIVED]: new Set([
-    InstalledTemplateStatus.ACTIVE,
-  ]),
+  [InstalledTemplateStatus.ARCHIVED]: new Set([InstalledTemplateStatus.ACTIVE]),
   [InstalledTemplateStatus.DEPRECATED]: new Set([
     InstalledTemplateStatus.UNINSTALLING,
     InstalledTemplateStatus.ARCHIVED,
@@ -111,12 +112,19 @@ export class InstalledTemplateAggregate extends AggregateRoot<UniqueEntityId> {
     this.updatedAt = props.updatedAt ?? new Date();
   }
 
-  public static create(props: InstalledTemplateProps): InstalledTemplateAggregate {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+  public static create(
+    props: InstalledTemplateProps,
+  ): InstalledTemplateAggregate {
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
     if (!props.templateKey || props.templateKey.trim().length === 0) {
-      throw new DomainValidationException('InstalledTemplateAggregate requires a templateKey.');
+      throw new DomainValidationException(
+        'InstalledTemplateAggregate requires a templateKey.',
+      );
     }
 
     return new InstalledTemplateAggregate(props);
@@ -131,7 +139,7 @@ export class InstalledTemplateAggregate extends AggregateRoot<UniqueEntityId> {
     return allowed ? allowed.has(newStatus) : false;
   }
 
-  public transitionTo(newStatus: InstalledTemplateStatus): void {
+  protected transitionTo(newStatus: InstalledTemplateStatus): void {
     if (this._status === newStatus) return;
 
     if (!this.canTransitionTo(newStatus)) {
@@ -144,25 +152,34 @@ export class InstalledTemplateAggregate extends AggregateRoot<UniqueEntityId> {
     this.updatedAt = new Date();
   }
 
+  private recordLifecycleEvent(event: DomainEvent): void {
+    this.addDomainEvent(event);
+  }
+
   public markInstalling(): void {
     this.transitionTo(InstalledTemplateStatus.INSTALLING);
   }
 
-  public markActive(version?: string): void {
+  public completeInstallation(version?: string): void {
     if (version) {
       this.installedVersion = version;
     }
     this.transitionTo(InstalledTemplateStatus.ACTIVE);
-    this.addDomainEvent(
-      new TemplateInstalledEvent(this.id, this.workspaceId, this.templateKey, this.installedVersion),
+    this.recordLifecycleEvent(
+      new TemplateInstalledEvent(
+        this.id,
+        this.workspaceId,
+        this.templateKey,
+        this.installedVersion,
+      ),
     );
   }
 
-  public markUpgraded(newVersion: string): void {
+  public completeUpgrade(newVersion: string): void {
     const previousVersion = this.installedVersion;
     this.installedVersion = newVersion;
     this.transitionTo(InstalledTemplateStatus.UPGRADED);
-    this.addDomainEvent(
+    this.recordLifecycleEvent(
       new TemplateUpgradedEvent(
         this.id,
         this.workspaceId,
@@ -175,22 +192,39 @@ export class InstalledTemplateAggregate extends AggregateRoot<UniqueEntityId> {
 
   public markRollingBack(): void {
     this.transitionTo(InstalledTemplateStatus.ROLLING_BACK);
-    this.addDomainEvent(
-      new TemplateRollbackStartedEvent(this.id, this.workspaceId, this.templateKey),
+    this.recordLifecycleEvent(
+      new TemplateRollbackStartedEvent(
+        this.id,
+        this.workspaceId,
+        this.templateKey,
+      ),
     );
   }
 
-  public markRollbackCompleted(): void {
+  public completeRollback(): void {
     this.transitionTo(InstalledTemplateStatus.ACTIVE);
-    this.addDomainEvent(
-      new TemplateRollbackCompletedEvent(this.id, this.workspaceId, this.templateKey),
+    this.recordLifecycleEvent(
+      new TemplateRollbackCompletedEvent(
+        this.id,
+        this.workspaceId,
+        this.templateKey,
+      ),
     );
   }
 
-  public markFailed(reason: string): void {
+  public markFailed(
+    operationType: TemplateOperationType,
+    reason: string,
+  ): void {
     this.transitionTo(InstalledTemplateStatus.FAILED);
-    this.addDomainEvent(
-      new TemplateInstallationFailedEvent(this.id, this.workspaceId, this.templateKey, reason),
+    this.recordLifecycleEvent(
+      new TemplateOperationFailedEvent(
+        this.id,
+        this.workspaceId,
+        this.templateKey,
+        operationType,
+        reason,
+      ),
     );
   }
 
@@ -200,7 +234,7 @@ export class InstalledTemplateAggregate extends AggregateRoot<UniqueEntityId> {
 
   public markArchived(): void {
     this.transitionTo(InstalledTemplateStatus.ARCHIVED);
-    this.addDomainEvent(
+    this.recordLifecycleEvent(
       new TemplateArchivedEvent(this.id, this.workspaceId, this.templateKey),
     );
   }

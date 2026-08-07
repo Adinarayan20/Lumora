@@ -10,7 +10,10 @@ export class TemplateUpgradeEngine {
     newPlan: TemplatePlan,
     newVersion: string,
   ): Promise<Result<void>> {
-    const policyResult = TemplateLifecyclePolicy.canUpgrade(instance, newVersion);
+    const policyResult = TemplateLifecyclePolicy.canUpgrade(
+      instance,
+      newVersion,
+    );
     if (policyResult.isFailure) {
       return Result.fail(policyResult.getError());
     }
@@ -20,7 +23,7 @@ export class TemplateUpgradeEngine {
 
     try {
       instance.markInstalling();
-      instance.markUpgraded(newVersion);
+      instance.completeUpgrade(newVersion);
       return Promise.resolve(Result.ok<void>(undefined));
     } catch (err) {
       await TemplateRollbackEngine.executeRollback(instance);

@@ -1,10 +1,13 @@
 import type { TemplateManifest, UniqueEntityId } from '@lumora/shared';
-import type { ITemplatePolicyEngine, PolicyEvaluationResult } from '../interfaces/template-interfaces.js';
+import type {
+  ITemplatePolicyEngine,
+  PolicyEvaluationResult,
+} from '../interfaces/template-interfaces.js';
 
 export class DefaultTemplatePolicyEngine implements ITemplatePolicyEngine {
   public async evaluate(
     manifest: TemplateManifest,
-    workspaceId: UniqueEntityId,
+    _workspaceId: UniqueEntityId,
   ): Promise<PolicyEvaluationResult> {
     const violations: string[] = [];
     const warnings: string[] = [];
@@ -20,7 +23,9 @@ export class DefaultTemplatePolicyEngine implements ITemplatePolicyEngine {
 
     // Rule 2: Minimum platform version verification
     if (!manifest.minPlatformVersion) {
-      violations.push(`Template '${manifest.key}' missing required minPlatformVersion.`);
+      violations.push(
+        `Template '${manifest.key}' missing required minPlatformVersion.`,
+      );
     }
 
     const allowed = violations.length === 0;

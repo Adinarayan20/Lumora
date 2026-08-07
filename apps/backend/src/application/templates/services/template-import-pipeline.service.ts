@@ -1,7 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId, TemplateValidator, DomainValidationException } from '@lumora/shared';
+import {
+  Result,
+  UniqueEntityId,
+  TemplateValidator,
+  DomainValidationException,
+} from '@lumora/shared';
 import type { TemplatePackage } from '@lumora/shared';
-import type { ITemplateImportPipeline, ITemplatePlanner, TemplatePlan } from '../../../domain/templates/interfaces/template-interfaces.js';
+import type {
+  ITemplateImportPipeline,
+  ITemplatePlanner,
+  TemplatePlan,
+} from '../../../domain/templates/interfaces/template-interfaces.js';
 
 @Injectable()
 export class TemplateImportPipelineService implements ITemplateImportPipeline {
@@ -15,7 +24,11 @@ export class TemplateImportPipelineService implements ITemplateImportPipeline {
     try {
       pkg = JSON.parse(rawJsonPayload) as TemplatePackage;
     } catch {
-      return Result.fail(new DomainValidationException('Invalid JSON payload provided for template import.'));
+      return Result.fail(
+        new DomainValidationException(
+          'Invalid JSON payload provided for template import.',
+        ),
+      );
     }
 
     // Step 1: Sandbox Validation

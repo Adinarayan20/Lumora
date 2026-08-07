@@ -1,5 +1,8 @@
 import { DomainValidationException, Result } from '@lumora/shared';
-import type { CapabilityRequirement, ICapabilityCompatibilityRegistry } from '@lumora/shared';
+import type {
+  CapabilityRequirement,
+  ICapabilityCompatibilityRegistry,
+} from '@lumora/shared';
 
 export class CompatibilityChecker {
   public static checkCapabilityCompatibility(
@@ -16,7 +19,8 @@ export class CompatibilityChecker {
           if (!def.compatible) {
             return Result.fail(
               new DomainValidationException(
-                def.reason ?? `Capability '${reqA.key}' (${reqA.versionConstraint}) is incompatible with capability '${reqB.key}' (${reqB.versionConstraint}).`,
+                def.reason ??
+                  `Capability '${reqA.key}' (${reqA.versionConstraint}) is incompatible with capability '${reqB.key}' (${reqB.versionConstraint}).`,
               ),
             );
           }

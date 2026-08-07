@@ -22,7 +22,9 @@ export class TemplateUninstallEngine {
 
     if (policy === TemplateUninstallPolicy.ARCHIVE_ALL_OBJECTS) {
       instance.markArchived();
-    } else if (policy === TemplateUninstallPolicy.HARD_DELETE_ALL_TEMPLATE_DATA) {
+    } else if (
+      policy === TemplateUninstallPolicy.HARD_DELETE_ALL_TEMPLATE_DATA
+    ) {
       instance.markDisabled();
     } else {
       // KEEP_OBJECTS_DETACH_METADATA

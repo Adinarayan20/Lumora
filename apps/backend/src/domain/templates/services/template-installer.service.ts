@@ -1,10 +1,23 @@
-import { Result, UniqueEntityId, DomainValidationException } from '@lumora/shared';
-import type { ITemplateInstaller, TemplatePlan } from '../interfaces/template-interfaces.js';
-import { InstalledTemplateAggregate, InstalledTemplateStatus } from '../installed-template.aggregate.js';
+import {
+  Result,
+  UniqueEntityId,
+  DomainValidationException,
+} from '@lumora/shared';
+import type {
+  ITemplateInstaller,
+  TemplatePlan,
+} from '../interfaces/template-interfaces.js';
+import {
+  InstalledTemplateAggregate,
+  InstalledTemplateStatus,
+} from '../installed-template.aggregate.js';
 import { TemplateOperationLock } from './template-operation-lock.js';
 
 export class TemplateInstallerService implements ITemplateInstaller {
-  public async install(plan: TemplatePlan, contextUserId: UniqueEntityId): Promise<Result<void>> {
+  public async install(
+    plan: TemplatePlan,
+    _contextUserId: UniqueEntityId,
+  ): Promise<Result<void>> {
     if (plan.isDryRun) {
       return Promise.resolve(Result.ok<void>(undefined));
     }
@@ -32,7 +45,7 @@ export class TemplateInstallerService implements ITemplateInstaller {
       });
 
       installedTemplate.markInstalling();
-      installedTemplate.markActive('1.0.0');
+      installedTemplate.completeInstallation('1.0.0');
 
       return Result.ok<void>(undefined);
     } finally {

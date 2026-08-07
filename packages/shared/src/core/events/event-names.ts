@@ -131,6 +131,7 @@ export type CatalogEventName =
 export const TemplateEventName = {
   INSTALLED: "template.installed",
   INSTALLATION_FAILED: "template.installation_failed",
+  OPERATION_FAILED: "template.operation_failed",
   UPGRADED: "template.upgraded",
   ROLLBACK_STARTED: "template.rollback_started",
   ROLLBACK_COMPLETED: "template.rollback_completed",
@@ -139,6 +140,7 @@ export const TemplateEventName = {
   IMPORTED: "template.imported",
   EXPORTED: "template.exported",
 } as const;
+
 
 export type TemplateEventName =
   (typeof TemplateEventName)[keyof typeof TemplateEventName];

@@ -81,7 +81,6 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
     });
   }
 
-
   public isBooted(): boolean {
     return this._isBooted;
   }

@@ -1,5 +1,3 @@
-import { DomainValidationException } from '@lumora/shared';
-
 export interface LockAcquisitionResult {
   acquired: boolean;
   lockId?: string;
@@ -7,7 +5,10 @@ export interface LockAcquisitionResult {
 }
 
 export class TemplateOperationLock {
-  private static readonly activeLocks = new Map<string, { lockId: string; expiresAt: Date }>();
+  private static readonly activeLocks = new Map<
+    string,
+    { lockId: string; expiresAt: Date }
+  >();
   private static readonly DEFAULT_TTL_MS = 30000; // 30 seconds
 
   public static acquireLock(
@@ -35,7 +36,11 @@ export class TemplateOperationLock {
     return { acquired: true, lockId, expiresAt };
   }
 
-  public static releaseLock(workspaceId: string, templateKey: string, lockId: string): void {
+  public static releaseLock(
+    workspaceId: string,
+    templateKey: string,
+    lockId: string,
+  ): void {
     const key = `${workspaceId}:${templateKey}`;
     const existing = this.activeLocks.get(key);
     if (existing && existing.lockId === lockId) {
