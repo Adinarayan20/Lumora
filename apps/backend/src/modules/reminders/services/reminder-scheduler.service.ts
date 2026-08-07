@@ -1,6 +1,7 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { rrulestr } from 'rrule';
+import { RecurrenceRuleInvalidException } from '@lumora/shared';
 import { EventRepository } from '../../auth/repositories/event.repository';
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
 import { SnoozeDuration } from '../dto/snooze-reminder.dto';
@@ -52,9 +53,9 @@ export class ReminderSchedulerService {
     try {
       rrulestr(recurrenceRule);
     } catch (err: unknown) {
-      const message =
+      const cause =
         err instanceof Error ? err.message : 'Invalid RFC 5545 RRULE string';
-      throw new BadRequestException(`Invalid recurrence rule: ${message}`);
+      throw new RecurrenceRuleInvalidException(recurrenceRule, cause);
     }
   }
 
@@ -83,7 +84,10 @@ export class ReminderSchedulerService {
     if (until) {
       const target = new Date(until);
       if (isNaN(target.getTime())) {
-        throw new BadRequestException('Invalid snooze ISO timestamp');
+        throw new RecurrenceRuleInvalidException(
+          until,
+          'Snooze until value is not a valid ISO 8601 timestamp',
+        );
       }
       return target;
     }

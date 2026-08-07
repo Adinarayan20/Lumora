@@ -1,8 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import {
-  Injectable,
-  NotFoundException,
+  EntityNotFoundException,
   ConflictException,
-} from '@nestjs/common';
+  RevisionConflictException,
+} from '@lumora/shared';
 import { CollectionRepository } from './repositories/collection.repository';
 import { ObjectRepository } from '../objects/repositories/object.repository';
 import { CreateCollectionDto } from './dto/create-collection.dto';
@@ -97,7 +98,7 @@ export class CollectionsService {
     }
 
     if (!collection || collection.workspaceId !== workspaceId) {
-      throw new NotFoundException('Collection not found');
+      throw new EntityNotFoundException('Collection', idOrSlug);
     }
 
     return collection;
@@ -115,8 +116,10 @@ export class CollectionsService {
     );
 
     if (dto.revision !== undefined && dto.revision !== collection.revision) {
-      throw new ConflictException(
-        `Collection revision mismatch: current is ${collection.revision}, update expected ${dto.revision}`,
+      throw new RevisionConflictException(
+        'Collection',
+        collection.revision,
+        dto.revision,
       );
     }
 
@@ -198,9 +201,7 @@ export class CollectionsService {
 
     const object = await this.objectRepository.findById(dto.objectId);
     if (!object || object.workspaceId !== workspaceId) {
-      throw new NotFoundException(
-        'Universal Object not found in this workspace',
-      );
+      throw new EntityNotFoundException('Object', dto.objectId);
     }
 
     try {
@@ -230,6 +231,7 @@ export class CollectionsService {
         (err as { code: string }).code === 'P2002'
       ) {
         throw new ConflictException(
+          'CollectionItem',
           'Object is already attached to this collection',
         );
       }

@@ -8,10 +8,6 @@ import {
   Param,
   Query,
   UseGuards,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../rbac/guards/permissions.guard';
@@ -52,11 +48,7 @@ export class SpacesController {
       createdById: userId,
       dto,
     });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      throw new BadRequestException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -70,9 +62,7 @@ export class SpacesController {
       workspaceId,
       filter,
     });
-    if (result.isFailure) {
-      throw new InternalServerErrorException(result.getError().message);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -83,11 +73,7 @@ export class SpacesController {
     @Param('idOrSlug') idOrSlug: string,
   ) {
     const result = await this.getSpaceQuery.execute({ workspaceId, idOrSlug });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      throw new InternalServerErrorException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -105,15 +91,7 @@ export class SpacesController {
       userId,
       dto,
     });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      if (msg.includes('mismatch')) throw new ConflictException(msg);
-      if (msg.includes('Circular') || msg.includes('own parent')) {
-        throw new BadRequestException(msg);
-      }
-      throw new BadRequestException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -129,12 +107,7 @@ export class SpacesController {
       spaceId,
       userId,
     });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      if (msg.includes('Cannot delete')) throw new BadRequestException(msg);
-      throw new InternalServerErrorException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 }

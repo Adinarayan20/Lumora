@@ -1,9 +1,10 @@
+import { Injectable } from '@nestjs/common';
 import {
-  Injectable,
-  NotFoundException,
-  ForbiddenException,
-  BadRequestException,
-} from '@nestjs/common';
+  EntityNotFoundException,
+  ForbiddenException as DomainForbiddenException,
+  PersonalWorkspaceDeletionForbiddenException,
+  TargetNotWorkspaceMemberException,
+} from '@lumora/shared';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import { WorkspaceRepository } from './repositories/workspace.repository';
 import { WorkspaceMemberRepository } from './repositories/workspace-member.repository';
@@ -184,12 +185,12 @@ export class WorkspacesService {
     }
 
     if (!workspace) {
-      throw new NotFoundException('Workspace not found');
+      throw new EntityNotFoundException('Workspace', idOrSlug);
     }
 
     const isMember = workspace.members.some((m) => m.userId === userId);
     if (!isMember && workspace.ownerId !== userId) {
-      throw new ForbiddenException('Access denied to workspace');
+      throw new DomainForbiddenException('workspace:read');
     }
 
     return workspace;
@@ -202,13 +203,11 @@ export class WorkspacesService {
   ): Promise<Workspace> {
     const workspace = await this.workspaceRepository.findById(workspaceId);
     if (!workspace) {
-      throw new NotFoundException('Workspace not found');
+      throw new EntityNotFoundException('Workspace', workspaceId);
     }
 
     if (workspace.ownerId !== userId) {
-      throw new ForbiddenException(
-        'Only the workspace owner can update workspace details',
-      );
+      throw new DomainForbiddenException('workspace:update');
     }
 
     const updated = await this.workspaceRepository.update(workspaceId, dto);
@@ -242,17 +241,15 @@ export class WorkspacesService {
   ): Promise<Workspace> {
     const workspace = await this.workspaceRepository.findById(workspaceId);
     if (!workspace) {
-      throw new NotFoundException('Workspace not found');
+      throw new EntityNotFoundException('Workspace', workspaceId);
     }
 
     if (workspace.ownerId !== userId) {
-      throw new ForbiddenException(
-        'Only the workspace owner can delete a workspace',
-      );
+      throw new DomainForbiddenException('workspace:delete');
     }
 
     if (workspace.type === WorkspaceType.PERSONAL) {
-      throw new BadRequestException('Personal workspace cannot be deleted');
+      throw new PersonalWorkspaceDeletionForbiddenException();
     }
 
     const deleted = await this.workspaceRepository.softDelete(workspaceId);
@@ -278,13 +275,11 @@ export class WorkspacesService {
   ): Promise<Workspace> {
     const workspace = await this.workspaceRepository.findById(workspaceId);
     if (!workspace) {
-      throw new NotFoundException('Workspace not found');
+      throw new EntityNotFoundException('Workspace', workspaceId);
     }
 
     if (workspace.ownerId !== currentOwnerId) {
-      throw new ForbiddenException(
-        'Only the workspace owner can transfer ownership',
-      );
+      throw new DomainForbiddenException('workspace:transfer-ownership');
     }
 
     const targetMember = await this.memberRepository.findMember(
@@ -292,9 +287,7 @@ export class WorkspacesService {
       dto.newOwnerId,
     );
     if (!targetMember) {
-      throw new BadRequestException(
-        'Target owner must be an active workspace member',
-      );
+      throw new TargetNotWorkspaceMemberException(workspaceId, dto.newOwnerId);
     }
 
     return this.prisma.$transaction(

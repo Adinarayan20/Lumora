@@ -1,9 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+  EntityNotFoundException,
+  DomainValidationException,
+  RevisionConflictException,
+} from '@lumora/shared';
 import { SpaceRepository } from './repositories/space.repository';
 import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
@@ -88,7 +88,7 @@ export class SpacesService {
     }
 
     if (!space || space.workspaceId !== workspaceId) {
-      throw new NotFoundException('Space not found');
+      throw new EntityNotFoundException('Space', idOrSlug);
     }
 
     return space;
@@ -103,14 +103,18 @@ export class SpacesService {
     const space = await this.getSpaceByIdOrSlug(workspaceId, spaceId);
 
     if (dto.revision !== undefined && dto.revision !== space.revision) {
-      throw new ConflictException(
-        `Space revision mismatch: current is ${space.revision}, update expected ${dto.revision}`,
+      throw new RevisionConflictException(
+        'Space',
+        space.revision,
+        dto.revision,
       );
     }
 
     if (dto.parentId !== undefined && dto.parentId !== null) {
       if (dto.parentId === space.id) {
-        throw new BadRequestException('A Space cannot be its own parent');
+        throw new DomainValidationException(
+          'A Space cannot be its own parent.',
+        );
       }
       await this.validateParent(workspaceId, dto.parentId);
       await this.validateParentCycle(workspaceId, space.id, dto.parentId);
@@ -166,7 +170,7 @@ export class SpacesService {
       await this.spaceRepository.countActiveChildren(space.id);
 
     if (childSpacesCount > 0 || childObjectsCount > 0) {
-      throw new BadRequestException(
+      throw new DomainValidationException(
         `Cannot delete Space containing active contents (${childSpacesCount} child spaces, ${childObjectsCount} objects). Delete or move contents first.`,
       );
     }
@@ -189,7 +193,7 @@ export class SpacesService {
   ): Promise<void> {
     const parent = await this.spaceRepository.findById(parentId);
     if (!parent || parent.workspaceId !== workspaceId) {
-      throw new NotFoundException('Parent space not found in this workspace');
+      throw new EntityNotFoundException('Parent space', parentId);
     }
   }
 
@@ -204,8 +208,8 @@ export class SpacesService {
 
     while (currentId && depth < maxDepth) {
       if (currentId === spaceId) {
-        throw new BadRequestException(
-          'Circular spatial hierarchy detected: target parent is a child of this Space',
+        throw new DomainValidationException(
+          'Circular spatial hierarchy detected: target parent is a child of this Space.',
         );
       }
       const parentSpace = await this.spaceRepository.findById(currentId);

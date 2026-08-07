@@ -8,10 +8,6 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  NotFoundException,
-  ForbiddenException,
-  BadRequestException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -40,19 +36,12 @@ export class NotificationsController {
     @Query('workspaceId') workspaceId: string,
     @Query() filter: ListNotificationsFilterDto,
   ) {
-    if (!workspaceId) {
-      throw new BadRequestException('workspaceId query parameter is required');
-    }
-
     const result = await this.listUserNotificationsQuery.execute({
       workspaceId,
       userId,
       filter,
     });
-
-    if (result.isFailure) {
-      throw new InternalServerErrorException(result.getError().message);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -70,15 +59,7 @@ export class NotificationsController {
       notificationId,
       channel,
     });
-
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found') || msg.includes('Not found')) {
-        throw new NotFoundException(msg);
-      }
-      throw new BadRequestException(msg);
-    }
-
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -96,18 +77,7 @@ export class NotificationsController {
       notificationId,
       userId,
     });
-
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found') || msg.includes('Not found')) {
-        throw new NotFoundException(msg);
-      }
-      if (msg.includes('cannot access') || msg.includes('Forbidden')) {
-        throw new ForbiddenException(msg);
-      }
-      throw new BadRequestException(msg);
-    }
-
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 }

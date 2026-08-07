@@ -1,9 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import {
-  Injectable,
-  ForbiddenException,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+  EntityNotFoundException,
+  ForbiddenException as DomainForbiddenException,
+  ConflictException,
+} from '@lumora/shared';
 import { WorkspaceMemberRepository } from '../repositories/workspace-member.repository';
 import { WorkspaceRepository } from '../repositories/workspace.repository';
 import {
@@ -42,7 +42,8 @@ export class WorkspaceMemberService {
     );
     if (existing) {
       if (existing.status === WorkspaceMemberStatus.ACTIVE) {
-        throw new BadRequestException(
+        throw new ConflictException(
+          'WorkspaceMember',
           'User is already a member of this workspace',
         );
       }
@@ -67,19 +68,15 @@ export class WorkspaceMemberService {
   ): Promise<WorkspaceMember> {
     const workspace = await this.workspaceRepository.findById(workspaceId, tx);
     if (!workspace) {
-      throw new NotFoundException('Workspace not found');
+      throw new EntityNotFoundException('Workspace', workspaceId);
     }
 
     if (workspace.ownerId === targetUserId) {
-      throw new ForbiddenException(
-        'Cannot remove workspace owner. Transfer ownership first.',
-      );
+      throw new DomainForbiddenException('workspace:remove-owner');
     }
 
     if (workspace.ownerId !== requesterId && requesterId !== targetUserId) {
-      throw new ForbiddenException(
-        'Only the workspace owner or member themselves can remove access',
-      );
+      throw new DomainForbiddenException('workspace:remove-member');
     }
 
     const removed = await this.memberRepository.removeMember(

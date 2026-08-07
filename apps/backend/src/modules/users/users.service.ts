@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { EntityNotFoundException } from '@lumora/shared';
 import { UserRepository } from './repositories/user.repository';
 import { DeviceService } from '../auth/services/device.service';
 import { SessionService } from '../auth/services/session.service';
@@ -16,7 +17,7 @@ export class UsersService {
   async getProfile(userId: string): Promise<Omit<User, 'passwordHash'>> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new EntityNotFoundException('User', userId);
     }
     const userWithoutPassword = { ...user };
     delete (userWithoutPassword as Record<string, any>).passwordHash;

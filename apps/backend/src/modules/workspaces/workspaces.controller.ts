@@ -9,10 +9,6 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  NotFoundException,
-  ForbiddenException,
-  BadRequestException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -38,28 +34,6 @@ import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { InviteMemberDto } from './dto/invite-member.dto';
 import { AcceptInvitationDto } from './dto/accept-invitation.dto';
 import { TransferOwnershipDto } from './dto/transfer-ownership.dto';
-
-/** Translates a Result failure error into the appropriate HTTP exception. */
-function throwWorkspaceError(error: Error): never {
-  const message = error.message;
-  if (message.includes('not found')) throw new NotFoundException(message);
-  if (
-    message.includes('Access denied') ||
-    message.includes('Only the workspace owner') ||
-    message.includes('Only the') ||
-    message.includes('Forbidden')
-  ) {
-    throw new ForbiddenException(message);
-  }
-  if (
-    message.includes('Personal workspace') ||
-    message.includes('must be an active') ||
-    message.includes('Cannot')
-  ) {
-    throw new BadRequestException(message);
-  }
-  throw new InternalServerErrorException(message);
-}
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('workspaces')
@@ -88,16 +62,14 @@ export class WorkspacesController {
       ownerId: userId,
       dto,
     });
-    if (result.isFailure) throwWorkspaceError(result.getError());
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
   @Get()
   async getUserWorkspaces(@CurrentUser('id') userId: string) {
     const result = await this.getUserWorkspacesQuery.execute({ userId });
-    if (result.isFailure) {
-      throw new InternalServerErrorException(result.getError().message);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -111,7 +83,7 @@ export class WorkspacesController {
       token: dto.token,
       user,
     });
-    if (result.isFailure) throwWorkspaceError(result.getError());
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -122,7 +94,7 @@ export class WorkspacesController {
     @CurrentUser('id') userId: string,
   ) {
     const result = await this.getWorkspaceQuery.execute({ idOrSlug, userId });
-    if (result.isFailure) throwWorkspaceError(result.getError());
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -138,7 +110,7 @@ export class WorkspacesController {
       userId,
       dto,
     });
-    if (result.isFailure) throwWorkspaceError(result.getError());
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -152,7 +124,7 @@ export class WorkspacesController {
       workspaceId,
       userId,
     });
-    if (result.isFailure) throwWorkspaceError(result.getError());
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -169,7 +141,7 @@ export class WorkspacesController {
       currentOwnerId,
       dto,
     });
-    if (result.isFailure) throwWorkspaceError(result.getError());
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -177,9 +149,7 @@ export class WorkspacesController {
   @RequirePermissions(Permissions.Member.List)
   async getMembers(@Param('id') workspaceId: string) {
     const result = await this.getMembersQuery.execute({ workspaceId });
-    if (result.isFailure) {
-      throw new InternalServerErrorException(result.getError().message);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -195,7 +165,7 @@ export class WorkspacesController {
       targetUserId,
       requesterId,
     });
-    if (result.isFailure) throwWorkspaceError(result.getError());
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -211,7 +181,7 @@ export class WorkspacesController {
       inviterId,
       dto,
     });
-    if (result.isFailure) throwWorkspaceError(result.getError());
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -219,9 +189,7 @@ export class WorkspacesController {
   @RequirePermissions(Permissions.Member.List)
   async getInvitations(@Param('id') workspaceId: string) {
     const result = await this.getInvitationsQuery.execute({ workspaceId });
-    if (result.isFailure) {
-      throw new InternalServerErrorException(result.getError().message);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -237,7 +205,7 @@ export class WorkspacesController {
       invitationId,
       requesterId,
     });
-    if (result.isFailure) throwWorkspaceError(result.getError());
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 }

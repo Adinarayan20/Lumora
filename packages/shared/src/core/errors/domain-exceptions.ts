@@ -1,10 +1,15 @@
 import { ApplicationException } from "./application-exception.js";
 import { ErrorCode } from "./error-code.js";
 
+// ─── Abstract Base ─────────────────────────────────────────────────────────────
+
 /**
  * Abstract base class for all domain rule violations.
+ * All concrete domain exceptions must extend this class.
  */
 export abstract class DomainException extends ApplicationException {}
+
+// ─── Generic Domain Exceptions ────────────────────────────────────────────────
 
 /**
  * Thrown when an aggregate root or domain entity cannot be resolved.
@@ -52,3 +57,151 @@ export class ConflictException extends DomainException {
     this.conflictReason = conflictReason;
   }
 }
+
+/**
+ * Thrown when an optimistic-concurrency revision mismatch is detected on update.
+ * Current revision in storage does not match the revision provided by the caller.
+ */
+export class RevisionConflictException extends DomainException {
+  public readonly entityName: string;
+  public readonly currentRevision: number;
+  public readonly expectedRevision: number;
+
+  constructor(entityName: string, currentRevision: number, expectedRevision: number) {
+    const message = `${entityName} revision mismatch: current is ${currentRevision}, update expected ${expectedRevision}.`;
+    super(message, ErrorCode.REVISION_CONFLICT, {
+      entityName,
+      currentRevision,
+      expectedRevision,
+    });
+    this.entityName = entityName;
+    this.currentRevision = currentRevision;
+    this.expectedRevision = expectedRevision;
+  }
+}
+
+// ─── Auth Domain Exceptions ───────────────────────────────────────────────────
+
+/**
+ * Thrown when registration is rejected because the email address is already in use.
+ */
+export class EmailAlreadyRegisteredException extends DomainException {
+  constructor(email: string) {
+    super(
+      `Email address '${email}' is already registered.`,
+      ErrorCode.EMAIL_ALREADY_REGISTERED,
+      { email },
+    );
+  }
+}
+
+/**
+ * Thrown when registration is rejected because the username is already taken.
+ */
+export class UsernameTakenException extends DomainException {
+  constructor(username: string) {
+    super(
+      `Username '${username}' is already taken.`,
+      ErrorCode.USERNAME_TAKEN,
+      { username },
+    );
+  }
+}
+
+/**
+ * Thrown when a login attempt fails due to invalid credentials.
+ * The message is intentionally generic to prevent user enumeration.
+ */
+export class InvalidCredentialsException extends DomainException {
+  constructor() {
+    super(
+      "Invalid email/username or password.",
+      ErrorCode.INVALID_CREDENTIALS,
+    );
+  }
+}
+
+/**
+ * Thrown when a supplied refresh token is invalid, revoked, or expired.
+ */
+export class InvalidRefreshTokenException extends DomainException {
+  constructor() {
+    super(
+      "The refresh token is invalid or has been revoked.",
+      ErrorCode.INVALID_REFRESH_TOKEN,
+    );
+  }
+}
+
+/**
+ * Thrown when an OAuth provider authentication flow cannot be resolved to a Lumora user.
+ */
+export class OAuthAccountResolutionFailedException extends DomainException {
+  constructor(provider: string) {
+    super(
+      `Unable to resolve a Lumora account for OAuth provider '${provider}'.`,
+      ErrorCode.OAUTH_ACCOUNT_RESOLUTION_FAILED,
+      { provider },
+    );
+  }
+}
+
+// ─── Workspace Domain Exceptions ──────────────────────────────────────────────
+
+/**
+ * Thrown when attempting to delete a PERSONAL workspace.
+ * Personal workspaces are permanent and cannot be removed.
+ */
+export class PersonalWorkspaceDeletionForbiddenException extends DomainException {
+  constructor() {
+    super(
+      "Personal workspace cannot be deleted.",
+      ErrorCode.PERSONAL_WORKSPACE_DELETION_FORBIDDEN,
+    );
+  }
+}
+
+/**
+ * Thrown when the target user for a membership or ownership operation is not a
+ * current active workspace member.
+ */
+export class TargetNotWorkspaceMemberException extends DomainException {
+  constructor(workspaceId: string, userId: string) {
+    super(
+      "Target user must be an active workspace member.",
+      ErrorCode.TARGET_NOT_WORKSPACE_MEMBER,
+      { workspaceId, userId },
+    );
+  }
+}
+
+// ─── Reminder Domain Exceptions ───────────────────────────────────────────────
+
+/**
+ * Thrown when a supplied RRULE string is not a valid RFC 5545 recurrence rule.
+ */
+export class RecurrenceRuleInvalidException extends DomainException {
+  constructor(rule: string, cause?: string) {
+    super(
+      cause
+        ? `Invalid recurrence rule: ${cause}`
+        : `The supplied recurrence rule is not a valid RFC 5545 RRULE.`,
+      ErrorCode.RECURRENCE_RULE_INVALID,
+      { rule, ...(cause !== undefined && { cause }) },
+    );
+  }
+}
+
+/**
+ * Thrown when a snooze operation is attempted on a reminder that is not ACTIVE.
+ */
+export class ReminderNotActiveForSnoozeException extends DomainException {
+  constructor(reminderId: string, currentStatus: string) {
+    super(
+      `Only ACTIVE reminders can be snoozed. Reminder '${reminderId}' is '${currentStatus}'.`,
+      ErrorCode.REMINDER_ONLY_ACTIVE_CAN_SNOOZE,
+      { reminderId, currentStatus },
+    );
+  }
+}
+

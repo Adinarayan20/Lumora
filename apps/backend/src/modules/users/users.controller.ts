@@ -6,9 +6,6 @@ import {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
-  InternalServerErrorException,
-  BadRequestException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -38,11 +35,7 @@ export class UsersController {
   @Get('me')
   async getProfile(@CurrentUser('id') userId: string) {
     const result = await this.getProfileQuery.execute({ userId });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      throw new InternalServerErrorException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -52,20 +45,14 @@ export class UsersController {
     @Body() dto: UpdateProfileDto,
   ) {
     const result = await this.updateProfileUseCase.execute({ userId, dto });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      throw new BadRequestException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
   @Get('me/devices')
   async getUserDevices(@CurrentUser('id') userId: string) {
     const result = await this.getUserDevicesQuery.execute({ userId });
-    if (result.isFailure) {
-      throw new InternalServerErrorException(result.getError().message);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -80,20 +67,14 @@ export class UsersController {
       deviceId,
       trusted: dto.trusted,
     });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      throw new BadRequestException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
   @Get('me/sessions')
   async getUserSessions(@CurrentUser('id') userId: string) {
     const result = await this.getUserSessionsQuery.execute({ userId });
-    if (result.isFailure) {
-      throw new InternalServerErrorException(result.getError().message);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -106,11 +87,7 @@ export class UsersController {
       userId,
       sessionId,
     });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      throw new BadRequestException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 }
