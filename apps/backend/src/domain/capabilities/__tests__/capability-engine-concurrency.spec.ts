@@ -17,7 +17,7 @@ import { UniversalCapabilityEngine } from '../universal-capability-engine.js';
 import { LumoraObjectRuntime } from '../../runtime/lumora-object-runtime.js';
 
 describe('Capability Engine Deterministic Concurrency & Aggregated Exception Tests', () => {
-  it('should throw AggregateCapabilityException when multiple parallel capabilities fail', async () => {
+  it('should throw AggregateCapabilityException with detailed metadata when parallel capabilities fail', async () => {
     const registry = new CapabilityRegistry();
     const executor = new CapabilityExecutor(registry);
     const engine = new UniversalCapabilityEngine(registry, executor);
@@ -104,7 +104,7 @@ describe('Capability Engine Deterministic Concurrency & Aggregated Exception Tes
     const context: ExecutionContext = {
       workspaceId: workspaceId.toValue(),
       userId: userId.toValue(),
-      transactionId: 'tx-parallel',
+      transactionId: 'tx-parallel-123',
       timezone: 'UTC',
       locale: 'en-US',
       permissions: [],
@@ -124,10 +124,12 @@ describe('Capability Engine Deterministic Concurrency & Aggregated Exception Tes
     expect(err).toBeInstanceOf(AggregateCapabilityException);
     if (err instanceof AggregateCapabilityException) {
       expect(err.failures.length).toBe(2);
+      expect(err.failures[0].transactionId).toBe('tx-parallel-123');
+      expect(err.failures[0].objectId).toBe(aggregate.id.toValue());
     }
   });
 
-  it('should prevent revision conflicts on optimistic concurrency mismatch', async () => {
+  it('should increment revision atomically and reject stale competing revisions', async () => {
     const registry = new CapabilityRegistry();
     const executor = new CapabilityExecutor(registry);
     const engine = new UniversalCapabilityEngine(registry, executor);
@@ -175,14 +177,39 @@ describe('Capability Engine Deterministic Concurrency & Aggregated Exception Tes
       timestamp: new Date(),
     };
 
-    const staleRes = await runtime.updateAttribute(
+    const initialRevision = runtime.revision;
+    expect(initialRevision).toBe(1);
+
+    // Valid update with matching expected revision
+    const validRes = await runtime.updateAttribute(
       'title',
-      'Updated Title',
+      'Valid Update 1',
       context,
       engine.executor,
-      999, // Stale revision
+      1,
     );
+    expect(validRes.isSuccess).toBe(true);
+    expect(runtime.revision).toBe(2); // Revision incremented atomically!
 
+    // Stale update with previous revision (1)
+    const staleRes = await runtime.updateAttribute(
+      'title',
+      'Stale Update',
+      context,
+      engine.executor,
+      1, // Stale revision
+    );
     expect(staleRes.isFailure).toBe(true);
+
+    // Second valid update with new revision (2)
+    const validRes2 = await runtime.updateAttribute(
+      'title',
+      'Valid Update 2',
+      context,
+      engine.executor,
+      2,
+    );
+    expect(validRes2.isSuccess).toBe(true);
+    expect(runtime.revision).toBe(3);
   });
 });

@@ -26,16 +26,59 @@ describe('Capability Engine Performance Benchmark Suite', () => {
       requiredTraits: [],
     });
 
-    const iterations = 20000;
-    const start = Date.now();
+    // Warm-up pass
+    for (let i = 0; i < 1000; i++) {
+      registry.get('timeline');
+    }
+
+    const iterations = 50000;
+    const start = performance.now();
     for (let i = 0; i < iterations; i++) {
       const cap = registry.get('timeline');
       expect(cap).not.toBeNull();
     }
-    const durationMs = Date.now() - start;
+    const durationMs = performance.now() - start;
     const opsPerSec = (iterations / durationMs) * 1000;
 
-    expect(opsPerSec).toBeGreaterThan(1000);
+    expect(opsPerSec).toBeGreaterThan(10000);
+  });
+
+  it('should handle 10,000 unique registrations and randomized lookups efficiently', () => {
+    const registry = new CapabilityRegistry();
+    const count = 10000;
+
+    const startReg = performance.now();
+    for (let i = 0; i < count; i++) {
+      registry.register({
+        key: `cap_unique_${i}`,
+        name: `Capability ${i}`,
+        description: `Description ${i}`,
+        version: '1.0.0',
+        priority: i,
+        executionOrder: i,
+        defaultEnabled: true,
+        systemRequired: false,
+        cannotDisable: false,
+        isExperimental: false,
+        executionPolicy: ExecutionPolicy.SEQUENTIAL,
+        failurePolicy: FailurePolicy.CONTINUE,
+        supportsOffline: true,
+        supportsUndo: true,
+        dependencies: [],
+        requiredTraits: [],
+      });
+    }
+    const regDurationMs = performance.now() - startReg;
+    expect(regDurationMs).toBeLessThan(1000);
+
+    const startLookup = performance.now();
+    for (let i = 0; i < count; i++) {
+      const randomIndex = (i * 37) % count;
+      const cap = registry.get(`cap_unique_${randomIndex}`);
+      expect(cap).not.toBeNull();
+    }
+    const lookupDurationMs = performance.now() - startLookup;
+    expect(lookupDurationMs).toBeLessThan(500);
   });
 
   it('should validate 5,000 capabilities in under 1 second', () => {
@@ -64,14 +107,19 @@ describe('Capability Engine Performance Benchmark Suite', () => {
 
     const refs = [{ key: 'timeline', version: '1.0.0', enabled: true }];
     const iterations = 5000;
-    const start = Date.now();
 
+    // Warm-up
+    for (let i = 0; i < 100; i++) {
+      engine.validateCapabilitiesForObject(refs, []);
+    }
+
+    const start = performance.now();
     for (let i = 0; i < iterations; i++) {
       const res = engine.validateCapabilitiesForObject(refs, []);
       expect(res.isSuccess).toBe(true);
     }
 
-    const durationMs = Date.now() - start;
+    const durationMs = performance.now() - start;
     expect(durationMs).toBeLessThan(1000);
   });
 });

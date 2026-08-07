@@ -197,6 +197,9 @@ export class CapabilityExecutor {
               error: err,
               attempts: 1,
               executionPolicy: ExecutionPolicy.PARALLEL,
+              transactionId: context.transactionId,
+              runtimeState: runtime.state,
+              objectId: runtime.aggregate.id.toValue(),
             });
           }
         }
@@ -286,7 +289,7 @@ export class CapabilityExecutor {
         }
 
         if (cap.failurePolicy === FailurePolicy.RETRY) {
-          this.metricsRegistry?.capabilityRetrySuccessesTotal?.inc({
+          this.metricsRegistry?.capabilityRetryFailuresTotal?.inc({
             capability: cap.key,
           });
         }

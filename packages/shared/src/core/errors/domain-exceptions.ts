@@ -52,6 +52,10 @@ export interface CapabilityFailureDetail {
   readonly error: Error;
   readonly attempts: number;
   readonly executionPolicy: string;
+  readonly correlationId?: string | undefined;
+  readonly transactionId?: string | undefined;
+  readonly runtimeState?: string | undefined;
+  readonly objectId?: string | undefined;
 }
 
 /**
