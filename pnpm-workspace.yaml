@@ -1,6 +1,18 @@
 packages:
   - "apps/*"
   - "packages/*"
+onlyBuiltDependencies:
+  - "@firebase/util"
+  - "@prisma/client"
+  - "@prisma/engines"
+  - "@scarf/scarf"
+  - "@swc/core"
+  - "bcrypt"
+  - "esbuild"
+  - "msgpackr-extract"
+  - "prisma"
+  - "protobufjs"
+  - "unrs-resolver"
 allowBuilds:
   '@firebase/util': true
   '@prisma/client': true
@@ -12,3 +24,4 @@ allowBuilds:
   msgpackr-extract: true
   prisma: true
   protobufjs: true
+  'unrs-resolver': true
