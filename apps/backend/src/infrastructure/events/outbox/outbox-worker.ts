@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Inject, Optional, Logger } from '@nestjs/common';
 import {
   IDomainEventPublisher,
   UniqueEntityId,
+  ReminderEventName,
   createDomainEvent,
 } from '@lumora/shared';
 import { IOutboxRepository } from '../../../domain/common/repositories/outbox.repository.interface.js';
@@ -9,6 +10,10 @@ import {
   OutboxMessage,
   OUTBOX_DEFAULTS,
 } from '../../../domain/common/events/index.js';
+import {
+  BACKGROUND_JOB_DISPATCHER_TOKEN,
+  type IBackgroundJobDispatcher,
+} from '../../../application/jobs/interfaces/background-job-dispatcher.interface.js';
 
 export interface OutboxWorkerConfig {
   readonly pollIntervalMs?: number | undefined;
@@ -19,7 +24,7 @@ export interface OutboxWorkerConfig {
 
 /**
  * Background polling worker executing outbox event dispatching and backoff retries.
- * Designed for horizontal scaling across multiple background server nodes using UniqueEntityId worker IDs.
+ * Delegates asynchronous background job execution through IBackgroundJobDispatcher.
  */
 @Injectable()
 export class OutboxWorker {
@@ -35,6 +40,9 @@ export class OutboxWorker {
   constructor(
     private readonly outboxRepository: IOutboxRepository,
     private readonly eventPublisher: IDomainEventPublisher,
+    @Optional()
+    @Inject(BACKGROUND_JOB_DISPATCHER_TOKEN)
+    private readonly jobDispatcher?: IBackgroundJobDispatcher,
     config?: OutboxWorkerConfig,
   ) {
     this.workerId = `worker-${new UniqueEntityId().toValue()}`;
@@ -118,6 +126,19 @@ export class OutboxWorker {
       });
 
       await this.eventPublisher.publish([eventContract]);
+
+      if (this.jobDispatcher) {
+        if (message.eventName === ReminderEventName.SCHEDULED) {
+          await this.jobDispatcher.dispatchReminder({
+            reminderId: message.aggregateId.toValue(),
+            workspaceId: message.workspaceId?.toValue() || '',
+            scheduledAt: new Date().toISOString(),
+            title: (message.payload.title as string) || 'Scheduled Reminder',
+            correlationId: message.eventId.toValue(),
+          });
+        }
+      }
+
       await this.outboxRepository.markAsCompleted(message.id, this.workerId);
     } catch (error) {
       const errorMessage =

@@ -31,6 +31,9 @@ const HTTP_STATUS_MAP: Record<ErrorCode, number> = {
   // ─── 403 Forbidden ──────────────────────────────────────────────────
   [ErrorCode.INSUFFICIENT_PERMISSIONS]: HttpStatus.FORBIDDEN,
 
+  // ─── 429 Too Many Requests ──────────────────────────────────────────
+  [ErrorCode.RATE_LIMIT_EXCEEDED]: HttpStatus.TOO_MANY_REQUESTS,
+
   // ─── 400 Bad Request (Validation & Domain Invariants) ──────────────
   [ErrorCode.DOMAIN_VALIDATION_ERROR]: HttpStatus.BAD_REQUEST,
   [ErrorCode.OAUTH_ACCOUNT_RESOLUTION_FAILED]: HttpStatus.BAD_REQUEST,
