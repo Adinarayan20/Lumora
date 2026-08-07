@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
+import { SystemConstants } from '../../common/constants/system.constants.js';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import { UserRepository } from '../users/repositories/user.repository';
 import { PasswordService } from './services/password.service';
@@ -139,7 +140,7 @@ export class AuthService {
           deviceId: device.id,
         };
       },
-      { timeout: 60000 },
+      { timeout: SystemConstants.DEFAULT_AUTH_TRANSACTION_TIMEOUT_MS },
     );
   }
 

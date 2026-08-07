@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { rrulestr } from 'rrule';
 import { RecurrenceRuleInvalidException } from '@lumora/shared';
+import { SystemConstants } from '../../../common/constants/system.constants.js';
 import { EventRepository } from '../../auth/repositories/event.repository';
 import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
 import { SnoozeDuration } from '../dto/snooze-reminder.dto';
@@ -247,7 +248,7 @@ export class ReminderSchedulerService {
       `Domain Event Emitted: ReminderTriggered - ${event.reminderId} (Execution: ${event.executionId})`,
     );
     await this.eventRepository.create({
-      userId: '00000000-0000-0000-0000-000000000000',
+      userId: SystemConstants.SYSTEM_USER_ID,
       type: ReminderTriggeredEvent.EVENT_NAME,
       payload: {
         reminderId: event.reminderId,

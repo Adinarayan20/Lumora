@@ -7,6 +7,8 @@ import {
   PersonalWorkspaceDeletionForbiddenException,
   TargetNotWorkspaceMemberException,
 } from '@lumora/shared';
+import { SystemConstants } from '../../common/constants/system.constants.js';
+import { WorkspacePolicies } from '../../domain/workspace/policies/workspace.policies.js';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import { WorkspaceRepository } from './repositories/workspace.repository';
 import { WorkspaceMemberRepository } from './repositories/workspace-member.repository';
@@ -56,12 +58,12 @@ export class WorkspacesService {
     tx?: PrismaTransaction,
   ): Promise<Result<Workspace, ApplicationException>> {
     const slug = await this.slugService.generateUniqueSlug(
-      `${displayName}-personal`,
+      WorkspacePolicies.personalWorkspaceSlug(displayName),
       tx,
     );
     const workspace = await this.workspaceRepository.create(
       {
-        name: `${displayName}'s Workspace`,
+        name: WorkspacePolicies.personalWorkspaceName(displayName),
         slug,
         ownerId,
         type: WorkspaceType.PERSONAL,
@@ -162,7 +164,7 @@ export class WorkspacesService {
 
         return created;
       },
-      { timeout: 20000 },
+      { timeout: SystemConstants.DEFAULT_WORKSPACE_TRANSACTION_TIMEOUT_MS },
     );
 
     return Result.ok(workspace);
@@ -335,7 +337,7 @@ export class WorkspacesService {
 
         return res;
       },
-      { timeout: 20000 },
+      { timeout: SystemConstants.DEFAULT_WORKSPACE_TRANSACTION_TIMEOUT_MS },
     );
 
     return Result.ok(updated);
