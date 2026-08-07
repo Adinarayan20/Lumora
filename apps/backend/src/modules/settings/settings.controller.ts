@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Patch,
-  Body,
-  UseGuards,
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Controller, Patch, Body, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { UpdateUserSettingsUseCase } from './use-cases/update-user-settings.use-case.js';
@@ -31,15 +24,7 @@ export class SettingsController {
       userId,
       dto,
     });
-
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('Invalid') || msg.includes('validation')) {
-        throw new BadRequestException(msg);
-      }
-      throw new InternalServerErrorException(msg);
-    }
-
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 }

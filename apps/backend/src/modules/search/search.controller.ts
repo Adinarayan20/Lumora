@@ -9,9 +9,6 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  BadRequestException,
-  NotFoundException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { IndexEntityUseCase } from './use-cases/index-entity.use-case.js';
@@ -36,15 +33,7 @@ export class SearchController {
   @Get()
   async search(@Query() dto: SearchQueryDto) {
     const result = await this.searchObjectsQuery.execute({ dto });
-
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('Invalid') || msg.includes('empty')) {
-        throw new BadRequestException(msg);
-      }
-      throw new InternalServerErrorException(msg);
-    }
-
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -56,16 +45,12 @@ export class SearchController {
   @Post('index')
   async indexEntity(@Body() dto: IndexEntityDto) {
     const result = await this.indexEntityUseCase.execute({ dto });
-
-    if (result.isFailure) {
-      throw new BadRequestException(result.getError().message);
-    }
-
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
   /**
-   * DELETE /search/index/:entityId
+   * DELETE /search/index/:entityCategory/:entityId
    * Removes an entity projection from the search index.
    * Typically called by internal workers when an entity is deleted.
    */
@@ -79,15 +64,7 @@ export class SearchController {
       entityCategory,
       entityId,
     });
-
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found') || msg.includes('Not found')) {
-        throw new NotFoundException(msg);
-      }
-      throw new InternalServerErrorException(msg);
-    }
-
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 }

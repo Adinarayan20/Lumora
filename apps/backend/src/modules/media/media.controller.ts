@@ -6,10 +6,6 @@ import {
   Body,
   Param,
   UseGuards,
-  ForbiddenException,
-  NotFoundException,
-  BadRequestException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -40,15 +36,7 @@ export class MediaController {
       uploadedById: userId,
       dto,
     });
-
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('quota') || msg.includes('Quota')) {
-        throw new BadRequestException(msg);
-      }
-      throw new InternalServerErrorException(msg);
-    }
-
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -59,15 +47,7 @@ export class MediaController {
   @Get(':id')
   async getFileAsset(@Param('id') fileAssetId: string) {
     const result = await this.getFileAssetQuery.execute({ fileAssetId });
-
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found') || msg.includes('Not found')) {
-        throw new NotFoundException(msg);
-      }
-      throw new InternalServerErrorException(msg);
-    }
-
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -85,18 +65,7 @@ export class MediaController {
       fileAssetId,
       requestedById: userId,
     });
-
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found') || msg.includes('Not found')) {
-        throw new NotFoundException(msg);
-      }
-      if (msg.includes('cannot delete') || msg.includes('Forbidden')) {
-        throw new ForbiddenException(msg);
-      }
-      throw new InternalServerErrorException(msg);
-    }
-
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 }
