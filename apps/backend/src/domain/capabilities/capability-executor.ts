@@ -5,9 +5,15 @@ import {
   FailurePolicy,
   ExecutionPolicy,
   CapabilityExecutedEvent,
+  DomainException,
   DomainValidationException,
+  AggregateCapabilityException,
 } from '@lumora/shared';
-import type { CapabilityDescriptor, ExecutionContext } from '@lumora/shared';
+import type {
+  CapabilityDescriptor,
+  ExecutionContext,
+  CapabilityFailureDetail,
+} from '@lumora/shared';
 import type { CapabilityRegistry } from './capability-registry.js';
 import type { MetricsRegistry } from '../../infrastructure/metrics/metrics.registry.js';
 import type { LumoraObjectRuntime } from '../runtime/lumora-object-runtime.js';
@@ -47,6 +53,13 @@ export interface RetryPolicy {
   backoffFactor: number;
 }
 
+export interface IRetryPolicyResolver {
+  resolvePolicy(
+    capability: CapabilityDescriptor,
+    context: ExecutionContext,
+  ): RetryPolicy;
+}
+
 const DEFAULT_RETRY_POLICY: RetryPolicy = {
   maxAttempts: 3,
   initialDelayMs: 100,
@@ -62,6 +75,7 @@ export class CapabilityExecutor {
   constructor(
     private readonly capabilityRegistry: CapabilityRegistry,
     @Optional() private readonly metricsRegistry?: MetricsRegistry,
+    @Optional() private readonly customRetryResolver?: IRetryPolicyResolver,
   ) {}
 
   public registerHandler(
@@ -138,7 +152,11 @@ export class CapabilityExecutor {
         `CapabilityExecutor pipeline execution failed: ${errMsg}`,
       );
       this.metricsRegistry?.capabilityPipelineFailuresTotal?.inc();
-      return Result.fail(new DomainValidationException(errMsg));
+      return Result.fail(
+        error instanceof DomainException
+          ? error
+          : new DomainValidationException(errMsg),
+      );
     }
   }
 
@@ -164,7 +182,7 @@ export class CapabilityExecutor {
         ),
       );
 
-      const failures: Error[] = [];
+      const failures: CapabilityFailureDetail[] = [];
       results.forEach((res, index) => {
         if (res.status === 'rejected') {
           const cap = parallelCaps[index];
@@ -173,13 +191,22 @@ export class CapabilityExecutor {
               ? res.reason
               : new Error(String(res.reason));
           if (cap.failurePolicy === FailurePolicy.FAIL_FAST) {
-            failures.push(err);
+            failures.push({
+              capabilityKey: cap.key,
+              phase: hookName,
+              error: err,
+              attempts: 1,
+              executionPolicy: ExecutionPolicy.PARALLEL,
+            });
           }
         }
       });
 
       if (failures.length > 0) {
-        throw failures[0];
+        if (failures.length === 1) {
+          throw failures[0].error;
+        }
+        throw new AggregateCapabilityException(failures);
       }
     }
 
@@ -204,7 +231,10 @@ export class CapabilityExecutor {
       | undefined;
     if (!hookFn) return;
 
-    const retryPolicy = DEFAULT_RETRY_POLICY;
+    const retryPolicy =
+      this.customRetryResolver?.resolvePolicy(cap, context) ??
+      DEFAULT_RETRY_POLICY;
+
     let attempts = 0;
     const maxAttempts =
       cap.failurePolicy === FailurePolicy.RETRY ? retryPolicy.maxAttempts : 1;
@@ -256,7 +286,7 @@ export class CapabilityExecutor {
         }
 
         if (cap.failurePolicy === FailurePolicy.RETRY) {
-          this.metricsRegistry?.capabilityRetryFailuresTotal?.inc({
+          this.metricsRegistry?.capabilityRetrySuccessesTotal?.inc({
             capability: cap.key,
           });
         }

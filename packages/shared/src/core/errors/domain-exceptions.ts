@@ -44,6 +44,31 @@ export class DomainValidationException extends DomainException {
 }
 
 /**
+ * Details of a single failed capability execution hook within an aggregate execution phase.
+ */
+export interface CapabilityFailureDetail {
+  readonly capabilityKey: string;
+  readonly phase: string;
+  readonly error: Error;
+  readonly attempts: number;
+  readonly executionPolicy: string;
+}
+
+/**
+ * Thrown when one or more capability execution hooks fail during parallel dispatch.
+ */
+export class AggregateCapabilityException extends DomainException {
+  public readonly failures: readonly CapabilityFailureDetail[];
+
+  constructor(failures: readonly CapabilityFailureDetail[]) {
+    const capList = failures.map((f) => f.capabilityKey).join(', ');
+    const message = `Aggregate capability execution failure in parallel dispatch (${failures.length} capabilities failed: ${capList}).`;
+    super(message, ErrorCode.DOMAIN_VALIDATION_ERROR, { failures });
+    this.failures = failures;
+  }
+}
+
+/**
  * Thrown when a unique constraint or concurrency collision occurs in the domain.
  */
 export class ConflictException extends DomainException {
@@ -204,4 +229,3 @@ export class ReminderNotActiveForSnoozeException extends DomainException {
     );
   }
 }
-

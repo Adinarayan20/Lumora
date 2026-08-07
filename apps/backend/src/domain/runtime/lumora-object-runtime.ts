@@ -3,6 +3,7 @@ import {
   UniqueEntityId,
   Guard,
   DomainValidationException,
+  RevisionConflictException,
   RuntimeState,
   Result,
   SchemaMigrationEngine,
@@ -64,6 +65,10 @@ export class LumoraObjectRuntime extends AggregateRoot<UniqueEntityId> {
     return this._state;
   }
 
+  public get revision(): number {
+    return this.aggregate.revision;
+  }
+
   public getAttribute(key: string): unknown {
     return this.aggregate.attributes[key];
   }
@@ -84,11 +89,25 @@ export class LumoraObjectRuntime extends AggregateRoot<UniqueEntityId> {
     value: unknown,
     context: ExecutionContext,
     executor: CapabilityExecutor,
+    expectedRevision?: number,
   ): Promise<Result<void>> {
     if (this._state !== RuntimeState.ACTIVE) {
       return Result.fail(
         new DomainValidationException(
           `Cannot mutate object attributes in state '${this._state}'. Runtime must be ACTIVE.`,
+        ),
+      );
+    }
+
+    if (
+      expectedRevision !== undefined &&
+      this.aggregate.revision !== expectedRevision
+    ) {
+      return Result.fail(
+        new RevisionConflictException(
+          this.definition.name,
+          this.aggregate.revision,
+          expectedRevision,
         ),
       );
     }
