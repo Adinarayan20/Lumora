@@ -128,6 +128,23 @@ export const CatalogEventName = {
 export type CatalogEventName =
   (typeof CatalogEventName)[keyof typeof CatalogEventName];
 
+export const TemplateEventName = {
+  INSTALLED: "template.installed",
+  INSTALLATION_FAILED: "template.installation_failed",
+  OPERATION_FAILED: "template.operation_failed",
+  UPGRADED: "template.upgraded",
+  ROLLBACK_STARTED: "template.rollback_started",
+  ROLLBACK_COMPLETED: "template.rollback_completed",
+  ARCHIVED: "template.archived",
+  DELETED: "template.deleted",
+  IMPORTED: "template.imported",
+  EXPORTED: "template.exported",
+} as const;
+
+
+export type TemplateEventName =
+  (typeof TemplateEventName)[keyof typeof TemplateEventName];
+
 /**
  * Union type representing all valid domain event name string literals.
  */
@@ -144,4 +161,6 @@ export type DomainEventName =
   | TimelineEventName
   | SettingsEventName
   | HouseholdEventName
-  | CatalogEventName;
+  | CatalogEventName
+  | TemplateEventName;
+
