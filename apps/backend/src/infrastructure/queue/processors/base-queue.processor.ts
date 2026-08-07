@@ -3,6 +3,7 @@ import { Worker, QueueEvents, Job } from 'bullmq';
 import { QueueName } from '../queue.constants.js';
 import { QueueOptionsProvider } from '../queue.options.js';
 import { BullMQConnectionProvider } from '../bullmq-connection.provider.js';
+import type { MetricsRegistry } from '../../metrics/metrics.registry.js';
 
 export abstract class BaseQueueProcessor<T extends { correlationId?: string }>
   implements OnModuleInit, OnModuleDestroy
@@ -15,6 +16,7 @@ export abstract class BaseQueueProcessor<T extends { correlationId?: string }>
     protected readonly queueName: QueueName,
     protected readonly connectionProvider: BullMQConnectionProvider,
     protected readonly queueOptionsProvider: QueueOptionsProvider,
+    protected readonly metricsRegistry?: MetricsRegistry,
   ) {
     this.logger = new Logger(this.constructor.name);
   }
@@ -33,10 +35,22 @@ export abstract class BaseQueueProcessor<T extends { correlationId?: string }>
 
         await this.processJobPayload(job.data);
 
-        const executionTime = Date.now() - startTime;
+        const executionTimeMs = Date.now() - startTime;
         this.logger.log(
-          `Completed job successfully [jobId: ${job.id}, queue: ${this.queueName}, executionTime: ${executionTime}ms]`,
+          `Completed job successfully [jobId: ${job.id}, queue: ${this.queueName}, executionTime: ${executionTimeMs}ms]`,
         );
+
+        if (this.metricsRegistry) {
+          this.metricsRegistry.queueJobsTotal.inc({
+            queue: this.queueName,
+            event_type: job.name,
+            status: 'completed',
+          });
+          this.metricsRegistry.queueJobDurationSeconds.observe(
+            { queue: this.queueName, event_type: job.name },
+            executionTimeMs / 1000,
+          );
+        }
       },
       {
         connection,
@@ -49,9 +63,17 @@ export abstract class BaseQueueProcessor<T extends { correlationId?: string }>
         `Job execution failed [jobId: ${job?.id || 'unknown'}, queue: ${this.queueName}, attempt: ${job?.attemptsMade || 0}]: ${err.message}`,
         err.stack,
       );
+
+      if (this.metricsRegistry && job) {
+        this.metricsRegistry.queueJobsTotal.inc({
+          queue: this.queueName,
+          event_type: job.name,
+          status: 'failed',
+        });
+      }
     });
 
-    // 2. Initialize QueueEvents listener for observability hooks (Unit 5 extension point)
+    // 2. Initialize QueueEvents listener for Prometheus metrics & observability
     this.queueEvents = new QueueEvents(this.queueName, { connection });
 
     this.queueEvents.on('waiting', ({ jobId }) => {
