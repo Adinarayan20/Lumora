@@ -8,6 +8,7 @@ describe('GracefulShutdownService Unit Tests', () => {
   let mockPrismaService: any;
   let mockRedisClientProvider: any;
   let mockTracingProvider: any;
+  let mockLogger: any;
   let mockOutboxWorker: any;
   let mockJobDispatcher: any;
 
@@ -28,6 +29,13 @@ describe('GracefulShutdownService Unit Tests', () => {
       onModuleDestroy: vi.fn().mockResolvedValue(undefined),
     };
 
+    mockLogger = {
+      log: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+
     mockOutboxWorker = {
       stop: vi.fn(),
     };
@@ -41,12 +49,13 @@ describe('GracefulShutdownService Unit Tests', () => {
       mockPrismaService,
       mockRedisClientProvider,
       mockTracingProvider,
+      mockLogger,
       mockOutboxWorker,
       mockJobDispatcher,
     );
   });
 
-  it('should execute shutdown steps in deterministic order upon receiving SIGTERM', async () => {
+  it('should execute shutdown steps in deterministic order and emit structured log reports', async () => {
     const callOrder: string[] = [];
 
     mockOutboxWorker.stop.mockImplementation(() => {
@@ -78,9 +87,17 @@ describe('GracefulShutdownService Unit Tests', () => {
       'prisma',
       'tracing',
     ]);
+    expect(mockLogger.log).toHaveBeenCalledWith(
+      expect.stringContaining('GracefulShutdownReport'),
+      'GracefulShutdownService',
+    );
   });
 
-  it('should continue executing shutdown steps gracefully even if a step throws an error', async () => {
+  it('should continue executing shutdown steps gracefully without process.exit() if a step throws an error', async () => {
+    const exitSpy = vi
+      .spyOn(process, 'exit')
+      .mockImplementation((() => {}) as any);
+
     mockRedisClientProvider.onModuleDestroy.mockRejectedValue(
       new Error('Redis connection lost during shutdown'),
     );
@@ -91,5 +108,8 @@ describe('GracefulShutdownService Unit Tests', () => {
 
     expect(mockPrismaService.onModuleDestroy).toHaveBeenCalled();
     expect(mockTracingProvider.onModuleDestroy).toHaveBeenCalled();
+    expect(exitSpy).not.toHaveBeenCalled();
+
+    exitSpy.mockRestore();
   });
 });
