@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { UniqueEntityId, FieldType } from '@lumora/shared';
+import {
+  UniqueEntityId,
+  FieldType,
+  DomainValidationException,
+} from '@lumora/shared';
 import { SchemaRegistryAggregate } from '../schema-registry.aggregate.js';
 
 describe('SchemaRegistryAggregate', () => {
@@ -33,5 +37,37 @@ describe('SchemaRegistryAggregate', () => {
 
     expect(schema.schemaVersion).toBe(2);
     expect(schema.fields.length).toBe(2);
+    expect(schema.domainEvents.length).toBe(2);
+  });
+
+  it('should throw DomainValidationException if field key is reserved property name', () => {
+    const workspaceId = new UniqueEntityId();
+    expect(() =>
+      SchemaRegistryAggregate.create({
+        workspaceId,
+        typeKey: 'note',
+        fields: [
+          {
+            key: 'createdAt',
+            label: 'Created At',
+            type: FieldType.DATE,
+          },
+        ],
+      }),
+    ).toThrow(DomainValidationException);
+  });
+
+  it('should throw DomainValidationException if duplicate field key is provided', () => {
+    const workspaceId = new UniqueEntityId();
+    expect(() =>
+      SchemaRegistryAggregate.create({
+        workspaceId,
+        typeKey: 'note',
+        fields: [
+          { key: 'tag', label: 'Tag 1', type: FieldType.STRING },
+          { key: 'TAG', label: 'Tag 2', type: FieldType.STRING },
+        ],
+      }),
+    ).toThrow(DomainValidationException);
   });
 });

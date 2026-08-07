@@ -34,6 +34,10 @@ export class MetricsRegistry implements OnModuleInit {
   public readonly outboxPendingMessagesGauge: Gauge<string>;
   public readonly outboxProcessingLagSeconds: Histogram<string>;
 
+  // Catalog & Schema Registry Metrics
+  public readonly schemaCacheHitsTotal: Counter<string>;
+  public readonly schemaCacheMissesTotal: Counter<string>;
+
   constructor(private readonly configService: ConfigService) {
     this.registry = new Registry();
 
@@ -126,6 +130,19 @@ export class MetricsRegistry implements OnModuleInit {
       name: `${prefix}outbox_processing_lag_seconds`,
       help: 'Lag in seconds between outbox message creation and dispatch',
       buckets: [0.1, 0.5, 1, 5, 10, 30, 60, 120, 300],
+      registers: [this.registry],
+    });
+
+    // Catalog & Schema Registry Metrics
+    this.schemaCacheHitsTotal = new Counter({
+      name: `${prefix}schema_cache_hits_total`,
+      help: 'Total count of schema cache hits',
+      registers: [this.registry],
+    });
+
+    this.schemaCacheMissesTotal = new Counter({
+      name: `${prefix}schema_cache_misses_total`,
+      help: 'Total count of schema cache misses',
       registers: [this.registry],
     });
   }

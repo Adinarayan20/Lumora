@@ -3,6 +3,7 @@ import {
   UniqueEntityId,
   Guard,
   DomainValidationException,
+  ObjectDefinitionRegisteredEvent,
 } from '@lumora/shared';
 import type { ObjectDefinition, SystemTrait } from '@lumora/shared';
 
@@ -46,9 +47,9 @@ export class ObjectDefinitionRegistryAggregate extends AggregateRoot<UniqueEntit
     this.icon = props.icon;
     this.color = props.color;
     this.allowedCapabilities = Object.freeze([
-      ...(props.allowedCapabilities ?? []),
+      ...new Set(props.allowedCapabilities ?? []),
     ]);
-    this.traits = Object.freeze([...(props.traits ?? [])]);
+    this.traits = Object.freeze([...new Set(props.traits ?? [])]);
     this.schemaVersion = props.schemaVersion ?? 1;
     this.createdAt = props.createdAt ?? new Date();
     this.updatedAt = props.updatedAt ?? new Date();
@@ -77,7 +78,17 @@ export class ObjectDefinitionRegistryAggregate extends AggregateRoot<UniqueEntit
       throw new DomainValidationException('Name cannot be empty.');
     }
 
-    return new ObjectDefinitionRegistryAggregate(props);
+    const aggregate = new ObjectDefinitionRegistryAggregate(props);
+
+    aggregate.addDomainEvent(
+      new ObjectDefinitionRegisteredEvent(
+        aggregate.id,
+        aggregate.workspaceId,
+        aggregate.typeKey,
+      ),
+    );
+
+    return aggregate;
   }
 
   public static reconstitute(

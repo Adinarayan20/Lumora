@@ -3,6 +3,8 @@ import {
   UniqueEntityId,
   Guard,
   DomainValidationException,
+  SchemaRegisteredEvent,
+  SchemaUpdatedEvent,
 } from '@lumora/shared';
 import type { SchemaDefinition, FieldSchema } from '@lumora/shared';
 
@@ -16,6 +18,15 @@ export interface SchemaRegistryProps {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+const RESERVED_FIELD_NAMES = new Set([
+  'id',
+  'workspaceid',
+  'createdat',
+  'updatedat',
+  'deletedat',
+  'typekey',
+]);
 
 export class SchemaRegistryAggregate extends AggregateRoot<UniqueEntityId> {
   public readonly workspaceId: UniqueEntityId;
@@ -37,6 +48,24 @@ export class SchemaRegistryAggregate extends AggregateRoot<UniqueEntityId> {
       : undefined;
     this.createdAt = props.createdAt ?? new Date();
     this.updatedAt = props.updatedAt ?? new Date();
+  }
+
+  private static validateFields(fields: FieldSchema[]): void {
+    const keys = new Set<string>();
+    for (const field of fields) {
+      const lowerKey = field.key.toLowerCase();
+      if (RESERVED_FIELD_NAMES.has(lowerKey)) {
+        throw new DomainValidationException(
+          `Field key '${field.key}' is a reserved system property.`,
+        );
+      }
+      if (keys.has(lowerKey)) {
+        throw new DomainValidationException(
+          `Duplicate field key '${field.key}' detected in schema definition.`,
+        );
+      }
+      keys.add(lowerKey);
+    }
   }
 
   public static create(props: SchemaRegistryProps): SchemaRegistryAggregate {
@@ -61,7 +90,22 @@ export class SchemaRegistryAggregate extends AggregateRoot<UniqueEntityId> {
       );
     }
 
-    return new SchemaRegistryAggregate(props);
+    if (props.fields) {
+      SchemaRegistryAggregate.validateFields(props.fields);
+    }
+
+    const aggregate = new SchemaRegistryAggregate(props);
+
+    aggregate.addDomainEvent(
+      new SchemaRegisteredEvent(
+        aggregate.id,
+        aggregate.workspaceId,
+        aggregate.typeKey,
+        aggregate.schemaVersion,
+      ),
+    );
+
+    return aggregate;
   }
 
   public static reconstitute(
@@ -71,9 +115,19 @@ export class SchemaRegistryAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public updateFields(fields: FieldSchema[]): void {
+    SchemaRegistryAggregate.validateFields(fields);
     this.fields = Object.freeze([...fields]);
     this.schemaVersion += 1;
     this.updatedAt = new Date();
+
+    this.addDomainEvent(
+      new SchemaUpdatedEvent(
+        this.id,
+        this.workspaceId,
+        this.typeKey,
+        this.schemaVersion,
+      ),
+    );
   }
 
   public toSchemaDefinition(): SchemaDefinition {
