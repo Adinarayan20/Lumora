@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
+  Result,
+  ApplicationException,
   EntityNotFoundException,
   ConflictException,
   RevisionConflictException,
@@ -26,7 +28,7 @@ export class ObjectsService {
     workspaceId: string,
     createdById: string,
     dto: CreateObjectDto,
-  ): Promise<LumoraObject> {
+  ): Promise<Result<LumoraObject, ApplicationException>> {
     let objectKey = dto.objectKey?.trim();
     if (!objectKey) {
       objectKey = await this.generateUniqueObjectKey(workspaceId, dto.typeKey);
@@ -36,9 +38,11 @@ export class ObjectsService {
         objectKey,
       );
       if (exists) {
-        throw new ConflictException(
-          'Object',
-          `key '${objectKey}' already exists in this workspace`,
+        return Result.fail(
+          new ConflictException(
+            'Object',
+            `key '${objectKey}' already exists in this workspace`,
+          ),
         );
       }
     }
@@ -76,20 +80,24 @@ export class ObjectsService {
       },
     });
 
-    return object;
+    return Result.ok(object);
   }
 
   async getWorkspaceObjects(
     workspaceId: string,
     filter: FilterObjectDto,
-  ): Promise<LumoraObject[]> {
-    return this.objectRepository.findWorkspaceObjects(workspaceId, filter);
+  ): Promise<Result<LumoraObject[], ApplicationException>> {
+    const objects = await this.objectRepository.findWorkspaceObjects(
+      workspaceId,
+      filter,
+    );
+    return Result.ok(objects);
   }
 
   async getObjectByIdOrKey(
     workspaceId: string,
     idOrKey: string,
-  ): Promise<LumoraObject> {
+  ): Promise<Result<LumoraObject, ApplicationException>> {
     const isUuid =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         idOrKey,
@@ -104,10 +112,10 @@ export class ObjectsService {
     }
 
     if (!object || object.workspaceId !== workspaceId) {
-      throw new EntityNotFoundException('Object', idOrKey);
+      return Result.fail(new EntityNotFoundException('Object', idOrKey));
     }
 
-    return object;
+    return Result.ok(object);
   }
 
   async updateObject(
@@ -115,14 +123,17 @@ export class ObjectsService {
     objectId: string,
     userId: string,
     dto: UpdateObjectDto,
-  ): Promise<LumoraObject> {
-    const object = await this.getObjectByIdOrKey(workspaceId, objectId);
+  ): Promise<Result<LumoraObject, ApplicationException>> {
+    const objectResult = await this.getObjectByIdOrKey(workspaceId, objectId);
+    if (objectResult.isFailure) {
+      return Result.fail(objectResult.getError());
+    }
+
+    const object = objectResult.getValue();
 
     if (dto.revision !== undefined && dto.revision !== object.revision) {
-      throw new RevisionConflictException(
-        'Object',
-        object.revision,
-        dto.revision,
+      return Result.fail(
+        new RevisionConflictException('Object', object.revision, dto.revision),
       );
     }
 
@@ -164,16 +175,20 @@ export class ObjectsService {
       },
     });
 
-    return updated;
+    return Result.ok(updated);
   }
 
   async softDeleteObject(
     workspaceId: string,
     objectId: string,
     userId: string,
-  ): Promise<LumoraObject> {
-    const object = await this.getObjectByIdOrKey(workspaceId, objectId);
+  ): Promise<Result<LumoraObject, ApplicationException>> {
+    const objectResult = await this.getObjectByIdOrKey(workspaceId, objectId);
+    if (objectResult.isFailure) {
+      return Result.fail(objectResult.getError());
+    }
 
+    const object = objectResult.getValue();
     const deleted = await this.objectRepository.softDelete(object.id, userId);
 
     await this.auditLogRepository.create({
@@ -183,7 +198,7 @@ export class ObjectsService {
       action: AuditAction.DELETE,
     });
 
-    return deleted;
+    return Result.ok(deleted);
   }
 
   private async generateUniqueObjectKey(

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId } from '@lumora/shared';
+import { Result, UniqueEntityId, ApplicationException } from '@lumora/shared';
 import type { INotificationRepository } from '../../../domain/notifications/repositories/notification.repository.interface.js';
 import { NOTIFICATION_REPOSITORY_TOKEN } from '../notifications.tokens.js';
 import { ListNotificationsFilterDto } from '../dto/list-notifications-filter.dto.js';
@@ -21,7 +21,7 @@ export class ListUserNotificationsQuery {
 
   public async execute(
     input: ListUserNotificationsQueryInput,
-  ): Promise<Result<NotificationResponseDto[], Error>> {
+  ): Promise<Result<NotificationResponseDto[], ApplicationException>> {
     try {
       const { workspaceId, userId, filter } = input;
 
@@ -43,9 +43,10 @@ export class ListUserNotificationsQuery {
       );
       return Result.ok(dtos);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId } from '@lumora/shared';
+import { Result, UniqueEntityId, ApplicationException } from '@lumora/shared';
 import type { ITimelineRepository } from '../../../domain/timeline/repositories/timeline.repository.interface.js';
 import { TIMELINE_REPOSITORY_TOKEN } from '../timeline.tokens.js';
 import { TimelineRecordResponseDto } from '../dto/timeline-record-response.dto.js';
@@ -20,7 +20,7 @@ export class GetWorkspaceTimelineQuery {
 
   public async execute(
     input: GetWorkspaceTimelineQueryInput,
-  ): Promise<Result<TimelineRecordResponseDto[], Error>> {
+  ): Promise<Result<TimelineRecordResponseDto[], ApplicationException>> {
     try {
       const { workspaceId, userId, limit = 50 } = input;
       const wsEntityId = new UniqueEntityId(workspaceId);
@@ -45,9 +45,10 @@ export class GetWorkspaceTimelineQuery {
       );
       return Result.ok(dtos);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

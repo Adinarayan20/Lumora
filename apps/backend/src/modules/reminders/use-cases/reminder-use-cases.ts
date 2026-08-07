@@ -6,12 +6,13 @@
  * Phase 3 DDD migration replaces it with ScheduleReminderUseCase (aggregate-backed).
  */
 import { Injectable } from '@nestjs/common';
-import { Result } from '@lumora/shared';
+import { Result, ApplicationException } from '@lumora/shared';
 import { RemindersService } from '../reminders.service.js';
 import { CreateReminderDto } from '../dto/create-reminder.dto.js';
 import { UpdateReminderDto } from '../dto/update-reminder.dto.js';
 import { FilterReminderDto } from '../dto/filter-reminder.dto.js';
 import { SnoozeReminderDto } from '../dto/snooze-reminder.dto.js';
+import { Reminder } from '../../../generated/prisma/client.js';
 
 // ─── Commands ────────────────────────────────────────────────────────────────
 
@@ -25,19 +26,15 @@ export interface CreateReminderCommand {
 @Injectable()
 export class CreateReminderFacadeUseCase {
   constructor(private readonly service: RemindersService) {}
-  async execute(cmd: CreateReminderCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.createReminder(
-          cmd.workspaceId,
-          cmd.objectId,
-          cmd.userId,
-          cmd.dto,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: CreateReminderCommand,
+  ): Promise<Result<Reminder, ApplicationException>> {
+    return this.service.createReminder(
+      cmd.workspaceId,
+      cmd.objectId,
+      cmd.userId,
+      cmd.dto,
+    );
   }
 }
 
@@ -51,19 +48,15 @@ export interface UpdateReminderCommand {
 @Injectable()
 export class UpdateReminderUseCase {
   constructor(private readonly service: RemindersService) {}
-  async execute(cmd: UpdateReminderCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.updateReminder(
-          cmd.workspaceId,
-          cmd.reminderId,
-          cmd.userId,
-          cmd.dto,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: UpdateReminderCommand,
+  ): Promise<Result<Reminder, ApplicationException>> {
+    return this.service.updateReminder(
+      cmd.workspaceId,
+      cmd.reminderId,
+      cmd.userId,
+      cmd.dto,
+    );
   }
 }
 
@@ -77,19 +70,15 @@ export interface SnoozeReminderCommand {
 @Injectable()
 export class SnoozeReminderUseCase {
   constructor(private readonly service: RemindersService) {}
-  async execute(cmd: SnoozeReminderCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.snoozeReminder(
-          cmd.workspaceId,
-          cmd.reminderId,
-          cmd.userId,
-          cmd.dto,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: SnoozeReminderCommand,
+  ): Promise<Result<Reminder, ApplicationException>> {
+    return this.service.snoozeReminder(
+      cmd.workspaceId,
+      cmd.reminderId,
+      cmd.userId,
+      cmd.dto,
+    );
   }
 }
 
@@ -102,18 +91,14 @@ export interface CompleteReminderCommand {
 @Injectable()
 export class CompleteReminderUseCase {
   constructor(private readonly service: RemindersService) {}
-  async execute(cmd: CompleteReminderCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.completeReminder(
-          cmd.workspaceId,
-          cmd.reminderId,
-          cmd.userId,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: CompleteReminderCommand,
+  ): Promise<Result<Reminder, ApplicationException>> {
+    return this.service.completeReminder(
+      cmd.workspaceId,
+      cmd.reminderId,
+      cmd.userId,
+    );
   }
 }
 
@@ -126,18 +111,14 @@ export interface CancelReminderCommand {
 @Injectable()
 export class CancelReminderUseCase {
   constructor(private readonly service: RemindersService) {}
-  async execute(cmd: CancelReminderCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.cancelReminder(
-          cmd.workspaceId,
-          cmd.reminderId,
-          cmd.userId,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: CancelReminderCommand,
+  ): Promise<Result<Reminder, ApplicationException>> {
+    return this.service.cancelReminder(
+      cmd.workspaceId,
+      cmd.reminderId,
+      cmd.userId,
+    );
   }
 }
 
@@ -150,18 +131,14 @@ export interface RestoreReminderCommand {
 @Injectable()
 export class RestoreReminderUseCase {
   constructor(private readonly service: RemindersService) {}
-  async execute(cmd: RestoreReminderCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.restoreReminder(
-          cmd.workspaceId,
-          cmd.reminderId,
-          cmd.userId,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: RestoreReminderCommand,
+  ): Promise<Result<Reminder, ApplicationException>> {
+    return this.service.restoreReminder(
+      cmd.workspaceId,
+      cmd.reminderId,
+      cmd.userId,
+    );
   }
 }
 
@@ -174,18 +151,14 @@ export interface DeleteReminderCommand {
 @Injectable()
 export class DeleteReminderUseCase {
   constructor(private readonly service: RemindersService) {}
-  async execute(cmd: DeleteReminderCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.softDeleteReminder(
-          cmd.workspaceId,
-          cmd.reminderId,
-          cmd.userId,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: DeleteReminderCommand,
+  ): Promise<Result<Reminder, ApplicationException>> {
+    return this.service.softDeleteReminder(
+      cmd.workspaceId,
+      cmd.reminderId,
+      cmd.userId,
+    );
   }
 }
 
@@ -201,17 +174,8 @@ export class GetWorkspaceRemindersQuery {
   constructor(private readonly service: RemindersService) {}
   async execute(
     input: GetWorkspaceRemindersQueryInput,
-  ): Promise<Result<unknown[], Error>> {
-    try {
-      return Result.ok(
-        await this.service.getWorkspaceReminders(
-          input.workspaceId,
-          input.filter,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  ): Promise<Result<Reminder[], ApplicationException>> {
+    return this.service.getWorkspaceReminders(input.workspaceId, input.filter);
   }
 }
 
@@ -225,17 +189,8 @@ export class GetObjectRemindersQuery {
   constructor(private readonly service: RemindersService) {}
   async execute(
     input: GetObjectRemindersQueryInput,
-  ): Promise<Result<unknown[], Error>> {
-    try {
-      return Result.ok(
-        await this.service.getObjectReminders(
-          input.workspaceId,
-          input.objectId,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  ): Promise<Result<Reminder[], ApplicationException>> {
+    return this.service.getObjectReminders(input.workspaceId, input.objectId);
   }
 }
 
@@ -247,13 +202,9 @@ export interface GetReminderQueryInput {
 @Injectable()
 export class GetReminderQuery {
   constructor(private readonly service: RemindersService) {}
-  async execute(input: GetReminderQueryInput): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.getReminderById(input.workspaceId, input.reminderId),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    input: GetReminderQueryInput,
+  ): Promise<Result<Reminder, ApplicationException>> {
+    return this.service.getReminderById(input.workspaceId, input.reminderId);
   }
 }

@@ -6,11 +6,12 @@
  * audit logs) until Phase 3 DDD migration.
  */
 import { Injectable } from '@nestjs/common';
-import { Result } from '@lumora/shared';
+import { Result, ApplicationException } from '@lumora/shared';
 import { SpacesService } from '../spaces.service.js';
 import { CreateSpaceDto } from '../dto/create-space.dto.js';
 import { UpdateSpaceDto } from '../dto/update-space.dto.js';
 import { FilterSpaceDto } from '../dto/filter-space.dto.js';
+import { Space as LumoraSpace } from '../../../generated/prisma/client.js';
 
 // ─── Commands ────────────────────────────────────────────────────────────────
 
@@ -23,18 +24,10 @@ export interface CreateSpaceCommand {
 @Injectable()
 export class CreateSpaceUseCase {
   constructor(private readonly service: SpacesService) {}
-  async execute(cmd: CreateSpaceCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.createSpace(
-          cmd.workspaceId,
-          cmd.createdById,
-          cmd.dto,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: CreateSpaceCommand,
+  ): Promise<Result<LumoraSpace, ApplicationException>> {
+    return this.service.createSpace(cmd.workspaceId, cmd.createdById, cmd.dto);
   }
 }
 
@@ -48,19 +41,15 @@ export interface UpdateSpaceCommand {
 @Injectable()
 export class UpdateSpaceUseCase {
   constructor(private readonly service: SpacesService) {}
-  async execute(cmd: UpdateSpaceCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.updateSpace(
-          cmd.workspaceId,
-          cmd.spaceId,
-          cmd.userId,
-          cmd.dto,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: UpdateSpaceCommand,
+  ): Promise<Result<LumoraSpace, ApplicationException>> {
+    return this.service.updateSpace(
+      cmd.workspaceId,
+      cmd.spaceId,
+      cmd.userId,
+      cmd.dto,
+    );
   }
 }
 
@@ -73,18 +62,14 @@ export interface DeleteSpaceCommand {
 @Injectable()
 export class DeleteSpaceUseCase {
   constructor(private readonly service: SpacesService) {}
-  async execute(cmd: DeleteSpaceCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.softDeleteSpace(
-          cmd.workspaceId,
-          cmd.spaceId,
-          cmd.userId,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: DeleteSpaceCommand,
+  ): Promise<Result<LumoraSpace, ApplicationException>> {
+    return this.service.softDeleteSpace(
+      cmd.workspaceId,
+      cmd.spaceId,
+      cmd.userId,
+    );
   }
 }
 
@@ -100,14 +85,8 @@ export class GetWorkspaceSpacesQuery {
   constructor(private readonly service: SpacesService) {}
   async execute(
     input: GetWorkspaceSpacesQueryInput,
-  ): Promise<Result<unknown[], Error>> {
-    try {
-      return Result.ok(
-        await this.service.getWorkspaceSpaces(input.workspaceId, input.filter),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  ): Promise<Result<LumoraSpace[], ApplicationException>> {
+    return this.service.getWorkspaceSpaces(input.workspaceId, input.filter);
   }
 }
 
@@ -119,16 +98,9 @@ export interface GetSpaceQueryInput {
 @Injectable()
 export class GetSpaceQuery {
   constructor(private readonly service: SpacesService) {}
-  async execute(input: GetSpaceQueryInput): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.getSpaceByIdOrSlug(
-          input.workspaceId,
-          input.idOrSlug,
-        ),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    input: GetSpaceQueryInput,
+  ): Promise<Result<LumoraSpace, ApplicationException>> {
+    return this.service.getSpaceByIdOrSlug(input.workspaceId, input.idOrSlug);
   }
 }

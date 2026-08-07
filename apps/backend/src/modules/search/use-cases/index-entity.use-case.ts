@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId } from '@lumora/shared';
+import { Result, UniqueEntityId, ApplicationException } from '@lumora/shared';
 import { SearchIndexEntity } from '../../../domain/search/entities/search-index.entity.js';
 import { SearchEntityCategory } from '../../../domain/search/value-objects/search-entity-category.js';
 import type { ISearchRepository } from '../../../domain/search/repositories/search.repository.interface.js';
@@ -21,7 +21,7 @@ export class IndexEntityUseCase {
 
   public async execute(
     command: IndexEntityCommand,
-  ): Promise<Result<SearchResultDto, Error>> {
+  ): Promise<Result<SearchResultDto, ApplicationException>> {
     try {
       const { dto } = command;
       const categoryObj = SearchEntityCategory.create(dto.entityCategory);
@@ -48,9 +48,10 @@ export class IndexEntityUseCase {
       const responseDto = SearchResponseMapper.toResponseDto(projection);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

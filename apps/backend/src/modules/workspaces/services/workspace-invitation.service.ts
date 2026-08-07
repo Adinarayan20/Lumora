@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
+  Result,
+  ApplicationException,
   EntityNotFoundException,
   ForbiddenException as DomainForbiddenException,
   DomainValidationException,
@@ -34,14 +36,16 @@ export class WorkspaceInvitationService {
     invitedById: string,
     roleId?: string,
     tx?: PrismaTransaction,
-  ): Promise<WorkspaceInvitation> {
+  ): Promise<Result<WorkspaceInvitation, ApplicationException>> {
     const workspace = await this.workspaceRepository.findById(workspaceId, tx);
     if (!workspace) {
-      throw new EntityNotFoundException('Workspace', workspaceId);
+      return Result.fail(new EntityNotFoundException('Workspace', workspaceId));
     }
 
     if (workspace.ownerId !== invitedById) {
-      throw new DomainForbiddenException('workspace:invite-member');
+      return Result.fail(
+        new DomainForbiddenException('workspace:invite-member'),
+      );
     }
 
     const token = nanoid(32);
@@ -70,14 +74,16 @@ export class WorkspaceInvitationService {
       tx,
     );
 
-    return invitation;
+    return Result.ok(invitation);
   }
 
   async getWorkspaceInvitations(
     workspaceId: string,
     tx?: PrismaTransaction,
-  ): Promise<WorkspaceInvitation[]> {
-    return this.invitationRepository.findWorkspaceInvitations(workspaceId, tx);
+  ): Promise<Result<WorkspaceInvitation[], ApplicationException>> {
+    const invitations =
+      await this.invitationRepository.findWorkspaceInvitations(workspaceId, tx);
+    return Result.ok(invitations);
   }
 
   async revokeInvitation(
@@ -85,10 +91,12 @@ export class WorkspaceInvitationService {
     invitationId: string,
     requesterId: string,
     tx?: PrismaTransaction,
-  ): Promise<WorkspaceInvitation> {
+  ): Promise<Result<WorkspaceInvitation, ApplicationException>> {
     const workspace = await this.workspaceRepository.findById(workspaceId, tx);
     if (!workspace || workspace.ownerId !== requesterId) {
-      throw new DomainForbiddenException('workspace:revoke-invitation');
+      return Result.fail(
+        new DomainForbiddenException('workspace:revoke-invitation'),
+      );
     }
 
     const invitation = await this.invitationRepository.findById(
@@ -96,25 +104,35 @@ export class WorkspaceInvitationService {
       tx,
     );
     if (!invitation || invitation.workspaceId !== workspaceId) {
-      throw new EntityNotFoundException('Invitation', invitationId);
+      return Result.fail(
+        new EntityNotFoundException('Invitation', invitationId),
+      );
     }
 
-    return this.invitationRepository.updateStatus(
+    const revoked = await this.invitationRepository.updateStatus(
       invitationId,
       InvitationStatus.REVOKED,
       tx,
     );
+    return Result.ok(revoked);
   }
 
   async acceptInvitation(
     token: string,
     user: { id: string; email: string },
     tx?: PrismaTransaction,
-  ): Promise<{ invitation: WorkspaceInvitation; workspaceId: string }> {
+  ): Promise<
+    Result<
+      { invitation: WorkspaceInvitation; workspaceId: string },
+      ApplicationException
+    >
+  > {
     const invitation = await this.invitationRepository.findByToken(token, tx);
     if (!invitation || invitation.status !== InvitationStatus.PENDING) {
-      throw new DomainValidationException(
-        'Invitation is invalid or has already been used.',
+      return Result.fail(
+        new DomainValidationException(
+          'Invitation is invalid or has already been used.',
+        ),
       );
     }
 
@@ -124,19 +142,28 @@ export class WorkspaceInvitationService {
         InvitationStatus.EXPIRED,
         tx,
       );
-      throw new DomainValidationException('Invitation has expired.');
+      return Result.fail(
+        new DomainValidationException('Invitation has expired.'),
+      );
     }
 
     if (invitation.email.toLowerCase() !== user.email.toLowerCase()) {
-      throw new DomainForbiddenException('workspace:accept-invitation');
+      return Result.fail(
+        new DomainForbiddenException('workspace:accept-invitation'),
+      );
     }
 
-    await this.memberService.addMember(
+    const addMemberResult = await this.memberService.addMember(
       invitation.workspaceId,
       user.id,
       invitation.roleId ?? undefined,
       tx,
     );
+
+    if (addMemberResult.isFailure) {
+      return Result.fail(addMemberResult.getError());
+    }
+
     const updatedInvitation = await this.invitationRepository.updateStatus(
       invitation.id,
       InvitationStatus.ACCEPTED,
@@ -148,9 +175,9 @@ export class WorkspaceInvitationService {
       tx,
     );
 
-    return {
+    return Result.ok({
       invitation: updatedInvitation,
       workspaceId: invitation.workspaceId,
-    };
+    });
   }
 }

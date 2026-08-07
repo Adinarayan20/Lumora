@@ -3,6 +3,7 @@ import {
   Result,
   UniqueEntityId,
   EntityNotFoundException,
+  ApplicationException,
 } from '@lumora/shared';
 import {
   NotificationChannel,
@@ -28,7 +29,7 @@ export class DeliverNotificationUseCase {
 
   public async execute(
     command: DeliverNotificationCommand,
-  ): Promise<Result<NotificationResponseDto, Error>> {
+  ): Promise<Result<NotificationResponseDto, ApplicationException>> {
     try {
       const { notificationId, channel = NotificationChannel.IN_APP } = command;
 
@@ -59,9 +60,10 @@ export class DeliverNotificationUseCase {
       const responseDto = NotificationResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

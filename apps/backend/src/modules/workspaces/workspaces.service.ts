@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
+  Result,
+  ApplicationException,
   EntityNotFoundException,
   ForbiddenException as DomainForbiddenException,
   PersonalWorkspaceDeletionForbiddenException,
@@ -52,7 +54,7 @@ export class WorkspacesService {
     ownerId: string,
     displayName: string,
     tx?: PrismaTransaction,
-  ): Promise<Workspace> {
+  ): Promise<Result<Workspace, ApplicationException>> {
     const slug = await this.slugService.generateUniqueSlug(
       `${displayName}-personal`,
       tx,
@@ -96,18 +98,18 @@ export class WorkspacesService {
       tx,
     );
 
-    return workspace;
+    return Result.ok(workspace);
   }
 
   async createWorkspace(
     ownerId: string,
     dto: CreateWorkspaceDto,
-  ): Promise<Workspace> {
+  ): Promise<Result<Workspace, ApplicationException>> {
     const slug = await this.slugService.generateUniqueSlug(dto.name);
 
-    return this.prisma.$transaction(
+    const workspace = await this.prisma.$transaction(
       async (tx) => {
-        const workspace = await this.workspaceRepository.create(
+        const created = await this.workspaceRepository.create(
           {
             name: dto.name,
             slug,
@@ -126,11 +128,11 @@ export class WorkspacesService {
         );
 
         await this.memberRepository.addMember(
-          { workspaceId: workspace.id, userId: ownerId },
+          { workspaceId: created.id, userId: ownerId },
           tx,
         );
         await this.rbacService.seedDefaultWorkspaceRoles(
-          workspace.id,
+          created.id,
           ownerId,
           tx,
         );
@@ -139,7 +141,7 @@ export class WorkspacesService {
           {
             userId: ownerId,
             entity: 'Workspace',
-            entityId: workspace.id,
+            entityId: created.id,
             action: AuditAction.CREATE,
             newData: { type: WorkspaceType.CUSTOM, slug },
           },
@@ -148,30 +150,36 @@ export class WorkspacesService {
 
         await this.eventPublisher.publishWorkspaceCreated(
           new WorkspaceCreatedEvent(
-            workspace.id,
+            created.id,
             ownerId,
-            workspace.name,
-            workspace.slug,
-            workspace.type,
-            workspace.plan,
+            created.name,
+            created.slug,
+            created.type,
+            created.plan,
           ),
           tx,
         );
 
-        return workspace;
+        return created;
       },
       { timeout: 20000 },
     );
+
+    return Result.ok(workspace);
   }
 
-  async getUserWorkspaces(userId: string): Promise<Workspace[]> {
-    return this.workspaceRepository.findUserWorkspaces(userId);
+  async getUserWorkspaces(
+    userId: string,
+  ): Promise<Result<Workspace[], ApplicationException>> {
+    const workspaces =
+      await this.workspaceRepository.findUserWorkspaces(userId);
+    return Result.ok(workspaces);
   }
 
   async getWorkspaceByIdOrSlug(
     idOrSlug: string,
     userId: string,
-  ): Promise<Workspace> {
+  ): Promise<Result<Workspace, ApplicationException>> {
     const isUuid =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         idOrSlug,
@@ -185,29 +193,29 @@ export class WorkspacesService {
     }
 
     if (!workspace) {
-      throw new EntityNotFoundException('Workspace', idOrSlug);
+      return Result.fail(new EntityNotFoundException('Workspace', idOrSlug));
     }
 
     const isMember = workspace.members.some((m) => m.userId === userId);
     if (!isMember && workspace.ownerId !== userId) {
-      throw new DomainForbiddenException('workspace:read');
+      return Result.fail(new DomainForbiddenException('workspace:read'));
     }
 
-    return workspace;
+    return Result.ok(workspace);
   }
 
   async updateWorkspace(
     workspaceId: string,
     userId: string,
     dto: UpdateWorkspaceDto,
-  ): Promise<Workspace> {
+  ): Promise<Result<Workspace, ApplicationException>> {
     const workspace = await this.workspaceRepository.findById(workspaceId);
     if (!workspace) {
-      throw new EntityNotFoundException('Workspace', workspaceId);
+      return Result.fail(new EntityNotFoundException('Workspace', workspaceId));
     }
 
     if (workspace.ownerId !== userId) {
-      throw new DomainForbiddenException('workspace:update');
+      return Result.fail(new DomainForbiddenException('workspace:update'));
     }
 
     const updated = await this.workspaceRepository.update(workspaceId, dto);
@@ -232,24 +240,24 @@ export class WorkspacesService {
       new WorkspaceUpdatedEvent(workspaceId, userId),
     );
 
-    return updated;
+    return Result.ok(updated);
   }
 
   async softDeleteWorkspace(
     workspaceId: string,
     userId: string,
-  ): Promise<Workspace> {
+  ): Promise<Result<Workspace, ApplicationException>> {
     const workspace = await this.workspaceRepository.findById(workspaceId);
     if (!workspace) {
-      throw new EntityNotFoundException('Workspace', workspaceId);
+      return Result.fail(new EntityNotFoundException('Workspace', workspaceId));
     }
 
     if (workspace.ownerId !== userId) {
-      throw new DomainForbiddenException('workspace:delete');
+      return Result.fail(new DomainForbiddenException('workspace:delete'));
     }
 
     if (workspace.type === WorkspaceType.PERSONAL) {
-      throw new PersonalWorkspaceDeletionForbiddenException();
+      return Result.fail(new PersonalWorkspaceDeletionForbiddenException());
     }
 
     const deleted = await this.workspaceRepository.softDelete(workspaceId);
@@ -265,21 +273,23 @@ export class WorkspacesService {
       new WorkspaceDeletedEvent(workspaceId, userId),
     );
 
-    return deleted;
+    return Result.ok(deleted);
   }
 
   async transferOwnership(
     workspaceId: string,
     currentOwnerId: string,
     dto: TransferOwnershipDto,
-  ): Promise<Workspace> {
+  ): Promise<Result<Workspace, ApplicationException>> {
     const workspace = await this.workspaceRepository.findById(workspaceId);
     if (!workspace) {
-      throw new EntityNotFoundException('Workspace', workspaceId);
+      return Result.fail(new EntityNotFoundException('Workspace', workspaceId));
     }
 
     if (workspace.ownerId !== currentOwnerId) {
-      throw new DomainForbiddenException('workspace:transfer-ownership');
+      return Result.fail(
+        new DomainForbiddenException('workspace:transfer-ownership'),
+      );
     }
 
     const targetMember = await this.memberRepository.findMember(
@@ -287,12 +297,14 @@ export class WorkspacesService {
       dto.newOwnerId,
     );
     if (!targetMember) {
-      throw new TargetNotWorkspaceMemberException(workspaceId, dto.newOwnerId);
+      return Result.fail(
+        new TargetNotWorkspaceMemberException(workspaceId, dto.newOwnerId),
+      );
     }
 
-    return this.prisma.$transaction(
+    const updated = await this.prisma.$transaction(
       async (tx) => {
-        const updated = await this.workspaceRepository.update(
+        const res = await this.workspaceRepository.update(
           workspaceId,
           { ownerId: dto.newOwnerId },
           tx,
@@ -321,14 +333,18 @@ export class WorkspacesService {
           tx,
         );
 
-        return updated;
+        return res;
       },
       { timeout: 20000 },
     );
+
+    return Result.ok(updated);
   }
 
   // Delegation helpers
-  async getMembers(workspaceId: string): Promise<WorkspaceMember[]> {
+  async getMembers(
+    workspaceId: string,
+  ): Promise<Result<WorkspaceMember[], ApplicationException>> {
     return this.memberService.getWorkspaceMembers(workspaceId);
   }
 
@@ -336,7 +352,7 @@ export class WorkspacesService {
     workspaceId: string,
     targetUserId: string,
     requesterId: string,
-  ): Promise<WorkspaceMember> {
+  ): Promise<Result<WorkspaceMember, ApplicationException>> {
     return this.memberService.removeMember(
       workspaceId,
       targetUserId,
@@ -348,7 +364,7 @@ export class WorkspacesService {
     workspaceId: string,
     dto: InviteMemberDto,
     inviterId: string,
-  ): Promise<WorkspaceInvitation> {
+  ): Promise<Result<WorkspaceInvitation, ApplicationException>> {
     return this.invitationService.createInvitation(
       workspaceId,
       dto.email,
@@ -357,7 +373,9 @@ export class WorkspacesService {
     );
   }
 
-  async getInvitations(workspaceId: string): Promise<WorkspaceInvitation[]> {
+  async getInvitations(
+    workspaceId: string,
+  ): Promise<Result<WorkspaceInvitation[], ApplicationException>> {
     return this.invitationService.getWorkspaceInvitations(workspaceId);
   }
 
@@ -365,7 +383,7 @@ export class WorkspacesService {
     workspaceId: string,
     invitationId: string,
     requesterId: string,
-  ): Promise<WorkspaceInvitation> {
+  ): Promise<Result<WorkspaceInvitation, ApplicationException>> {
     return this.invitationService.revokeInvitation(
       workspaceId,
       invitationId,
@@ -376,7 +394,12 @@ export class WorkspacesService {
   async acceptInvitation(
     token: string,
     user: { id: string; email: string },
-  ): Promise<{ invitation: WorkspaceInvitation; workspaceId: string }> {
+  ): Promise<
+    Result<
+      { invitation: WorkspaceInvitation; workspaceId: string },
+      ApplicationException
+    >
+  > {
     return this.prisma.$transaction(
       async (tx) => {
         return this.invitationService.acceptInvitation(token, user, tx);

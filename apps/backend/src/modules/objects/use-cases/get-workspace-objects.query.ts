@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Result } from '@lumora/shared';
+import { Result, ApplicationException } from '@lumora/shared';
 import { ObjectsService } from '../objects.service.js';
 import { FilterObjectDto } from '../dto/filter-object.dto.js';
+import { Object as LumoraObject } from '../../../generated/prisma/client.js';
 
 export interface GetWorkspaceObjectsQueryInput {
   workspaceId: string;
@@ -14,17 +15,10 @@ export class GetWorkspaceObjectsQuery {
 
   public async execute(
     input: GetWorkspaceObjectsQueryInput,
-  ): Promise<Result<unknown[], Error>> {
-    try {
-      const objects = await this.objectsService.getWorkspaceObjects(
-        input.workspaceId,
-        input.filter,
-      );
-      return Result.ok(objects);
-    } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
-    }
+  ): Promise<Result<LumoraObject[], ApplicationException>> {
+    return this.objectsService.getWorkspaceObjects(
+      input.workspaceId,
+      input.filter,
+    );
   }
 }

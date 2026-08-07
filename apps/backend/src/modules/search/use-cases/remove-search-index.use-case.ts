@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId } from '@lumora/shared';
+import { Result, UniqueEntityId, ApplicationException } from '@lumora/shared';
 import { SearchEntityCategory } from '../../../domain/search/value-objects/search-entity-category.js';
 import type { ISearchRepository } from '../../../domain/search/repositories/search.repository.interface.js';
 import { SEARCH_REPOSITORY_TOKEN } from '../search.tokens.js';
@@ -18,18 +18,19 @@ export class RemoveSearchIndexUseCase {
 
   public async execute(
     command: RemoveSearchIndexCommand,
-  ): Promise<Result<void, Error>> {
+  ): Promise<Result<void, ApplicationException>> {
     try {
       const { entityCategory, entityId } = command;
       const categoryObj = SearchEntityCategory.create(entityCategory);
       const entityIdObj = new UniqueEntityId(entityId);
 
       await this.searchRepository.deleteByEntity(categoryObj, entityIdObj);
-      return Result.ok<void, Error>(undefined);
+      return Result.ok<void, ApplicationException>(undefined);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }
