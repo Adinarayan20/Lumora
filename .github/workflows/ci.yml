@@ -1,0 +1,74 @@
+name: Continuous Integration & Release Quality Gates
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_ENV: test
+  CI: true
+  DATABASE_URL: "postgresql://lumora:lumora@localhost:5432/lumora_test?schema=public"
+  REDIS_URL: "redis://localhost:6379"
+
+jobs:
+  quality-gates:
+    name: Run Release Quality Gates (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: true
+      matrix:
+        node-version: ['22.x']
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.3.0
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm --filter backend run build:prisma || pnpm --filter backend exec prisma generate
+
+      - name: 1. Typecheck Monorepo
+        run: pnpm run typecheck
+
+      - name: 2. Lint Source Code
+        run: pnpm run lint
+
+      - name: 3. Run Unit Tests
+        run: pnpm run test
+
+      - name: 4. Build Monorepo Bundles
+        run: pnpm run build
+
+      - name: Upload Build & Test Logs on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-failure-logs-node-${{ matrix.node-version }}
+          path: |
+            apps/backend/coverage/
+            apps/backend/*.log
+            .turbo/
+          retention-days: 7

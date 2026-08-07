@@ -1,5 +1,7 @@
 # Lumora — AI-Ready Life Operating System
 
+[![CI & Quality Gates](https://github.com/Adinarayan20/Lumora/actions/workflows/ci.yml/badge.svg)](https://github.com/Adinarayan20/Lumora/actions/workflows/ci.yml)
+
 Lumora is built around a **Universal Object Model** (Everything is an Object: Reminder, Note, Task, Event, Habit, Document, Collection) with deterministic business logic and layered architecture (`UI → Application → Domain → Infrastructure`).
 
 ---
@@ -55,7 +57,7 @@ In `pnpm-workspace.yaml`, native build scripts are configured under `allowBuilds
 
 ## Architectural & Operational Documentation
 
-- **[Architecture Decisions (ADR)](docs/architecture/adr/)**: Architectural decision records (ADR-001 through ADR-004).
+- **[Architecture Decisions (ADR)](docs/architecture/adr/)**: Architectural decision records (ADR-001 through ADR-012).
 - **[Deployment Guide](docs/operations/DEPLOYMENT_GUIDE.md)**: Production deployment requirements and pipeline instructions.
 - **[Operational Runbook](docs/operations/RUNBOOK.md)**: Severity definitions, incident response runbook, and debugging procedures.
 - **[Performance Baseline](docs/architecture/PERFORMANCE_BASELINE.md)**: Latency SLAs, memory budgets, and query optimization rules.
