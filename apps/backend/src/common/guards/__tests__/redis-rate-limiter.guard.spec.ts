@@ -8,6 +8,8 @@ describe('RedisRateLimiterGuard Unit Tests', () => {
   let guard: RedisRateLimiterGuard;
   let mockReflector: any;
   let mockRateLimitStore: any;
+  let mockNetworkResolver: any;
+  let mockTtlPolicies: any;
   let mockExecutionContext: any;
   let mockRequest: any;
   let mockResponse: any;
@@ -19,6 +21,15 @@ describe('RedisRateLimiterGuard Unit Tests', () => {
 
     mockRateLimitStore = {
       increment: vi.fn(),
+    };
+
+    mockNetworkResolver = {
+      extractClientIp: vi.fn().mockReturnValue('127.0.0.1'),
+    };
+
+    mockTtlPolicies = {
+      defaultRateLimitQuota: 100,
+      defaultRateLimitTtlSeconds: 60,
     };
 
     mockRequest = {
@@ -40,7 +51,12 @@ describe('RedisRateLimiterGuard Unit Tests', () => {
       }),
     };
 
-    guard = new RedisRateLimiterGuard(mockReflector, mockRateLimitStore);
+    guard = new RedisRateLimiterGuard(
+      mockReflector,
+      mockRateLimitStore,
+      mockNetworkResolver,
+      mockTtlPolicies,
+    );
   });
 
   it('should allow request and set rate limit response headers when below threshold', async () => {

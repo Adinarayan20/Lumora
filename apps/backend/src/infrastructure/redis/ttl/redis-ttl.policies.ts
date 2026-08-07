@@ -17,6 +17,10 @@ export class RedisTtlPolicies {
     return this.configService.get<number>('USER_CACHE_TTL_SECONDS', 86400);
   }
 
+  public get defaultRateLimitQuota(): number {
+    return this.configService.get<number>('DEFAULT_RATE_LIMIT_QUOTA', 100);
+  }
+
   public get defaultRateLimitTtlSeconds(): number {
     return this.configService.get<number>('DEFAULT_RATE_LIMIT_TTL_SECONDS', 60);
   }

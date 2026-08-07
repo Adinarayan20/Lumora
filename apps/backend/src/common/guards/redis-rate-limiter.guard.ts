@@ -12,6 +12,8 @@ import {
   RATE_LIMIT_STORE_TOKEN,
   type IRateLimitStore,
 } from '../../infrastructure/redis/interfaces/rate-limit-store.interface.js';
+import { RedisTtlPolicies } from '../../infrastructure/redis/ttl/redis-ttl.policies.js';
+import { NetworkIdentityResolver } from '../services/network-identity.resolver.js';
 import {
   RATE_LIMIT_METADATA_KEY,
   RateLimitOptions,
@@ -25,6 +27,8 @@ export class RedisRateLimiterGuard implements CanActivate {
     private readonly reflector: Reflector,
     @Inject(RATE_LIMIT_STORE_TOKEN)
     private readonly rateLimitStore: IRateLimitStore,
+    private readonly networkIdentityResolver: NetworkIdentityResolver,
+    private readonly ttlPolicies: RedisTtlPolicies,
   ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -33,8 +37,9 @@ export class RedisRateLimiterGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
 
-    const limit = options?.limit ?? 100;
-    const ttlSeconds = options?.ttlSeconds ?? 60;
+    const limit = options?.limit ?? this.ttlPolicies.defaultRateLimitQuota;
+    const ttlSeconds =
+      options?.ttlSeconds ?? this.ttlPolicies.defaultRateLimitTtlSeconds;
 
     const httpContext = context.switchToHttp();
     const req = httpContext.getRequest<Request>();
@@ -69,15 +74,10 @@ export class RedisRateLimiterGuard implements CanActivate {
 
   private resolveIdentifier(req: Request, context: ExecutionContext): string {
     const user = (req as unknown as Record<string, unknown>).user as
-      | { id?: string }
-      | undefined;
+      { id?: string } | undefined;
     const userId = user?.id;
 
-    const rawIp =
-      req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
-    const clientIp = Array.isArray(rawIp)
-      ? rawIp[0]
-      : rawIp.split(',')[0].trim();
+    const clientIp = this.networkIdentityResolver.extractClientIp(req);
 
     const handler = context.getHandler().name;
     const className = context.getClass().name;
