@@ -4,7 +4,6 @@ import {
   OnModuleInit,
   OnModuleDestroy,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Queue } from 'bullmq';
 import type {
   IBackgroundJobDispatcher,
@@ -12,8 +11,9 @@ import type {
   DispatchNotificationJobDto,
   DispatchEmailJobDto,
 } from '../../application/jobs/index.js';
-import { QUEUES, QueueName } from './queue.constants.js';
+import { QUEUES, JOB_NAMES, QueueName } from './queue.constants.js';
 import { QueueOptionsProvider } from './queue.options.js';
+import { BullMQConnectionProvider } from './bullmq-connection.provider.js';
 
 @Injectable()
 export class BullMQJobDispatcher
@@ -23,25 +23,14 @@ export class BullMQJobDispatcher
   private readonly queues = new Map<QueueName, Queue>();
 
   constructor(
-    private readonly configService: ConfigService,
+    private readonly connectionProvider: BullMQConnectionProvider,
     private readonly queueOptionsProvider: QueueOptionsProvider,
   ) {}
 
   public onModuleInit(): void {
-    const redisUrl = this.configService.get<string>(
-      'REDIS_URL',
-      'redis://localhost:6379',
-    );
-    const urlObj = new URL(redisUrl);
+    const connection = this.connectionProvider.getConnectionOptions();
 
-    const connection = {
-      host: urlObj.hostname || 'localhost',
-      port: parseInt(urlObj.port || '6379', 10),
-      username: urlObj.username || undefined,
-      password: urlObj.password || undefined,
-    };
-
-    // Initialize dedicated queues
+    // Initialize dedicated queues using central BullMQConnectionProvider
     for (const queueName of Object.values(QUEUES)) {
       const queue = new Queue(queueName, { connection });
       this.queues.set(queueName, queue);
@@ -57,7 +46,7 @@ export class BullMQJobDispatcher
   ): Promise<void> {
     await this.enqueueJob(
       QUEUES.REMINDER,
-      'process-reminder',
+      JOB_NAMES.PROCESS_REMINDER,
       payload,
       payload.correlationId,
     );
@@ -68,7 +57,7 @@ export class BullMQJobDispatcher
   ): Promise<void> {
     await this.enqueueJob(
       QUEUES.NOTIFICATION,
-      'process-notification',
+      JOB_NAMES.PROCESS_NOTIFICATION,
       payload,
       payload.correlationId,
     );
@@ -77,7 +66,7 @@ export class BullMQJobDispatcher
   public async dispatchEmail(payload: DispatchEmailJobDto): Promise<void> {
     await this.enqueueJob(
       QUEUES.EMAIL,
-      'process-email',
+      JOB_NAMES.PROCESS_EMAIL,
       payload,
       payload.correlationId,
     );

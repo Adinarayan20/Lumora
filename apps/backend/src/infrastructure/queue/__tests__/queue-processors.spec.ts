@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ReminderQueueProcessor } from '../processors/reminder-queue.processor.js';
 import { NotificationQueueProcessor } from '../processors/notification-queue.processor.js';
@@ -6,9 +6,13 @@ import { EmailQueueProcessor } from '../processors/email-queue.processor.js';
 
 vi.mock('bullmq', () => {
   return {
-    Worker: vi.fn().mockImplementation((name: string, handler: any) => ({
+    Worker: vi.fn().mockImplementation((name: string) => ({
       name,
-      handler,
+      on: vi.fn(),
+      close: vi.fn().mockResolvedValue(undefined),
+    })),
+    QueueEvents: vi.fn().mockImplementation((name: string) => ({
+      name,
       on: vi.fn(),
       close: vi.fn().mockResolvedValue(undefined),
     })),
@@ -16,12 +20,15 @@ vi.mock('bullmq', () => {
 });
 
 describe('Queue Processors Unit Tests', () => {
-  let mockConfigService: any;
+  let mockConnectionProvider: any;
   let mockQueueOptionsProvider: any;
 
   beforeEach(() => {
-    mockConfigService = {
-      get: vi.fn().mockReturnValue('redis://localhost:6379'),
+    mockConnectionProvider = {
+      getConnectionOptions: vi.fn().mockReturnValue({
+        host: 'localhost',
+        port: 6379,
+      }),
     };
     mockQueueOptionsProvider = {
       concurrency: 5,
@@ -30,7 +37,7 @@ describe('Queue Processors Unit Tests', () => {
 
   it('should initialize and destroy ReminderQueueProcessor worker cleanly', async () => {
     const processor = new ReminderQueueProcessor(
-      mockConfigService,
+      mockConnectionProvider,
       mockQueueOptionsProvider,
     );
 
@@ -40,7 +47,7 @@ describe('Queue Processors Unit Tests', () => {
 
   it('should initialize and destroy NotificationQueueProcessor worker cleanly', async () => {
     const processor = new NotificationQueueProcessor(
-      mockConfigService,
+      mockConnectionProvider,
       mockQueueOptionsProvider,
     );
 
@@ -50,7 +57,7 @@ describe('Queue Processors Unit Tests', () => {
 
   it('should initialize and destroy EmailQueueProcessor worker cleanly', async () => {
     const processor = new EmailQueueProcessor(
-      mockConfigService,
+      mockConnectionProvider,
       mockQueueOptionsProvider,
     );
 

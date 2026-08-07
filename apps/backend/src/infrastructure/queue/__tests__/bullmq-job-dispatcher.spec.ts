@@ -14,12 +14,15 @@ vi.mock('bullmq', () => {
 
 describe('BullMQJobDispatcher Unit Tests', () => {
   let dispatcher: BullMQJobDispatcher;
-  let mockConfigService: any;
+  let mockConnectionProvider: any;
   let mockQueueOptionsProvider: any;
 
   beforeEach(() => {
-    mockConfigService = {
-      get: vi.fn().mockReturnValue('redis://localhost:6379'),
+    mockConnectionProvider = {
+      getConnectionOptions: vi.fn().mockReturnValue({
+        host: 'localhost',
+        port: 6379,
+      }),
     };
 
     mockQueueOptionsProvider = {
@@ -30,7 +33,7 @@ describe('BullMQJobDispatcher Unit Tests', () => {
     };
 
     dispatcher = new BullMQJobDispatcher(
-      mockConfigService,
+      mockConnectionProvider,
       mockQueueOptionsProvider,
     );
     dispatcher.onModuleInit();
