@@ -23,6 +23,9 @@ export interface CreateReminderCommand {
   dto: CreateReminderDto;
 }
 
+/**
+ * @deprecated — Replaced by ScheduleReminderUseCase (aggregate-backed). Scheduled for removal in Phase 4.
+ */
 @Injectable()
 export class CreateReminderFacadeUseCase {
   constructor(private readonly service: RemindersService) {}

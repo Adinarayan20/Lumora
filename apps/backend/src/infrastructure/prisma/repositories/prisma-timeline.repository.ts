@@ -104,7 +104,7 @@ export class PrismaTimelineRepository implements ITimelineRepository {
       workspaceId: entity.workspaceId.toString(),
       userId: entity.userId.toString(),
       action: entity.action.getValue(),
-      metadata: (entity.metadata as Prisma.InputJsonValue) ?? null,
+      metadata: entity.metadata ?? null,
       startedAt: entity.timestamp,
       endedAt: null,
       timezone: 'UTC',

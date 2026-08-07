@@ -10,6 +10,9 @@ export interface CreateObjectCommand {
   dto: CreateObjectDto;
 }
 
+/**
+ * @deprecated — Replaced by CreateObjectUseCase (aggregate-backed). Scheduled for removal in Phase 4.
+ */
 @Injectable()
 export class CreateObjectFacadeUseCase {
   constructor(private readonly objectsService: ObjectsService) {}

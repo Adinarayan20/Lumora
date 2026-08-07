@@ -14,7 +14,7 @@ import { PermissionsGuard } from '../rbac/guards/permissions.guard';
 import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator';
 import { Permissions } from '../rbac/constants/permissions';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { CreateObjectFacadeUseCase } from './use-cases/create-object-facade.use-case.js';
+import { CreateObjectUseCase } from './use-cases/create-object.use-case.js';
 import { GetWorkspaceObjectsQuery } from './use-cases/get-workspace-objects.query.js';
 import { GetObjectQuery } from './use-cases/get-object.query.js';
 import { UpdateObjectUseCase } from './use-cases/update-object.use-case.js';
@@ -27,7 +27,7 @@ import { FilterObjectDto } from './dto/filter-object.dto';
 @Controller('workspaces/:workspaceId/objects')
 export class ObjectsController {
   constructor(
-    private readonly createObjectUseCase: CreateObjectFacadeUseCase,
+    private readonly createObjectUseCase: CreateObjectUseCase,
     private readonly getWorkspaceObjectsQuery: GetWorkspaceObjectsQuery,
     private readonly getObjectQuery: GetObjectQuery,
     private readonly updateObjectUseCase: UpdateObjectUseCase,

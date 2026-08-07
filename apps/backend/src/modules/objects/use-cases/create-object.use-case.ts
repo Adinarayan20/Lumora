@@ -13,7 +13,7 @@ import { CreateObjectDto } from '../dto/create-object.dto.js';
 import { ObjectResponseDto } from '../dto/object-response.dto.js';
 import { ObjectResponseMapper } from '../mappers/object-response.mapper.js';
 
-export const OBJECT_REPOSITORY_TOKEN = 'IObjectRepository';
+import { OBJECT_REPOSITORY_TOKEN } from '../objects.tokens.js';
 
 export interface CreateObjectCommand {
   workspaceId: string;

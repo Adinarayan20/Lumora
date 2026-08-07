@@ -9,7 +9,7 @@ import { CreateReminderDto } from '../dto/create-reminder.dto.js';
 import { ReminderResponseDto } from '../dto/reminder-response.dto.js';
 import { ReminderResponseMapper } from '../mappers/reminder-response.mapper.js';
 
-export const REMINDER_REPOSITORY_TOKEN = 'IReminderRepository';
+import { REMINDER_REPOSITORY_TOKEN } from '../reminders.tokens.js';
 
 export interface ScheduleReminderCommand {
   workspaceId: string;

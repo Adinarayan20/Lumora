@@ -16,8 +16,8 @@ import { PermissionsGuard } from '../rbac/guards/permissions.guard';
 import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator';
 import { Permissions } from '../rbac/constants/permissions';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { ScheduleReminderUseCase } from './use-cases/schedule-reminder.use-case.js';
 import {
-  CreateReminderFacadeUseCase,
   GetWorkspaceRemindersQuery,
   GetObjectRemindersQuery,
   GetReminderQuery,
@@ -37,7 +37,7 @@ import { SnoozeReminderDto } from './dto/snooze-reminder.dto';
 @Controller('workspaces/:workspaceId')
 export class RemindersController {
   constructor(
-    private readonly createReminderUseCase: CreateReminderFacadeUseCase,
+    private readonly createReminderUseCase: ScheduleReminderUseCase,
     private readonly getWorkspaceRemindersQuery: GetWorkspaceRemindersQuery,
     private readonly getObjectRemindersQuery: GetObjectRemindersQuery,
     private readonly getReminderQuery: GetReminderQuery,
@@ -59,9 +59,11 @@ export class RemindersController {
   ) {
     const result = await this.createReminderUseCase.execute({
       workspaceId,
-      objectId,
-      userId,
-      dto,
+      createdById: userId,
+      dto: {
+        ...dto,
+        objectId: dto.objectId || objectId,
+      },
     });
     if (result.isFailure) throw result.getError();
     return result.getValue();

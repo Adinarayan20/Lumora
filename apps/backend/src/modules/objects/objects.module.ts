@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
-import { ObjectsController } from './objects.controller';
-import { ObjectsService } from './objects.service';
-import { ObjectRepository } from './repositories/object.repository';
-import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
-import { RbacModule } from '../rbac/rbac.module';
-import { AuthModule } from '../auth/auth.module';
-import { CreateObjectFacadeUseCase } from './use-cases/create-object-facade.use-case';
-import { GetWorkspaceObjectsQuery } from './use-cases/get-workspace-objects.query';
-import { GetObjectQuery } from './use-cases/get-object.query';
-import { UpdateObjectUseCase } from './use-cases/update-object.use-case';
-import { DeleteObjectUseCase } from './use-cases/delete-object.use-case';
+import { ObjectsController } from './objects.controller.js';
+import { ObjectsService } from './objects.service.js';
+import { ObjectRepository } from './repositories/object.repository.js';
+import { PrismaModule } from '../../infrastructure/prisma/prisma.module.js';
+import { RbacModule } from '../rbac/rbac.module.js';
+import { AuthModule } from '../auth/auth.module.js';
+import { OBJECT_REPOSITORY_TOKEN } from './objects.tokens.js';
+import { CreateObjectUseCase } from './use-cases/create-object.use-case.js';
+import { GetWorkspaceObjectsQuery } from './use-cases/get-workspace-objects.query.js';
+import { GetObjectQuery } from './use-cases/get-object.query.js';
+import { UpdateObjectUseCase } from './use-cases/update-object.use-case.js';
+import { DeleteObjectUseCase } from './use-cases/delete-object.use-case.js';
 
 @Module({
   imports: [PrismaModule, RbacModule, AuthModule],
@@ -17,12 +18,16 @@ import { DeleteObjectUseCase } from './use-cases/delete-object.use-case';
   providers: [
     ObjectsService,
     ObjectRepository,
-    CreateObjectFacadeUseCase,
+    {
+      provide: OBJECT_REPOSITORY_TOKEN,
+      useClass: ObjectRepository,
+    },
+    CreateObjectUseCase,
     GetWorkspaceObjectsQuery,
     GetObjectQuery,
     UpdateObjectUseCase,
     DeleteObjectUseCase,
   ],
-  exports: [ObjectsService, ObjectRepository],
+  exports: [ObjectsService, ObjectRepository, OBJECT_REPOSITORY_TOKEN],
 })
 export class ObjectsModule {}
