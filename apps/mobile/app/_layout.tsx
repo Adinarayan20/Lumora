@@ -45,15 +45,22 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+import { ViewportProvider, ThemeProvider as LumoraThemeProvider } from '@lumora/theme';
+
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+    <ViewportProvider>
+      <LumoraThemeProvider initialMode={colorScheme === 'dark' ? 'dark' : 'light'}>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="design-system" options={{ title: 'Design System Playground', headerShown: true }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          </Stack>
+        </ThemeProvider>
+      </LumoraThemeProvider>
+    </ViewportProvider>
   );
 }

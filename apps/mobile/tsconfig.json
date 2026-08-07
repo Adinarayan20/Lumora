@@ -5,6 +5,12 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@lumora/theme": [
+        "../../packages/theme/index.ts"
+      ],
+      "@lumora/ui": [
+        "../../packages/ui/index.ts"
       ]
     }
   },

@@ -25,6 +25,7 @@ export interface ViewportState {
   readonly gutter: number;
   readonly pagePadding: number;
   readonly maxContentWidth: number;
+  readonly maxReadingWidth: number;
   readonly cardWidth: number;
   readonly dialogWidth: number;
   readonly fabOffset: number;
@@ -53,6 +54,7 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
     let gutter = 16;
     let pagePadding = 16;
     let maxContentWidth = 600;
+    let maxReadingWidth = 680;
     let cardWidth = width - 32;
     let dialogWidth = Math.min(width - 32, 480);
     let sheetWidth = width;
@@ -72,6 +74,7 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       gutter = 40;
       pagePadding = 64;
       maxContentWidth = 800;
+      maxReadingWidth = 680;
       cardWidth = 380;
       dialogWidth = 560;
       sheetWidth = 640;
@@ -83,6 +86,7 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       gutter = 32;
       pagePadding = 40;
       maxContentWidth = 720;
+      maxReadingWidth = 680;
       cardWidth = 340;
       dialogWidth = 520;
       sheetWidth = 580;
@@ -94,6 +98,7 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       gutter = 24;
       pagePadding = 32;
       maxContentWidth = 680;
+      maxReadingWidth = 680;
       cardWidth = 320;
       dialogWidth = 480;
       sheetWidth = 520;
@@ -105,6 +110,7 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       gutter = 20;
       pagePadding = 24;
       maxContentWidth = 600;
+      maxReadingWidth = 680;
       cardWidth = (width - 68) / 2;
       dialogWidth = 460;
       sheetWidth = 480;
@@ -133,6 +139,7 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       gutter,
       pagePadding,
       maxContentWidth,
+      maxReadingWidth,
       cardWidth,
       dialogWidth,
       fabOffset,
