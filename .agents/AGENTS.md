@@ -1,93 +1,132 @@
-# Lumora Development Constitution
+# Lumora Development Constitution & Engineering Manifesto
+
+> **CORE OVERRIDING MANDATE**: Lumora is a platform, not a collection of features. Every architectural decision must increase the platform's ability to support future object types without requiring rewrites.
+
+---
 
 ## Core Mandates & Engineering Philosophy
 - **Role**: Lead Staff Software Engineer (30+ years enterprise experience).
 - **Goal**: Production-quality, highly scalable platform built to last without rewrites.
-- **Product Model**: Lumora is an AI-ready Life Operating System built around a **Universal Object Model** (Everything is an Object: Reminder, Note, Task, Event, Habit, Document, Collection, etc.).
-- **Stage**: Engineering & Implementation Phase.
+- **Product Model**: Lumora is NOT a productivity app. Lumora is an AI-ready Personal Life Operating System built around a **Universal Object Model** (Everything is an Object: Reminder, Note, Task, Event, Habit, Document, Collection, etc.).
+- **Mission**: Build Lumora with production-grade engineering standards comparable to world-class software products. Every architectural decision must optimize for scalability, maintainability, performance, and long-term extensibility.
 
-## Architectural & Code Standards
-1. **Layered Architecture**: Business Logic → Repository → Database → API → UI.
-   - Zero business logic in UI components.
-   - Zero database logic in controllers.
-2. **Single Responsibility & File Size**:
-   - ~100–200 lines per file naturally split by responsibility (e.g., `CreateReminderUseCase`, `UpdateReminderUseCase`, `ReminderRepository`, `ReminderScheduler`).
-3. **Module Independence & Resilience**:
-   - Auth, Reminders, Objects, Workspaces must be independently maintainable.
-   - Failure in one module must NEVER crash unrelated modules. Graceful degradation required.
-4. **Deterministic Business Logic**:
-   - Zero hidden side-effects, centralized validation, explicit error handling.
-   - Never silently ignore errors or crash on isolated failures.
-5. **AI-Optional**:
-   - AI capabilities must be completely optional. Core system functions 100% without AI.
-6. **UI Discipline**:
-   - Clean component architecture only. Do not invent themes, colors, branding, or animations without explicit UI design specs.
+---
+
+## Lumora Engineering Manifesto — Non-Negotiable Rules
+
+1. **Never Hardcode Business Logic**: Everything must be metadata-driven or configuration-driven wherever possible.
+2. **Never Duplicate Code**: One implementation should support every object type.
+3. **Domain Layer is Single Source of Truth**: UI, database, networking, notifications, and future AI must never contain business rules.
+4. **Performance First**: Every feature must be designed for speed before features or visual effects.
+5. **Offline First**: Core functionality must continue working without internet whenever possible.
+6. **Scalable First**: The architecture must support millions of objects and future modules without rewrites.
+7. **Maintainability First**: Future developers should understand the code quickly.
+8. **Testability First**: Business logic must be isolated and easy to test.
+9. **Accessibility First**: Support accessibility features from the beginning.
+10. **Security First**: Never expose sensitive information or create insecure data flows.
+
+---
+
+## Strategic Architectural Principles
+
+### 1. Metadata Before Code
+Before creating new code, always ask: **Can this be solved by metadata?** If yes, prefer metadata over new implementations. New object types should rarely require new business logic.
+
+### 2. Extension Before Modification (Open/Closed Principle)
+Open for extension, closed for modification. Prefer extending the platform via plugins, capabilities, or hooks instead of editing existing stable modules.
+
+### 3. Event-Driven Mindset & Domain Events
+Business events are first-class citizens. Objects emit domain events (`ObjectCreated`, `ReminderCompleted`, `TimelineRecorded`, `TemplateInstalled`, `NotificationScheduled`). Future modules subscribe to events instead of tightly coupling, maintaining complete module independence.
+
+### 4. Observability First
+Every critical operation must be observable via structured JSON logging, Prometheus metrics, OpenTelemetry distributed tracing, production health endpoints (`/health/live`, `/health/ready`, `/health/startup`), and explicit error reporting. Never deploy code that cannot be monitored.
+
+### 5. API Compatibility & Evolution
+Public APIs must remain backward compatible whenever possible. Breaking changes require versioning and a documented migration path. Never remove or rename public contracts without a formal deprecation period.
+
+### 6. Feature Flags
+Every major feature must support staged rollouts. Feature lifecycle states: `Disabled` → `Experimental` → `Beta` → `Stable` → `Deprecated`.
+
+### 7. Zero Magic
+No hidden behavior. Every action must be explicit, transparent, and predictable. Avoid implicit business rules, reflection-based surprises, or hidden side-effect dependencies.
+
+### 8. Data Model Permanence
+Data survives forever while UI, APIs, AI integrations, and storage mechanisms change. The core data model must be engineered to require the fewest database migrations over the product lifetime.
+
+### 9. Universal Object Inheritance
+Every object created in Lumora automatically inherits all Universal Capabilities without exception:
+- **Identity & Metadata**: Unique GUIDs, type key, custom attributes.
+- **Timeline & History**: Full creation, mutation, and audit trail.
+- **Relationships**: Parent/child hierarchies, links, back-references.
+- **Notifications & Reminders**: Native trigger engine support.
+- **Attachments & Media**: Unified file asset linking.
+- **Organization**: Tags, Collections, Archive, Favorites, Pins.
+- **Search**: Automatic global search index generation.
+- **Permissions, AI Hooks & Analytics**: Future capability entry points.
+
+### 10. Template & Starter Library Philosophy
+Templates are first-class citizens. The Starter Library ships built-in templates; community and premium templates follow later. All templates must be installable, versioned, exportable, and replaceable.
+
+### 11. Community Extension Architecture
+The Community ecosystem is an extension, not a core dependency. Every community feature builds upon existing personal objects. Personal data remains the ultimate single source of truth.
+
+---
+
+## Performance Budget & Operational Standards
+
+### Explicit Performance Budget
+Every Pull Request must evaluate:
+- **Memory**: Controlled footprint across long sessions.
+- **CPU & Battery**: Minimal CPU wakeups and background battery impact.
+- **Database Queries**: Zero N+1 queries, mandatory cursor pagination, composite index coverage.
+- **Bundle Size**: Continuous tree-shaking, lazy-loading optional modules, compressed vector assets.
+- **Startup & Navigation**: Fast cold starts, instant page transitions.
+- **Rendering**: Zero unnecessary re-renders via windowing/virtualization.
+If a feature exceeds the performance budget, redesign before merging.
+
+---
+
+## Design System, Motion & UX Philosophy
+
+### UX Principles
+- **Never Block the User**: Asynchronous background operations where possible.
+- **Always Show Progress**: Clear feedback indicators for long operations.
+- **Support Undo**: Soft-deletes and reversible actions wherever safe.
+- **Optimistic UI**: Instant local updates with background sync.
+- **Data Safety**: Never lose user data; never surprise the user.
+
+### Lumora Design System Rules
+Strict tokenized design system enforcing:
+- **Design Tokens**: Typography, Color (Tailored HSL), Motion physics, Spacing scales, Elevation levels.
+- **Visual Polish**: Curated glassmorphism, background blurs, vector icon sets.
+- **Accessibility & Responsiveness**: WCAG 2.2 contrast compliance, 48px touch targets, dynamic viewport height (`dvh`). Zero arbitrary ad-hoc UI styles.
+
+### Motion Philosophy
+**Motion should communicate, never distract.** Every animation must explain state changes, guide user attention, or improve perceived performance. Decorative animations everywhere are strictly prohibited.
+
+#### Motion Engine Device Capabilities:
+- **High-End Devices**: Rich ambient glassmorphism effects, advanced shared element transitions.
+- **Mid-Range Devices**: Moderate communication motion.
+- **Low-End Devices**: Minimal motion preserving 60fps smoothness.
+
+---
 
 ## Streamlined Implementation Workflow (Single-Response Execution)
 For every implementation unit, present all 4 steps together in a single response:
-1. **Step 1 — Analyze**:
-   - Purpose, necessity in phase, dependencies, risks, performance, security, scalability.
-2. **Step 2 — Design**:
-   - Folder structure, public interfaces, responsibilities, data flow, dependency boundaries, engineering tradeoffs.
-3. **Step 3 — Implement**:
-   - Production-ready code (~100–200 lines per file), zero placeholders, zero TODOs, strict typing, explicit error handling.
-4. **Step 4 — Self Review & Summary Log**:
-   - Senior staff code audit.
-   - Mandatory Implementation Summary Log:
-     - Implementation Summary
-     - Files Added
-     - Files Modified
-     - Public APIs Added
-     - Breaking Changes
-     - Tests Added
-     - Technical Debt
-     - Future Improvements
+1. **Step 1 — Analyze**: Purpose, phase necessity, dependencies, risks, performance, security, scalability.
+2. **Step 2 — Design**: Folder structure, public interfaces, responsibilities, data flow, dependency boundaries, engineering tradeoffs.
+3. **Step 3 — Implement**: Production-ready code (~100–200 lines per file), zero placeholders, zero TODOs, strict typing, explicit error handling.
+4. **Step 4 — Self Review & Summary Log**: Senior staff audit with mandatory Implementation Summary Log.
+
+---
 
 ## Locked Infrastructure & Persistence Isolation Rules
-1. **Prisma Infrastructure Boundary**: Prisma must exist ONLY inside the infrastructure layer (`apps/backend/src/infrastructure/prisma/`).
+1. **Prisma Infrastructure Boundary**: Prisma exists ONLY inside `apps/backend/src/infrastructure/prisma/`.
 2. **Shared Package Independence**: `@lumora/shared` must NEVER import Prisma.
 3. **Domain Purity**: Domain entities, repositories, events, value objects, and use cases must NEVER import Prisma types.
 4. **Persistence Model Isolation**: Prisma models are persistence models only.
-5. **Bidirectional Mapping**: Repository implementations are strictly responsible for mapping `Prisma Model ↔ Domain Entity`.
-6. **Client Encapsulation**: Never expose `PrismaClient` outside the infrastructure layer.
-7. **Entity Return Guarantee**: Repositories MUST return domain entities or primitives—NEVER Prisma model instances.
-8. **Direct Query Prohibition**: Never allow controllers, services, or use cases to execute Prisma queries directly.
-9. **Repository Access Only**: All database access must go through repository implementations.
-10. **Infrastructure Replaceability**: `PrismaService` is infrastructure-only and must remain replaceable without changing domain code.
-11. **Strict Layer Dependency Direction**: Dependency flow must strictly follow: `UI → Application → Domain → Infrastructure`. Infrastructure may depend on Domain; Domain must NEVER depend on Infrastructure.
-
-## Engineering Performance & Quality Standards
-
-### Performance First
-- Lumora must feel instant.
-- Every architectural decision considers startup time, rendering performance, memory footprint, battery consumption, database query efficiency, and network payload size.
-
-### Mobile Performance Goals (React Native / Expo)
-- Fast cold starts and instant navigation transitions.
-- Eliminate unnecessary rerenders. Support lists of thousands of objects via windowing/virtualization.
-- Stable memory consumption across long user sessions; low battery impact; controlled bundle size.
-
-### Database & Query Standards
-- Prevent N+1 queries. Never load unneeded columns.
-- Ensure composite index coverage for frequent access paths.
-- Mandatory cursor/keyset pagination for collections. Avoid long-running transactions.
-
-### API Standards
-- Return only requested fields. Compact, structured payloads.
-- Native support for pagination, filtering, and sorting. Design for backward-compatible evolution.
-
-### React Native Standards
-- Minimize state overhead and component nesting.
-- Avoid overusing Context; memoize only with explicit performance evidence.
-
-### Reliability & Resilience
-- Module isolation: A failure in one domain must NEVER crash unrelated domains.
-- Explicit error handling: Graceful degradation with zero uncaught top-level exceptions.
-
-### Security & Input Discipline
-- Zero trust on external client inputs: Mandatory schema validation at API boundaries.
-- Least privilege access control enforced by RBAC guards.
-
-### Scalability Mindset
-- Systems designed to manage millions of objects per tenant.
-- Scalable repository queries, outbox queue dispatching, and background workers.
+5. **Bidirectional Mapping**: Repositories strictly map `Prisma Model ↔ Domain Entity`.
+6. **Client Encapsulation**: Never expose `PrismaClient` outside infrastructure.
+7. **Entity Return Guarantee**: Repositories return domain entities or primitives—NEVER Prisma model instances.
+8. **Direct Query Prohibition**: No controllers, services, or use cases may execute Prisma queries directly.
+9. **Strict Layer Dependency Direction**: `UI → Application → Domain → Infrastructure`. Infrastructure may depend on Domain; Domain must NEVER depend on Infrastructure.
