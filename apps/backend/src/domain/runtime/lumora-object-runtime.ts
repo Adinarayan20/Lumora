@@ -5,6 +5,7 @@ import {
   DomainValidationException,
   RuntimeState,
   Result,
+  SchemaMigrationEngine,
 } from '@lumora/shared';
 import type {
   SchemaDefinition,
@@ -99,6 +100,20 @@ export class LumoraObjectRuntime extends AggregateRoot<UniqueEntityId> {
       return Result.fail(
         new DomainValidationException(
           `Attribute key '${key}' does not exist in schema for object type '${this.schema.typeKey}'.`,
+        ),
+      );
+    }
+
+    // Perform strict schema attribute type validation
+    try {
+      SchemaMigrationEngine.validateAttributeValue(fieldSchema, value);
+    } catch (err) {
+      if (err instanceof DomainValidationException) {
+        return Result.fail(err);
+      }
+      return Result.fail(
+        new DomainValidationException(
+          `Validation failed for attribute '${key}': ${err instanceof Error ? err.message : String(err)}`,
         ),
       );
     }

@@ -4,6 +4,8 @@
 export interface ValidationRule {
   readonly min?: number;
   readonly max?: number;
+  readonly minLength?: number;
+  readonly maxLength?: number;
   readonly pattern?: string;
   readonly required?: boolean;
   readonly options?: readonly string[];

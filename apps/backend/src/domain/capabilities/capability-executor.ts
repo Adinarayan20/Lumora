@@ -3,6 +3,7 @@ import {
   Result,
   CapabilityId,
   FailurePolicy,
+  ExecutionPolicy,
   CapabilityExecutedEvent,
   DomainValidationException,
 } from '@lumora/shared';
@@ -74,76 +75,29 @@ export class CapabilityExecutor {
 
     try {
       // 1. BEFORE_VALIDATION
-      for (const cap of activeCaps) {
-        const handler = this.handlers.get(cap.key);
-        if (handler?.beforeValidation) {
-          await this.safelyExecuteHook(
-            cap,
-            'beforeValidation',
-            () => handler.beforeValidation!(runtime, context),
-            runtime,
-            context,
-          );
-        }
-      }
+      await this.dispatchPhase(
+        activeCaps,
+        'beforeValidation',
+        runtime,
+        context,
+      );
 
       // 2. BEFORE_EXECUTION
-      for (const cap of activeCaps) {
-        const handler = this.handlers.get(cap.key);
-        if (handler?.beforeExecution) {
-          await this.safelyExecuteHook(
-            cap,
-            'beforeExecution',
-            () => handler.beforeExecution!(runtime, context),
-            runtime,
-            context,
-          );
-        }
-      }
+      await this.dispatchPhase(activeCaps, 'beforeExecution', runtime, context);
 
       // 3. BEFORE_COMMIT
-      for (const cap of activeCaps) {
-        const handler = this.handlers.get(cap.key);
-        if (handler?.beforeCommit) {
-          await this.safelyExecuteHook(
-            cap,
-            'beforeCommit',
-            () => handler.beforeCommit!(runtime, context),
-            runtime,
-            context,
-          );
-        }
-      }
+      await this.dispatchPhase(activeCaps, 'beforeCommit', runtime, context);
 
       // 4. CORE ACTION MUTATION
       await updateAction();
 
       // 5. AFTER_COMMIT
-      for (const cap of activeCaps) {
-        const handler = this.handlers.get(cap.key);
-        if (handler?.afterCommit) {
-          await this.safelyExecuteHook(
-            cap,
-            'afterCommit',
-            () => handler.afterCommit!(runtime, context),
-            runtime,
-            context,
-          );
-        }
-      }
+      await this.dispatchPhase(activeCaps, 'afterCommit', runtime, context);
 
       // 6. AFTER_EXECUTION
+      await this.dispatchPhase(activeCaps, 'afterExecution', runtime, context);
+
       for (const cap of activeCaps) {
-        const handler = this.handlers.get(cap.key);
-        if (handler?.afterExecution) {
-          await this.safelyExecuteHook(
-            cap,
-            'afterExecution',
-            () => handler.afterExecution!(runtime, context),
-            runtime,
-            context,
-          );
-        }
         runtime.recordDomainEvent(
           new CapabilityExecutedEvent(
             runtime.aggregate.id,
@@ -170,28 +124,87 @@ export class CapabilityExecutor {
     }
   }
 
-  private async safelyExecuteHook(
-    cap: CapabilityDescriptor,
-    hookName: string,
-    hookCall: () => Promise<void>,
+  private async dispatchPhase(
+    caps: readonly CapabilityDescriptor[],
+    hookName: keyof CapabilityHookHandler,
     runtime: LumoraObjectRuntime,
     context: ExecutionContext,
   ): Promise<void> {
-    try {
-      await hookCall();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      const handler = this.handlers.get(cap.key);
-      if (handler?.onFailure) {
-        await handler.onFailure(runtime, context, err);
-      }
+    const parallelCaps = caps.filter(
+      (c) => c.executionPolicy === ExecutionPolicy.PARALLEL,
+    );
+    const sequentialCaps = caps.filter(
+      (c) => c.executionPolicy !== ExecutionPolicy.PARALLEL,
+    );
 
-      if (cap.failurePolicy === FailurePolicy.FAIL_FAST) {
-        throw err;
-      } else {
-        this.logger.warn(
-          `Capability '${cap.key}' hook '${hookName}' failed with failurePolicy=${cap.failurePolicy}: ${err.message}`,
-        );
+    // Run parallel execution policy capabilities concurrently
+    if (parallelCaps.length > 0) {
+      await Promise.all(
+        parallelCaps.map((cap) =>
+          this.executeCapabilityHook(cap, hookName, runtime, context),
+        ),
+      );
+    }
+
+    // Run sequential / exclusive capabilities serially
+    for (const cap of sequentialCaps) {
+      await this.executeCapabilityHook(cap, hookName, runtime, context);
+    }
+  }
+
+  private async executeCapabilityHook(
+    cap: CapabilityDescriptor,
+    hookName: keyof CapabilityHookHandler,
+    runtime: LumoraObjectRuntime,
+    context: ExecutionContext,
+  ): Promise<void> {
+    const handler = this.handlers.get(cap.key);
+    const hookFn = handler?.[hookName] as
+      | ((
+          runtime: LumoraObjectRuntime,
+          context: ExecutionContext,
+        ) => Promise<void>)
+      | undefined;
+    if (!hookFn) return;
+
+    let attempts = 0;
+    const maxAttempts = cap.failurePolicy === FailurePolicy.RETRY ? 3 : 1;
+
+    while (attempts < maxAttempts) {
+      attempts += 1;
+      try {
+        await hookFn(runtime, context);
+        return; // Success
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+
+        if (handler?.onFailure) {
+          try {
+            await handler.onFailure(runtime, context, err);
+          } catch (onFailureErr) {
+            this.logger.error(
+              `Capability '${cap.key}' onFailure handler failed: ${onFailureErr instanceof Error ? onFailureErr.message : String(onFailureErr)}`,
+            );
+          }
+        }
+
+        if (attempts < maxAttempts) {
+          this.logger.warn(
+            `Retrying capability '${cap.key}' hook '${hookName}' (attempt ${attempts}/${maxAttempts})...`,
+          );
+          continue;
+        }
+
+        if (cap.failurePolicy === FailurePolicy.FAIL_FAST) {
+          throw err;
+        } else if (cap.failurePolicy === FailurePolicy.IGNORE) {
+          return; // Ignore completely without warning log
+        } else {
+          this.logger.warn(
+            `Capability '${cap.key}' hook '${hookName}' failed with failurePolicy=${cap.failurePolicy}: ${err.message}`,
+          );
+          return;
+        }
       }
     }
   }

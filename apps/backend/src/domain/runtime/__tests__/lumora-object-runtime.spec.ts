@@ -5,8 +5,9 @@ import {
   SystemTrait,
   ExecutionPolicy,
   FailurePolicy,
-  RuntimeState,
   ObjectTypeKey,
+  DomainValidationException,
+  CatalogEventName,
 } from '@lumora/shared';
 import type { ExecutionContext } from '@lumora/shared';
 import { ObjectAggregate } from '../../objects/object.aggregate.js';
@@ -18,7 +19,7 @@ import { UniversalCapabilityEngine } from '../../capabilities/universal-capabili
 import { LumoraObjectRuntime } from '../lumora-object-runtime.js';
 
 describe('LumoraObjectRuntime & UniversalCapabilityEngine', () => {
-  it('should validate capabilities against required traits and prerequisite dependencies', () => {
+  it('should validate capabilities against required traits and prerequisite dependencies with version ranges', () => {
     const registry = new CapabilityRegistry();
     const executor = new CapabilityExecutor(registry);
     const engine = new UniversalCapabilityEngine(registry, executor);
@@ -83,7 +84,130 @@ describe('LumoraObjectRuntime & UniversalCapabilityEngine', () => {
     expect(invalidTraitResult.isFailure).toBe(true);
   });
 
-  it('should execute immutable attribute updates through CapabilityExecutor pipeline', async () => {
+  it('should throw DomainValidationException when circular dependencies exist', () => {
+    const registry = new CapabilityRegistry();
+    const executor = new CapabilityExecutor(registry);
+    const engine = new UniversalCapabilityEngine(registry, executor);
+
+    registry.register({
+      key: 'a',
+      name: 'A',
+      description: 'A',
+      version: '1.0.0',
+      priority: 1,
+      executionOrder: 1,
+      defaultEnabled: true,
+      systemRequired: false,
+      cannotDisable: false,
+      isExperimental: false,
+      executionPolicy: ExecutionPolicy.SEQUENTIAL,
+      failurePolicy: FailurePolicy.FAIL_FAST,
+      supportsOffline: true,
+      supportsUndo: false,
+      dependencies: [
+        {
+          capabilityKey: 'b',
+          dependencyType: 'REQUIRED',
+          versionRange: '1.0.0',
+        },
+      ],
+      requiredTraits: [],
+    });
+
+    expect(() =>
+      engine.registerCapability({
+        key: 'b',
+        name: 'B',
+        description: 'B',
+        version: '1.0.0',
+        priority: 2,
+        executionOrder: 2,
+        defaultEnabled: true,
+        systemRequired: false,
+        cannotDisable: false,
+        isExperimental: false,
+        executionPolicy: ExecutionPolicy.SEQUENTIAL,
+        failurePolicy: FailurePolicy.FAIL_FAST,
+        supportsOffline: true,
+        supportsUndo: false,
+        dependencies: [
+          {
+            capabilityKey: 'a',
+            dependencyType: 'REQUIRED',
+            versionRange: '1.0.0',
+          },
+        ],
+        requiredTraits: [],
+      }),
+    ).toThrow(DomainValidationException);
+  });
+
+  it('should reject attribute updates with invalid schema types', async () => {
+    const registry = new CapabilityRegistry();
+    const executor = new CapabilityExecutor(registry);
+    const engine = new UniversalCapabilityEngine(registry, executor);
+
+    const workspaceId = new UniqueEntityId();
+    const userId = new UniqueEntityId();
+    const typeKey = ObjectTypeKey.NOTE;
+
+    const aggregate = ObjectAggregate.create({
+      workspaceId,
+      createdById: userId,
+      objectKey: ObjectKey.create('task-123'),
+      typeKey,
+      title: ObjectTitle.create('Complete Task'),
+    });
+
+    const runtime = LumoraObjectRuntime.create({
+      aggregate,
+      schema: {
+        typeKey,
+        schemaVersion: 1,
+        fields: [
+          {
+            key: 'priorityNumber',
+            label: 'Priority Number',
+            type: FieldType.NUMBER,
+            validation: { min: 1, max: 10 },
+          },
+        ],
+      },
+      definition: {
+        typeKey,
+        name: 'Task',
+        pluralName: 'Tasks',
+        icon: 'task-icon',
+        allowedCapabilities: [],
+        traits: [],
+        schemaVersion: 1,
+      },
+      activeCapabilities: [],
+    });
+
+    const context: ExecutionContext = {
+      workspaceId: workspaceId.toValue(),
+      userId: userId.toValue(),
+      transactionId: 'tx-123',
+      timezone: 'UTC',
+      locale: 'en-US',
+      permissions: ['task:write'],
+      device: { platform: 'web', isOffline: false, appVersion: '1.0.0' },
+      featureFlags: {},
+      timestamp: new Date(),
+    };
+
+    const invalidResult = await runtime.updateAttribute(
+      'priorityNumber',
+      'NOT_A_NUMBER',
+      context,
+      engine.executor,
+    );
+
+    expect(invalidResult.isFailure).toBe(true);
+  });
+
+  it('should execute attribute updates and emit CAPABILITY_EXECUTED event', async () => {
     const registry = new CapabilityRegistry();
     const executor = new CapabilityExecutor(registry);
     const engine = new UniversalCapabilityEngine(registry, executor);
@@ -173,6 +297,8 @@ describe('LumoraObjectRuntime & UniversalCapabilityEngine', () => {
     expect(updateResult.isSuccess).toBe(true);
     expect(beforeHook).toHaveBeenCalled();
     expect(runtime.getAttribute('priority')).toBe('HIGH');
-    expect(runtime.state).toBe(RuntimeState.ACTIVE);
+    expect(
+      runtime.domainEvents[runtime.domainEvents.length - 1].eventName,
+    ).toBe(CatalogEventName.CAPABILITY_EXECUTED);
   });
 });

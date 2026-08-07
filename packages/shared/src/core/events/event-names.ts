@@ -122,6 +122,7 @@ export const CatalogEventName = {
   SCHEMA_UPDATED: "catalog.schema_updated",
   OBJECT_DEFINITION_REGISTERED: "catalog.definition_registered",
   OBJECT_DEFINITION_UPDATED: "catalog.definition_updated",
+  CAPABILITY_EXECUTED: "capability.executed",
 } as const;
 
 export type CatalogEventName =

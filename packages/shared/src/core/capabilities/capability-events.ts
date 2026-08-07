@@ -6,12 +6,12 @@ import type { InstantString } from "../events/instant-string.js";
 export class CapabilityExecutedEvent
   implements
     DomainEvent<
-      typeof CatalogEventName.OBJECT_DEFINITION_UPDATED,
+      typeof CatalogEventName.CAPABILITY_EXECUTED,
       { capabilityKey: string; actionName: string }
     >
 {
   public readonly eventId: UniqueEntityId;
-  public readonly eventName = CatalogEventName.OBJECT_DEFINITION_UPDATED;
+  public readonly eventName = CatalogEventName.CAPABILITY_EXECUTED;
   public readonly aggregateId: UniqueEntityId;
   public readonly workspaceId: UniqueEntityId;
   public readonly occurredAt: InstantString;
