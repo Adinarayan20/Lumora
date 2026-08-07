@@ -17,6 +17,16 @@ export interface ViewportState {
   readonly gutter: number;
   readonly pagePadding: number;
   readonly maxContentWidth: number;
+  readonly cardWidth: number;
+  readonly dialogWidth: number;
+  readonly fabOffset: number;
+  readonly sheetWidth: number;
+  readonly contentWidth: number;
+  readonly spacing: {
+    readonly small: number;
+    readonly medium: number;
+    readonly large: number;
+  };
   readonly navigationMode: NavigationMode;
 }
 
@@ -35,6 +45,10 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
     let gutter = 16;
     let pagePadding = 16;
     let maxContentWidth = 600;
+    let cardWidth = width - 32;
+    let dialogWidth = Math.min(width - 32, 480);
+    let sheetWidth = width;
+    let fabOffset = 16;
     let navigationMode: NavigationMode = 'bottom-bar';
 
     if (width >= 1600) {
@@ -43,6 +57,10 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       gutter = 40;
       pagePadding = 64;
       maxContentWidth = 800;
+      cardWidth = 380;
+      dialogWidth = 560;
+      sheetWidth = 640;
+      fabOffset = 32;
       navigationMode = 'sidebar';
     } else if (width >= 1200) {
       sizeClass = 'Large';
@@ -50,6 +68,10 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       gutter = 32;
       pagePadding = 40;
       maxContentWidth = 720;
+      cardWidth = 340;
+      dialogWidth = 520;
+      sheetWidth = 580;
+      fabOffset = 24;
       navigationMode = 'sidebar';
     } else if (width >= 840) {
       sizeClass = 'Expanded';
@@ -57,6 +79,10 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       gutter = 24;
       pagePadding = 32;
       maxContentWidth = 680;
+      cardWidth = 320;
+      dialogWidth = 480;
+      sheetWidth = 520;
+      fabOffset = 24;
       navigationMode = 'sidebar';
     } else if (width >= 600) {
       sizeClass = 'Medium';
@@ -64,6 +90,10 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       gutter = 20;
       pagePadding = 24;
       maxContentWidth = 600;
+      cardWidth = (width - 68) / 2;
+      dialogWidth = 460;
+      sheetWidth = 480;
+      fabOffset = 20;
       navigationMode = 'navigation-rail';
     }
 
@@ -80,6 +110,16 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       gutter,
       pagePadding,
       maxContentWidth,
+      cardWidth,
+      dialogWidth,
+      fabOffset,
+      sheetWidth,
+      contentWidth: Math.min(width - pagePadding * 2, maxContentWidth),
+      spacing: {
+        small: gutter / 2,
+        medium: gutter,
+        large: gutter * 1.5,
+      },
       navigationMode,
     };
   }, [width, height]);

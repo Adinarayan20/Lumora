@@ -9,17 +9,23 @@ export interface ComponentThemeTokens {
       readonly hover: string;
       readonly pressed: string;
       readonly glow: string;
+      readonly border: string;
+      readonly disabledBg: string;
+      readonly disabledText: string;
     };
     readonly danger: {
       readonly background: string;
       readonly text: string;
+      readonly hover: string;
+      readonly pressed: string;
     };
   };
   readonly card: {
     readonly default: {
       readonly surface: string;
       readonly border: string;
-      readonly shadow: string;
+      readonly textPrimary: string;
+      readonly textSecondary: string;
     };
     readonly elevated: {
       readonly surface: string;
@@ -47,21 +53,27 @@ export class ComponentTokenResolver {
       button: {
         primary: {
           background: palette.primary,
-          text: '#FFFFFF',
+          text: palette.surface,
           hover: palette.primaryHover,
-          pressed: 'hsl(226, 70%, 45%)',
-          glow: 'rgba(91, 127, 255, 0.18)',
+          pressed: palette.primaryPressed,
+          glow: palette.primaryGlow,
+          border: palette.border,
+          disabledBg: palette.backgroundSecondary,
+          disabledText: palette.textMuted,
         },
         danger: {
           background: palette.danger,
-          text: '#FFFFFF',
+          text: palette.surface,
+          hover: palette.danger,
+          pressed: palette.danger,
         },
       },
       card: {
         default: {
           surface: palette.surface,
           border: palette.border,
-          shadow: mode === 'dark' ? '0 18px 50px rgba(0,0,0,0.45)' : '0 12px 40px rgba(17,24,39,0.08)',
+          textPrimary: palette.textPrimary,
+          textSecondary: palette.textSecondary,
         },
         elevated: {
           surface: palette.surfaceElevated,
@@ -70,13 +82,13 @@ export class ComponentTokenResolver {
       },
       timeline: {
         hero: {
-          border: 'hsl(226, 70%, 55%)',
-          background: mode === 'dark' ? '#1D2430' : '#FCFCFD',
+          border: palette.primary,
+          background: palette.surfaceElevated,
         },
       },
       home: {
         focus: {
-          glow: 'rgba(91, 127, 255, 0.18)',
+          glow: palette.primaryGlow,
         },
       },
     };

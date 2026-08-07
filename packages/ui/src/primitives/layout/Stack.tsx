@@ -1,12 +1,13 @@
 import React from 'react';
-import { View, ViewStyle, StyleSheet } from 'react-native';
-import { useTheme } from '@lumora/theme';
+import { View, ViewStyle } from 'react-native';
+import type { SpacingTokenKey } from '@lumora/theme';
+import { useTheme, SpacingScale } from '@lumora/theme';
 
 export interface StackProps {
   readonly children?: React.ReactNode;
   readonly style?: ViewStyle;
-  readonly padding?: number;
-  readonly gap?: number;
+  readonly padding?: SpacingTokenKey;
+  readonly gap?: SpacingTokenKey;
   readonly background?: string;
 }
 
@@ -20,8 +21,8 @@ export const Stack: React.FC<StackProps> = React.memo(({
   const { colors } = useTheme();
 
   const computedStyle: ViewStyle = {
-    padding: padding ?? 0,
-    gap: gap ?? 0,
+    padding: padding ? SpacingScale[padding] : 0,
+    gap: gap ? SpacingScale[gap] : 0,
     backgroundColor: background ?? colors.background,
   };
 
