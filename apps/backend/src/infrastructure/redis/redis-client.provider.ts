@@ -5,7 +5,8 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Redis } from 'ioredis';
+import Redis from 'ioredis';
+import type { MetricsRegistry } from '../metrics/metrics.registry.js';
 
 export const REDIS_CLIENT_TOKEN = Symbol('REDIS_CLIENT');
 
@@ -14,52 +15,69 @@ export class RedisClientProvider implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(RedisClientProvider.name);
   private client: Redis | null = null;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly metricsRegistry?: MetricsRegistry,
+  ) {}
 
   public async onModuleInit(): Promise<void> {
     const redisUrl = this.configService.get<string>('REDIS_URL');
-
-    if (!redisUrl && process.env.NODE_ENV === 'production') {
+    if (!redisUrl) {
       throw new Error(
         'REDIS_URL environment variable is required in production environment.',
       );
     }
 
-    const targetUrl = redisUrl || 'redis://localhost:6379';
-    this.logger.log('Initializing Redis infrastructure client connection...');
-
-    this.client = new Redis(targetUrl, {
-      maxRetriesPerRequest: 3,
-      enableReadyCheck: true,
-      lazyConnect: false,
-      retryStrategy(times: number) {
-        if (times > 3) {
-          return null; // Stop retrying after 3 attempts to enforce fail-fast startup
-        }
-        return Math.min(times * 100, 1000);
-      },
-    });
-
-    this.client.on('error', (err: Error) => {
-      this.logger.error(
-        `Redis client connection error: ${err.message}`,
-        err.stack,
-      );
-    });
-
-    this.client.on('connect', () => {
-      this.logger.log('Redis client connected successfully.');
-    });
-
     try {
+      this.client = new Redis(redisUrl, {
+        lazyConnect: true,
+        maxRetriesPerRequest: 3,
+        retryStrategy: (times: number) => {
+          if (times > 5) return null;
+          return Math.min(times * 100, 3000);
+        },
+      });
+
+      this.client.on('connect', () => {
+        this.logger.log('Redis client connected successfully.');
+        if (this.metricsRegistry) {
+          this.metricsRegistry.redisConnectionStateGauge.set(1);
+        }
+      });
+
+      this.client.on('ready', () => {
+        if (this.metricsRegistry) {
+          this.metricsRegistry.redisConnectionStateGauge.set(1);
+        }
+      });
+
+      this.client.on('error', (err: Error) => {
+        this.logger.error(`Redis client error: ${err.message}`, err.stack);
+        if (this.metricsRegistry) {
+          this.metricsRegistry.redisConnectionStateGauge.set(0);
+        }
+      });
+
+      this.client.on('close', () => {
+        if (this.metricsRegistry) {
+          this.metricsRegistry.redisConnectionStateGauge.set(0);
+        }
+      });
+
+      this.client.on('end', () => {
+        if (this.metricsRegistry) {
+          this.metricsRegistry.redisConnectionStateGauge.set(0);
+        }
+      });
+
+      await this.client.connect();
       await this.client.ping();
-      this.logger.log('Redis ping health check verified successfully.');
+      this.logger.log('Redis client ping check succeeded.');
     } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error);
-      this.logger.error(`Redis startup health check failed: ${msg}`);
-      throw new Error(
-        `Redis infrastructure initialization failed fast: unable to ping Redis server. Error: ${msg}`,
+      this.logger.error(
+        `Failed fast during Redis initialization: ${(error as Error).message}`,
       );
+      throw error;
     }
   }
 
@@ -74,7 +92,10 @@ export class RedisClientProvider implements OnModuleInit, OnModuleDestroy {
 
   public async onModuleDestroy(): Promise<void> {
     if (this.client) {
-      this.logger.log('Closing Redis client connection cleanly...');
+      this.logger.log('Disconnecting Redis client cleanly...');
+      if (this.metricsRegistry) {
+        this.metricsRegistry.redisConnectionStateGauge.set(0);
+      }
       await this.client.quit();
       this.client = null;
     }

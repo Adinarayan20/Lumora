@@ -22,10 +22,17 @@ export class MetricsRegistry implements OnModuleInit {
   public readonly queueJobsTotal: Counter<string>;
   public readonly queueJobDurationSeconds: Histogram<string>;
   public readonly queueDepthGauge: Gauge<string>;
+  public readonly queueRetriesTotal: Counter<string>;
 
-  // Infrastructure Metrics
+  // Redis & Infrastructure Metrics
   public readonly redisConnectionStateGauge: Gauge<string>;
+
+  // Database Metrics
+  public readonly databaseQueryDurationSeconds: Histogram<string>;
+
+  // Outbox Metrics
   public readonly outboxPendingMessagesGauge: Gauge<string>;
+  public readonly outboxProcessingLagSeconds: Histogram<string>;
 
   constructor(private readonly configService: ConfigService) {
     this.registry = new Registry();
@@ -85,16 +92,40 @@ export class MetricsRegistry implements OnModuleInit {
       registers: [this.registry],
     });
 
-    // Redis & Outbox Metrics Initialization
+    this.queueRetriesTotal = new Counter({
+      name: `${prefix}bullmq_retries_total`,
+      help: 'Total count of BullMQ job retry attempts',
+      labelNames: ['queue', 'event_type'],
+      registers: [this.registry],
+    });
+
+    // Redis Infrastructure Metrics
     this.redisConnectionStateGauge = new Gauge({
       name: `${prefix}redis_connection_state`,
       help: 'Redis infrastructure connection status (1 = connected, 0 = disconnected)',
       registers: [this.registry],
     });
 
+    // Database Metrics
+    this.databaseQueryDurationSeconds = new Histogram({
+      name: `${prefix}database_query_duration_seconds`,
+      help: 'Prisma database query duration in seconds',
+      labelNames: ['model', 'action'],
+      buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5],
+      registers: [this.registry],
+    });
+
+    // Outbox Metrics Initialization
     this.outboxPendingMessagesGauge = new Gauge({
       name: `${prefix}outbox_pending_messages`,
       help: 'Current number of unprocessed domain events in outbox queue',
+      registers: [this.registry],
+    });
+
+    this.outboxProcessingLagSeconds = new Histogram({
+      name: `${prefix}outbox_processing_lag_seconds`,
+      help: 'Lag in seconds between outbox message creation and dispatch',
+      buckets: [0.1, 0.5, 1, 5, 10, 30, 60, 120, 300],
       registers: [this.registry],
     });
   }

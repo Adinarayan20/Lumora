@@ -29,8 +29,17 @@ export abstract class BaseQueueProcessor<T extends { correlationId?: string }>
       this.queueName,
       async (job: Job<T>) => {
         const startTime = Date.now();
+        const attemptsMade = job.attemptsMade;
+
+        if (attemptsMade > 0 && this.metricsRegistry) {
+          this.metricsRegistry.queueRetriesTotal.inc({
+            queue: this.queueName,
+            event_type: job.name,
+          });
+        }
+
         this.logger.log(
-          `Processing job [jobId: ${job.id}, queue: ${this.queueName}, attempt: ${job.attemptsMade + 1}, correlationId: ${job.data.correlationId || 'none'}]`,
+          `Processing job [jobId: ${job.id}, queue: ${this.queueName}, attempt: ${attemptsMade + 1}, correlationId: ${job.data.correlationId || 'none'}]`,
         );
 
         await this.processJobPayload(job.data);
@@ -73,13 +82,16 @@ export abstract class BaseQueueProcessor<T extends { correlationId?: string }>
       }
     });
 
-    // 2. Initialize QueueEvents listener for Prometheus metrics & observability
+    // 2. Initialize QueueEvents listener reusing Unit 3 setup for Prometheus depth metrics & observability
     this.queueEvents = new QueueEvents(this.queueName, { connection });
 
     this.queueEvents.on('waiting', ({ jobId }) => {
       this.logger.debug(
         `[QueueEvent:waiting] jobId: ${jobId}, queue: ${this.queueName}`,
       );
+      if (this.metricsRegistry) {
+        this.metricsRegistry.queueDepthGauge.inc({ queue: this.queueName });
+      }
     });
 
     this.queueEvents.on('active', ({ jobId }) => {
@@ -92,12 +104,18 @@ export abstract class BaseQueueProcessor<T extends { correlationId?: string }>
       this.logger.debug(
         `[QueueEvent:completed] jobId: ${jobId}, queue: ${this.queueName}`,
       );
+      if (this.metricsRegistry) {
+        this.metricsRegistry.queueDepthGauge.dec({ queue: this.queueName });
+      }
     });
 
     this.queueEvents.on('failed', ({ jobId, failedReason }) => {
       this.logger.warn(
         `[QueueEvent:failed] jobId: ${jobId}, queue: ${this.queueName}, reason: ${failedReason}`,
       );
+      if (this.metricsRegistry) {
+        this.metricsRegistry.queueDepthGauge.dec({ queue: this.queueName });
+      }
     });
 
     this.queueEvents.on('stalled', ({ jobId }) => {
