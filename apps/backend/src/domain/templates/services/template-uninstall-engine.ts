@@ -1,6 +1,6 @@
 import { Result } from '@lumora/shared';
 import type { InstalledTemplateAggregate } from '../installed-template.aggregate.js';
-import { InstalledTemplateStatus } from '../installed-template.aggregate.js';
+import { TemplateLifecyclePolicy } from '../policies/template-lifecycle-policy.js';
 
 export enum TemplateUninstallPolicy {
   KEEP_OBJECTS_DETACH_METADATA = 'KEEP_OBJECTS_DETACH_METADATA',
@@ -13,15 +13,20 @@ export class TemplateUninstallEngine {
     instance: InstalledTemplateAggregate,
     policy: TemplateUninstallPolicy = TemplateUninstallPolicy.KEEP_OBJECTS_DETACH_METADATA,
   ): Promise<Result<void>> {
-    instance.transitionTo(InstalledTemplateStatus.UNINSTALLING);
+    const policyResult = TemplateLifecyclePolicy.canUninstall(instance);
+    if (policyResult.isFailure) {
+      return Result.fail(policyResult.getError());
+    }
+
+    instance.markUninstalling();
 
     if (policy === TemplateUninstallPolicy.ARCHIVE_ALL_OBJECTS) {
-      instance.transitionTo(InstalledTemplateStatus.ARCHIVED);
+      instance.markArchived();
     } else if (policy === TemplateUninstallPolicy.HARD_DELETE_ALL_TEMPLATE_DATA) {
-      instance.transitionTo(InstalledTemplateStatus.DISABLED);
+      instance.markDisabled();
     } else {
       // KEEP_OBJECTS_DETACH_METADATA
-      instance.transitionTo(InstalledTemplateStatus.ARCHIVED);
+      instance.markArchived();
     }
 
     return Promise.resolve(Result.ok<void>(undefined));

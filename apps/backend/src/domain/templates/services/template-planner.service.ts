@@ -2,15 +2,19 @@ import {
   Result,
   TemplateValidator,
   DomainValidationException,
+  CapabilityCompatibilityRegistry,
 } from '@lumora/shared';
-import type { TemplatePackage, UniqueEntityId } from '@lumora/shared';
+import type { TemplatePackage, UniqueEntityId, ICapabilityCompatibilityRegistry } from '@lumora/shared';
 import type { ITemplatePlanner, ITemplatePolicyEngine, TemplatePlan } from '../interfaces/template-interfaces.js';
 import { TemplateDependencyResolver } from './template-dependency-resolver.js';
 import { CompatibilityChecker } from './compatibility-checker.js';
 import { TemplatePlannerMetrics } from './template-planner-metrics.js';
 
 export class TemplatePlannerService implements ITemplatePlanner {
-  constructor(private readonly policyEngine: ITemplatePolicyEngine) {}
+  constructor(
+    private readonly policyEngine: ITemplatePolicyEngine,
+    private readonly compatibilityRegistry: ICapabilityCompatibilityRegistry = new CapabilityCompatibilityRegistry(),
+  ) {}
 
   public async planInstallation(
     pkg: TemplatePackage,
@@ -37,7 +41,10 @@ export class TemplatePlannerService implements ITemplatePlanner {
     }
 
     // Step 3: Capability compatibility check
-    const compatResult = CompatibilityChecker.checkCapabilityCompatibility(pkg.manifest.capabilities);
+    const compatResult = CompatibilityChecker.checkCapabilityCompatibility(
+      this.compatibilityRegistry,
+      pkg.manifest.capabilities,
+    );
     if (compatResult.isFailure) {
       return Result.fail(compatResult.getError());
     }

@@ -28,8 +28,11 @@ export class TemplateInstallerService implements ITemplateInstaller {
         workspaceId: new UniqueEntityId(plan.targetWorkspaceId),
         templateKey: plan.templateKey,
         installedVersion: '1.0.0',
-        status: InstalledTemplateStatus.ACTIVE,
+        status: InstalledTemplateStatus.DRAFT,
       });
+
+      installedTemplate.markInstalling();
+      installedTemplate.markActive('1.0.0');
 
       return Result.ok<void>(undefined);
     } finally {

@@ -1,6 +1,7 @@
-import { UniqueEntityId, Result } from '@lumora/shared';
+import { Result } from '@lumora/shared';
 import type { InstalledTemplateAggregate } from '../installed-template.aggregate.js';
 import { InstalledTemplateStatus } from '../installed-template.aggregate.js';
+import { TemplateLifecyclePolicy } from '../policies/template-lifecycle-policy.js';
 
 export interface TemplateSnapshot {
   snapshotId: string;
@@ -32,16 +33,20 @@ export class TemplateRollbackEngine {
   public static async executeRollback(
     instance: InstalledTemplateAggregate,
   ): Promise<Result<void>> {
+    const policyResult = TemplateLifecyclePolicy.canRollback(instance);
+    if (policyResult.isFailure) {
+      return Result.fail(policyResult.getError());
+    }
+
     const key = `${instance.workspaceId.toString()}:${instance.templateKey}`;
     const snapshot = this.snapshots.get(key);
 
-    instance.transitionTo(InstalledTemplateStatus.ROLLING_BACK);
+    instance.markRollingBack();
 
     if (snapshot) {
-      instance.installedVersion = snapshot.previousVersion;
-      instance.transitionTo(snapshot.status);
+      instance.markRollbackCompleted();
     } else {
-      instance.transitionTo(InstalledTemplateStatus.FAILED);
+      instance.markFailed('Rollback snapshot not found');
     }
 
     return Promise.resolve(Result.ok<void>(undefined));

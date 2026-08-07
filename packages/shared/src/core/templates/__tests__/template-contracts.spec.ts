@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { STARTER_LIBRARY_CATALOG } from '../starter-library.catalog.js';
 import { TemplateValidator } from '../template-validator.js';
-import { CapabilityCompatibilityMatrix } from '../capability-compatibility-matrix.js';
+import {
+  CapabilityCompatibilityRegistry,
+  CompatibilityResolver,
+} from '../capability-compatibility-matrix.js';
 import { PublisherTrustLevel } from '../publisher-trust-level.js';
 
 describe('Sub-Milestone 3.1: Template Contracts & Starter Catalog', () => {
@@ -53,13 +56,28 @@ describe('Sub-Milestone 3.1: Template Contracts & Starter Catalog', () => {
     expect(result.isFailure).toBe(true);
   });
 
-  it('should evaluate capability compatibility correctly', () => {
-    const isTimelineSearchCompatible = CapabilityCompatibilityMatrix.isCompatible(
-      'timeline',
-      '2.0.0',
-      'search',
-      '1.5.0',
+  it('should evaluate capability compatibility correctly via CompatibilityResolver', () => {
+    const registry = new CapabilityCompatibilityRegistry();
+    registry.registerDefinition({
+      id: 'rule-timeline-search',
+      capabilityKey: 'timeline',
+      targetCapabilityKey: 'search',
+      compatible: true,
+    });
+
+    const resolver = new CompatibilityResolver(registry);
+    const result = resolver.evaluate(
+      [
+        { key: 'timeline', versionConstraint: '>=1.0.0' },
+        { key: 'search', versionConstraint: '>=1.0.0' },
+      ],
+      {
+        platformVersion: '1.0.0',
+        featureFlags: {},
+      },
     );
-    expect(isTimelineSearchCompatible).toBe(true);
+
+    expect(result.compatible).toBe(true);
+    expect(result.evaluatedRulesCount).toBe(1);
   });
 });
