@@ -7,6 +7,7 @@ export interface MotionConfig {
 
 export class MotionEngine {
   public static press(): MotionConfig {
+    'worklet';
     return {
       duration: 200,
       scale: 0.97,
@@ -15,7 +16,8 @@ export class MotionEngine {
     };
   }
 
-  public static appear(): MotionConfig {
+  public static fadeIn(): MotionConfig {
+    'worklet';
     return {
       duration: 250,
       scale: 1.0,
@@ -24,7 +26,8 @@ export class MotionEngine {
     };
   }
 
-  public static dismiss(): MotionConfig {
+  public static fadeOut(): MotionConfig {
+    'worklet';
     return {
       duration: 180,
       scale: 0.95,
@@ -33,16 +36,28 @@ export class MotionEngine {
     };
   }
 
-  public static hero(): MotionConfig {
+  public static cardLift(): MotionConfig {
+    'worklet';
+    return {
+      duration: 220,
+      scale: 1.02,
+      springDamping: 16,
+      springStiffness: 210,
+    };
+  }
+
+  public static heroExpand(): MotionConfig {
+    'worklet';
     return {
       duration: 350,
-      scale: 1.02,
+      scale: 1.04,
       springDamping: 15,
       springStiffness: 180,
     };
   }
 
   public static sheet(): MotionConfig {
+    'worklet';
     return {
       duration: 300,
       scale: 1.0,
@@ -52,6 +67,7 @@ export class MotionEngine {
   }
 
   public static dialog(): MotionConfig {
+    'worklet';
     return {
       duration: 250,
       scale: 1.0,
@@ -61,11 +77,22 @@ export class MotionEngine {
   }
 
   public static snackbar(): MotionConfig {
+    'worklet';
     return {
       duration: 200,
       scale: 1.0,
       springDamping: 20,
       springStiffness: 250,
+    };
+  }
+
+  public static fabMorph(): MotionConfig {
+    'worklet';
+    return {
+      duration: 280,
+      scale: 1.05,
+      springDamping: 18,
+      springStiffness: 230,
     };
   }
 }

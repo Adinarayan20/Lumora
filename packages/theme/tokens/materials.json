@@ -1,0 +1,37 @@
+{
+  "name": "Lumora Material System Tokens",
+  "version": "1.0.0",
+  "layers": {
+    "MaterialCanvas": {
+      "light": "#F7F8FA",
+      "dark": "#0E1117",
+      "blur": 0
+    },
+    "MaterialCard": {
+      "light": "#FFFFFF",
+      "dark": "#171C25",
+      "blur": 0
+    },
+    "MaterialFloating": {
+      "light": "#FCFCFD",
+      "dark": "#1D2430",
+      "blur": 0
+    },
+    "MaterialGlass": {
+      "light": "rgba(255, 255, 255, 0.72)",
+      "dark": "rgba(24, 30, 41, 0.65)",
+      "blurLight": 28,
+      "blurDark": 32
+    },
+    "MaterialOverlay": {
+      "light": "rgba(17, 24, 39, 0.40)",
+      "dark": "rgba(0, 0, 0, 0.60)",
+      "blur": 16
+    },
+    "MaterialHero": {
+      "light": "linear-gradient(135deg, #5B7FFF 0%, #8B5CF6 100%)",
+      "dark": "linear-gradient(135deg, #4F74F8 0%, #7C3AED 100%)",
+      "blur": 0
+    }
+  }
+}
