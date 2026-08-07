@@ -14,9 +14,13 @@ describe('Sub-Milestone 3.3: Dependency Resolver, Compatibility Checker & Templa
     const planner = new TemplatePlannerService(policyEngine);
 
     const targetTemplate = STARTER_LIBRARY_CATALOG[0]; // Daily Journal
-    const result = await planner.planInstallation(targetTemplate, new UniqueEntityId(), {
-      dryRun: true,
-    });
+    const result = await planner.planInstallation(
+      targetTemplate,
+      new UniqueEntityId(),
+      {
+        dryRun: true,
+      },
+    );
 
     expect(result.isSuccess).toBe(true);
     const plan = result.getValue();

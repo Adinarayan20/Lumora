@@ -2,14 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { UniqueEntityId } from '@lumora/shared';
 import type { ITemplateRepository } from '../../../domain/templates/repositories/template.repository.interface.js';
 import { TemplateAggregate } from '../../../domain/templates/template.aggregate.js';
-import { InstalledTemplateAggregate, InstalledTemplateStatus } from '../../../domain/templates/installed-template.aggregate.js';
+import {
+  InstalledTemplateAggregate,
+  InstalledTemplateStatus,
+} from '../../../domain/templates/installed-template.aggregate.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 
 @Injectable()
 export class PrismaTemplateRepository implements ITemplateRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  public async findTemplateByKey(key: string): Promise<TemplateAggregate | null> {
+  public async findTemplateByKey(
+    key: string,
+  ): Promise<TemplateAggregate | null> {
     const raw = await this.prisma.template.findUnique({
       where: { key },
     });
@@ -70,7 +75,9 @@ export class PrismaTemplateRepository implements ITemplateRepository {
     });
   }
 
-  public async saveInstalledTemplate(installed: InstalledTemplateAggregate): Promise<void> {
+  public async saveInstalledTemplate(
+    installed: InstalledTemplateAggregate,
+  ): Promise<void> {
     await this.prisma.installedTemplate.upsert({
       where: {
         workspaceId_templateKey: {

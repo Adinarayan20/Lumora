@@ -15,7 +15,9 @@ export interface TemplateSnapshot {
 export class TemplateRollbackEngine {
   private static readonly snapshots = new Map<string, TemplateSnapshot>();
 
-  public static createSnapshot(instance: InstalledTemplateAggregate): TemplateSnapshot {
+  public static createSnapshot(
+    instance: InstalledTemplateAggregate,
+  ): TemplateSnapshot {
     const snapshot: TemplateSnapshot = {
       snapshotId: `snap-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       workspaceId: instance.workspaceId.toString(),
@@ -44,9 +46,9 @@ export class TemplateRollbackEngine {
     instance.markRollingBack();
 
     if (snapshot) {
-      instance.markRollbackCompleted();
+      instance.completeRollback();
     } else {
-      instance.markFailed('Rollback snapshot not found');
+      instance.markFailed('ROLLBACK', 'Rollback snapshot not found');
     }
 
     return Promise.resolve(Result.ok<void>(undefined));

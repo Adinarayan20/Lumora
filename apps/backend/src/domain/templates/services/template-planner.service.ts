@@ -4,8 +4,16 @@ import {
   DomainValidationException,
   CapabilityCompatibilityRegistry,
 } from '@lumora/shared';
-import type { TemplatePackage, UniqueEntityId, ICapabilityCompatibilityRegistry } from '@lumora/shared';
-import type { ITemplatePlanner, ITemplatePolicyEngine, TemplatePlan } from '../interfaces/template-interfaces.js';
+import type {
+  TemplatePackage,
+  UniqueEntityId,
+  ICapabilityCompatibilityRegistry,
+} from '@lumora/shared';
+import type {
+  ITemplatePlanner,
+  ITemplatePolicyEngine,
+  TemplatePlan,
+} from '../interfaces/template-interfaces.js';
 import { TemplateDependencyResolver } from './template-dependency-resolver.js';
 import { CompatibilityChecker } from './compatibility-checker.js';
 import { TemplatePlannerMetrics } from './template-planner-metrics.js';
@@ -31,7 +39,10 @@ export class TemplatePlannerService implements ITemplatePlanner {
     }
 
     // Step 2: Policy Engine evaluation
-    const policyResult = await this.policyEngine.evaluate(pkg.manifest, workspaceId);
+    const policyResult = await this.policyEngine.evaluate(
+      pkg.manifest,
+      workspaceId,
+    );
     if (!policyResult.allowed) {
       return Result.fail(
         new DomainValidationException(
@@ -52,10 +63,15 @@ export class TemplatePlannerService implements ITemplatePlanner {
     // Step 4: Topological dependency order resolution
     let installOrder: string[];
     try {
-      installOrder = TemplateDependencyResolver.resolveInstallationOrder(pkg, []);
+      installOrder = TemplateDependencyResolver.resolveInstallationOrder(
+        pkg,
+        [],
+      );
     } catch (err) {
       return Result.fail(
-        err instanceof DomainValidationException ? err : new DomainValidationException(String(err)),
+        err instanceof DomainValidationException
+          ? err
+          : new DomainValidationException(String(err)),
       );
     }
 

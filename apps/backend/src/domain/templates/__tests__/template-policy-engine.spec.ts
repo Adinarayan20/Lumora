@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { UniqueEntityId, PublisherTrustLevel, TemplateCategory } from '@lumora/shared';
+import {
+  UniqueEntityId,
+  PublisherTrustLevel,
+  TemplateCategory,
+} from '@lumora/shared';
 import { DefaultTemplatePolicyEngine } from '../services/template-policy-engine.js';
 
 describe('Sub-Milestone 3.2: Template Policy Engine', () => {

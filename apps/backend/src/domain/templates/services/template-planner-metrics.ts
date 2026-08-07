@@ -3,7 +3,10 @@ export class TemplatePlannerMetrics {
   private static totalDryRuns = 0;
   private static totalPlanningDurationMs = 0;
 
-  public static recordPlanGenerated(durationMs: number, isDryRun: boolean): void {
+  public static recordPlanGenerated(
+    durationMs: number,
+    isDryRun: boolean,
+  ): void {
     this.totalPlansGenerated += 1;
     this.totalPlanningDurationMs += durationMs;
     if (isDryRun) {

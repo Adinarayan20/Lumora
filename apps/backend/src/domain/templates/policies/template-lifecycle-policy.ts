@@ -32,7 +32,9 @@ export class TemplateLifecyclePolicy {
     return Result.ok<void>(undefined);
   }
 
-  public static canUninstall(instance: InstalledTemplateAggregate): Result<void> {
+  public static canUninstall(
+    instance: InstalledTemplateAggregate,
+  ): Result<void> {
     if (instance.status === InstalledTemplateStatus.INSTALLING) {
       return Result.fail(
         new DomainValidationException(
@@ -51,7 +53,9 @@ export class TemplateLifecyclePolicy {
     return Result.ok<void>(undefined);
   }
 
-  public static canRollback(instance: InstalledTemplateAggregate): Result<void> {
+  public static canRollback(
+    instance: InstalledTemplateAggregate,
+  ): Result<void> {
     if (instance.status === InstalledTemplateStatus.DRAFT) {
       return Result.fail(
         new DomainValidationException(

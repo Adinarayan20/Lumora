@@ -4,7 +4,12 @@ import {
   Guard,
   DomainValidationException,
 } from '@lumora/shared';
-import type { TemplateManifest, TemplateContent, TemplateCategory, PublisherTrustLevel } from '@lumora/shared';
+import type {
+  TemplateManifest,
+  TemplateContent,
+  TemplateCategory,
+  PublisherTrustLevel,
+} from '@lumora/shared';
 
 export interface TemplateProps {
   id?: UniqueEntityId;
@@ -29,14 +34,19 @@ export class TemplateAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public static create(props: TemplateProps): TemplateAggregate {
-    const manifestGuard = Guard.againstNullOrUndefined(props.manifest, 'manifest');
+    const manifestGuard = Guard.againstNullOrUndefined(
+      props.manifest,
+      'manifest',
+    );
     if (manifestGuard.isFailure) throw manifestGuard.getError();
 
     const contentGuard = Guard.againstNullOrUndefined(props.content, 'content');
     if (contentGuard.isFailure) throw contentGuard.getError();
 
     if (!props.manifest.key || props.manifest.key.trim().length === 0) {
-      throw new DomainValidationException('TemplateAggregate requires a non-empty key.');
+      throw new DomainValidationException(
+        'TemplateAggregate requires a non-empty key.',
+      );
     }
 
     return new TemplateAggregate(props);

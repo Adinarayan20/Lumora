@@ -2,6 +2,7 @@ import type { DomainEvent } from './domain-event.interface.js';
 import { UniqueEntityId } from '../primitives/unique-entity-id.js';
 import { TemplateEventName } from './event-names.js';
 import type { InstantString } from './instant-string.js';
+import type { TemplateOperationType } from '../templates/template-operation-context.js';
 
 export class TemplateInstalledEvent
   implements DomainEvent<TemplateEventName, { templateKey: string; version: string }>
@@ -52,6 +53,33 @@ export class TemplateInstallationFailedEvent
     this.occurredAt = new Date().toISOString() as InstantString;
     this.schemaVersion = 1;
     this.payload = Object.freeze({ templateKey, reason });
+  }
+}
+
+export class TemplateOperationFailedEvent
+  implements DomainEvent<TemplateEventName, { templateKey: string; operationType: TemplateOperationType; reason: string }>
+{
+  public readonly eventId: UniqueEntityId;
+  public readonly eventName = TemplateEventName.OPERATION_FAILED;
+  public readonly aggregateId: UniqueEntityId;
+  public readonly workspaceId: UniqueEntityId;
+  public readonly occurredAt: InstantString;
+  public readonly schemaVersion: number;
+  public readonly payload: Readonly<{ templateKey: string; operationType: TemplateOperationType; reason: string }>;
+
+  constructor(
+    aggregateId: UniqueEntityId,
+    workspaceId: UniqueEntityId,
+    templateKey: string,
+    operationType: TemplateOperationType,
+    reason: string,
+  ) {
+    this.eventId = new UniqueEntityId();
+    this.aggregateId = aggregateId;
+    this.workspaceId = workspaceId;
+    this.occurredAt = new Date().toISOString() as InstantString;
+    this.schemaVersion = 1;
+    this.payload = Object.freeze({ templateKey, operationType, reason });
   }
 }
 

@@ -18,7 +18,9 @@ export interface TemplateManifestResponseDto {
   tags: string[];
 }
 
-export function mapManifestToResponseDto(manifest: TemplateManifest): TemplateManifestResponseDto {
+export function mapManifestToResponseDto(
+  manifest: TemplateManifest,
+): TemplateManifestResponseDto {
   return {
     id: manifest.id,
     packageUuid: manifest.packageUuid,
