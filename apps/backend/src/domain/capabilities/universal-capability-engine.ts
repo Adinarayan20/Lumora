@@ -21,6 +21,12 @@ export interface IUniversalCapabilityEngine {
   getCapability(id: CapabilityId | string): CapabilityDescriptor | null;
 }
 
+interface SemVer {
+  major: number;
+  minor: number;
+  patch: number;
+}
+
 @Injectable()
 export class UniversalCapabilityEngine implements IUniversalCapabilityEngine {
   private readonly logger = new Logger(UniversalCapabilityEngine.name);
@@ -88,7 +94,7 @@ export class UniversalCapabilityEngine implements IUniversalCapabilityEngine {
             );
           }
 
-          // Validate Version Range
+          // Validate Version Range using numeric semver comparison
           const targetDescriptor = this.capabilityRegistry.get(
             targetCapRef.key,
           );
@@ -109,36 +115,85 @@ export class UniversalCapabilityEngine implements IUniversalCapabilityEngine {
     return Result.ok<void>(undefined);
   }
 
-  private matchesVersionRange(version: string, range: string): boolean {
-    if (!range || range === '*' || range === 'latest') return true;
+  public matchesVersionRange(versionStr: string, rangeStr: string): boolean {
+    if (!rangeStr || rangeStr === '*' || rangeStr === 'latest') return true;
 
-    const cleanVersion = version.replace(/^v/, '');
-    const cleanRange = range.trim();
+    const version = this.parseSemVer(versionStr);
+    if (!version) return false;
 
-    // Major wildcard (e.g. 1.x or 1.*)
-    if (cleanRange.endsWith('.x') || cleanRange.endsWith('.*')) {
-      const major = cleanRange.split('.')[0];
-      const targetMajor = cleanVersion.split('.')[0];
-      return major === targetMajor;
+    const range = rangeStr.trim();
+
+    // Wildcards (e.g. 1.x or 1.* or 1.2.x)
+    if (range.includes('.x') || range.includes('.*')) {
+      const parts = range.split('.');
+      if (parts[0] !== '*' && parts[0] !== 'x') {
+        if (parseInt(parts[0], 10) !== version.major) return false;
+      }
+      if (parts[1] && parts[1] !== '*' && parts[1] !== 'x') {
+        if (parseInt(parts[1], 10) !== version.minor) return false;
+      }
+      return true;
     }
 
-    // Caret range (e.g. ^1.2.0 -> same major version)
-    if (cleanRange.startsWith('^')) {
-      const targetMajor = cleanRange.slice(1).split('.')[0];
-      const actualMajor = cleanVersion.split('.')[0];
-      return targetMajor === actualMajor;
+    // Caret ^ (same major)
+    if (range.startsWith('^')) {
+      const target = this.parseSemVer(range.slice(1));
+      if (!target) return false;
+      if (version.major !== target.major) return false;
+      return this.compareSemVer(version, target) >= 0;
     }
 
-    // Greater than or equal (e.g. >=1.0.0)
-    if (cleanRange.startsWith('>=')) {
-      const minVer = cleanRange.slice(2).trim();
-      return (
-        cleanVersion.localeCompare(minVer, undefined, { numeric: true }) >= 0
-      );
+    // Tilde ~ (same major and minor)
+    if (range.startsWith('~')) {
+      const target = this.parseSemVer(range.slice(1));
+      if (!target) return false;
+      if (version.major !== target.major || version.minor !== target.minor)
+        return false;
+      return this.compareSemVer(version, target) >= 0;
     }
 
-    // Exact version match
-    return cleanVersion === cleanRange;
+    // Comparison operators (>=, <=, >, <, =)
+    if (range.startsWith('>=')) {
+      const target = this.parseSemVer(range.slice(2));
+      return target ? this.compareSemVer(version, target) >= 0 : false;
+    }
+    if (range.startsWith('<=')) {
+      const target = this.parseSemVer(range.slice(2));
+      return target ? this.compareSemVer(version, target) <= 0 : false;
+    }
+    if (range.startsWith('>')) {
+      const target = this.parseSemVer(range.slice(1));
+      return target ? this.compareSemVer(version, target) > 0 : false;
+    }
+    if (range.startsWith('<')) {
+      const target = this.parseSemVer(range.slice(1));
+      return target ? this.compareSemVer(version, target) < 0 : false;
+    }
+    if (range.startsWith('=')) {
+      const target = this.parseSemVer(range.slice(1));
+      return target ? this.compareSemVer(version, target) === 0 : false;
+    }
+
+    // Exact version comparison
+    const target = this.parseSemVer(range);
+    return target ? this.compareSemVer(version, target) === 0 : false;
+  }
+
+  private parseSemVer(v: string): SemVer | null {
+    const clean = v.replace(/^v/, '').trim();
+    const parts = clean.split('.').map((p) => parseInt(p, 10));
+    if (parts.some((p) => isNaN(p))) return null;
+    return {
+      major: parts[0] ?? 0,
+      minor: parts[1] ?? 0,
+      patch: parts[2] ?? 0,
+    };
+  }
+
+  private compareSemVer(a: SemVer, b: SemVer): number {
+    if (a.major !== b.major) return a.major - b.major;
+    if (a.minor !== b.minor) return a.minor - b.minor;
+    return a.patch - b.patch;
   }
 
   private detectCircularDependencies(): void {

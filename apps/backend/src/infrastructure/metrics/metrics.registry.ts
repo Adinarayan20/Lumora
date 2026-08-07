@@ -38,6 +38,16 @@ export class MetricsRegistry implements OnModuleInit {
   public readonly schemaCacheHitsTotal: Counter<string>;
   public readonly schemaCacheMissesTotal: Counter<string>;
 
+  // Capability Execution Metrics (Milestone 2.1)
+  public readonly capabilityExecutionsTotal: Counter<string>;
+  public readonly capabilityExecutionDurationSeconds: Histogram<string>;
+  public readonly capabilityRetriesTotal: Counter<string>;
+  public readonly capabilityRetrySuccessesTotal: Counter<string>;
+  public readonly capabilityRetryFailuresTotal: Counter<string>;
+  public readonly capabilityFailuresTotal: Counter<string>;
+  public readonly capabilityPipelineFailuresTotal: Counter<string>;
+  public readonly capabilityParallelExecutionsTotal: Counter<string>;
+
   constructor(private readonly configService: ConfigService) {
     this.registry = new Registry();
 
@@ -143,6 +153,62 @@ export class MetricsRegistry implements OnModuleInit {
     this.schemaCacheMissesTotal = new Counter({
       name: `${prefix}schema_cache_misses_total`,
       help: 'Total count of schema cache misses',
+      registers: [this.registry],
+    });
+
+    // Capability Execution Metrics
+    this.capabilityExecutionsTotal = new Counter({
+      name: `${prefix}capability_executions_total`,
+      help: 'Total count of capability pipeline executions',
+      labelNames: ['status'],
+      registers: [this.registry],
+    });
+
+    this.capabilityExecutionDurationSeconds = new Histogram({
+      name: `${prefix}capability_execution_duration_seconds`,
+      help: 'Capability execution pipeline duration in seconds',
+      labelNames: ['capability', 'status'],
+      buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1],
+      registers: [this.registry],
+    });
+
+    this.capabilityRetriesTotal = new Counter({
+      name: `${prefix}capability_retries_total`,
+      help: 'Total count of capability hook retry attempts',
+      labelNames: ['capability'],
+      registers: [this.registry],
+    });
+
+    this.capabilityRetrySuccessesTotal = new Counter({
+      name: `${prefix}capability_retry_successes_total`,
+      help: 'Total count of successful capability hook retries',
+      labelNames: ['capability'],
+      registers: [this.registry],
+    });
+
+    this.capabilityRetryFailuresTotal = new Counter({
+      name: `${prefix}capability_retry_failures_total`,
+      help: 'Total count of failed capability hook retries after max attempts',
+      labelNames: ['capability'],
+      registers: [this.registry],
+    });
+
+    this.capabilityFailuresTotal = new Counter({
+      name: `${prefix}capability_failures_total`,
+      help: 'Total count of capability hook failures',
+      labelNames: ['capability', 'hook'],
+      registers: [this.registry],
+    });
+
+    this.capabilityPipelineFailuresTotal = new Counter({
+      name: `${prefix}capability_pipeline_failures_total`,
+      help: 'Total count of capability pipeline failures',
+      registers: [this.registry],
+    });
+
+    this.capabilityParallelExecutionsTotal = new Counter({
+      name: `${prefix}capability_parallel_executions_total`,
+      help: 'Total count of parallel capability hook dispatches',
       registers: [this.registry],
     });
   }

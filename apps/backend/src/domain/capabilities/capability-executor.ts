@@ -40,6 +40,20 @@ export interface CapabilityHookHandler {
   ) => Promise<void>;
 }
 
+export interface RetryPolicy {
+  maxAttempts: number;
+  initialDelayMs: number;
+  maxDelayMs: number;
+  backoffFactor: number;
+}
+
+const DEFAULT_RETRY_POLICY: RetryPolicy = {
+  maxAttempts: 3,
+  initialDelayMs: 100,
+  maxDelayMs: 2000,
+  backoffFactor: 2,
+};
+
 @Injectable()
 export class CapabilityExecutor {
   private readonly logger = new Logger(CapabilityExecutor.name);
@@ -109,10 +123,13 @@ export class CapabilityExecutor {
       }
 
       const durationSec = (Date.now() - startTime) / 1000;
-      this.metricsRegistry?.queueJobDurationSeconds?.observe(
-        { queue: 'capability_execution', event_type: 'pipeline' },
+      this.metricsRegistry?.capabilityExecutionDurationSeconds?.observe(
+        { capability: 'pipeline', status: 'success' },
         durationSec,
       );
+      this.metricsRegistry?.capabilityExecutionsTotal?.inc({
+        status: 'success',
+      });
 
       return Result.ok<void>(undefined);
     } catch (error) {
@@ -120,6 +137,7 @@ export class CapabilityExecutor {
       this.logger.error(
         `CapabilityExecutor pipeline execution failed: ${errMsg}`,
       );
+      this.metricsRegistry?.capabilityPipelineFailuresTotal?.inc();
       return Result.fail(new DomainValidationException(errMsg));
     }
   }
@@ -137,16 +155,35 @@ export class CapabilityExecutor {
       (c) => c.executionPolicy !== ExecutionPolicy.PARALLEL,
     );
 
-    // Run parallel execution policy capabilities concurrently
+    // Run parallel execution policy capabilities concurrently with Promise.allSettled
     if (parallelCaps.length > 0) {
-      await Promise.all(
+      this.metricsRegistry?.capabilityParallelExecutionsTotal?.inc();
+      const results = await Promise.allSettled(
         parallelCaps.map((cap) =>
           this.executeCapabilityHook(cap, hookName, runtime, context),
         ),
       );
+
+      const failures: Error[] = [];
+      results.forEach((res, index) => {
+        if (res.status === 'rejected') {
+          const cap = parallelCaps[index];
+          const err =
+            res.reason instanceof Error
+              ? res.reason
+              : new Error(String(res.reason));
+          if (cap.failurePolicy === FailurePolicy.FAIL_FAST) {
+            failures.push(err);
+          }
+        }
+      });
+
+      if (failures.length > 0) {
+        throw failures[0];
+      }
     }
 
-    // Run sequential / exclusive capabilities serially
+    // Run sequential capabilities serially
     for (const cap of sequentialCaps) {
       await this.executeCapabilityHook(cap, hookName, runtime, context);
     }
@@ -167,38 +204,72 @@ export class CapabilityExecutor {
       | undefined;
     if (!hookFn) return;
 
+    const retryPolicy = DEFAULT_RETRY_POLICY;
     let attempts = 0;
-    const maxAttempts = cap.failurePolicy === FailurePolicy.RETRY ? 3 : 1;
+    const maxAttempts =
+      cap.failurePolicy === FailurePolicy.RETRY ? retryPolicy.maxAttempts : 1;
 
     while (attempts < maxAttempts) {
       attempts += 1;
       try {
         await hookFn(runtime, context);
+        if (attempts > 1) {
+          this.metricsRegistry?.capabilityRetrySuccessesTotal?.inc({
+            capability: cap.key,
+          });
+        }
         return; // Success
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
 
-        if (handler?.onFailure) {
-          try {
-            await handler.onFailure(runtime, context, err);
-          } catch (onFailureErr) {
-            this.logger.error(
-              `Capability '${cap.key}' onFailure handler failed: ${onFailureErr instanceof Error ? onFailureErr.message : String(onFailureErr)}`,
-            );
+        // Non-retryable domain validation errors bypass retry logic
+        if (err instanceof DomainValidationException) {
+          if (handler?.onFailure) {
+            await this.safelyCallOnFailure(handler, runtime, context, err);
           }
+          this.metricsRegistry?.capabilityFailuresTotal?.inc({
+            capability: cap.key,
+            hook: hookName,
+          });
+          throw err;
+        }
+
+        if (handler?.onFailure) {
+          await this.safelyCallOnFailure(handler, runtime, context, err);
         }
 
         if (attempts < maxAttempts) {
-          this.logger.warn(
-            `Retrying capability '${cap.key}' hook '${hookName}' (attempt ${attempts}/${maxAttempts})...`,
+          this.metricsRegistry?.capabilityRetriesTotal?.inc({
+            capability: cap.key,
+          });
+          const backoffMs = Math.min(
+            retryPolicy.initialDelayMs *
+              Math.pow(retryPolicy.backoffFactor, attempts - 1) +
+              Math.floor(Math.random() * 50),
+            retryPolicy.maxDelayMs,
           );
+          this.logger.warn(
+            `Retrying capability '${cap.key}' hook '${hookName}' (attempt ${attempts}/${maxAttempts}) after ${backoffMs}ms...`,
+          );
+          await new Promise((resolve) => setTimeout(resolve, backoffMs));
           continue;
         }
+
+        if (cap.failurePolicy === FailurePolicy.RETRY) {
+          this.metricsRegistry?.capabilityRetryFailuresTotal?.inc({
+            capability: cap.key,
+          });
+        }
+
+        this.metricsRegistry?.capabilityFailuresTotal?.inc({
+          capability: cap.key,
+          hook: hookName,
+        });
 
         if (cap.failurePolicy === FailurePolicy.FAIL_FAST) {
           throw err;
         } else if (cap.failurePolicy === FailurePolicy.IGNORE) {
-          return; // Ignore completely without warning log
+          return; // Ignore silently
         } else {
           this.logger.warn(
             `Capability '${cap.key}' hook '${hookName}' failed with failurePolicy=${cap.failurePolicy}: ${err.message}`,
@@ -206,6 +277,23 @@ export class CapabilityExecutor {
           return;
         }
       }
+    }
+  }
+
+  private async safelyCallOnFailure(
+    handler: CapabilityHookHandler,
+    runtime: LumoraObjectRuntime,
+    context: ExecutionContext,
+    error: Error,
+  ): Promise<void> {
+    try {
+      if (handler.onFailure) {
+        await handler.onFailure(runtime, context, error);
+      }
+    } catch (onFailureErr) {
+      this.logger.error(
+        `Capability onFailure handler failed: ${onFailureErr instanceof Error ? onFailureErr.message : String(onFailureErr)}`,
+      );
     }
   }
 }
