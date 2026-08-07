@@ -31,3 +31,18 @@ export class ForbiddenException extends SecurityException {
     this.requiredPermission = requiredPermission;
   }
 }
+
+/**
+ * Thrown when a user or IP address exceeds the configured rate limit quota.
+ */
+export class RateLimitExceededException extends SecurityException {
+  public readonly retryAfterSeconds: number;
+
+  constructor(
+    retryAfterSeconds: number,
+    message: string = `Rate limit exceeded. Try again in ${retryAfterSeconds} seconds.`,
+  ) {
+    super(message, ErrorCode.RATE_LIMIT_EXCEEDED, { retryAfterSeconds });
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}

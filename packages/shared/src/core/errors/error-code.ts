@@ -64,6 +64,9 @@ export const ErrorCode = {
   /** The authenticated user lacks a required permission for this operation. Maps to HTTP 403. */
   INSUFFICIENT_PERMISSIONS: "INSUFFICIENT_PERMISSIONS",
 
+  /** Too many requests have been sent in a given time window. Maps to HTTP 429. */
+  RATE_LIMIT_EXCEEDED: "RATE_LIMIT_EXCEEDED",
+
   // ─── System Failures ──────────────────────────────────────────────────────
 
   /** An unrecoverable infrastructure or system error occurred. Maps to HTTP 500. */
