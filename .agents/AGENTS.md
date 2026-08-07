@@ -24,6 +24,7 @@
 8. **Testability First**: Business logic must be isolated and easy to test.
 9. **Accessibility First**: Support accessibility features from the beginning.
 10. **Security First**: Never expose sensitive information or create insecure data flows.
+11. **Delete Code Rule**: Deleting unnecessary code is considered an improvement. The simplest maintainable solution is always preferred over unnecessary abstraction.
 
 ---
 
@@ -53,7 +54,28 @@ No hidden behavior. Every action must be explicit, transparent, and predictable.
 ### 8. Data Model Permanence
 Data survives forever while UI, APIs, AI integrations, and storage mechanisms change. The core data model must be engineered to require the fewest database migrations over the product lifetime.
 
-### 9. Universal Object Inheritance
+### 9. Architecture Decision Records (ADR)
+Every significant architectural decision must be documented in a dedicated ADR file inside `docs/architecture/adr/`. Architecture must never depend on tribal knowledge. Each ADR must detail:
+- Context & Problem Statement
+- Decision
+- Alternatives Considered
+- Trade-offs & Consequences
+- Date & Status (`Proposed` | `Accepted` | `Deprecated` | `Superseded`)
+
+### 10. Dependency Policy
+Third-party dependencies are liabilities. Before adding any dependency, evaluate:
+- Can we reasonably build this ourselves?
+- Is it actively maintained, secure, lightweight, and tree-shakeable?
+- Does it duplicate existing functionality?
+Prefer fewer high-quality, lightweight dependencies (critical for Expo/React Native and Node.js performance).
+
+### 11. Future AI Relationship
+**AI consumes platform data; AI NEVER owns platform data.** AI features are consumers of domain objects, events, and capabilities. The core platform remains 100% functional without AI. AI integrations must never pollute core domain models.
+
+### 12. Release Philosophy
+Never release unfinished architecture. Ship fewer features with exceptional quality rather than many incomplete features. Lumora launching with 30 outstanding capabilities is vastly superior to 150 average ones.
+
+### 13. Universal Object Inheritance
 Every object created in Lumora automatically inherits all Universal Capabilities without exception:
 - **Identity & Metadata**: Unique GUIDs, type key, custom attributes.
 - **Timeline & History**: Full creation, mutation, and audit trail.
@@ -64,15 +86,18 @@ Every object created in Lumora automatically inherits all Universal Capabilities
 - **Search**: Automatic global search index generation.
 - **Permissions, AI Hooks & Analytics**: Future capability entry points.
 
-### 10. Template & Starter Library Philosophy
+### 14. Template & Starter Library Philosophy
 Templates are first-class citizens. The Starter Library ships built-in templates; community and premium templates follow later. All templates must be installable, versioned, exportable, and replaceable.
 
-### 11. Community Extension Architecture
+### 15. Community Extension Architecture
 The Community ecosystem is an extension, not a core dependency. Every community feature builds upon existing personal objects. Personal data remains the ultimate single source of truth.
 
 ---
 
 ## Performance Budget & Operational Standards
+
+### Performance Regressions are Bugs
+**Performance regressions are treated as blocking bugs.** No Pull Request may reduce startup speed, scroll performance, navigation responsiveness, or increase bundle size without documented architectural justification.
 
 ### Explicit Performance Budget
 Every Pull Request must evaluate:
