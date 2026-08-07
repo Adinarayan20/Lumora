@@ -1,4 +1,4 @@
-export const USER_CACHE_TOKEN = 'IUserCache';
+export const USER_CACHE_TOKEN = Symbol('IUserCache');
 
 export interface IUserCache {
   get<T = unknown>(userId: string): Promise<T | null>;

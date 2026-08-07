@@ -1,4 +1,4 @@
-export const OBJECT_CACHE_TOKEN = 'IObjectCache';
+export const OBJECT_CACHE_TOKEN = Symbol('IObjectCache');
 
 export interface IObjectCache {
   get<T = unknown>(objectId: string): Promise<T | null>;

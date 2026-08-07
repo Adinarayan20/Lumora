@@ -4,6 +4,7 @@ export * from './key-strategy/redis-key.strategy.js';
 export * from './ttl/redis-ttl.policies.js';
 export * from './serializers/json.serializer.js';
 export * from './providers/cache-store.js';
+export * from './providers/base-domain-cache.provider.js';
 export * from './providers/rate-limiter-store.js';
 export * from './providers/object-cache.provider.js';
 export * from './providers/workspace-cache.provider.js';

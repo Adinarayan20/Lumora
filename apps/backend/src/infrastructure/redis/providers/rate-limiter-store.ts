@@ -6,6 +6,20 @@ import type {
   RateLimitResult,
 } from '../interfaces/rate-limit-store.interface.js';
 
+/**
+ * Atomic Lua Script for distributed rate limiting.
+ * Atomically increments counter and sets expiration window on first hit.
+ * Returns array: [totalHits, ttlSeconds]
+ */
+const ATOMIC_RATE_LIMIT_LUA_SCRIPT = `
+local current = redis.call('INCR', KEYS[1])
+if tonumber(current) == 1 then
+  redis.call('EXPIRE', KEYS[1], ARGV[1])
+end
+local ttl = redis.call('TTL', KEYS[1])
+return {current, ttl}
+`;
+
 @Injectable()
 export class RateLimiterStore implements IRateLimitStore {
   private readonly logger = new Logger(RateLimiterStore.name);
@@ -21,33 +35,25 @@ export class RateLimiterStore implements IRateLimitStore {
 
     try {
       const client = this.redisClientProvider.getClient();
-      const multi = client.multi();
-      multi.incr(key);
-      multi.ttl(key);
-      const results = await multi.exec();
 
-      let totalHits = 1;
-      let ttl = -1;
+      // Execute atomic Lua script
+      const res = (await client.eval(
+        ATOMIC_RATE_LIMIT_LUA_SCRIPT,
+        1,
+        key,
+        ttlSeconds,
+      )) as [number, number];
 
-      if (results && results[0] && results[0][1]) {
-        totalHits = Number(results[0][1]);
-      }
-      if (results && results[1] && results[1][1]) {
-        ttl = Number(results[1][1]);
-      }
-
-      if (ttl === -1) {
-        await client.expire(key, ttlSeconds);
-        ttl = ttlSeconds;
-      }
+      const totalHits = Number(res[0]);
+      const ttl = Number(res[1]);
 
       const resetTimeMs = now + (ttl > 0 ? ttl * 1000 : ttlSeconds * 1000);
       return { totalHits, resetTimeMs };
     } catch (error) {
       this.logger.error(
-        `Failed to increment rate limit for '${identifier}': ${(error as Error).message}`,
+        `Failed to increment rate limiter entry: ${(error as Error).message}`,
       );
-      // Safe fallback on Redis failure: allow request through with reset window
+      // Safe fallback on Redis infrastructure error: allow request with reset window
       return { totalHits: 1, resetTimeMs: now + ttlSeconds * 1000 };
     }
   }
@@ -60,7 +66,7 @@ export class RateLimiterStore implements IRateLimitStore {
       return val ? parseInt(val, 10) : null;
     } catch (error) {
       this.logger.error(
-        `Failed to get rate limit for '${identifier}': ${(error as Error).message}`,
+        `Failed to query rate limiter counter: ${(error as Error).message}`,
       );
       return null;
     }
@@ -73,7 +79,7 @@ export class RateLimiterStore implements IRateLimitStore {
       await client.del(key);
     } catch (error) {
       this.logger.error(
-        `Failed to reset rate limit for '${identifier}': ${(error as Error).message}`,
+        `Failed to reset rate limiter counter: ${(error as Error).message}`,
       );
     }
   }

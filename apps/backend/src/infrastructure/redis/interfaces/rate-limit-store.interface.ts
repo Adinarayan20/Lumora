@@ -1,4 +1,4 @@
-export const RATE_LIMIT_STORE_TOKEN = 'IRateLimitStore';
+export const RATE_LIMIT_STORE_TOKEN = Symbol('IRateLimitStore');
 
 export interface RateLimitResult {
   totalHits: number;

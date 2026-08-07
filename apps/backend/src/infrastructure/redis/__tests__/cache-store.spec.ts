@@ -20,10 +20,6 @@ describe('CacheStore Unit Tests', () => {
       getClient: vi.fn().mockReturnValue(mockRedisClient),
     };
 
-    mockRedisProvider = {
-      getClient: vi.fn().mockReturnValue(mockRedisClient),
-    };
-
     cacheStore = new CacheStore(mockRedisProvider);
   });
 
@@ -44,6 +40,22 @@ describe('CacheStore Unit Tests', () => {
     mockRedisClient.get.mockResolvedValue(null);
 
     const result = await cacheStore.get('lumora:nonexistent');
+
+    expect(result).toBeNull();
+  });
+
+  it('should handle corrupt JSON gracefully by returning null', async () => {
+    mockRedisClient.get.mockResolvedValue('{corrupt-json-string');
+
+    const result = await cacheStore.get('lumora:corrupt');
+
+    expect(result).toBeNull();
+  });
+
+  it('should return null without crashing when Redis get throws error', async () => {
+    mockRedisClient.get.mockRejectedValue(new Error('Connection timed out'));
+
+    const result = await cacheStore.get('lumora:error');
 
     expect(result).toBeNull();
   });

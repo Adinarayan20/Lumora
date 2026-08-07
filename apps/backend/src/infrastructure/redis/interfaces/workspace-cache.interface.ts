@@ -1,4 +1,4 @@
-export const WORKSPACE_CACHE_TOKEN = 'IWorkspaceCache';
+export const WORKSPACE_CACHE_TOKEN = Symbol('IWorkspaceCache');
 
 export interface IWorkspaceCache {
   get<T = unknown>(workspaceId: string): Promise<T | null>;

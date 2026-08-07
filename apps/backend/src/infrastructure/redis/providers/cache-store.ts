@@ -16,7 +16,7 @@ export class CacheStore {
       return JsonSerializer.deserialize<T>(raw);
     } catch (error) {
       this.logger.error(
-        `Failed to read key '${key}' from Redis cache: ${(error as Error).message}`,
+        `Failed to read entry from Redis cache store: ${(error as Error).message}`,
       );
       return null;
     }
@@ -37,7 +37,7 @@ export class CacheStore {
       }
     } catch (error) {
       this.logger.error(
-        `Failed to set key '${key}' in Redis cache: ${(error as Error).message}`,
+        `Failed to write entry to Redis cache store: ${(error as Error).message}`,
       );
     }
   }
@@ -48,7 +48,7 @@ export class CacheStore {
       await client.del(key);
     } catch (error) {
       this.logger.error(
-        `Failed to delete key '${key}' from Redis cache: ${(error as Error).message}`,
+        `Failed to delete entry from Redis cache store: ${(error as Error).message}`,
       );
     }
   }
@@ -60,7 +60,7 @@ export class CacheStore {
       return count > 0;
     } catch (error) {
       this.logger.error(
-        `Failed to check existence of key '${key}' in Redis: ${(error as Error).message}`,
+        `Failed to query key existence in Redis cache store: ${(error as Error).message}`,
       );
       return false;
     }

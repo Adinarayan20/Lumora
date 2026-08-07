@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 
-export const REDIS_CLIENT_TOKEN = 'REDIS_CLIENT';
+export const REDIS_CLIENT_TOKEN = Symbol('REDIS_CLIENT');
 
 @Injectable()
 export class RedisClientProvider implements OnModuleInit, OnModuleDestroy {
@@ -17,20 +17,24 @@ export class RedisClientProvider implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly configService: ConfigService) {}
 
   public async onModuleInit(): Promise<void> {
-    const redisUrl = this.configService.get<string>(
-      'REDIS_URL',
-      'redis://localhost:6379',
-    );
+    const redisUrl = this.configService.get<string>('REDIS_URL');
 
-    this.logger.log(`Initializing Redis client connection to ${redisUrl}...`);
+    if (!redisUrl && process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'REDIS_URL environment variable is required in production environment.',
+      );
+    }
 
-    this.client = new Redis(redisUrl, {
+    const targetUrl = redisUrl || 'redis://localhost:6379';
+    this.logger.log('Initializing Redis infrastructure client connection...');
+
+    this.client = new Redis(targetUrl, {
       maxRetriesPerRequest: 3,
       enableReadyCheck: true,
       lazyConnect: false,
       retryStrategy(times: number) {
         if (times > 3) {
-          return null; // Stop retrying after 3 attempts during fail-fast startup check
+          return null; // Stop retrying after 3 attempts to enforce fail-fast startup
         }
         return Math.min(times * 100, 1000);
       },
@@ -49,11 +53,12 @@ export class RedisClientProvider implements OnModuleInit, OnModuleDestroy {
 
     try {
       await this.client.ping();
-      this.logger.log('Redis ping check verified successfully.');
+      this.logger.log('Redis ping health check verified successfully.');
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      this.logger.warn(
-        `Redis startup ping warning (non-fatal dev fallback): ${msg}`,
+      this.logger.error(`Redis startup health check failed: ${msg}`);
+      throw new Error(
+        `Redis infrastructure initialization failed fast: unable to ping Redis server. Error: ${msg}`,
       );
     }
   }
