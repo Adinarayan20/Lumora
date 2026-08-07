@@ -32,11 +32,14 @@ export class PrismaTimelineRepository implements ITimelineRepository {
   }
 
   public async findWorkspaceTimeline(
-    _workspaceId: UniqueEntityId,
+    workspaceId: UniqueEntityId,
     limit = 50,
   ): Promise<TimelineRecordEntity[]> {
     try {
       const records = await this.prisma.timeline.findMany({
+        where: {
+          workspaceId: workspaceId.toString(),
+        },
         take: limit,
         orderBy: { startedAt: 'desc' },
       });
@@ -48,12 +51,16 @@ export class PrismaTimelineRepository implements ITimelineRepository {
   }
 
   public async findUserTimeline(
-    _workspaceId: UniqueEntityId,
-    _userId: UniqueEntityId,
+    workspaceId: UniqueEntityId,
+    userId: UniqueEntityId,
     limit = 50,
   ): Promise<TimelineRecordEntity[]> {
     try {
       const records = await this.prisma.timeline.findMany({
+        where: {
+          workspaceId: workspaceId.toString(),
+          userId: userId.toString(),
+        },
         take: limit,
         orderBy: { startedAt: 'desc' },
       });
@@ -66,24 +73,24 @@ export class PrismaTimelineRepository implements ITimelineRepository {
 
   /**
    * Explicit mapping converting database Timeline model to TimelineRecordEntity domain object.
-   *
-   * WARNING / ARCHITECTURAL LIMITATION NOTICE (TD-014):
-   * Current Prisma Timeline schema model persists id, objectId, startedAt, endedAt, timezone.
-   * Workspace and user audit association (workspaceId, userId, action, metadata) are synthesized
-   * as temporary placeholders in this legacy adapter.
-   * THIS ADAPTER IS TEMPORARY: Full audit properties will be rehydrated from dedicated columns
-   * added in schema migration v2 (TD-014).
+   * Rehydrates real audit columns (workspaceId, userId, action, metadata) added in schema v2.
    */
   public toDomain(model: PrismaTimeline): TimelineRecordEntity {
     return TimelineRecordEntity.reconstitute({
       id: new UniqueEntityId(model.id),
-      workspaceId: new UniqueEntityId(),
-      userId: new UniqueEntityId(),
+      workspaceId: model.workspaceId
+        ? new UniqueEntityId(model.workspaceId)
+        : new UniqueEntityId(),
+      userId: model.userId
+        ? new UniqueEntityId(model.userId)
+        : new UniqueEntityId(),
       entityCategory: TimelineCategory.create('OBJECT'),
       entityId: new UniqueEntityId(model.objectId),
-      action: TimelineAction.create('TIMELINE_STARTED'),
+      action: model.action
+        ? TimelineAction.create(model.action)
+        : TimelineAction.create('TIMELINE_ACTIVITY'),
       timestamp: model.startedAt,
-      metadata: undefined,
+      metadata: (model.metadata as Record<string, unknown>) ?? undefined,
     });
   }
 
@@ -94,6 +101,10 @@ export class PrismaTimelineRepository implements ITimelineRepository {
     return {
       id: entity.id.toString(),
       objectId: entity.entityId.toString(),
+      workspaceId: entity.workspaceId.toString(),
+      userId: entity.userId.toString(),
+      action: entity.action.getValue(),
+      metadata: (entity.metadata as Prisma.InputJsonValue) ?? null,
       startedAt: entity.timestamp,
       endedAt: null,
       timezone: 'UTC',

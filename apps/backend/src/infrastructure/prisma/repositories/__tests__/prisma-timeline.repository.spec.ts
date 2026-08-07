@@ -26,11 +26,16 @@ describe('PrismaTimelineRepository Unit Tests', () => {
       entityCategory: 'OBJECT',
       entityId: new UniqueEntityId(),
       action: 'OBJECT_CREATED',
+      metadata: { key: 'value' },
     });
 
     mockPrisma.timeline.create.mockResolvedValue({
       id: record.id.toString(),
       objectId: record.entityId.toString(),
+      workspaceId: record.workspaceId.toString(),
+      userId: record.userId.toString(),
+      action: 'OBJECT_CREATED',
+      metadata: { key: 'value' },
       startedAt: record.timestamp,
       endedAt: null,
       timezone: 'UTC',
@@ -43,18 +48,27 @@ describe('PrismaTimelineRepository Unit Tests', () => {
         data: expect.objectContaining({
           id: record.id.toString(),
           objectId: record.entityId.toString(),
+          workspaceId: record.workspaceId.toString(),
+          userId: record.userId.toString(),
+          action: 'OBJECT_CREATED',
+          metadata: { key: 'value' },
         }),
       }),
     );
   });
 
-  it('should find workspace timeline records sorted chronologically', async () => {
+  it('should find workspace timeline records filtered by workspaceId and sorted chronologically', async () => {
     const wsId = new UniqueEntityId();
+    const userId = new UniqueEntityId();
 
     mockPrisma.timeline.findMany.mockResolvedValue([
       {
         id: IdGenerator.generate().toString(),
         objectId: IdGenerator.generate().toString(),
+        workspaceId: wsId.toString(),
+        userId: userId.toString(),
+        action: 'OBJECT_UPDATED',
+        metadata: null,
         startedAt: new Date(),
         endedAt: null,
         timezone: 'UTC',
@@ -64,8 +78,47 @@ describe('PrismaTimelineRepository Unit Tests', () => {
     const results = await repository.findWorkspaceTimeline(wsId, 10);
 
     expect(results).toHaveLength(1);
-    expect(results[0].entityId).toBeDefined();
+    expect(results[0].workspaceId.toString()).toBe(wsId.toString());
+    expect(results[0].userId.toString()).toBe(userId.toString());
+    expect(results[0].action.getValue()).toBe('OBJECT_UPDATED');
     expect(mockPrisma.timeline.findMany).toHaveBeenCalledWith({
+      where: {
+        workspaceId: wsId.toString(),
+      },
+      take: 10,
+      orderBy: { startedAt: 'desc' },
+    });
+  });
+
+  it('should find user timeline records filtered by workspaceId and userId', async () => {
+    const wsId = new UniqueEntityId();
+    const userId = new UniqueEntityId();
+
+    mockPrisma.timeline.findMany.mockResolvedValue([
+      {
+        id: IdGenerator.generate().toString(),
+        objectId: IdGenerator.generate().toString(),
+        workspaceId: wsId.toString(),
+        userId: userId.toString(),
+        action: 'OBJECT_DELETED',
+        metadata: null,
+        startedAt: new Date(),
+        endedAt: null,
+        timezone: 'UTC',
+      },
+    ]);
+
+    const results = await repository.findUserTimeline(wsId, userId, 10);
+
+    expect(results).toHaveLength(1);
+    expect(results[0].workspaceId.toString()).toBe(wsId.toString());
+    expect(results[0].userId.toString()).toBe(userId.toString());
+    expect(results[0].action.getValue()).toBe('OBJECT_DELETED');
+    expect(mockPrisma.timeline.findMany).toHaveBeenCalledWith({
+      where: {
+        workspaceId: wsId.toString(),
+        userId: userId.toString(),
+      },
       take: 10,
       orderBy: { startedAt: 'desc' },
     });

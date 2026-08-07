@@ -710,7 +710,7 @@ model Object {
 
   reminders Reminder[]
 
-  timeline Timeline?
+  timeline Timeline[]
 
   collectionItems CollectionItem[]
 
@@ -847,7 +847,7 @@ model Notification {
 model Timeline {
   id String @id @default(uuid()) @db.Uuid
 
-  objectId String @unique @db.Uuid
+  objectId String @db.Uuid
 
   startedAt DateTime
 
@@ -855,7 +855,19 @@ model Timeline {
 
   timezone String
 
+  workspaceId String? @db.Uuid
+
+  userId String? @db.Uuid
+
+  action String?
+
+  metadata Json?
+
   object Object @relation(fields: [objectId], references: [id])
+
+  @@index([workspaceId])
+  @@index([userId])
+  @@index([action])
 }
 
 model Collection {
