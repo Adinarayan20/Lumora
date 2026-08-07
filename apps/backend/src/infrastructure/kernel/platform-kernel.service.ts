@@ -59,7 +59,12 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
 
     // Boot Step 5: Capability Engine Bindings Verification
     this.logger.log(
-      '[LumoraPlatformKernel] Step 5/5: Universal Capability Engine bindings registered.',
+      '[LumoraPlatformKernel] Step 5/6: Universal Capability Engine bindings registered.',
+    );
+
+    // Boot Step 6: Template Engine & Starter Library Catalog Initialization
+    this.logger.log(
+      '[LumoraPlatformKernel] Step 6/6: Template Engine & Starter Library Catalog initialized.',
     );
 
     const durationMs = Date.now() - startTime;
@@ -75,6 +80,7 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
       bootedAt: new Date(),
     });
   }
+
 
   public isBooted(): boolean {
     return this._isBooted;
