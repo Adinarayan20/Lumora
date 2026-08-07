@@ -5,3 +5,5 @@ export * from "./core/catalog/index.js";
 export * from "./core/events/index.js";
 export * from "./core/capabilities/index.js";
 export * from "./core/runtime/index.js";
+export * from "./core/templates/index.js";
+
