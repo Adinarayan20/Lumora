@@ -8,10 +8,6 @@ import {
   Param,
   Query,
   UseGuards,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../rbac/guards/permissions.guard';
@@ -57,9 +53,7 @@ export class CollectionsController {
       createdById: userId,
       dto,
     });
-    if (result.isFailure) {
-      throw new BadRequestException(result.getError().message);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -73,9 +67,7 @@ export class CollectionsController {
       workspaceId,
       filter,
     });
-    if (result.isFailure) {
-      throw new InternalServerErrorException(result.getError().message);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -89,11 +81,7 @@ export class CollectionsController {
       workspaceId,
       idOrSlug,
     });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      throw new InternalServerErrorException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -111,12 +99,7 @@ export class CollectionsController {
       userId,
       dto,
     });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      if (msg.includes('mismatch')) throw new ConflictException(msg);
-      throw new BadRequestException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -132,11 +115,7 @@ export class CollectionsController {
       collectionId,
       userId,
     });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      throw new InternalServerErrorException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -154,12 +133,7 @@ export class CollectionsController {
       userId,
       dto,
     });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      if (msg.includes('already')) throw new ConflictException(msg);
-      throw new BadRequestException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
@@ -177,11 +151,7 @@ export class CollectionsController {
       objectId,
       userId,
     });
-    if (result.isFailure) {
-      const msg = result.getError().message;
-      if (msg.includes('not found')) throw new NotFoundException(msg);
-      throw new InternalServerErrorException(msg);
-    }
+    if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 }

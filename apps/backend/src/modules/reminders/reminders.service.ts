@@ -1,9 +1,10 @@
+import { Injectable } from '@nestjs/common';
 import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+  EntityNotFoundException,
+  RevisionConflictException,
+  ReminderNotActiveForSnoozeException,
+  DomainValidationException,
+} from '@lumora/shared';
 import { ReminderRepository } from './repositories/reminder.repository';
 import { ObjectRepository } from '../objects/repositories/object.repository';
 import { AuditLogRepository } from '../auth/repositories/audit-log.repository';
@@ -43,9 +44,7 @@ export class RemindersService {
   ): Promise<Reminder> {
     const object = await this.objectRepository.findById(objectId);
     if (!object || object.workspaceId !== workspaceId) {
-      throw new NotFoundException(
-        'Universal Object not found in this workspace',
-      );
+      throw new EntityNotFoundException('Object', objectId);
     }
 
     if (dto.recurrenceRule) {
@@ -54,7 +53,9 @@ export class RemindersService {
 
     const remindAt = new Date(dto.remindAt);
     if (isNaN(remindAt.getTime())) {
-      throw new BadRequestException('Invalid remindAt ISO date string');
+      throw new DomainValidationException(
+        `Invalid remindAt date string '${dto.remindAt}'. Must be valid ISO 8601 date.`,
+      );
     }
 
     const nextOccurrenceAt =
@@ -118,9 +119,7 @@ export class RemindersService {
   ): Promise<Reminder[]> {
     const object = await this.objectRepository.findById(objectId);
     if (!object || object.workspaceId !== workspaceId) {
-      throw new NotFoundException(
-        'Universal Object not found in this workspace',
-      );
+      throw new EntityNotFoundException('Object', objectId);
     }
     return this.reminderRepository.findByObjectId(workspaceId, objectId);
   }
@@ -131,7 +130,7 @@ export class RemindersService {
   ): Promise<Reminder> {
     const reminder = await this.reminderRepository.findById(reminderId);
     if (!reminder || reminder.workspaceId !== workspaceId) {
-      throw new NotFoundException('Reminder not found');
+      throw new EntityNotFoundException('Reminder', reminderId);
     }
     return reminder;
   }
@@ -145,8 +144,10 @@ export class RemindersService {
     const reminder = await this.getReminderById(workspaceId, reminderId);
 
     if (dto.revision !== undefined && dto.revision !== reminder.revision) {
-      throw new ConflictException(
-        `Reminder revision mismatch: current is ${reminder.revision}, update expected ${dto.revision}`,
+      throw new RevisionConflictException(
+        'Reminder',
+        reminder.revision,
+        dto.revision,
       );
     }
 
@@ -202,7 +203,10 @@ export class RemindersService {
     const reminder = await this.getReminderById(workspaceId, reminderId);
 
     if (reminder.status !== ReminderStatus.ACTIVE) {
-      throw new ConflictException('Only ACTIVE reminders can be snoozed');
+      throw new ReminderNotActiveForSnoozeException(
+        reminder.id,
+        reminder.status,
+      );
     }
 
     const snoozedUntil = this.schedulerService.calculateSnoozeTarget(

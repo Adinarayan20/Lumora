@@ -1,8 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import {
-  Injectable,
-  NotFoundException,
+  EntityNotFoundException,
   ConflictException,
-} from '@nestjs/common';
+  RevisionConflictException,
+} from '@lumora/shared';
 import { ObjectRepository } from './repositories/object.repository';
 import { CreateObjectDto } from './dto/create-object.dto';
 import { UpdateObjectDto } from './dto/update-object.dto';
@@ -36,7 +37,8 @@ export class ObjectsService {
       );
       if (exists) {
         throw new ConflictException(
-          `Object key '${objectKey}' already exists in workspace`,
+          'Object',
+          `key '${objectKey}' already exists in this workspace`,
         );
       }
     }
@@ -102,7 +104,7 @@ export class ObjectsService {
     }
 
     if (!object || object.workspaceId !== workspaceId) {
-      throw new NotFoundException('Universal Object not found');
+      throw new EntityNotFoundException('Object', idOrKey);
     }
 
     return object;
@@ -117,8 +119,10 @@ export class ObjectsService {
     const object = await this.getObjectByIdOrKey(workspaceId, objectId);
 
     if (dto.revision !== undefined && dto.revision !== object.revision) {
-      throw new ConflictException(
-        `Object revision mismatch: current is ${object.revision}, update expected ${dto.revision}`,
+      throw new RevisionConflictException(
+        'Object',
+        object.revision,
+        dto.revision,
       );
     }
 

@@ -1,9 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  ForbiddenException,
-} from '@nestjs/common';
+  EntityNotFoundException,
+  ForbiddenException as DomainForbiddenException,
+  DomainValidationException,
+} from '@lumora/shared';
 import { nanoid } from 'nanoid';
 import { WorkspaceInvitationRepository } from '../repositories/workspace-invitation.repository';
 import { WorkspaceRepository } from '../repositories/workspace.repository';
@@ -37,11 +37,11 @@ export class WorkspaceInvitationService {
   ): Promise<WorkspaceInvitation> {
     const workspace = await this.workspaceRepository.findById(workspaceId, tx);
     if (!workspace) {
-      throw new NotFoundException('Workspace not found');
+      throw new EntityNotFoundException('Workspace', workspaceId);
     }
 
     if (workspace.ownerId !== invitedById) {
-      throw new ForbiddenException('Only workspace owner can invite members');
+      throw new DomainForbiddenException('workspace:invite-member');
     }
 
     const token = nanoid(32);
@@ -88,9 +88,7 @@ export class WorkspaceInvitationService {
   ): Promise<WorkspaceInvitation> {
     const workspace = await this.workspaceRepository.findById(workspaceId, tx);
     if (!workspace || workspace.ownerId !== requesterId) {
-      throw new ForbiddenException(
-        'Only workspace owner can revoke invitations',
-      );
+      throw new DomainForbiddenException('workspace:revoke-invitation');
     }
 
     const invitation = await this.invitationRepository.findById(
@@ -98,7 +96,7 @@ export class WorkspaceInvitationService {
       tx,
     );
     if (!invitation || invitation.workspaceId !== workspaceId) {
-      throw new NotFoundException('Invitation not found');
+      throw new EntityNotFoundException('Invitation', invitationId);
     }
 
     return this.invitationRepository.updateStatus(
@@ -115,7 +113,9 @@ export class WorkspaceInvitationService {
   ): Promise<{ invitation: WorkspaceInvitation; workspaceId: string }> {
     const invitation = await this.invitationRepository.findByToken(token, tx);
     if (!invitation || invitation.status !== InvitationStatus.PENDING) {
-      throw new BadRequestException('Invitation invalid or already used');
+      throw new DomainValidationException(
+        'Invitation is invalid or has already been used.',
+      );
     }
 
     if (new Date() > invitation.expiresAt) {
@@ -124,13 +124,11 @@ export class WorkspaceInvitationService {
         InvitationStatus.EXPIRED,
         tx,
       );
-      throw new BadRequestException('Invitation expired');
+      throw new DomainValidationException('Invitation has expired.');
     }
 
     if (invitation.email.toLowerCase() !== user.email.toLowerCase()) {
-      throw new ForbiddenException(
-        'Invitation email does not match user email',
-      );
+      throw new DomainForbiddenException('workspace:accept-invitation');
     }
 
     await this.memberService.addMember(
