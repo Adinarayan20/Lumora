@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId } from '@lumora/shared';
+import { Result, UniqueEntityId, ApplicationException } from '@lumora/shared';
 import { HouseholdAggregate } from '../../../domain/households/household.aggregate.js';
 import type { IHouseholdRepository } from '../../../domain/households/repositories/household.repository.interface.js';
 import { HOUSEHOLD_REPOSITORY_TOKEN } from '../households.tokens.js';
@@ -20,7 +20,7 @@ export class CreateHouseholdUseCase {
 
   public async execute(
     command: CreateHouseholdCommand,
-  ): Promise<Result<HouseholdResponseDto, Error>> {
+  ): Promise<Result<HouseholdResponseDto, ApplicationException>> {
     try {
       const { dto } = command;
       const wsEntityId = new UniqueEntityId(dto.workspaceId);
@@ -37,9 +37,10 @@ export class CreateHouseholdUseCase {
       const responseDto = HouseholdResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

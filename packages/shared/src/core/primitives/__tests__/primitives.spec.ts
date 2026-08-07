@@ -55,6 +55,62 @@ describe("Core Domain Primitives", () => {
         );
       }
     });
+
+    it("should unwrap value or return fallback", () => {
+      const okResult = Result.ok<number>(42);
+      const failResult = Result.fail<number, string>("Failed");
+
+      expect(okResult.unwrapOr(0)).toBe(42);
+      expect(failResult.unwrapOr(0)).toBe(0);
+    });
+
+    it("should map value on success and preserve error on failure", () => {
+      const okResult = Result.ok<number>(10).map((n) => n * 2);
+      const failResult = Result.fail<number, string>("Error").map((n) => n * 2);
+
+      expect(okResult.getValue()).toBe(20);
+      expect(failResult.getError()).toBe("Error");
+    });
+
+    it("should flatMap value on success and preserve error on failure", () => {
+      const okResult = Result.ok<number>(10).flatMap((n) => Result.ok(n + 5));
+      const failResult = Result.fail<number, string>("Error").flatMap((n) => Result.ok(n + 5));
+
+      expect(okResult.getValue()).toBe(15);
+      expect(failResult.getError()).toBe("Error");
+    });
+
+    it("should pattern match correctly on success and failure", () => {
+      const okResult = Result.ok<string>("Hello");
+      const failResult = Result.fail<string, string>("Failed");
+
+      const okMessage = okResult.match(
+        (val) => `Success: ${val}`,
+        (err) => `Error: ${err}`,
+      );
+      const failMessage = failResult.match(
+        (val) => `Success: ${val}`,
+        (err) => `Error: ${err}`,
+      );
+
+      expect(okMessage).toBe("Success: Hello");
+      expect(failMessage).toBe("Error: Failed");
+    });
+
+    it("should combine array of successful Results or return first failure", () => {
+      const r1 = Result.ok<number>(1);
+      const r2 = Result.ok<number>(2);
+      const r3 = Result.ok<number>(3);
+      const combinedOk = Result.combine([r1, r2, r3]);
+
+      expect(combinedOk.getValue()).toEqual([1, 2, 3]);
+
+      const fail = Result.fail<number, string>("Failed element");
+      const combinedFail = Result.combine([r1, fail, r3]);
+
+      expect(combinedFail.isFailure).toBe(true);
+      expect(combinedFail.getError()).toBe("Failed element");
+    });
   });
 
   describe("ValueObject Base Class", () => {

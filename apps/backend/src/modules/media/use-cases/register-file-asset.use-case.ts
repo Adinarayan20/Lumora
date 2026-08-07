@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId } from '@lumora/shared';
+import { Result, UniqueEntityId, ApplicationException } from '@lumora/shared';
 import { FileAssetAggregate } from '../../../domain/media/file-asset.aggregate.js';
 import { FileProvider } from '../../../domain/media/value-objects/file-provider.enum.js';
 import { StorageQuotaPolicy } from '../../../domain/media/policies/storage-quota.policy.js';
@@ -23,7 +23,7 @@ export class RegisterFileAssetUseCase {
 
   public async execute(
     command: RegisterFileAssetCommand,
-  ): Promise<Result<FileAssetResponseDto, Error>> {
+  ): Promise<Result<FileAssetResponseDto, ApplicationException>> {
     try {
       const { uploadedById, dto } = command;
       const userEntityId = new UniqueEntityId(uploadedById);
@@ -51,9 +51,10 @@ export class RegisterFileAssetUseCase {
       const responseDto = FileAssetResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

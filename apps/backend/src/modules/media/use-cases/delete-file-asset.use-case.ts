@@ -4,6 +4,7 @@ import {
   UniqueEntityId,
   EntityNotFoundException,
   DomainValidationException,
+  ApplicationException,
 } from '@lumora/shared';
 import type { IFileAssetRepository } from '../../../domain/media/repositories/file-asset.repository.interface.js';
 import type { IStorageProvider } from '../../../domain/media/interfaces/storage-provider.interface.js';
@@ -30,7 +31,7 @@ export class DeleteFileAssetUseCase {
 
   public async execute(
     command: DeleteFileAssetCommand,
-  ): Promise<Result<FileAssetResponseDto, Error>> {
+  ): Promise<Result<FileAssetResponseDto, ApplicationException>> {
     try {
       const { fileAssetId, requestedById } = command;
 
@@ -60,9 +61,10 @@ export class DeleteFileAssetUseCase {
       const responseDto = FileAssetResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

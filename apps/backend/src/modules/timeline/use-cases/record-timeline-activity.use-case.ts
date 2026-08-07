@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId } from '@lumora/shared';
+import { Result, UniqueEntityId, ApplicationException } from '@lumora/shared';
 import { TimelineRecordEntity } from '../../../domain/timeline/entities/timeline-record.entity.js';
 import type { ITimelineRepository } from '../../../domain/timeline/repositories/timeline.repository.interface.js';
 import { TIMELINE_REPOSITORY_TOKEN } from '../timeline.tokens.js';
@@ -20,7 +20,7 @@ export class RecordTimelineActivityUseCase {
 
   public async execute(
     command: RecordTimelineActivityCommand,
-  ): Promise<Result<TimelineRecordResponseDto, Error>> {
+  ): Promise<Result<TimelineRecordResponseDto, ApplicationException>> {
     try {
       const { dto } = command;
 
@@ -38,9 +38,10 @@ export class RecordTimelineActivityUseCase {
       const responseDto = TimelineRecordResponseMapper.toResponseDto(record);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

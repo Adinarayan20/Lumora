@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
+  Result,
+  ApplicationException,
   EntityNotFoundException,
   ForbiddenException as DomainForbiddenException,
   ConflictException,
@@ -25,8 +27,12 @@ export class WorkspaceMemberService {
   async getWorkspaceMembers(
     workspaceId: string,
     tx?: PrismaTransaction,
-  ): Promise<WorkspaceMember[]> {
-    return this.memberRepository.findWorkspaceMembers(workspaceId, tx);
+  ): Promise<Result<WorkspaceMember[], ApplicationException>> {
+    const members = await this.memberRepository.findWorkspaceMembers(
+      workspaceId,
+      tx,
+    );
+    return Result.ok(members);
   }
 
   async addMember(
@@ -34,7 +40,7 @@ export class WorkspaceMemberService {
     userId: string,
     roleId?: string,
     tx?: PrismaTransaction,
-  ): Promise<WorkspaceMember> {
+  ): Promise<Result<WorkspaceMember, ApplicationException>> {
     const existing = await this.memberRepository.findMember(
       workspaceId,
       userId,
@@ -42,14 +48,16 @@ export class WorkspaceMemberService {
     );
     if (existing) {
       if (existing.status === WorkspaceMemberStatus.ACTIVE) {
-        throw new ConflictException(
-          'WorkspaceMember',
-          'User is already a member of this workspace',
+        return Result.fail(
+          new ConflictException(
+            'WorkspaceMember',
+            'User is already a member of this workspace',
+          ),
         );
       }
     }
 
-    return this.memberRepository.addMember(
+    const member = await this.memberRepository.addMember(
       {
         workspaceId,
         userId,
@@ -58,6 +66,7 @@ export class WorkspaceMemberService {
       },
       tx,
     );
+    return Result.ok(member);
   }
 
   async removeMember(
@@ -65,18 +74,22 @@ export class WorkspaceMemberService {
     targetUserId: string,
     requesterId: string,
     tx?: PrismaTransaction,
-  ): Promise<WorkspaceMember> {
+  ): Promise<Result<WorkspaceMember, ApplicationException>> {
     const workspace = await this.workspaceRepository.findById(workspaceId, tx);
     if (!workspace) {
-      throw new EntityNotFoundException('Workspace', workspaceId);
+      return Result.fail(new EntityNotFoundException('Workspace', workspaceId));
     }
 
     if (workspace.ownerId === targetUserId) {
-      throw new DomainForbiddenException('workspace:remove-owner');
+      return Result.fail(
+        new DomainForbiddenException('workspace:remove-owner'),
+      );
     }
 
     if (workspace.ownerId !== requesterId && requesterId !== targetUserId) {
-      throw new DomainForbiddenException('workspace:remove-member');
+      return Result.fail(
+        new DomainForbiddenException('workspace:remove-member'),
+      );
     }
 
     const removed = await this.memberRepository.removeMember(
@@ -90,6 +103,6 @@ export class WorkspaceMemberService {
       tx,
     );
 
-    return removed;
+    return Result.ok(removed);
   }
 }

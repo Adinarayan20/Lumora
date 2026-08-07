@@ -4,6 +4,7 @@ import {
   UniqueEntityId,
   EntityNotFoundException,
   DomainValidationException,
+  ApplicationException,
 } from '@lumora/shared';
 import type { INotificationRepository } from '../../../domain/notifications/repositories/notification.repository.interface.js';
 import { NOTIFICATION_REPOSITORY_TOKEN } from '../notifications.tokens.js';
@@ -24,7 +25,7 @@ export class MarkNotificationAsReadUseCase {
 
   public async execute(
     command: MarkNotificationAsReadCommand,
-  ): Promise<Result<NotificationResponseDto, Error>> {
+  ): Promise<Result<NotificationResponseDto, ApplicationException>> {
     try {
       const { notificationId, userId } = command;
 
@@ -53,9 +54,10 @@ export class MarkNotificationAsReadUseCase {
       const responseDto = NotificationResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

@@ -5,9 +5,10 @@
  * and delegates device/session management to DeviceService and SessionService.
  */
 import { Injectable } from '@nestjs/common';
-import { Result } from '@lumora/shared';
+import { Result, ApplicationException } from '@lumora/shared';
 import { UsersService } from '../users.service.js';
 import { UpdateProfileDto } from '../dto/update-profile.dto.js';
+import { User, Device, Session } from '../../../generated/prisma/client.js';
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
 
@@ -18,12 +19,10 @@ export interface GetProfileQueryInput {
 @Injectable()
 export class GetProfileQuery {
   constructor(private readonly service: UsersService) {}
-  async execute(input: GetProfileQueryInput): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(await this.service.getProfile(input.userId));
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    input: GetProfileQueryInput,
+  ): Promise<Result<Omit<User, 'passwordHash'>, ApplicationException>> {
+    return this.service.getProfile(input.userId);
   }
 }
 
@@ -36,12 +35,8 @@ export class GetUserDevicesQuery {
   constructor(private readonly service: UsersService) {}
   async execute(
     input: GetUserDevicesQueryInput,
-  ): Promise<Result<unknown[], Error>> {
-    try {
-      return Result.ok(await this.service.getUserDevices(input.userId));
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  ): Promise<Result<Device[], ApplicationException>> {
+    return this.service.getUserDevices(input.userId);
   }
 }
 
@@ -54,12 +49,8 @@ export class GetUserSessionsQuery {
   constructor(private readonly service: UsersService) {}
   async execute(
     input: GetUserSessionsQueryInput,
-  ): Promise<Result<unknown[], Error>> {
-    try {
-      return Result.ok(await this.service.getUserSessions(input.userId));
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  ): Promise<Result<Session[], ApplicationException>> {
+    return this.service.getUserSessions(input.userId);
   }
 }
 
@@ -73,12 +64,10 @@ export interface UpdateProfileCommand {
 @Injectable()
 export class UpdateProfileUseCase {
   constructor(private readonly service: UsersService) {}
-  async execute(cmd: UpdateProfileCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(await this.service.updateProfile(cmd.userId, cmd.dto));
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: UpdateProfileCommand,
+  ): Promise<Result<Omit<User, 'passwordHash'>, ApplicationException>> {
+    return this.service.updateProfile(cmd.userId, cmd.dto);
   }
 }
 
@@ -91,14 +80,10 @@ export interface TrustDeviceCommand {
 @Injectable()
 export class TrustDeviceUseCase {
   constructor(private readonly service: UsersService) {}
-  async execute(cmd: TrustDeviceCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.trustDevice(cmd.userId, cmd.deviceId, cmd.trusted),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: TrustDeviceCommand,
+  ): Promise<Result<Device, ApplicationException>> {
+    return this.service.trustDevice(cmd.userId, cmd.deviceId, cmd.trusted);
   }
 }
 
@@ -110,13 +95,9 @@ export interface RevokeSessionCommand {
 @Injectable()
 export class RevokeSessionUseCase {
   constructor(private readonly service: UsersService) {}
-  async execute(cmd: RevokeSessionCommand): Promise<Result<unknown, Error>> {
-    try {
-      return Result.ok(
-        await this.service.revokeSession(cmd.userId, cmd.sessionId),
-      );
-    } catch (e) {
-      return Result.fail(e instanceof Error ? e : new Error(String(e)));
-    }
+  async execute(
+    cmd: RevokeSessionCommand,
+  ): Promise<Result<Session, ApplicationException>> {
+    return this.service.revokeSession(cmd.userId, cmd.sessionId);
   }
 }

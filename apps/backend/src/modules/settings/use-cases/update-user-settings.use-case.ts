@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, UniqueEntityId } from '@lumora/shared';
+import { Result, UniqueEntityId, ApplicationException } from '@lumora/shared';
 import { UserSettingsAggregate } from '../../../domain/settings/user-settings.aggregate.js';
 import type { IUserSettingsRepository } from '../../../domain/settings/repositories/user-settings.repository.interface.js';
 import { USER_SETTINGS_REPOSITORY_TOKEN } from '../settings.tokens.js';
@@ -21,7 +21,7 @@ export class UpdateUserSettingsUseCase {
 
   public async execute(
     command: UpdateUserSettingsCommand,
-  ): Promise<Result<UserSettingsResponseDto, Error>> {
+  ): Promise<Result<UserSettingsResponseDto, ApplicationException>> {
     try {
       const { userId, dto } = command;
       const userEntityId = new UniqueEntityId(userId);
@@ -55,9 +55,10 @@ export class UpdateUserSettingsUseCase {
       const responseDto = UserSettingsResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

@@ -3,6 +3,7 @@ import {
   Result,
   UniqueEntityId,
   EntityNotFoundException,
+  ApplicationException,
 } from '@lumora/shared';
 import type { IFileAssetRepository } from '../../../domain/media/repositories/file-asset.repository.interface.js';
 import type { IStorageProvider } from '../../../domain/media/interfaces/storage-provider.interface.js';
@@ -33,7 +34,7 @@ export class GetFileAssetQuery {
 
   public async execute(
     input: GetFileAssetQueryInput,
-  ): Promise<Result<GetFileAssetQueryOutput, Error>> {
+  ): Promise<Result<GetFileAssetQueryOutput, ApplicationException>> {
     try {
       const { fileAssetId } = input;
 
@@ -57,9 +58,10 @@ export class GetFileAssetQuery {
         downloadUrl,
       });
     } catch (error) {
-      return Result.fail(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      if (error instanceof ApplicationException) {
+        return Result.fail(error);
+      }
+      throw error;
     }
   }
 }

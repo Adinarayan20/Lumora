@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
+  Result,
+  ApplicationException,
   EntityNotFoundException,
   ConflictException,
   RevisionConflictException,
@@ -31,7 +33,7 @@ export class CollectionsService {
     workspaceId: string,
     createdById: string,
     dto: CreateCollectionDto,
-  ): Promise<LumoraCollection> {
+  ): Promise<Result<LumoraCollection, ApplicationException>> {
     const slug = await this.generateSlug(workspaceId, dto.name);
     const pinnedAt = dto.pinnedAt ? new Date(dto.pinnedAt) : undefined;
 
@@ -65,23 +67,25 @@ export class CollectionsService {
       },
     });
 
-    return collection;
+    return Result.ok(collection);
   }
 
   async getWorkspaceCollections(
     workspaceId: string,
     filter: FilterCollectionDto,
-  ): Promise<LumoraCollection[]> {
-    return this.collectionRepository.findWorkspaceCollections(
-      workspaceId,
-      filter,
-    );
+  ): Promise<Result<LumoraCollection[], ApplicationException>> {
+    const collections =
+      await this.collectionRepository.findWorkspaceCollections(
+        workspaceId,
+        filter,
+      );
+    return Result.ok(collections);
   }
 
   async getCollectionByIdOrSlug(
     workspaceId: string,
     idOrSlug: string,
-  ): Promise<LumoraCollection> {
+  ): Promise<Result<LumoraCollection, ApplicationException>> {
     const isUuid =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         idOrSlug,
@@ -98,10 +102,10 @@ export class CollectionsService {
     }
 
     if (!collection || collection.workspaceId !== workspaceId) {
-      throw new EntityNotFoundException('Collection', idOrSlug);
+      return Result.fail(new EntityNotFoundException('Collection', idOrSlug));
     }
 
-    return collection;
+    return Result.ok(collection);
   }
 
   async updateCollection(
@@ -109,17 +113,24 @@ export class CollectionsService {
     collectionId: string,
     userId: string,
     dto: UpdateCollectionDto,
-  ): Promise<LumoraCollection> {
-    const collection = await this.getCollectionByIdOrSlug(
+  ): Promise<Result<LumoraCollection, ApplicationException>> {
+    const collectionResult = await this.getCollectionByIdOrSlug(
       workspaceId,
       collectionId,
     );
+    if (collectionResult.isFailure) {
+      return Result.fail(collectionResult.getError());
+    }
+
+    const collection = collectionResult.getValue();
 
     if (dto.revision !== undefined && dto.revision !== collection.revision) {
-      throw new RevisionConflictException(
-        'Collection',
-        collection.revision,
-        dto.revision,
+      return Result.fail(
+        new RevisionConflictException(
+          'Collection',
+          collection.revision,
+          dto.revision,
+        ),
       );
     }
 
@@ -160,18 +171,23 @@ export class CollectionsService {
       },
     });
 
-    return updated;
+    return Result.ok(updated);
   }
 
   async softDeleteCollection(
     workspaceId: string,
     collectionId: string,
     userId: string,
-  ): Promise<LumoraCollection> {
-    const collection = await this.getCollectionByIdOrSlug(
+  ): Promise<Result<LumoraCollection, ApplicationException>> {
+    const collectionResult = await this.getCollectionByIdOrSlug(
       workspaceId,
       collectionId,
     );
+    if (collectionResult.isFailure) {
+      return Result.fail(collectionResult.getError());
+    }
+
+    const collection = collectionResult.getValue();
 
     const deleted = await this.collectionRepository.softDelete(
       collection.id,
@@ -185,7 +201,7 @@ export class CollectionsService {
       action: AuditAction.DELETE,
     });
 
-    return deleted;
+    return Result.ok(deleted);
   }
 
   async addCollectionItem(
@@ -193,15 +209,20 @@ export class CollectionsService {
     collectionId: string,
     userId: string,
     dto: AddCollectionItemDto,
-  ): Promise<CollectionItem> {
-    const collection = await this.getCollectionByIdOrSlug(
+  ): Promise<Result<CollectionItem, ApplicationException>> {
+    const collectionResult = await this.getCollectionByIdOrSlug(
       workspaceId,
       collectionId,
     );
+    if (collectionResult.isFailure) {
+      return Result.fail(collectionResult.getError());
+    }
+
+    const collection = collectionResult.getValue();
 
     const object = await this.objectRepository.findById(dto.objectId);
     if (!object || object.workspaceId !== workspaceId) {
-      throw new EntityNotFoundException('Object', dto.objectId);
+      return Result.fail(new EntityNotFoundException('Object', dto.objectId));
     }
 
     try {
@@ -222,7 +243,7 @@ export class CollectionsService {
         },
       });
 
-      return item;
+      return Result.ok(item);
     } catch (err: unknown) {
       if (
         typeof err === 'object' &&
@@ -230,9 +251,11 @@ export class CollectionsService {
         'code' in err &&
         (err as { code: string }).code === 'P2002'
       ) {
-        throw new ConflictException(
-          'CollectionItem',
-          'Object is already attached to this collection',
+        return Result.fail(
+          new ConflictException(
+            'CollectionItem',
+            'Object is already attached to this collection',
+          ),
         );
       }
       throw err;
@@ -244,11 +267,16 @@ export class CollectionsService {
     collectionId: string,
     objectId: string,
     userId: string,
-  ): Promise<{ removed: boolean }> {
-    const collection = await this.getCollectionByIdOrSlug(
+  ): Promise<Result<{ removed: boolean }, ApplicationException>> {
+    const collectionResult = await this.getCollectionByIdOrSlug(
       workspaceId,
       collectionId,
     );
+    if (collectionResult.isFailure) {
+      return Result.fail(collectionResult.getError());
+    }
+
+    const collection = collectionResult.getValue();
 
     const result = await this.collectionRepository.removeItem(
       collection.id,
@@ -262,7 +290,7 @@ export class CollectionsService {
       action: AuditAction.DELETE,
     });
 
-    return { removed: result.count > 0 };
+    return Result.ok({ removed: result.count > 0 });
   }
 
   private async generateSlug(

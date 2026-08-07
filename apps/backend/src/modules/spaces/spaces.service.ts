@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
+  Result,
+  ApplicationException,
   EntityNotFoundException,
   DomainValidationException,
   RevisionConflictException,
@@ -26,9 +28,12 @@ export class SpacesService {
     workspaceId: string,
     createdById: string,
     dto: CreateSpaceDto,
-  ): Promise<LumoraSpace> {
+  ): Promise<Result<LumoraSpace, ApplicationException>> {
     if (dto.parentId) {
-      await this.validateParent(workspaceId, dto.parentId);
+      const parentResult = await this.validateParent(workspaceId, dto.parentId);
+      if (parentResult.isFailure) {
+        return Result.fail(parentResult.getError());
+      }
     }
 
     const slug = await this.generateSlug(workspaceId, dto.name);
@@ -63,20 +68,24 @@ export class SpacesService {
       },
     });
 
-    return space;
+    return Result.ok(space);
   }
 
   async getWorkspaceSpaces(
     workspaceId: string,
     filter: FilterSpaceDto,
-  ): Promise<LumoraSpace[]> {
-    return this.spaceRepository.findWorkspaceSpaces(workspaceId, filter);
+  ): Promise<Result<LumoraSpace[], ApplicationException>> {
+    const spaces = await this.spaceRepository.findWorkspaceSpaces(
+      workspaceId,
+      filter,
+    );
+    return Result.ok(spaces);
   }
 
   async getSpaceByIdOrSlug(
     workspaceId: string,
     idOrSlug: string,
-  ): Promise<LumoraSpace> {
+  ): Promise<Result<LumoraSpace, ApplicationException>> {
     const isUuid =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         idOrSlug,
@@ -88,10 +97,10 @@ export class SpacesService {
     }
 
     if (!space || space.workspaceId !== workspaceId) {
-      throw new EntityNotFoundException('Space', idOrSlug);
+      return Result.fail(new EntityNotFoundException('Space', idOrSlug));
     }
 
-    return space;
+    return Result.ok(space);
   }
 
   async updateSpace(
@@ -99,25 +108,38 @@ export class SpacesService {
     spaceId: string,
     userId: string,
     dto: UpdateSpaceDto,
-  ): Promise<LumoraSpace> {
-    const space = await this.getSpaceByIdOrSlug(workspaceId, spaceId);
+  ): Promise<Result<LumoraSpace, ApplicationException>> {
+    const spaceResult = await this.getSpaceByIdOrSlug(workspaceId, spaceId);
+    if (spaceResult.isFailure) {
+      return Result.fail(spaceResult.getError());
+    }
+
+    const space = spaceResult.getValue();
 
     if (dto.revision !== undefined && dto.revision !== space.revision) {
-      throw new RevisionConflictException(
-        'Space',
-        space.revision,
-        dto.revision,
+      return Result.fail(
+        new RevisionConflictException('Space', space.revision, dto.revision),
       );
     }
 
     if (dto.parentId !== undefined && dto.parentId !== null) {
       if (dto.parentId === space.id) {
-        throw new DomainValidationException(
-          'A Space cannot be its own parent.',
+        return Result.fail(
+          new DomainValidationException('A Space cannot be its own parent.'),
         );
       }
-      await this.validateParent(workspaceId, dto.parentId);
-      await this.validateParentCycle(workspaceId, space.id, dto.parentId);
+      const parentResult = await this.validateParent(workspaceId, dto.parentId);
+      if (parentResult.isFailure) {
+        return Result.fail(parentResult.getError());
+      }
+      const cycleResult = await this.validateParentCycle(
+        workspaceId,
+        space.id,
+        dto.parentId,
+      );
+      if (cycleResult.isFailure) {
+        return Result.fail(cycleResult.getError());
+      }
     }
 
     const pinnedAt =
@@ -156,22 +178,29 @@ export class SpacesService {
       },
     });
 
-    return updated;
+    return Result.ok(updated);
   }
 
   async softDeleteSpace(
     workspaceId: string,
     spaceId: string,
     userId: string,
-  ): Promise<LumoraSpace> {
-    const space = await this.getSpaceByIdOrSlug(workspaceId, spaceId);
+  ): Promise<Result<LumoraSpace, ApplicationException>> {
+    const spaceResult = await this.getSpaceByIdOrSlug(workspaceId, spaceId);
+    if (spaceResult.isFailure) {
+      return Result.fail(spaceResult.getError());
+    }
+
+    const space = spaceResult.getValue();
 
     const { childSpacesCount, childObjectsCount } =
       await this.spaceRepository.countActiveChildren(space.id);
 
     if (childSpacesCount > 0 || childObjectsCount > 0) {
-      throw new DomainValidationException(
-        `Cannot delete Space containing active contents (${childSpacesCount} child spaces, ${childObjectsCount} objects). Delete or move contents first.`,
+      return Result.fail(
+        new DomainValidationException(
+          `Cannot delete Space containing active contents (${childSpacesCount} child spaces, ${childObjectsCount} objects). Delete or move contents first.`,
+        ),
       );
     }
 
@@ -184,38 +213,42 @@ export class SpacesService {
       action: AuditAction.DELETE,
     });
 
-    return deleted;
+    return Result.ok(deleted);
   }
 
   private async validateParent(
     workspaceId: string,
     parentId: string,
-  ): Promise<void> {
+  ): Promise<Result<void, ApplicationException>> {
     const parent = await this.spaceRepository.findById(parentId);
     if (!parent || parent.workspaceId !== workspaceId) {
-      throw new EntityNotFoundException('Parent space', parentId);
+      return Result.fail(new EntityNotFoundException('Parent space', parentId));
     }
+    return Result.ok(undefined);
   }
 
   private async validateParentCycle(
     workspaceId: string,
     spaceId: string,
     targetParentId: string,
-  ): Promise<void> {
+  ): Promise<Result<void, ApplicationException>> {
     let currentId: string | null = targetParentId;
     const maxDepth = 50;
     let depth = 0;
 
     while (currentId && depth < maxDepth) {
       if (currentId === spaceId) {
-        throw new DomainValidationException(
-          'Circular spatial hierarchy detected: target parent is a child of this Space.',
+        return Result.fail(
+          new DomainValidationException(
+            'Circular spatial hierarchy detected: target parent is a child of this Space.',
+          ),
         );
       }
       const parentSpace = await this.spaceRepository.findById(currentId);
       currentId = parentSpace?.parentId || null;
       depth++;
     }
+    return Result.ok(undefined);
   }
 
   private async generateSlug(

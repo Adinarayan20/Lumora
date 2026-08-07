@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundException } from '@lumora/shared';
+import {
+  Result,
+  ApplicationException,
+  EntityNotFoundException,
+} from '@lumora/shared';
 import { UserRepository } from './repositories/user.repository';
 import { DeviceService } from '../auth/services/device.service';
 import { SessionService } from '../auth/services/session.service';
@@ -14,47 +18,64 @@ export class UsersService {
     private readonly sessionService: SessionService,
   ) {}
 
-  async getProfile(userId: string): Promise<Omit<User, 'passwordHash'>> {
+  async getProfile(
+    userId: string,
+  ): Promise<Result<Omit<User, 'passwordHash'>, ApplicationException>> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new EntityNotFoundException('User', userId);
+      return Result.fail(new EntityNotFoundException('User', userId));
     }
     const userWithoutPassword = { ...user };
     delete (userWithoutPassword as Record<string, any>).passwordHash;
-    return userWithoutPassword;
+    return Result.ok(userWithoutPassword);
   }
 
   async updateProfile(
     userId: string,
     dto: UpdateProfileDto,
-  ): Promise<Omit<User, 'passwordHash'>> {
+  ): Promise<Result<Omit<User, 'passwordHash'>, ApplicationException>> {
     const user = await this.userRepository.update(userId, dto);
     const userWithoutPassword = { ...user };
     delete (userWithoutPassword as Record<string, any>).passwordHash;
-    return userWithoutPassword;
+    return Result.ok(userWithoutPassword);
   }
 
-  async getUserDevices(userId: string): Promise<Device[]> {
-    return this.deviceService.getUserDevices(userId);
+  async getUserDevices(
+    userId: string,
+  ): Promise<Result<Device[], ApplicationException>> {
+    const devices = await this.deviceService.getUserDevices(userId);
+    return Result.ok(devices);
   }
 
   async trustDevice(
     userId: string,
     deviceId: string,
     trusted: boolean,
-  ): Promise<Device> {
-    return this.deviceService.trustDevice(userId, deviceId, trusted);
+  ): Promise<Result<Device, ApplicationException>> {
+    const device = await this.deviceService.trustDevice(
+      userId,
+      deviceId,
+      trusted,
+    );
+    return Result.ok(device);
   }
 
-  async getUserSessions(userId: string): Promise<Session[]> {
-    return this.sessionService.getUserSessions(userId);
+  async getUserSessions(
+    userId: string,
+  ): Promise<Result<Session[], ApplicationException>> {
+    const sessions = await this.sessionService.getUserSessions(userId);
+    return Result.ok(sessions);
   }
 
-  async revokeSession(userId: string, sessionId: string): Promise<Session> {
-    return this.sessionService.revokeSession(
+  async revokeSession(
+    userId: string,
+    sessionId: string,
+  ): Promise<Result<Session, ApplicationException>> {
+    const session = await this.sessionService.revokeSession(
       userId,
       sessionId,
       'Revoked by user profile',
     );
+    return Result.ok(session);
   }
 }
