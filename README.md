@@ -50,3 +50,13 @@ In `pnpm-workspace.yaml`, native build scripts are configured under `allowBuilds
 - `apps/backend`: NestJS backend application with Prisma PostgreSQL persistence, soft-delete extensions, and Transactional Outbox workers.
 - `apps/admin`: Next.js web application.
 - `apps/mobile`: Expo / React Native mobile application.
+
+---
+
+## Architectural & Operational Documentation
+
+- **[Architecture Decisions (ADR)](docs/architecture/adr/)**: Architectural decision records (ADR-001 through ADR-004).
+- **[Deployment Guide](docs/operations/DEPLOYMENT_GUIDE.md)**: Production deployment requirements and pipeline instructions.
+- **[Operational Runbook](docs/operations/RUNBOOK.md)**: Severity definitions, incident response runbook, and debugging procedures.
+- **[Performance Baseline](docs/architecture/PERFORMANCE_BASELINE.md)**: Latency SLAs, memory budgets, and query optimization rules.
+- **[Technical Debt Registry](docs/architecture/TECH_DEBT.md)**: Technical debt tracking and deferral registry.
