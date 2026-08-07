@@ -1,0 +1,45 @@
+{
+  "name": "Lumora Component Semantic Tokens",
+  "version": "1.0.0",
+  "button": {
+    "primary": {
+      "background": "primary",
+      "text": "surface",
+      "hover": "primaryHover",
+      "pressed": "primaryPressed",
+      "glow": "primaryGlow",
+      "border": "border",
+      "disabledBg": "backgroundSecondary",
+      "disabledText": "textMuted"
+    },
+    "danger": {
+      "background": "danger",
+      "text": "surface",
+      "hover": "danger",
+      "pressed": "danger"
+    }
+  },
+  "card": {
+    "default": {
+      "surface": "surface",
+      "border": "border",
+      "textPrimary": "textPrimary",
+      "textSecondary": "textSecondary"
+    },
+    "elevated": {
+      "surface": "surfaceElevated",
+      "border": "border"
+    }
+  },
+  "timeline": {
+    "hero": {
+      "border": "primary",
+      "background": "surfaceElevated"
+    }
+  },
+  "home": {
+    "focus": {
+      "glow": "primaryGlow"
+    }
+  }
+}

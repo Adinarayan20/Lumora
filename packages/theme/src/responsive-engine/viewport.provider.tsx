@@ -3,6 +3,8 @@ import { useWindowDimensions } from 'react-native';
 
 export type WindowSizeClass = 'Compact' | 'Medium' | 'Expanded' | 'Large' | 'Ultra';
 export type NavigationMode = 'bottom-bar' | 'navigation-rail' | 'sidebar';
+export type DeviceType = 'phone' | 'tablet' | 'desktop';
+export type Orientation = 'portrait' | 'landscape';
 
 export interface ViewportState {
   readonly width: number;
@@ -13,6 +15,12 @@ export interface ViewportState {
   readonly isExpanded: boolean;
   readonly isLarge: boolean;
   readonly isUltra: boolean;
+  readonly isLandscape: boolean;
+  readonly isPortrait: boolean;
+  readonly orientation: Orientation;
+  readonly deviceType: DeviceType;
+  readonly touchMode: boolean;
+  readonly pointerMode: boolean;
   readonly columns: number;
   readonly gutter: number;
   readonly pagePadding: number;
@@ -50,6 +58,13 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
     let sheetWidth = width;
     let fabOffset = 16;
     let navigationMode: NavigationMode = 'bottom-bar';
+    let deviceType: DeviceType = 'phone';
+
+    if (width >= 1200) {
+      deviceType = 'desktop';
+    } else if (width >= 600) {
+      deviceType = 'tablet';
+    }
 
     if (width >= 1600) {
       sizeClass = 'Ultra';
@@ -97,6 +112,8 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       navigationMode = 'navigation-rail';
     }
 
+    const isLandscape = width > height;
+
     return {
       width,
       height,
@@ -106,6 +123,12 @@ export const ViewportProvider: React.FC<ViewportProviderProps> = ({ children }) 
       isExpanded: sizeClass === 'Expanded',
       isLarge: sizeClass === 'Large',
       isUltra: sizeClass === 'Ultra',
+      isLandscape,
+      isPortrait: !isLandscape,
+      orientation: isLandscape ? 'landscape' : 'portrait',
+      deviceType,
+      touchMode: deviceType !== 'desktop',
+      pointerMode: deviceType === 'desktop',
       columns,
       gutter,
       pagePadding,
