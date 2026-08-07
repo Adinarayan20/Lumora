@@ -1,6 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { trace, context as otelContext, TraceFlags } from '@opentelemetry/api';
 import { TraceContextService } from './trace-context.service.js';
 import type { TraceContext } from './interfaces/trace-context.interface.js';
 
@@ -43,8 +44,23 @@ export class CorrelationIdMiddleware implements NestMiddleware {
     res.setHeader('x-trace-id', traceId);
     res.setHeader('x-request-id', requestId);
 
-    this.traceContextService.run(traceContext, () => {
-      next();
+    // Bind trace context into OpenTelemetry active context
+    const otelSpanContext = {
+      traceId,
+      spanId,
+      traceFlags: TraceFlags.SAMPLED,
+      isRemote: Boolean(parentSpanId),
+    };
+
+    const newOtelContext = trace.setSpanContext(
+      otelContext.active(),
+      otelSpanContext,
+    );
+
+    otelContext.with(newOtelContext, () => {
+      this.traceContextService.run(traceContext, () => {
+        next();
+      });
     });
   }
 }

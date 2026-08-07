@@ -1,4 +1,5 @@
 import { Injectable, LoggerService } from '@nestjs/common';
+import { trace } from '@opentelemetry/api';
 import { TraceContextService } from './trace-context.service.js';
 
 @Injectable()
@@ -31,7 +32,13 @@ export class StructuredLoggerProvider implements LoggerService {
     context?: string,
     stack?: string,
   ): void {
+    const activeSpan = trace.getActiveSpan();
+    const spanContext = activeSpan?.spanContext();
     const traceCtx = this.traceContextService.getContext();
+
+    const traceId = spanContext?.traceId || traceCtx?.traceId || 'none';
+    const spanId = spanContext?.spanId || traceCtx?.spanId || 'none';
+    const requestId = traceCtx?.requestId || 'none';
 
     let formattedMessage: string;
     if (message instanceof Error) {
@@ -44,9 +51,9 @@ export class StructuredLoggerProvider implements LoggerService {
 
     const logEntry = {
       timestamp: new Date().toISOString(),
-      traceId: traceCtx?.traceId || 'none',
-      spanId: traceCtx?.spanId || 'none',
-      requestId: traceCtx?.requestId || 'none',
+      traceId,
+      spanId,
+      requestId,
       level,
       context: context || 'Application',
       message: formattedMessage,

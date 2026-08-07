@@ -10,6 +10,7 @@ describe('TracingInterceptor Unit Tests', () => {
   let mockTracingProvider: any;
   let mockExecutionContext: any;
   let mockCallHandler: any;
+  let mockSpan: any;
 
   beforeEach(() => {
     mockTraceContextService = {
@@ -20,8 +21,18 @@ describe('TracingInterceptor Unit Tests', () => {
       }),
     };
 
+    mockSpan = {
+      setAttribute: vi.fn(),
+      setStatus: vi.fn(),
+      recordException: vi.fn(),
+      end: vi.fn(),
+    };
+
     mockTracingProvider = {
       isTracingEnabled: vi.fn().mockReturnValue(true),
+      getTracer: vi.fn().mockReturnValue({
+        startSpan: vi.fn().mockReturnValue(mockSpan),
+      }),
     };
 
     mockExecutionContext = {
@@ -41,7 +52,7 @@ describe('TracingInterceptor Unit Tests', () => {
     );
   });
 
-  it('should intercept execution and tap successful response stream', () => {
+  it('should intercept execution and start/end OpenTelemetry span cleanly', () => {
     return new Promise<void>((resolve) => {
       interceptor
         .intercept(
@@ -51,13 +62,15 @@ describe('TracingInterceptor Unit Tests', () => {
         .subscribe({
           next: (result) => {
             expect(result).toEqual({ success: true });
+            expect(mockSpan.setStatus).toHaveBeenCalled();
+            expect(mockSpan.end).toHaveBeenCalled();
             resolve();
           },
         });
     });
   });
 
-  it('should catch error and log tracing exception context', () => {
+  it('should catch error and record exception on OpenTelemetry span', () => {
     mockCallHandler.handle.mockReturnValue(
       throwError(() => new Error('Db error')),
     );
@@ -71,6 +84,8 @@ describe('TracingInterceptor Unit Tests', () => {
         .subscribe({
           error: (err: Error) => {
             expect(err.message).toBe('Db error');
+            expect(mockSpan.recordException).toHaveBeenCalled();
+            expect(mockSpan.end).toHaveBeenCalled();
             resolve();
           },
         });
