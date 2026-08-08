@@ -115,4 +115,14 @@ export class MotionEngine {
       springStiffness: 0,
     };
   }
+
+  public static buttonPress(): MotionConfig {
+    'worklet';
+    return {
+      duration: 180,
+      scale: 0.96,
+      springDamping: 20,
+      springStiffness: 250,
+    };
+  }
 }

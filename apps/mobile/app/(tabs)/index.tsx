@@ -10,7 +10,7 @@ import {
   Stack,
   VStack,
   Container,
-  ButtonText,
+  Button,
 } from '@lumora/ui';
 
 export default function TabOneScreen() {
@@ -36,11 +36,12 @@ export default function TabOneScreen() {
                 <Body color="textSecondary">
                   Launch the internal Design System Review Platform to test all 34 typography roles, materials, themes, and motion physics.
                 </Body>
-                <Pressable onPress={() => router.push('/design-system')}>
-                  <Stack padding="sm" radius="control" background={colors.primary}>
-                    <ButtonText color="inverse">Open Design System Playground (/design-system)</ButtonText>
-                  </Stack>
-                </Pressable>
+                <Button
+                  label="Open Design System Playground (/design-system)"
+                  variant="primary"
+                  leftIcon="system.playground"
+                  onPress={() => router.push('/design-system')}
+                />
               </VStack>
             </Stack>
           )}
