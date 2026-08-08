@@ -686,6 +686,8 @@ model Object {
 
   status ObjectStatus @default(ACTIVE)
 
+  schemaVersion Int @default(1)
+
   systemData Json? @default("{}")
 
   attributes Json? @default("{}")
@@ -714,14 +716,43 @@ model Object {
 
   collectionItems CollectionItem[]
 
-  @@index([workspaceId, objectKey])
+  @@unique([workspaceId, objectKey])
   @@index([workspaceId, status])
   @@index([workspaceId, typeKey])
+  @@index([workspaceId, typeKey, status])
+  @@index([workspaceId, updatedAt(sort: Desc), id])
   @@index([workspaceId, isFavorite])
   @@index([workspaceId, pinnedAt])
   @@index([spaceId])
   @@index([createdById])
   @@index([updatedById])
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model OutboxMessage {
+  id                   String       @id @default(uuid()) @db.Uuid
+  workspaceId          String       @db.Uuid
+  aggregateId          String       @db.Uuid
+  eventType            String
+  payload              Json
+  payloadSchemaVersion Int          @default(1)
+  status               OutboxStatus @default(PENDING)
+  retryCount           Int          @default(0)
+  maxRetries           Int          @default(5)
+  nextAttemptAt        DateTime     @default(now())
+  idempotencyKey       String       @unique
+  lastError            String?
+  createdAt            DateTime     @default(now())
+  processedAt          DateTime?
+
+  @@index([status, nextAttemptAt])
+  @@index([workspaceId, aggregateId])
 }
 
 model Reminder {
