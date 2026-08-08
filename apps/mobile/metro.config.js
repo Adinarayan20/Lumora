@@ -20,6 +20,7 @@ config.resolver.nodeModulesPaths = [
 config.resolver.extraNodeModules = {
   '@lumora/theme': path.resolve(workspaceRoot, 'packages/theme/index.ts'),
   '@lumora/ui': path.resolve(workspaceRoot, 'packages/ui/index.ts'),
+  '@lumora/shared': path.resolve(workspaceRoot, 'packages/shared/dist/index.js'),
 };
 
 module.exports = config;
