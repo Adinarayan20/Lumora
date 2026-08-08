@@ -1,0 +1,22 @@
+{
+  "name": "Lumora Selection System Tokens",
+  "version": "1.0.0",
+  "toggleDimensions": {
+    "sm": {
+      "width": 40,
+      "height": 24,
+      "thumb": 20
+    },
+    "md": {
+      "width": 48,
+      "height": 28,
+      "thumb": 24
+    }
+  },
+  "indicatorDimensions": {
+    "checkbox": 20,
+    "radio": 20,
+    "radioDot": 10
+  },
+  "interactiveTargetMinimum": 48
+}

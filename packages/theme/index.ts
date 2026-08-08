@@ -4,5 +4,6 @@ export * from './src/theme-provider';
 export * from './src/responsive-engine/viewport.provider';
 export * from './src/theme-v2/component-tokens';
 export * from './src/motion-engine/motion-engine';
+export * from './src/motion-engine/use-reduced-motion';
 export * from './src/interaction-engine/interaction-engine';
 export * from './src/platform-managers/index';
