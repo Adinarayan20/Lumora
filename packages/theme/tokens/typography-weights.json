@@ -1,0 +1,11 @@
+{
+  "name": "Lumora Typography Weight Tokens",
+  "version": "1.0.0",
+  "emphasis": {
+    "default": "default",
+    "strong": "700",
+    "subtle": "400",
+    "disabled": "400",
+    "accent": "600"
+  }
+}

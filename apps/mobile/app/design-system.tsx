@@ -208,7 +208,7 @@ export default function DesignSystemPlayground() {
                     <Caption>Caption: Subtitle explanation for contextual cues.</Caption>
                     <Overline color="primary">OVERLINE CATEGORY BADGE</Overline>
                     <Metadata>Metadata: Created 2 minutes ago • 1.2 MB</Metadata>
-                    <Code>const object = new UniversalObject({ typeKey: 'task' });</Code>
+                    <Code>{`const object = new UniversalObject({ typeKey: 'task' });`}</Code>
                     <ButtonText color="primary">Button Text Action</ButtonText>
                   </VStack>
                 </Stack>

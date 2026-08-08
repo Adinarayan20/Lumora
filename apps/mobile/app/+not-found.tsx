@@ -1,40 +1,24 @@
+import React from 'react';
 import { Link, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
-
-import { Text, View } from '@/components/Themed';
+import { useTheme } from '@lumora/theme';
+import { Heading, Text, VStack, Container, Stack as LumoraStack } from '@lumora/ui';
 
 export default function NotFoundScreen() {
+  const { colors } = useTheme();
+
   return (
     <>
       <Stack.Screen options={{ title: 'Oops!' }} />
-      <View style={styles.container}>
-        <Text style={styles.title}>This screen doesn't exist.</Text>
-
-        <Link href="/" style={styles.link}>
-          <Text style={styles.linkText}>Go to home screen!</Text>
-        </Link>
-      </View>
+      <LumoraStack padding="lg" radius="none" background={colors.background} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Container max="content">
+          <VStack gap="md" style={{ alignItems: 'center' }}>
+            <Heading level={2}>This screen doesn't exist.</Heading>
+            <Link href="/">
+              <Text role="Body" color="primary">Go to home screen!</Text>
+            </Link>
+          </VStack>
+        </Container>
+      </LumoraStack>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-  linkText: {
-    fontSize: 14,
-    color: '#2e78b7',
-  },
-});

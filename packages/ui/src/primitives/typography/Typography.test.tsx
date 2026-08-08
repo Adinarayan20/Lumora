@@ -2,9 +2,9 @@ import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { ThemeProvider, ViewportProvider } from '@lumora/theme';
-import { Typography } from './Typography.js';
-import { Heading } from './Heading.js';
-import { Text } from './Text.js';
+import { Typography } from './Typography';
+import { Heading } from './Heading';
+import { Text } from './Text';
 
 describe('Typography Primitive', () => {
   it('renders children with default Body role', () => {

@@ -1,7 +1,7 @@
 import React, { forwardRef, memo } from 'react';
 import { Text as RNText } from 'react-native';
-import type { TypographyProps } from './Typography.types.js';
-import { Typography } from './Typography.js';
+import type { TypographyProps } from './Typography.types';
+import { Typography } from './Typography';
 
 export interface OverlineProps extends Omit<TypographyProps, 'role'> {}
 

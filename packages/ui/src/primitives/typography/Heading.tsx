@@ -1,8 +1,8 @@
 import React, { forwardRef, memo } from 'react';
 import { Text as RNText } from 'react-native';
-import type { HeadingProps } from './Typography.types.js';
-import { Typography } from './Typography.js';
-import { HEADING_LEVEL_ROLE_MAP } from './Typography.constants.js';
+import type { HeadingProps } from './Typography.types';
+import { Typography } from './Typography';
+import { HEADING_LEVEL_ROLE_MAP } from './Typography.constants';
 
 export const Heading = memo(
   forwardRef<RNText, HeadingProps>((props, ref) => {

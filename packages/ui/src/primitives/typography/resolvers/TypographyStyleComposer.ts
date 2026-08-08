@@ -1,10 +1,10 @@
 import type { TextStyle } from 'react-native';
 import type { SemanticTypographyRole, ColorPalette } from '@lumora/theme';
-import type { TypographyColorToken, TypographyAlign, TypographyEmphasis } from '../Typography.types.js';
-import { TypographyColorResolver } from './TypographyColorResolver.js';
-import { TypographyScaleResolver } from './TypographyScaleResolver.js';
-import { TypographyTrackingResolver } from './TypographyTrackingResolver.js';
-import { TypographyWeightResolver } from './TypographyWeightResolver.js';
+import type { TypographyColorToken, TypographyAlign, TypographyEmphasis } from '../Typography.types';
+import { TypographyColorResolver } from './TypographyColorResolver';
+import { TypographyScaleResolver } from './TypographyScaleResolver';
+import { TypographyTrackingResolver } from './TypographyTrackingResolver';
+import { TypographyWeightResolver } from './TypographyWeightResolver';
 
 export class TypographyStyleComposer {
   public static composeStyle(options: {

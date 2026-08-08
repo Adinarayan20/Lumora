@@ -1,41 +1,49 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
-import type { ThemeMode, ColorPalette } from './generated/tokens.js';
-import { LightThemeColors, DarkThemeColors } from './generated/tokens.js';
+import type { ThemeMode, ColorPalette } from './generated/tokens';
+import { LightThemeColors, DarkThemeColors } from './generated/tokens';
 
-export interface ThemeContextValue {
+export interface ThemeContextState {
   readonly mode: ThemeMode;
   readonly colors: ColorPalette;
-  readonly toggleTheme: () => void;
   readonly setThemeMode: (mode: ThemeMode) => void;
 }
 
-const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+const ThemeContext = createContext<ThemeContextState | undefined>(undefined);
 
 export interface ThemeProviderProps {
-  readonly initialMode?: ThemeMode;
   readonly children: React.ReactNode;
+  readonly initialMode?: ThemeMode;
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({
-  initialMode = 'light',
-  children,
-}) => {
-  const [mode, setMode] = useState<ThemeMode>(initialMode);
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, initialMode = 'light' }) => {
+  const [mode, setThemeMode] = useState<ThemeMode>(initialMode);
 
-  const value = useMemo<ThemeContextValue>(() => {
-    const colors = mode === 'dark' ? DarkThemeColors : LightThemeColors;
-    return {
+  const colors = useMemo<ColorPalette>(() => {
+    switch (mode) {
+      case 'dark':
+      case 'amoled':
+        return DarkThemeColors;
+      case 'light':
+      case 'highContrast':
+      case 'system':
+      default:
+        return LightThemeColors;
+    }
+  }, [mode]);
+
+  const value = useMemo<ThemeContextState>(
+    () => ({
       mode,
       colors,
-      toggleTheme: () => setMode((prev) => (prev === 'light' ? 'dark' : 'light')),
-      setThemeMode: (newMode: ThemeMode) => setMode(newMode),
-    };
-  }, [mode]);
+      setThemeMode,
+    }),
+    [mode, colors],
+  );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };
 
-export const useTheme = (): ThemeContextValue => {
+export const useTheme = (): ThemeContextState => {
   const context = useContext(ThemeContext);
   if (!context) {
     throw new Error('useTheme must be used within a Lumora ThemeProvider');

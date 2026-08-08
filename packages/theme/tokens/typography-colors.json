@@ -1,0 +1,21 @@
+{
+  "name": "Lumora Typography Color Tokens",
+  "version": "1.0.0",
+  "colors": {
+    "textPrimary": "textPrimary",
+    "textSecondary": "textSecondary",
+    "textMuted": "textMuted",
+    "primary": "primary",
+    "success": "success",
+    "warning": "warning",
+    "danger": "danger",
+    "inverse": "surface"
+  },
+  "emphasis": {
+    "default": "textPrimary",
+    "strong": "textPrimary",
+    "subtle": "textSecondary",
+    "disabled": "textMuted",
+    "accent": "primary"
+  }
+}

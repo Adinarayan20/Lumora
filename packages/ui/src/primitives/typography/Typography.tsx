@@ -1,9 +1,9 @@
 import React, { forwardRef, memo, useMemo } from 'react';
 import { Text as RNText, View, ViewStyle } from 'react-native';
 import { useTheme, useViewport } from '@lumora/theme';
-import type { TypographyProps } from './Typography.types.js';
-import { TypographyStyleComposer } from './resolvers/TypographyStyleComposer.js';
-import { DEFAULT_TYPOGRAPHY_ROLE } from './Typography.constants.js';
+import type { TypographyProps } from './Typography.types';
+import { TypographyStyleComposer } from './resolvers/TypographyStyleComposer';
+import { DEFAULT_TYPOGRAPHY_ROLE } from './Typography.constants';
 
 export const Typography = memo(
   forwardRef<RNText, TypographyProps>((props, ref) => {

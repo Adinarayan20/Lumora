@@ -1,7 +1,7 @@
 import type { TextStyle } from 'react-native';
 import type { SemanticTypographyRole, ColorPalette } from '@lumora/theme';
 import { SemanticTypographyMap } from '@lumora/theme';
-import type { TypographyColorToken, TypographyAlign } from './Typography.types.js';
+import type { TypographyColorToken, TypographyAlign } from './Typography.types';
 
 export class TypographyStyles {
   public static resolveStyle(options: {

@@ -1,24 +1,19 @@
+import React, { useEffect } from 'react';
+import { useColorScheme as useRNColorScheme } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { ViewportProvider, ThemeProvider as LumoraThemeProvider, useTheme } from '@lumora/theme';
 
-import { useColorScheme } from '@/components/useColorScheme';
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
+export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -27,7 +22,6 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -45,21 +39,27 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
-import { ViewportProvider, ThemeProvider as LumoraThemeProvider } from '@lumora/theme';
+function InnerNavigation() {
+  const { mode } = useTheme();
+  const isDark = mode === 'dark' || mode === 'amoled';
+
+  return (
+    <NavigationThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="design-system" options={{ title: 'Design System Playground', headerShown: true }} />
+      </Stack>
+    </NavigationThemeProvider>
+  );
+}
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useRNColorScheme();
 
   return (
     <ViewportProvider>
       <LumoraThemeProvider initialMode={colorScheme === 'dark' ? 'dark' : 'light'}>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="design-system" options={{ title: 'Design System Playground', headerShown: true }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          </Stack>
-        </ThemeProvider>
+        <InnerNavigation />
       </LumoraThemeProvider>
     </ViewportProvider>
   );
