@@ -11,7 +11,6 @@ export interface FieldControlProps {
   readonly helperText?: string;
   readonly errorText?: string;
   readonly disabled?: boolean;
-  readonly required?: boolean;
   readonly testID?: string;
 }
 
