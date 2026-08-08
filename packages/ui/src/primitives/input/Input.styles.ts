@@ -4,6 +4,7 @@ import {
   InputHeights,
   InputPaddingHorizontal,
   InputIconGaps,
+  InputFontSizes,
   InputInteractiveTargetMinimum,
 } from '@lumora/theme';
 import type { ColorPalette, ViewportSizeClass } from '@lumora/theme';
@@ -28,6 +29,7 @@ export interface ResolvedInputStyles {
   readonly resolvedHeight: number;
   readonly resolvedPaddingHorizontal: number;
   readonly resolvedIconGap: number;
+  readonly resolvedFontSize: number;
   readonly resolvedIconSize: SemanticIconSize;
   readonly resolvedRadius: number;
   readonly resolvedBorderWidth: number;
@@ -60,15 +62,25 @@ export function resolveInputStyles({
   const resolvedHeight = InputHeights[resolvedSize];
   const resolvedPaddingHorizontal = InputPaddingHorizontal[resolvedSize];
   const resolvedIconGap = InputIconGaps[resolvedSize];
+  const resolvedFontSize = InputFontSizes[resolvedSize];
 
-  if (__DEV__ && (!resolvedHeight || !resolvedPaddingHorizontal || !resolvedIconGap)) {
+  if (
+    __DEV__ &&
+    (!resolvedHeight ||
+      !resolvedPaddingHorizontal ||
+      !resolvedIconGap ||
+      !resolvedFontSize)
+  ) {
     throw new Error(
       `[Lumora Input Token Error]: Invalid or missing input size token for size '${resolvedSize}'.`,
     );
   }
 
   // 2. Resolve Interactive Touch Target Minimum (48dp minimum unconditionally)
-  const touchTargetDimension = Math.max(resolvedHeight, InputInteractiveTargetMinimum);
+  const touchTargetDimension = Math.max(
+    resolvedHeight,
+    InputInteractiveTargetMinimum,
+  );
 
   // 3. Resolve Icon Size Token
   const resolvedIconSize: SemanticIconSize =
@@ -126,7 +138,7 @@ export function resolveInputStyles({
   const inputTextStyle: TextStyle = {
     flex: 1,
     color: disabled ? themeColors.textMuted : themeColors.textPrimary,
-    fontSize: resolvedSize === 'sm' ? 14 : resolvedSize === 'lg' ? 18 : 16,
+    fontSize: resolvedFontSize,
     includeFontPadding: false,
     textAlignVertical: 'center',
   };
@@ -139,6 +151,7 @@ export function resolveInputStyles({
     resolvedHeight,
     resolvedPaddingHorizontal,
     resolvedIconGap,
+    resolvedFontSize,
     resolvedIconSize,
     resolvedRadius,
     resolvedBorderWidth,

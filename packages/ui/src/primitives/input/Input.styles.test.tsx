@@ -3,13 +3,14 @@ import { LightThemeColors } from '@lumora/theme';
 import { resolveInputStyles } from './Input.styles';
 
 describe('resolveInputStyles Token Resolver Contract', () => {
-  it('enforces sm, md, lg visual heights and >=48dp touch target minimum', () => {
+  it('enforces sm, md, lg visual heights, font sizes, and >=48dp touch target minimum', () => {
     const sm = resolveInputStyles({
       size: 'sm',
       themeColors: LightThemeColors,
       sizeClass: 'Compact',
     });
     expect(sm.resolvedHeight).toBe(36);
+    expect(sm.resolvedFontSize).toBe(14);
     expect(sm.touchTargetDimension).toBe(48);
 
     const md = resolveInputStyles({
@@ -18,6 +19,7 @@ describe('resolveInputStyles Token Resolver Contract', () => {
       sizeClass: 'Compact',
     });
     expect(md.resolvedHeight).toBe(44);
+    expect(md.resolvedFontSize).toBe(16);
     expect(md.touchTargetDimension).toBe(48);
 
     const lg = resolveInputStyles({
@@ -26,6 +28,7 @@ describe('resolveInputStyles Token Resolver Contract', () => {
       sizeClass: 'Expanded',
     });
     expect(lg.resolvedHeight).toBe(52);
+    expect(lg.resolvedFontSize).toBe(18);
     expect(lg.touchTargetDimension).toBe(52);
   });
 

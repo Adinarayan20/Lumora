@@ -5,7 +5,7 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
-import { useTheme, useViewport } from '@lumora/theme';
+import { useTheme, useViewport, InputMultilineTokens } from '@lumora/theme';
 import { Icon } from '../icon/Icon';
 import { IconButton } from '../button/IconButton';
 import { FieldControl } from './FieldControl';
@@ -111,16 +111,15 @@ export const Input: React.FC<InputProps> = memo(({
       disabled={disabled}
       testID={testID}
     >
+      {/* 
+        Outer Pressable is a non-focusable touch forwarder to TextInput.
+        accessible={false} prevents accessibility tree duplication.
+      */}
       <Pressable
         onPress={handleContainerPress}
         disabled={!isEditable}
-        accessibilityRole="none"
-        accessibilityLabel={effectiveAccessibilityLabel}
-        accessibilityHint={accessibilityHint || helperText || errorText}
-        accessibilityState={{
-          disabled: disabled || readOnly,
-          invalid: isError,
-        }}
+        accessible={false}
+        importantForAccessibility="no"
         testID={testID}
         style={[
           styles.touchableArea,
@@ -144,7 +143,7 @@ export const Input: React.FC<InputProps> = memo(({
             </View>
           )}
 
-          {/* Native Controlled TextInput */}
+          {/* Single Authoritative Accessible Native TextInput */}
           <TextInput
             ref={inputRef}
             value={value}
@@ -163,6 +162,11 @@ export const Input: React.FC<InputProps> = memo(({
             multiline={multiline}
             numberOfLines={numberOfLines}
             accessibilityLabel={effectiveAccessibilityLabel}
+            accessibilityHint={accessibilityHint || helperText || errorText}
+            accessibilityState={{
+              disabled: disabled || readOnly,
+              invalid: isError,
+            }}
             testID={testID ? `${testID}-text-input` : undefined}
             style={[inputTextStyle, multiline && styles.multilineInput]}
           />
@@ -200,9 +204,9 @@ const styles = StyleSheet.create({
   },
   multilineContainer: {
     height: 'auto',
-    minHeight: 88,
+    minHeight: InputMultilineTokens.minHeight,
     alignItems: 'flex-start',
-    paddingVertical: 10,
+    paddingVertical: InputMultilineTokens.paddingVertical,
   },
   multilineInput: {
     textAlignVertical: 'top',

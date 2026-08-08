@@ -16,5 +16,14 @@
     "md": 8,
     "lg": 10
   },
+  "fontSizes": {
+    "sm": 14,
+    "md": 16,
+    "lg": 18
+  },
+  "multiline": {
+    "minHeight": 88,
+    "paddingVertical": 10
+  },
   "interactiveTargetMinimum": 48
 }
