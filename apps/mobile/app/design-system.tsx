@@ -103,6 +103,7 @@ export default function DesignSystemPlayground() {
   const [btnFullWidth, setBtnFullWidth] = useState(false);
   const [btnHasLeftIcon, setBtnHasLeftIcon] = useState(true);
   const [btnHasRightIcon, setBtnHasRightIcon] = useState(false);
+  const [btnPressCount, setBtnPressCount] = useState(0);
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -478,7 +479,7 @@ export default function DesignSystemPlayground() {
                             </HStack>
                             <HStack justify="space-between">
                               <Label color="textMuted">text color: <Code>{resolved.textColorToken}</Code></Label>
-                              <Label color="textMuted">opacity: <Code>{resolved.resolvedOpacity}</Code></Label>
+                              <Label color="textMuted">press count: <Code>{btnPressCount}</Code></Label>
                             </HStack>
                           </React.Fragment>
                         );
@@ -498,7 +499,7 @@ export default function DesignSystemPlayground() {
                       fullWidth={btnFullWidth}
                       leftIcon={btnHasLeftIcon ? 'action.search' : undefined}
                       rightIcon={btnHasRightIcon ? 'nav.forward' : undefined}
-                      onPress={() => alert('Button Pressed!')}
+                      onPress={() => setBtnPressCount((c) => c + 1)}
                     />
                   </Stack>
 

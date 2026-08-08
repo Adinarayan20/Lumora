@@ -1,6 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
+import { AccessibilityInfo } from 'react-native';
 import { ThemeProvider, ViewportProvider } from '@lumora/theme';
 import { Button } from './Button';
 
@@ -60,7 +61,6 @@ describe('Button Primitive Subsystem', () => {
 
     const pressable = getByRole('button');
     expect(pressable).toBeTruthy();
-    // The interactive Pressable element owns aria-role="button" and minHeight: 48
     expect(pressable.style.minHeight).toBe('48px');
   });
 
@@ -98,22 +98,30 @@ describe('Button Primitive Subsystem', () => {
     expect(button.getAttribute('aria-disabled')).toBe('true');
   });
 
-  it('prevents onPress callback and renders loading spinner when loading is true', () => {
+  it('prevents onPress callback, sets busy state, and preserves layout geometry during loading', () => {
     const handlePress = vi.fn();
-    const { getByTestId, getByRole } = render(
+    const { getByTestId, getByRole, getByText } = render(
       <ViewportProvider>
         <ThemeProvider>
-          <Button label="Processing" loading={true} onPress={handlePress} testID="test-btn" />
+          <Button label="Processing Order" loading={true} onPress={handlePress} testID="test-btn" />
         </ThemeProvider>
       </ViewportProvider>,
     );
 
+    // Spinner is rendered
     const spinner = getByTestId('test-btn-spinner');
     expect(spinner).toBeTruthy();
 
+    // Accessibility busy and disabled states are exposed
     const button = getByRole('button');
     expect(button.getAttribute('aria-busy')).toBe('true');
+    expect(button.getAttribute('aria-disabled')).toBe('true');
 
+    // Label text remains rendered in layout for intrinsic geometry preservation
+    const labelText = getByText('Processing Order');
+    expect(labelText).toBeTruthy();
+
+    // Click is blocked
     fireEvent.click(spinner);
     expect(handlePress).not.toHaveBeenCalled();
   });
@@ -145,5 +153,50 @@ describe('Button Primitive Subsystem', () => {
     const button = getByRole('button');
     expect(button).toBeTruthy();
     expect(button.style.width).toBe('100%');
+  });
+
+  it('handles focus, blur, press-in, and press-out events cleanly', () => {
+    const handlePress = vi.fn();
+    const { getByRole } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <Button label="Interactive Button" onPress={handlePress} />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+
+    const button = getByRole('button');
+
+    // Focus & Blur
+    fireEvent.focus(button);
+    fireEvent.blur(button);
+
+    // PressIn & PressOut
+    fireEvent.mouseDown(button);
+    fireEvent.mouseUp(button);
+
+    expect(button).toBeTruthy();
+  });
+
+  it('cleans up reduceMotionChanged subscription on unmount', () => {
+    const removeSpy = vi.fn();
+    const addEventListenerSpy = vi.spyOn(AccessibilityInfo, 'addEventListener').mockReturnValue({
+      remove: removeSpy,
+    } as any);
+
+    const { unmount } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <Button label="Unmount Test" onPress={() => {}} />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+
+    unmount();
+
+    expect(addEventListenerSpy).toHaveBeenCalledWith('reduceMotionChanged', expect.any(Function));
+    expect(removeSpy).toHaveBeenCalledTimes(1);
+
+    addEventListenerSpy.mockRestore();
   });
 });

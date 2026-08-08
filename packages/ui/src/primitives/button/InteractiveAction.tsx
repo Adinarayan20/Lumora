@@ -22,7 +22,6 @@ export interface InteractiveActionProps {
   readonly accessibilityLabel: string;
   readonly accessibilityHint?: string;
   readonly testID?: string;
-  readonly containerStyle?: StyleProp<ViewStyle>;
   readonly innerStyle?: StyleProp<ViewStyle>;
   readonly focusRingColor?: string;
   readonly hoverBackgroundColor?: string;
@@ -39,7 +38,6 @@ export const InteractiveAction: React.FC<InteractiveActionProps> = memo(({
   accessibilityLabel,
   accessibilityHint,
   testID,
-  containerStyle,
   innerStyle,
   focusRingColor,
   hoverBackgroundColor,
@@ -166,7 +164,6 @@ export const InteractiveAction: React.FC<InteractiveActionProps> = memo(({
           minHeight: targetMinHeight,
           minWidth: targetMinWidth,
         },
-        containerStyle,
       ]}
     >
       <Animated.View

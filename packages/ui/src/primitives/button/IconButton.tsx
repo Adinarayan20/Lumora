@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { useTheme, useViewport, InteractiveTouchTargetMinimum } from '@lumora/theme';
+import { useTheme, useViewport } from '@lumora/theme';
 import { Icon } from '../icon/Icon';
 import type { IconButtonProps } from './Button.types';
 import { resolveButtonStyles } from './Button.styles';

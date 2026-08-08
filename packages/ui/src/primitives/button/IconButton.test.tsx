@@ -1,6 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
+import { AccessibilityInfo } from 'react-native';
 import { ThemeProvider, ViewportProvider } from '@lumora/theme';
 import { IconButton } from './IconButton';
 
@@ -122,5 +123,50 @@ describe('IconButton Primitive Subsystem', () => {
 
     fireEvent.click(spinner);
     expect(handlePress).not.toHaveBeenCalled();
+  });
+
+  it('handles focus, blur, press-in, and press-out events cleanly', () => {
+    const handlePress = vi.fn();
+    const { getByLabelText } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <IconButton icon="action.edit" accessibilityLabel="Edit record" onPress={handlePress} />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+
+    const iconButton = getByLabelText('Edit record');
+
+    // Focus & Blur
+    fireEvent.focus(iconButton);
+    fireEvent.blur(iconButton);
+
+    // PressIn & PressOut
+    fireEvent.mouseDown(iconButton);
+    fireEvent.mouseUp(iconButton);
+
+    expect(iconButton).toBeTruthy();
+  });
+
+  it('cleans up reduceMotionChanged subscription on unmount', () => {
+    const removeSpy = vi.fn();
+    const addEventListenerSpy = vi.spyOn(AccessibilityInfo, 'addEventListener').mockReturnValue({
+      remove: removeSpy,
+    } as any);
+
+    const { unmount } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <IconButton icon="nav.more" accessibilityLabel="More options" onPress={() => {}} />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+
+    unmount();
+
+    expect(addEventListenerSpy).toHaveBeenCalledWith('reduceMotionChanged', expect.any(Function));
+    expect(removeSpy).toHaveBeenCalledTimes(1);
+
+    addEventListenerSpy.mockRestore();
   });
 });
