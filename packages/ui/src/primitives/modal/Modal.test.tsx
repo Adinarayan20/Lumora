@@ -6,10 +6,10 @@ import { ThemeProvider, ViewportProvider } from '@lumora/theme';
 import { Modal } from './Modal';
 import { Dialog } from './Dialog';
 
-describe('Modal & Dialog Primitive Contract', () => {
-  it('renders modal title and body content when visible is true', () => {
+describe('Modal & Dialog Primitive Deep Contract', () => {
+  it('renders modal title, body content, and dialog role when visible is true', () => {
     const handleClose = vi.fn();
-    const { getByText } = render(
+    const { getByText, getByRole } = render(
       <ThemeProvider>
         <ViewportProvider>
           <Modal visible={true} onRequestClose={handleClose} title="Delete Object Confirmation">
@@ -21,29 +21,53 @@ describe('Modal & Dialog Primitive Contract', () => {
 
     expect(getByText('Delete Object Confirmation')).toBeTruthy();
     expect(getByText('Are you sure you want to proceed?')).toBeTruthy();
+    expect(getByRole('dialog')).toBeTruthy();
   });
 
-  it('triggers primaryAction onPress in Dialog component', () => {
+  it('renders nothing when visible is false', () => {
+    const handleClose = vi.fn();
+    const { queryByText, queryByRole } = render(
+      <ThemeProvider>
+        <ViewportProvider>
+          <Modal visible={false} onRequestClose={handleClose} title="Hidden Modal">
+            <Text>Hidden Body</Text>
+          </Modal>
+        </ViewportProvider>
+      </ThemeProvider>,
+    );
+
+    expect(queryByText('Hidden Modal')).toBeNull();
+    expect(queryByRole('dialog')).toBeNull();
+  });
+
+  it('triggers primaryAction and secondaryAction in Dialog component', () => {
     const handleClose = vi.fn();
     const handlePrimary = vi.fn();
+    const handleSecondary = vi.fn();
+
     const { getByText } = render(
       <ThemeProvider>
         <ViewportProvider>
           <Dialog
             visible={true}
             onRequestClose={handleClose}
-            title="Confirm Action"
+            title="Confirm Delete"
             description="This action cannot be undone."
-            primaryAction={{ label: 'Delete', onPress: handlePrimary, variant: 'danger' }}
+            primaryAction={{ label: 'Delete Permanently', onPress: handlePrimary, variant: 'danger' }}
+            secondaryAction={{ label: 'Cancel', onPress: handleSecondary }}
           />
         </ViewportProvider>
       </ThemeProvider>,
     );
 
-    expect(getByText('Confirm Action')).toBeTruthy();
+    expect(getByText('Confirm Delete')).toBeTruthy();
     expect(getByText('This action cannot be undone.')).toBeTruthy();
 
-    const deleteBtn = getByText('Delete');
+    const cancelBtn = getByText('Cancel');
+    fireEvent.click(cancelBtn);
+    expect(handleSecondary).toHaveBeenCalledTimes(1);
+
+    const deleteBtn = getByText('Delete Permanently');
     fireEvent.click(deleteBtn);
     expect(handlePrimary).toHaveBeenCalledTimes(1);
   });

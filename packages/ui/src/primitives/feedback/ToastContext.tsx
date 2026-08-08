@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ToastDimensions, SpacingScale } from '@lumora/theme';
 import type { ToastOptions, ToastItem, ToastContextValue, ToastProviderProps } from './Toast.types';
@@ -8,14 +8,28 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   const hideToast = useCallback((id: string) => {
+    // Clear active timer for this toast if present
+    const existingTimer = timersRef.current.get(id);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+      timersRef.current.delete(id);
+    }
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   const showToast = useCallback((options: ToastOptions): string => {
-    const id = options.id || `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const id = options.id || `toast-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     const duration = options.durationMs !== undefined ? options.durationMs : ToastDimensions.toastAutoDismissMs;
+
+    // Clear any previous timer if toast with same ID is being replaced
+    const existingTimer = timersRef.current.get(id);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+      timersRef.current.delete(id);
+    }
 
     const newItem: ToastItem = {
       ...options,
@@ -26,13 +40,23 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
     setToasts((prev) => [...prev.filter((t) => t.id !== id), newItem]);
 
     if (duration > 0) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         hideToast(id);
       }, duration);
+      timersRef.current.set(id, timer);
     }
 
     return id;
   }, [hideToast]);
+
+  // Clean up all active timers on provider unmount
+  useEffect(() => {
+    const currentTimers = timersRef.current;
+    return () => {
+      currentTimers.forEach((timer) => clearTimeout(timer));
+      currentTimers.clear();
+    };
+  }, []);
 
   return (
     <ToastContext.Provider value={{ showToast, hideToast }}>

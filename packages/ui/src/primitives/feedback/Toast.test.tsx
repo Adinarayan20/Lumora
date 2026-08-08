@@ -25,7 +25,25 @@ const TestComponent = ({ onShow }: { onShow?: (id: string) => void }) => {
   );
 };
 
-describe('Toast Feedback Primitive Contract', () => {
+const DangerTestComponent = () => {
+  const { showToast } = useToast();
+
+  return (
+    <Pressable
+      onPress={() => {
+        showToast({
+          title: 'Connection Error',
+          message: 'Failed to sync workspace',
+          variant: 'danger',
+        });
+      }}
+    >
+      <Text>Trigger Danger Toast</Text>
+    </Pressable>
+  );
+};
+
+describe('Toast Feedback Primitive Deep Contract', () => {
   it('renders toast banner when showToast is called', () => {
     const { getByText, queryByText } = render(
       <ThemeProvider>
@@ -43,6 +61,22 @@ describe('Toast Feedback Primitive Contract', () => {
     expect(getByText('Object Saved')).toBeTruthy();
     expect(getByText('Task object saved successfully')).toBeTruthy();
     expect(getByText('Undo')).toBeTruthy();
+  });
+
+  it('assigns alert role and assertive live region for high urgency danger variant', () => {
+    const { getByText, getByRole } = render(
+      <ThemeProvider>
+        <ToastProvider>
+          <DangerTestComponent />
+        </ToastProvider>
+      </ThemeProvider>,
+    );
+
+    const triggerBtn = getByText('Trigger Danger Toast');
+    fireEvent.click(triggerBtn);
+
+    const alertElement = getByRole('alert');
+    expect(alertElement).toBeTruthy();
   });
 
   it('dismisses toast banner when close button is clicked', () => {

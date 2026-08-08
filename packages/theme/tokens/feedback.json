@@ -3,6 +3,14 @@
     "toastAutoDismissMs": 4000,
     "toastMaxWidth": 420,
     "toastZIndex": 9999,
-    "modalMaxWidth": 520
+    "modalMaxWidth": 520,
+    "dialogButtonMinWidth": 90,
+    "shadowOffset": {
+      "width": 0,
+      "height": 4
+    },
+    "shadowOpacity": 0.15,
+    "shadowRadius": 10,
+    "elevation": 8
   }
 }

@@ -16,7 +16,7 @@ export const Card: React.FC<CardProps> = memo(({
 }) => {
   const { colors } = useTheme();
 
-  const isInteractive = Boolean(onPress) || variant === 'interactive';
+  const isInteractive = Boolean(onPress);
 
   const { cardStyle } = resolveCardStyles({
     variant,
@@ -36,7 +36,7 @@ export const Card: React.FC<CardProps> = memo(({
   const webKeyboardProps: { onKeyDown?: (e: React.KeyboardEvent) => void } =
     Platform.OS === 'web' && isInteractive ? { onKeyDown: handleKeyDown } : {};
 
-  if (isInteractive) {
+  if (isInteractive && onPress) {
     return (
       <Pressable
         onPress={disabled ? undefined : onPress}

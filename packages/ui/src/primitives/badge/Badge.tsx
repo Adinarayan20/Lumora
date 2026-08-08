@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { useTheme } from '@lumora/theme';
 import { Icon } from '../icon/Icon';
 import { Text } from '../typography/Text';
@@ -22,8 +22,8 @@ export const Badge: React.FC<BadgeProps> = memo(({
     colors,
   });
 
-  const labelString = typeof children === 'string' ? children : undefined;
-  const effectiveAccessibilityLabel = accessibilityLabel || labelString || 'Badge indicator';
+  const labelText = typeof children === 'string' ? children : String(children);
+  const effectiveAccessibilityLabel = accessibilityLabel || labelText;
 
   return (
     <View
@@ -38,11 +38,7 @@ export const Badge: React.FC<BadgeProps> = memo(({
         </View>
       ) : null}
 
-      {typeof children === 'string' ? (
-        <Text style={textStyle}>{children}</Text>
-      ) : (
-        children
-      )}
+      <Text style={textStyle}>{children}</Text>
     </View>
   );
 });

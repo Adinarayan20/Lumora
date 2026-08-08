@@ -26,11 +26,19 @@ export const Modal: React.FC<ModalProps> = memo(({
     <Overlay visible={visible} onRequestClose={onRequestClose} testID={testID}>
       <View style={styles.centerWrapper}>
         <View
+          accessibilityRole="dialog"
+          accessibilityViewIsModal={true}
+          aria-modal={true}
           style={[
             styles.modalCard,
             {
               backgroundColor: colors.surfaceElevated,
               borderColor: colors.border,
+              shadowColor: colors.textPrimary,
+              shadowOffset: ToastDimensions.shadowOffset,
+              shadowOpacity: ToastDimensions.shadowOpacity,
+              shadowRadius: ToastDimensions.shadowRadius,
+              elevation: ToastDimensions.elevation,
               maxWidth: ToastDimensions.modalMaxWidth,
             },
           ]}
@@ -76,11 +84,6 @@ const styles = StyleSheet.create({
     borderRadius: RadiusScale.card,
     borderWidth: 1,
     padding: SpacingScale.md,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-    elevation: 10,
   },
   headerRow: {
     flexDirection: 'row',

@@ -25,6 +25,7 @@ export const ToastBanner: React.FC<ToastBannerProps> = memo(({ toast, onDismiss 
   let iconName: SemanticIconName = 'status.info';
   let borderColor = colors.border;
   let iconColor: 'icon.primary' | 'icon.secondary' | 'status.success' | 'status.warning' | 'status.error' = 'icon.primary';
+  const isHighUrgency = variant === 'danger' || variant === 'warning';
 
   switch (variant) {
     case 'success':
@@ -60,11 +61,16 @@ export const ToastBanner: React.FC<ToastBannerProps> = memo(({ toast, onDismiss 
         {
           backgroundColor: colors.surfaceElevated,
           borderColor,
+          shadowColor: colors.textPrimary,
+          shadowOffset: ToastDimensions.shadowOffset,
+          shadowOpacity: ToastDimensions.shadowOpacity,
+          shadowRadius: ToastDimensions.shadowRadius,
+          elevation: ToastDimensions.elevation,
           maxWidth: ToastDimensions.toastMaxWidth,
         },
       ]}
-      accessibilityRole="alert"
-      accessibilityLiveRegion="polite"
+      accessibilityRole={isHighUrgency ? 'alert' : undefined}
+      accessibilityLiveRegion={isHighUrgency ? 'assertive' : 'polite'}
       accessibilityLabel={toast.title ? `${toast.title}: ${toast.message}` : toast.message}
     >
       <View style={styles.leftContainer}>
@@ -124,11 +130,6 @@ const styles = StyleSheet.create({
     padding: SpacingScale.sm,
     borderRadius: RadiusScale.card,
     borderWidth: 1,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 8,
     marginVertical: SpacingScale.xs,
   },
   leftContainer: {
