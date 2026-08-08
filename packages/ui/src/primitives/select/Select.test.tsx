@@ -88,12 +88,12 @@ describe('Select Primitive Contract', () => {
     fireEvent.keyDown(combobox, { key: ' ' });
     expect(getByText('Pending')).toBeTruthy();
 
-    // Navigate to next option
+    // Navigate to next option (In Progress)
     fireEvent.keyDown(combobox, { key: 'ArrowDown' });
 
     // Select highlighted option via Enter
     fireEvent.keyDown(combobox, { key: 'Enter' });
-    expect(handleChange).toHaveBeenCalled();
+    expect(handleChange).toHaveBeenCalledWith('in_progress');
   });
 
   it('closes menu when Escape key is pressed', () => {

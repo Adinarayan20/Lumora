@@ -63,9 +63,10 @@ export const Popover: React.FC<PopoverProps> = memo(({
   const windowWidth = windowDim.width || 1024;
   const windowHeight = windowDim.height || 800;
 
-  // Clamp popover width within screen boundaries
-  const maxAllowedWidth = Math.max(180, windowWidth - 20);
-  const popoverWidth = Math.min(Math.max(rect.width, 200), maxAllowedWidth);
+  // Clamp popover width strictly within viewport boundaries even on narrow viewports
+  const maxAllowedWidth = Math.max(0, windowWidth - 20);
+  const preferredMinWidth = Math.min(200, maxAllowedWidth);
+  const popoverWidth = Math.min(Math.max(rect.width, preferredMinWidth), maxAllowedWidth);
 
   // Horizontal collision prevention (clamps popover within screen edges)
   const popoverX = Math.max(10, Math.min(rect.x, windowWidth - popoverWidth - 10));
