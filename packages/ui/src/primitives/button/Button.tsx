@@ -41,6 +41,7 @@ export const Button: React.FC<ButtonProps> = memo(({
     spinnerColor,
     focusRingColor,
     hoverBackgroundColor,
+    touchTargetDimension,
     resolvedIconGap,
     resolvedIconSize,
   } = resolveButtonStyles({
@@ -64,6 +65,7 @@ export const Button: React.FC<ButtonProps> = memo(({
       testID={testID}
       focusRingColor={focusRingColor}
       hoverBackgroundColor={hoverBackgroundColor}
+      minInteractiveHeight={touchTargetDimension}
       innerStyle={[containerStyle, style]}
     >
       {() => (

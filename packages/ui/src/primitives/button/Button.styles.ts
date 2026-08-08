@@ -71,7 +71,9 @@ export function resolveButtonStyles({
   }
 
   // 2. Resolve Interactive Touch Target Minimum
-  const touchTargetDimension = isTouchMode ? InteractiveTouchTargetMinimum : 36;
+  const touchTargetDimension = isTouchMode
+    ? Math.max(resolvedHeight, InteractiveTouchTargetMinimum)
+    : resolvedHeight;
 
   // 3. Resolve Icon Size Token
   const resolvedIconSize: SemanticIconSize =

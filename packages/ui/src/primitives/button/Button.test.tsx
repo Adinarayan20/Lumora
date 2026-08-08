@@ -49,6 +49,21 @@ describe('Button Primitive Subsystem', () => {
     expect(button.getAttribute('aria-label') || button.textContent).toContain('Save Changes');
   });
 
+  it('enforces minHeight >= 48dp on the interactive Pressable element', () => {
+    const { getByRole } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <Button label="Small Visual Button" size="sm" onPress={() => {}} />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+
+    const pressable = getByRole('button');
+    expect(pressable).toBeTruthy();
+    // The interactive Pressable element owns aria-role="button" and minHeight: 48
+    expect(pressable.style.minHeight).toBe('48px');
+  });
+
   it('uses explicit accessibilityLabel and accessibilityHint when provided', () => {
     const { getByLabelText } = render(
       <ViewportProvider>
@@ -80,11 +95,12 @@ describe('Button Primitive Subsystem', () => {
     const button = getByRole('button');
     fireEvent.click(button);
     expect(handlePress).not.toHaveBeenCalled();
+    expect(button.getAttribute('aria-disabled')).toBe('true');
   });
 
   it('prevents onPress callback and renders loading spinner when loading is true', () => {
     const handlePress = vi.fn();
-    const { getByTestId } = render(
+    const { getByTestId, getByRole } = render(
       <ViewportProvider>
         <ThemeProvider>
           <Button label="Processing" loading={true} onPress={handlePress} testID="test-btn" />
@@ -94,6 +110,9 @@ describe('Button Primitive Subsystem', () => {
 
     const spinner = getByTestId('test-btn-spinner');
     expect(spinner).toBeTruthy();
+
+    const button = getByRole('button');
+    expect(button.getAttribute('aria-busy')).toBe('true');
 
     fireEvent.click(spinner);
     expect(handlePress).not.toHaveBeenCalled();
@@ -125,5 +144,6 @@ describe('Button Primitive Subsystem', () => {
     );
     const button = getByRole('button');
     expect(button).toBeTruthy();
+    expect(button.style.width).toBe('100%');
   });
 });

@@ -41,13 +41,14 @@ describe('IconButton Primitive Subsystem', () => {
     ).toThrow("[Lumora IconButton Primitive]: IconButton for icon 'action.delete' must provide a valid 'onPress' callback.");
   });
 
-  it('renders IconButton and fires onPress callback when clicked', () => {
+  it('renders IconButton and enforces 48dp minimum hit area on Pressable', () => {
     const handlePress = vi.fn();
     const { getByLabelText } = render(
       <ViewportProvider>
         <ThemeProvider>
           <IconButton
             icon="action.delete"
+            size="sm"
             accessibilityLabel="Delete item from workspace"
             onPress={handlePress}
           />
@@ -57,6 +58,8 @@ describe('IconButton Primitive Subsystem', () => {
 
     const iconButton = getByLabelText('Delete item from workspace');
     expect(iconButton).toBeTruthy();
+    expect(iconButton.style.minHeight).toBe('48px');
+    expect(iconButton.style.minWidth).toBe('48px');
 
     fireEvent.click(iconButton);
     expect(handlePress).toHaveBeenCalledTimes(1);
@@ -80,11 +83,12 @@ describe('IconButton Primitive Subsystem', () => {
     const iconButton = getByLabelText('Close panel');
     fireEvent.click(iconButton);
     expect(handlePress).not.toHaveBeenCalled();
+    expect(iconButton.getAttribute('aria-disabled')).toBe('true');
   });
 
   it('prevents onPress callback and renders spinner when loading is true', () => {
     const handlePress = vi.fn();
-    const { getByTestId } = render(
+    const { getByTestId, getByLabelText } = render(
       <ViewportProvider>
         <ThemeProvider>
           <IconButton
@@ -100,6 +104,9 @@ describe('IconButton Primitive Subsystem', () => {
 
     const spinner = getByTestId('test-icon-btn-spinner');
     expect(spinner).toBeTruthy();
+
+    const iconButton = getByLabelText('Processing item');
+    expect(iconButton.getAttribute('aria-busy')).toBe('true');
 
     fireEvent.click(spinner);
     expect(handlePress).not.toHaveBeenCalled();

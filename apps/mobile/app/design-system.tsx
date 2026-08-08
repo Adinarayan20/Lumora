@@ -466,11 +466,11 @@ export default function DesignSystemPlayground() {
                           <React.Fragment>
                             <HStack justify="space-between">
                               <Label color="textMuted">variant: <Code>{btnVariant}</Code></Label>
-                              <Label color="textMuted">resolved height: <Code>{resolved.resolvedHeight}px</Code></Label>
+                              <Label color="textMuted">visual body height: <Code>{resolved.resolvedHeight}px</Code></Label>
                             </HStack>
                             <HStack justify="space-between">
                               <Label color="textMuted">size: <Code>{btnSize}</Code></Label>
-                              <Label color="textMuted">touch target: <Code>{resolved.touchTargetDimension}px</Code></Label>
+                              <Label color="textMuted">interactive hit target: <Code>{resolved.touchTargetDimension}dp</Code></Label>
                             </HStack>
                             <HStack justify="space-between">
                               <Label color="textMuted">shape: <Code>{btnShape}</Code></Label>

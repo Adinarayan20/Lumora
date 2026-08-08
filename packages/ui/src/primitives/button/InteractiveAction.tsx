@@ -1,7 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
 import {
   Pressable,
-  View,
   AccessibilityInfo,
   Animated,
   StyleSheet,
@@ -52,7 +51,7 @@ export const InteractiveAction: React.FC<InteractiveActionProps> = memo(({
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
 
-  // Reduced Motion Detection
+  // Reduced Motion Detection with Clean Unmount Cleanup
   useEffect(() => {
     let isMounted = true;
     AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
@@ -125,6 +124,7 @@ export const InteractiveAction: React.FC<InteractiveActionProps> = memo(({
   };
 
   const transformStyle = isInteractive && !reduceMotion ? [{ scale: scaleAnim }] : [];
+  
   const focusStyle: ViewStyle | null = isFocused && focusRingColor
     ? {
         borderWidth: 2,
@@ -138,64 +138,59 @@ export const InteractiveAction: React.FC<InteractiveActionProps> = memo(({
       }
     : null;
 
+  const targetMinHeight = Math.max(minInteractiveHeight, InteractiveTouchTargetMinimum);
+  const targetMinWidth = minInteractiveWidth ? Math.max(minInteractiveWidth, InteractiveTouchTargetMinimum) : undefined;
+
   return (
-    <View
+    <Pressable
+      onPress={isInteractive ? onPress : undefined}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      onHoverIn={handleHoverIn}
+      onHoverOut={handleHoverOut}
+      disabled={!isInteractive}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{
+        disabled: disabled || loading,
+        busy: loading,
+      }}
+      testID={testID}
       style={[
-        styles.outerContainer,
+        styles.touchableArea,
         fullWidth && styles.fullWidth,
         {
-          minHeight: Math.max(minInteractiveHeight, InteractiveTouchTargetMinimum),
-          minWidth: minInteractiveWidth ? Math.max(minInteractiveWidth, InteractiveTouchTargetMinimum) : undefined,
+          minHeight: targetMinHeight,
+          minWidth: targetMinWidth,
         },
         containerStyle,
       ]}
     >
-      <Pressable
-        onPress={isInteractive ? onPress : undefined}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onHoverIn={handleHoverIn}
-        onHoverOut={handleHoverOut}
-        disabled={!isInteractive}
-        accessibilityRole="button"
-        accessibilityLabel={accessibilityLabel}
-        accessibilityHint={accessibilityHint}
-        accessibilityState={{
-          disabled: disabled || loading,
-          busy: loading,
-        }}
-        testID={testID}
-        style={[styles.touchable, fullWidth && styles.fullWidth]}
+      <Animated.View
+        style={[
+          innerStyle,
+          hoverStyle,
+          focusStyle,
+          fullWidth && styles.fullWidth,
+          {
+            opacity: (innerStyle ? (StyleSheet.flatten(innerStyle)?.opacity ?? 1) : 1) * pressedOpacity,
+            transform: transformStyle,
+          },
+        ]}
       >
-        <Animated.View
-          style={[
-            innerStyle,
-            hoverStyle,
-            focusStyle,
-            fullWidth && styles.fullWidth,
-            {
-              opacity: (innerStyle ? (StyleSheet.flatten(innerStyle)?.opacity ?? 1) : 1) * pressedOpacity,
-              transform: transformStyle,
-            },
-          ]}
-        >
-          {typeof children === 'function' ? children({ isHovered, isFocused, isPressed }) : children}
-        </Animated.View>
-      </Pressable>
-    </View>
+        {typeof children === 'function' ? children({ isHovered, isFocused, isPressed }) : children}
+      </Animated.View>
+    </Pressable>
   );
 });
 
 InteractiveAction.displayName = 'InteractiveAction';
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  touchable: {
+  touchableArea: {
     alignItems: 'center',
     justifyContent: 'center',
   },
