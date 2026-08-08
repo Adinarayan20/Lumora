@@ -4,7 +4,7 @@ import {
   useTheme,
   RadiusScale,
   SpacingScale,
-  ToastDimensions,
+  ModalDimensions,
 } from '@lumora/theme';
 import { Text } from '../typography/Text';
 import { IconButton } from '../button/IconButton';
@@ -35,11 +35,11 @@ export const Modal: React.FC<ModalProps> = memo(({
               backgroundColor: colors.surfaceElevated,
               borderColor: colors.border,
               shadowColor: colors.textPrimary,
-              shadowOffset: ToastDimensions.shadowOffset,
-              shadowOpacity: ToastDimensions.shadowOpacity,
-              shadowRadius: ToastDimensions.shadowRadius,
-              elevation: ToastDimensions.elevation,
-              maxWidth: ToastDimensions.modalMaxWidth,
+              shadowOffset: ModalDimensions.shadowOffset,
+              shadowOpacity: ModalDimensions.shadowOpacity,
+              shadowRadius: ModalDimensions.shadowRadius,
+              elevation: ModalDimensions.elevation,
+              maxWidth: ModalDimensions.modalMaxWidth,
             },
           ]}
         >

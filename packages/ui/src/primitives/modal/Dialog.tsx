@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { SpacingScale } from '@lumora/theme';
+import { SpacingScale, ModalDimensions } from '@lumora/theme';
 import { Text } from '../typography/Text';
 import { Button } from '../button/Button';
 import { Modal } from './Modal';
@@ -77,6 +77,6 @@ const styles = StyleSheet.create({
     marginTop: SpacingScale.sm,
   },
   actionButtonWrapper: {
-    minWidth: 90,
+    minWidth: ModalDimensions.dialogButtonMinWidth,
   },
 });
