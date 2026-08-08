@@ -1,4 +1,4 @@
-import type { SemanticIconName } from './Icon.types';
+import type { SemanticIconName, ExtensionIconName } from './Icon.types';
 
 export interface IconRegistryEntry {
   readonly family: 'Feather' | 'Ionicons' | 'FontAwesome' | 'MaterialCommunityIcons';
@@ -51,7 +51,7 @@ const CORE_REGISTRY: Record<SemanticIconName, IconRegistryEntry> = {
 };
 
 /**
- * Extensible Domain Registry for dynamic domain objects.
+ * Controlled Extensible Domain Registry for dynamic domain objects.
  */
 const EXTENSION_REGISTRY: Record<string, IconRegistryEntry> = {};
 
@@ -59,7 +59,7 @@ const EXTENSION_REGISTRY: Record<string, IconRegistryEntry> = {};
  * Multi-layer lookup: Core Semantic Registry -> Extension Registry.
  * Fails loudly if an un-configured icon is requested.
  */
-export function getRegisteredIcon(name: SemanticIconName | string): IconRegistryEntry {
+export function getRegisteredIcon(name: SemanticIconName | ExtensionIconName | string): IconRegistryEntry {
   const coreEntry = CORE_REGISTRY[name as SemanticIconName];
   if (coreEntry) {
     return coreEntry;
@@ -76,8 +76,28 @@ export function getRegisteredIcon(name: SemanticIconName | string): IconRegistry
 }
 
 /**
- * Extension hook to register domain-specific icons at runtime.
+ * Controlled extension hook to register domain-specific icons at runtime.
+ * Enforces the 'ext:' namespace boundary and prevents silent duplicate overwriting.
  */
-export function registerDomainIcon(name: string, entry: IconRegistryEntry): void {
+export function registerDomainIcon(name: ExtensionIconName, entry: IconRegistryEntry): void {
+  if (__DEV__ && !name.startsWith('ext:')) {
+    throw new Error(
+      `[Lumora Icon Registry]: Extension icon '${name}' must use the controlled 'ext:' namespace (e.g. 'ext:medical.pill').`,
+    );
+  }
+
+  if (EXTENSION_REGISTRY[name]) {
+    throw new Error(
+      `[Lumora Icon Registry]: Extension icon '${name}' is already registered. Use replaceDomainIcon() if intentional.`,
+    );
+  }
+
+  EXTENSION_REGISTRY[name] = entry;
+}
+
+/**
+ * Explicit update hook for hot-reload or test environment replacement.
+ */
+export function replaceDomainIcon(name: ExtensionIconName, entry: IconRegistryEntry): void {
   EXTENSION_REGISTRY[name] = entry;
 }

@@ -12,7 +12,7 @@ Lumora is a Universal Object Platform (Everything is an Object: Notes, Reminders
 
 ### Non-Negotiable Architectural Rules
 1. **Zero Direct Vendor Coupling**: Application screens and domain components MUST NEVER directly import vendor icon sets (e.g. `@expo/vector-icons/FontAwesome`, `lucide-react-native`, `react-native-vector-icons`). Icons must be consumed exclusively via the Lumora Icon Primitive (`<Icon name="..." />`).
-2. **Metadata-Driven Semantic Registry**: Icons are registered in a centralized semantic registry mapping functional names (e.g., `action.search`, `nav.home`, `object.task`, `status.warning`) to vector geometry representations.
+2. **Metadata-Driven Core & Extension Registries**: Core icons are registered in a closed, strongly-typed semantic registry (`CORE_REGISTRY`: `Record<SemanticIconName, IconRegistryEntry>`). Dynamic domain-specific icons are registered in a controlled extension registry (`EXTENSION_REGISTRY`) governed strictly by the `ext:${string}` namespace (`ExtensionIconName`). Raw arbitrary strings are forbidden.
 3. **Strict Theme Token Consumption**: Icons MUST NOT accept raw hex colors (e.g. `#111827`, `#5B7FFF`) or hardcode color maps inside UI components. All coloring is governed by semantic icon tokens resolved dynamically via `@lumora/theme`.
 4. **No Raw Numeric Stroke Width Props**: Public API MUST NOT expose `strokeWidth?: number`. Stroke weight is governed semantically via `strokeWeight?: IconStrokeWeight` (`auto` | `thin` | `regular` | `strong`).
 5. **Optical Alignment & Touch Target Isolation**: An icon's visual bounding box is separate from its interactive touch target. Minimum interactive hit areas are enforced via container tokens without inflating optical glyph dimensions.
