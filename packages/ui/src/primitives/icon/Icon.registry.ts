@@ -53,13 +53,13 @@ const CORE_REGISTRY: Record<SemanticIconName, IconRegistryEntry> = {
 /**
  * Controlled Extensible Domain Registry for dynamic domain objects.
  */
-const EXTENSION_REGISTRY: Record<string, IconRegistryEntry> = {};
+let EXTENSION_REGISTRY: Record<string, IconRegistryEntry> = {};
 
 /**
  * Multi-layer lookup: Core Semantic Registry -> Extension Registry.
- * Fails loudly if an un-configured icon is requested.
+ * Fails loudly at compile-time and runtime if an un-configured icon is requested.
  */
-export function getRegisteredIcon(name: SemanticIconName | ExtensionIconName | string): IconRegistryEntry {
+export function getRegisteredIcon(name: SemanticIconName | ExtensionIconName): IconRegistryEntry {
   const coreEntry = CORE_REGISTRY[name as SemanticIconName];
   if (coreEntry) {
     return coreEntry;
@@ -77,10 +77,10 @@ export function getRegisteredIcon(name: SemanticIconName | ExtensionIconName | s
 
 /**
  * Controlled extension hook to register domain-specific icons at runtime.
- * Enforces the 'ext:' namespace boundary and prevents silent duplicate overwriting.
+ * Enforces the 'ext:' namespace boundary unconditionally and prevents silent duplicate overwriting.
  */
 export function registerDomainIcon(name: ExtensionIconName, entry: IconRegistryEntry): void {
-  if (__DEV__ && !name.startsWith('ext:')) {
+  if (!name.startsWith('ext:')) {
     throw new Error(
       `[Lumora Icon Registry]: Extension icon '${name}' must use the controlled 'ext:' namespace (e.g. 'ext:medical.pill').`,
     );
@@ -96,8 +96,20 @@ export function registerDomainIcon(name: ExtensionIconName, entry: IconRegistryE
 }
 
 /**
- * Explicit update hook for hot-reload or test environment replacement.
+ * Explicit update hook for infrastructure, hot-reload, or test environment replacement.
  */
 export function replaceDomainIcon(name: ExtensionIconName, entry: IconRegistryEntry): void {
+  if (!name.startsWith('ext:')) {
+    throw new Error(
+      `[Lumora Icon Registry]: Extension icon '${name}' must use the controlled 'ext:' namespace (e.g. 'ext:medical.pill').`,
+    );
+  }
   EXTENSION_REGISTRY[name] = entry;
+}
+
+/**
+ * Clears global extension registry state between unit tests.
+ */
+export function resetExtensionRegistryForTesting(): void {
+  EXTENSION_REGISTRY = {};
 }

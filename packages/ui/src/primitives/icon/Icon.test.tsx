@@ -1,12 +1,21 @@
 import React from 'react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { ThemeProvider, ViewportProvider, LightThemeColors } from '@lumora/theme';
 import { Icon } from './Icon';
-import { getRegisteredIcon, registerDomainIcon, replaceDomainIcon } from './Icon.registry';
+import {
+  getRegisteredIcon,
+  registerDomainIcon,
+  replaceDomainIcon,
+  resetExtensionRegistryForTesting,
+} from './Icon.registry';
 import { resolveIconStyles } from './Icon.styles';
 
 describe('Icon Primitive & Registry Subsystem Hardening', () => {
+  beforeEach(() => {
+    resetExtensionRegistryForTesting();
+  });
+
   it('resolves core semantic icons from core registry in O(1)', () => {
     const homeIcon = getRegisteredIcon('nav.home');
     expect(homeIcon.family).toBe('Feather');
@@ -23,6 +32,7 @@ describe('Icon Primitive & Registry Subsystem Hardening', () => {
   });
 
   it('prevents duplicate domain extension registration and supports explicit replaceDomainIcon', () => {
+    registerDomainIcon('ext:medical.pill', { family: 'Feather', glyph: 'activity' });
     expect(() =>
       registerDomainIcon('ext:medical.pill', { family: 'Feather', glyph: 'activity' }),
     ).toThrow("[Lumora Icon Registry]: Extension icon 'ext:medical.pill' is already registered.");
@@ -33,8 +43,8 @@ describe('Icon Primitive & Registry Subsystem Hardening', () => {
 
   it('throws loud Error when an unregistered icon is requested', () => {
     // Intentional negative test verifying runtime error throw on invalid key
-    expect(() => getRegisteredIcon('unregistered.invalid')).toThrow(
-      "[Lumora Icon Registry]: Icon 'unregistered.invalid' is not registered",
+    expect(() => getRegisteredIcon('ext:unregistered.invalid' as any)).toThrow(
+      "[Lumora Icon Registry]: Icon 'ext:unregistered.invalid' is not registered",
     );
   });
 
