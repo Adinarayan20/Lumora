@@ -51,7 +51,9 @@ import {
   Dialog,
   ToastProvider,
   useToast,
+  DynamicForm,
 } from '@lumora/ui';
+import { FieldType, type FieldSchema } from '@lumora/shared';
 
 const ALL_FOUNDATIONAL_ICONS: { domain: string; icons: SemanticIconName[] }[] = [
   {
@@ -156,13 +158,97 @@ function ToastDemoSection() {
   );
 }
 
+function DynamicFormDemoSection() {
+  const { colors } = useTheme();
+  const { showToast } = useToast();
+  const [submittedValues, setSubmittedValues] = useState<Record<string, unknown> | null>(null);
+
+  const sampleObjectSchema: FieldSchema[] = [
+    {
+      key: 'title',
+      label: 'Universal Object Title',
+      type: FieldType.STRING,
+      defaultValue: 'Review Architecture Blueprint',
+      validation: { required: true, minLength: 3 },
+    },
+    {
+      key: 'priority',
+      label: 'Priority Weight',
+      type: FieldType.NUMBER,
+      defaultValue: 1,
+      validation: { min: 1, max: 10 },
+    },
+    {
+      key: 'status',
+      label: 'Object Status',
+      type: FieldType.ENUM,
+      defaultValue: 'In Progress',
+      validation: { options: ['Backlog', 'In Progress', 'Completed', 'Archived'] },
+    },
+    {
+      key: 'isReminderEnabled',
+      label: 'Enable Notification Trigger',
+      type: FieldType.BOOLEAN,
+      defaultValue: true,
+    },
+    {
+      key: 'dueDate',
+      label: 'Schedule Target Date',
+      type: FieldType.DATE,
+    },
+  ];
+
+  return (
+    <VStack gap="md">
+      <Heading level={2}>Batch 4 — Dynamic Form Orchestration Laboratory</Heading>
+      <Stack padding="lg" radius="card" background={colors.surfaceElevated}>
+        <VStack gap="md">
+          <Text role="Body" color="textSecondary">
+            Demonstrating generic, metadata-driven form generation across arbitrary Universal Object Schemas (Task, Medicine, Grocery, Bill, Habit). Zero custom form screen implementations.
+          </Text>
+
+          <DynamicForm
+            fields={sampleObjectSchema}
+            onSubmit={(values) => {
+              setSubmittedValues(values);
+              showToast({
+                title: 'Schema Submission Successful',
+                message: 'DynamicForm normalized values submitted cleanly.',
+                variant: 'success',
+              });
+            }}
+            onCancel={() => {
+              setSubmittedValues(null);
+              showToast({
+                message: 'Form edit cancelled',
+                variant: 'info',
+              });
+            }}
+            submitLabel="Save Object Schema"
+            cancelLabel="Reset Form"
+          />
+
+          {submittedValues ? (
+            <Stack padding="md" radius="card" background={colors.backgroundSecondary}>
+              <VStack gap="xs">
+                <Text role="Label" color="primary">Normalized Submission Output:</Text>
+                <Code>{JSON.stringify(submittedValues, null, 2)}</Code>
+              </VStack>
+            </Stack>
+          ) : null}
+        </VStack>
+      </Stack>
+    </VStack>
+  );
+}
+
 function DesignSystemPlaygroundBody() {
   const { mode, setThemeMode, colors } = useTheme();
   const viewport = useViewport();
 
   // Navigation Tab Section State
   const [activeSection, setActiveSection] = useState<
-    'Overview' | 'Typography' | 'Icons' | 'Buttons' | 'Motion' | 'Materials' | 'Colors' | 'Accessibility' | 'Responsive' | 'Anti-Patterns' | 'Surfaces & Feedback'
+    'Overview' | 'Typography' | 'Icons' | 'Buttons' | 'Inputs' | 'Selection' | 'Surfaces & Feedback' | 'Dynamic Forms' | 'Motion' | 'Materials' | 'Colors' | 'Accessibility' | 'Responsive' | 'Anti-Patterns'
   >('Overview');
 
   // Inspection Mode Toggles
@@ -242,7 +328,7 @@ function DesignSystemPlaygroundBody() {
           {/* Section Navigation Tabs */}
           <Stack padding="sm" radius="card" background={colors.surfaceElevated}>
             <HStack gap="xs" style={{ flexWrap: 'wrap' }}>
-              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Inputs', 'Selection', 'Surfaces & Feedback', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
+              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Inputs', 'Selection', 'Surfaces & Feedback', 'Dynamic Forms', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
                 <Pressable key={tab} onPress={() => setActiveSection(tab)}>
                   <Stack
                     padding="sm"
@@ -1137,6 +1223,9 @@ function DesignSystemPlaygroundBody() {
               />
             </VStack>
           )}
+
+          {/* DYNAMIC FORMS SECTION */}
+          {activeSection === 'Dynamic Forms' && <DynamicFormDemoSection />}
 
           {/* 4. MOTION PLAYGROUND SECTION */}
           {activeSection === 'Motion' && (
