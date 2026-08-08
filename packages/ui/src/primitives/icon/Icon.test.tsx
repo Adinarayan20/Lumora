@@ -43,7 +43,7 @@ describe('Icon Primitive & Registry Subsystem Hardening', () => {
 
   it('throws loud Error when an unregistered icon is requested', () => {
     // Intentional negative test verifying runtime error throw on invalid key
-    expect(() => getRegisteredIcon('ext:unregistered.invalid' as any)).toThrow(
+    expect(() => getRegisteredIcon('ext:unregistered.invalid')).toThrow(
       "[Lumora Icon Registry]: Icon 'ext:unregistered.invalid' is not registered",
     );
   });
