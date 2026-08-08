@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, Pressable, StyleSheet, ActivityIndicator, Platform } from 'react-native';
-import { useTheme, useViewport, SpacingScale, RadiusScale } from '@lumora/theme';
+import { useTheme, useViewport, SpacingScale } from '@lumora/theme';
 import { Icon } from '../icon/Icon';
 import { Text } from '../typography/Text';
 import { FieldControl } from '../field/FieldControl';
@@ -39,8 +39,6 @@ export function Select<T = string>({
   // Selected option object (handles unknown / unresolved values gracefully)
   const selectedOption = options.find((opt) => opt.value === value);
 
-  const enabledOptions = options.filter((opt) => !opt.disabled);
-
   const {
     triggerStyle,
     textStyle,
@@ -56,18 +54,28 @@ export function Select<T = string>({
     isOpen,
   });
 
+  const calculateInitialHighlight = (): number => {
+    if (options.length === 0) return 0;
+    const selectedIdx = options.findIndex((opt) => opt.value === value && !opt.disabled);
+    if (selectedIdx !== -1) return selectedIdx;
+    const firstEnabledIdx = options.findIndex((opt) => !opt.disabled);
+    return firstEnabledIdx !== -1 ? firstEnabledIdx : 0;
+  };
+
   const handleOpen = () => {
     if (!isInteractive) return;
+
+    const initialIdx = calculateInitialHighlight();
 
     if (triggerRef.current) {
       triggerRef.current.measureInWindow((x, y, width, height) => {
         setAnchorRect({ x, y, width, height });
         setIsOpen(true);
-        setHighlightedIndex(0);
+        setHighlightedIndex(initialIdx);
       });
     } else {
       setIsOpen(true);
-      setHighlightedIndex(0);
+      setHighlightedIndex(initialIdx);
     }
   };
 
@@ -83,12 +91,15 @@ export function Select<T = string>({
   const navigateHighlight = (step: number) => {
     if (options.length === 0) return;
 
-    let nextIndex = highlightedIndex + step;
-    while (nextIndex >= 0 && nextIndex < options.length && options[nextIndex].disabled) {
-      nextIndex += step;
-    }
+    let nextIndex = highlightedIndex;
+    let attempts = 0;
 
-    if (nextIndex >= 0 && nextIndex < options.length) {
+    do {
+      nextIndex = (nextIndex + step + options.length) % options.length;
+      attempts++;
+    } while (options[nextIndex]?.disabled && attempts < options.length);
+
+    if (!options[nextIndex]?.disabled) {
       setHighlightedIndex(nextIndex);
     }
   };
@@ -120,6 +131,9 @@ export function Select<T = string>({
       }
     }
   };
+
+  const webKeyboardProps: { onKeyDown?: (e: React.KeyboardEvent) => void } =
+    Platform.OS === 'web' ? { onKeyDown: handleTriggerKeyDown } : {};
 
   const effectiveAccessibilityLabel = accessibilityLabel || label || placeholder;
   const isMobileView = viewport.sizeClass === 'Compact';
@@ -191,7 +205,7 @@ export function Select<T = string>({
       <View ref={triggerRef} style={styles.touchContainer}>
         <Pressable
           onPress={handleOpen}
-          onKeyDown={Platform.OS === 'web' ? (handleTriggerKeyDown as any) : undefined}
+          {...webKeyboardProps}
           disabled={!isInteractive}
           accessibilityRole="combobox"
           accessibilityLabel={effectiveAccessibilityLabel}

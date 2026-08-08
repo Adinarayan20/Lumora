@@ -44,6 +44,7 @@ import {
   Checkbox,
   RadioGroup,
   Select,
+  resolveSelectStyles,
 } from '@lumora/ui';
 
 const ALL_FOUNDATIONAL_ICONS: { domain: string; icons: SemanticIconName[] }[] = [
@@ -897,6 +898,25 @@ export default function DesignSystemPlayground() {
                       <Metadata color="textMuted">
                         Active State Values — Toggle: {String(toggleVal)} | Checkbox: {String(checkboxVal)} | Radio: {radioVal} | Select: {String(selectVal)}
                       </Metadata>
+                      {(() => {
+                        const selRes = resolveSelectStyles({
+                          size: 'md',
+                          themeColors: colors,
+                          sizeClass: viewport.sizeClass,
+                          disabled: selectionDisabled,
+                          error: selectHasError,
+                        });
+                        return (
+                          <VStack gap="xs" style={{ marginTop: 8 }}>
+                            <Metadata color="primary">
+                              Resolved Tokens — Size: {viewport.sizeClass} | Visual Height: {selRes.resolvedHeight}px | Touch Target Min: {selRes.touchTargetDimension}dp
+                            </Metadata>
+                            <Metadata color="textMuted">
+                              Overlay Mode: {viewport.sizeClass === 'Compact' ? 'BottomSheet (Mobile)' : 'Anchored Popover (Desktop)'} | Keyboard: Space/Enter/Arrows
+                            </Metadata>
+                          </VStack>
+                        );
+                      })()}
                     </VStack>
                   </Stack>
                 </VStack>

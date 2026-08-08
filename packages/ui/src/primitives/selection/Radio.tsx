@@ -10,11 +10,11 @@ import {
 import { Text } from '../typography/Text';
 import type { RadioProps } from './Selection.types';
 
-export interface ExtendedRadioProps<T = string> extends RadioProps<T> {
+export interface InternalRadioProps<T = string> extends RadioProps<T> {
   readonly onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
-export const Radio: React.FC<ExtendedRadioProps> = memo(({
+export const Radio: React.FC<InternalRadioProps> = memo(({
   selected,
   onSelect,
   label,
@@ -42,10 +42,13 @@ export const Radio: React.FC<ExtendedRadioProps> = memo(({
     }
   };
 
+  const webKeyboardProps: { onKeyDown?: (e: React.KeyboardEvent) => void } =
+    Platform.OS === 'web' ? { onKeyDown: handleKeyDown } : {};
+
   return (
     <Pressable
       onPress={disabled ? undefined : onSelect}
-      onKeyDown={Platform.OS === 'web' ? (handleKeyDown as any) : undefined}
+      {...webKeyboardProps}
       disabled={disabled}
       accessibilityRole="radio"
       accessibilityLabel={label}

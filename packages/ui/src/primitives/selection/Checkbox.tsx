@@ -43,13 +43,16 @@ export const Checkbox: React.FC<CheckboxProps> = memo(({
     }
   };
 
+  const webKeyboardProps: { onKeyDown?: (e: React.KeyboardEvent) => void } =
+    Platform.OS === 'web' ? { onKeyDown: handleKeyDown } : {};
+
   const effectiveAccessibilityLabel = accessibilityLabel || label || 'Checkbox';
 
   return (
     <View style={styles.touchContainer} testID={testID ? `${testID}-checkbox-container` : undefined}>
       <Pressable
         onPress={handlePress}
-        onKeyDown={Platform.OS === 'web' ? (handleKeyDown as any) : undefined}
+        {...webKeyboardProps}
         disabled={disabled}
         accessibilityRole="checkbox"
         accessibilityLabel={effectiveAccessibilityLabel}

@@ -43,13 +43,16 @@ export const Toggle: React.FC<ToggleProps> = memo(({
     }
   };
 
+  const webKeyboardProps: { onKeyDown?: (e: React.KeyboardEvent) => void } =
+    Platform.OS === 'web' ? { onKeyDown: handleKeyDown } : {};
+
   const effectiveAccessibilityLabel = accessibilityLabel || label || 'Toggle switch';
 
   return (
     <View style={styles.touchContainer} testID={testID ? `${testID}-toggle-container` : undefined}>
       <Pressable
         onPress={handlePress}
-        onKeyDown={Platform.OS === 'web' ? (handleKeyDown as any) : undefined}
+        {...webKeyboardProps}
         disabled={disabled}
         accessibilityRole="switch"
         accessibilityLabel={effectiveAccessibilityLabel}
@@ -75,6 +78,7 @@ export const Toggle: React.FC<ToggleProps> = memo(({
             },
           ]}
         >
+          {/* Note: translateX offset values (2px left, 4px right inset) are physical track geometry padding insets */}
           <View
             style={[
               styles.thumb,

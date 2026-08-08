@@ -33,7 +33,7 @@ export const Overlay: React.FC<OverlayProps> = memo(({
     <Modal
       visible={visible}
       transparent={true}
-      animationType={isReducedMotion ? 'none' : 'none'}
+      animationType={isReducedMotion ? 'none' : 'fade'}
       onRequestClose={onRequestClose}
       testID={testID}
     >
