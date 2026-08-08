@@ -1,0 +1,20 @@
+{
+  "name": "Lumora Input System Tokens",
+  "version": "1.0.0",
+  "heights": {
+    "sm": 36,
+    "md": 44,
+    "lg": 52
+  },
+  "paddingHorizontal": {
+    "sm": 12,
+    "md": 16,
+    "lg": 20
+  },
+  "iconGaps": {
+    "sm": 6,
+    "md": 8,
+    "lg": 10
+  },
+  "interactiveTargetMinimum": 48
+}
