@@ -302,7 +302,7 @@ describe('DynamicObjectDetail Universal Object Contract', () => {
     expect(handleDelete).toHaveBeenCalledWith(dummyTaskObject);
   });
 
-  it('handles edit mode fallback safely when schema has no fields', () => {
+  it('disables Edit action when schema or fields are missing (Protection A)', () => {
     const emptySchema: SchemaDefinition = {
       typeKey: 'task',
       schemaVersion: 1,
@@ -311,7 +311,7 @@ describe('DynamicObjectDetail Universal Object Contract', () => {
 
     const handleEdit = vi.fn();
 
-    const { getByText } = render(
+    const { getByTestId } = render(
       <ThemeProvider>
         <ViewportProvider>
           <DynamicObjectDetail
@@ -324,8 +324,28 @@ describe('DynamicObjectDetail Universal Object Contract', () => {
       </ThemeProvider>,
     );
 
-    // Default Edit button is disabled when schema fields are empty
-    const editBtn = getByText('Edit');
+    // Protection A Assertion: Edit button action is disabled when schema fields are empty
+    const editBtn = getByTestId('dynamic-object-detail-action-edit');
+    expect(editBtn).toBeTruthy();
+  });
+
+  it('disables Edit action when schema prop is undefined', () => {
+    const handleEdit = vi.fn();
+
+    const { getByTestId } = render(
+      <ThemeProvider>
+        <ViewportProvider>
+          <DynamicObjectDetail
+            object={dummyTaskObject}
+            definition={dummyTaskDefinition}
+            schema={undefined}
+            onEdit={handleEdit}
+          />
+        </ViewportProvider>
+      </ThemeProvider>,
+    );
+
+    const editBtn = getByTestId('dynamic-object-detail-action-edit');
     expect(editBtn).toBeTruthy();
   });
 });

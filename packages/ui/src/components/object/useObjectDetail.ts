@@ -45,7 +45,7 @@ export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetai
   const defaultActions: ObjectActionConfig[] = [];
 
   if (onEdit) {
-    const isEditDisabled = Boolean(schema && (!schema.fields || schema.fields.length === 0));
+    const isEditDisabled = !schema?.fields || schema.fields.length === 0;
     defaultActions.push({
       key: 'edit',
       label: 'Edit',
