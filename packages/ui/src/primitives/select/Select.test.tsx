@@ -72,6 +72,49 @@ describe('Select Primitive Contract', () => {
     expect(handleChange).toHaveBeenCalledWith('pending');
   });
 
+  it('opens menu and selects option via keyboard navigation (Space -> ArrowDown -> Enter)', () => {
+    const handleChange = vi.fn();
+    const { getByRole, getByText } = render(
+      <ThemeProvider>
+        <ViewportProvider>
+          <Select value={null} onChange={handleChange} options={options} placeholder="Choose status" />
+        </ViewportProvider>
+      </ThemeProvider>,
+    );
+
+    const combobox = getByRole('combobox');
+
+    // Open via Space
+    fireEvent.keyDown(combobox, { key: ' ' });
+    expect(getByText('Pending')).toBeTruthy();
+
+    // Navigate to next option
+    fireEvent.keyDown(combobox, { key: 'ArrowDown' });
+
+    // Select highlighted option via Enter
+    fireEvent.keyDown(combobox, { key: 'Enter' });
+    expect(handleChange).toHaveBeenCalled();
+  });
+
+  it('closes menu when Escape key is pressed', () => {
+    const handleChange = vi.fn();
+    const { getByRole, getByText, queryByText } = render(
+      <ThemeProvider>
+        <ViewportProvider>
+          <Select value={null} onChange={handleChange} options={options} placeholder="Choose status" />
+        </ViewportProvider>
+      </ThemeProvider>,
+    );
+
+    const combobox = getByRole('combobox');
+    fireEvent.click(combobox);
+    expect(getByText('Pending')).toBeTruthy();
+
+    // Close via Escape
+    fireEvent.keyDown(combobox, { key: 'Escape' });
+    expect(queryByText('Pending')).toBeNull();
+  });
+
   it('prevents selection when disabled option is clicked', () => {
     const handleChange = vi.fn();
     const { getByRole, getByText } = render(

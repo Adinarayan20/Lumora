@@ -18,6 +18,7 @@ export const Popover: React.FC<PopoverProps> = memo(({
 }) => {
   const { colors } = useTheme();
   const [rect, setRect] = useState<OverlayAnchorRect>({ x: 0, y: 0, width: 0, height: 0 });
+  const [windowDim, setWindowDim] = useState(() => Dimensions.get('window'));
 
   const updatePosition = useCallback(async () => {
     if ('measure' in anchor) {
@@ -32,6 +33,11 @@ export const Popover: React.FC<PopoverProps> = memo(({
     if (visible) {
       updatePosition();
 
+      const subscription = Dimensions.addEventListener('change', ({ window }) => {
+        setWindowDim(window);
+        updatePosition();
+      });
+
       if (Platform.OS === 'web') {
         const handleReposition = () => {
           updatePosition();
@@ -39,19 +45,29 @@ export const Popover: React.FC<PopoverProps> = memo(({
         window.addEventListener('resize', handleReposition);
         window.addEventListener('scroll', handleReposition, true);
         return () => {
+          subscription?.remove();
           window.removeEventListener('resize', handleReposition);
           window.removeEventListener('scroll', handleReposition, true);
         };
       }
+
+      return () => {
+        subscription?.remove();
+      };
     }
   }, [visible, updatePosition]);
 
   if (!visible) return null;
 
-  const windowDim = Dimensions.get('window');
+  const windowWidth = windowDim.width || 1024;
   const windowHeight = windowDim.height || 800;
 
-  // Collision detection: check space below vs space above
+  const popoverWidth = Math.max(rect.width, 200);
+
+  // Horizontal collision prevention (clamps popover within screen edges)
+  const popoverX = Math.max(10, Math.min(rect.x, windowWidth - popoverWidth - 10));
+
+  // Vertical collision detection: opens above if near bottom of viewport
   const spaceBelow = windowHeight - (rect.y + rect.height);
   const opensAbove = placement === 'top-start' || (spaceBelow < 200 && rect.y > spaceBelow);
 
@@ -70,8 +86,8 @@ export const Popover: React.FC<PopoverProps> = memo(({
           styles.popoverCard,
           {
             top: popoverY,
-            left: rect.x,
-            width: Math.max(rect.width, 200),
+            left: popoverX,
+            width: popoverWidth,
             maxHeight: Math.max(100, maxAvailableHeight),
             backgroundColor: colors.surfaceElevated,
             borderColor: colors.border,

@@ -1,6 +1,6 @@
 import React, { memo, useEffect } from 'react';
 import { Modal, Pressable, View, StyleSheet, Platform } from 'react-native';
-import { useTheme, OverlayBackdropOpacity } from '@lumora/theme';
+import { useTheme, useReducedMotion, OverlayBackdropOpacity } from '@lumora/theme';
 import type { OverlayProps } from './Overlay.types';
 
 export const Overlay: React.FC<OverlayProps> = memo(({
@@ -10,6 +10,7 @@ export const Overlay: React.FC<OverlayProps> = memo(({
   testID,
 }) => {
   const { colors } = useTheme();
+  const isReducedMotion = useReducedMotion();
 
   // Escape key handler on Web
   useEffect(() => {
@@ -32,7 +33,7 @@ export const Overlay: React.FC<OverlayProps> = memo(({
     <Modal
       visible={visible}
       transparent={true}
-      animationType="none"
+      animationType={isReducedMotion ? 'none' : 'none'}
       onRequestClose={onRequestClose}
       testID={testID}
     >

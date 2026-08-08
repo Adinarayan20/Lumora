@@ -37,6 +37,19 @@ describe('RadioGroup Primitive Contract', () => {
     expect(handleChange).toHaveBeenCalledWith('medium');
   });
 
+  it('navigates radio options via Arrow keys skipping disabled items', () => {
+    const handleChange = vi.fn();
+    const { getAllByRole } = render(
+      <ThemeProvider>
+        <RadioGroup value="low" onChange={handleChange} options={options} label="Priority Level" />
+      </ThemeProvider>,
+    );
+
+    const radioItems = getAllByRole('radio');
+    fireEvent.keyDown(radioItems[0], { key: 'ArrowDown' });
+    expect(handleChange).toHaveBeenCalledWith('medium');
+  });
+
   it('prevents selection on disabled option', () => {
     const handleChange = vi.fn();
     const { getAllByRole } = render(

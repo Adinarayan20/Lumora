@@ -1,12 +1,14 @@
 import React, { memo } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet, Platform } from 'react-native';
 import {
   useTheme,
   ToggleDimensions,
   InteractiveTouchTargetMinimum,
   RadiusScale,
+  SpacingScale,
 } from '@lumora/theme';
-import { FieldControl } from '../field/FieldControl';
+import { Text } from '../typography/Text';
+import { Caption } from '../typography/Caption';
 import type { ToggleProps } from './Selection.types';
 
 export const Toggle: React.FC<ToggleProps> = memo(({
@@ -34,59 +36,73 @@ export const Toggle: React.FC<ToggleProps> = memo(({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (Platform.OS === 'web' && (e.key === ' ' || e.key === 'Enter')) {
+      e.preventDefault();
+      handlePress();
+    }
+  };
+
   const effectiveAccessibilityLabel = accessibilityLabel || label || 'Toggle switch';
 
   return (
-    <FieldControl
-      label={label}
-      helperText={helperText}
-      disabled={disabled}
-      testID={testID}
-    >
-      <View style={styles.touchContainer}>
-        <Pressable
-          onPress={handlePress}
-          disabled={disabled}
-          accessibilityRole="switch"
-          accessibilityLabel={effectiveAccessibilityLabel}
-          accessibilityState={{
-            checked: value,
-            disabled,
-          }}
-          testID={testID}
+    <View style={styles.touchContainer} testID={testID ? `${testID}-toggle-container` : undefined}>
+      <Pressable
+        onPress={handlePress}
+        onKeyDown={Platform.OS === 'web' ? (handleKeyDown as any) : undefined}
+        disabled={disabled}
+        accessibilityRole="switch"
+        accessibilityLabel={effectiveAccessibilityLabel}
+        accessibilityState={{
+          checked: value,
+          disabled,
+        }}
+        testID={testID}
+        style={[
+          styles.pressableRow,
+          { opacity },
+        ]}
+      >
+        <View
           style={[
-            styles.pressableArea,
-            { opacity },
+            styles.track,
+            {
+              width: dims.width,
+              height: dims.height,
+              borderRadius: RadiusScale.full,
+              backgroundColor: trackBackgroundColor,
+              borderColor: trackBorderColor,
+            },
           ]}
         >
           <View
             style={[
-              styles.track,
+              styles.thumb,
               {
-                width: dims.width,
-                height: dims.height,
+                width: dims.thumb,
+                height: dims.thumb,
                 borderRadius: RadiusScale.full,
-                backgroundColor: trackBackgroundColor,
-                borderColor: trackBorderColor,
+                backgroundColor: thumbColor,
+                transform: [{ translateX: value ? dims.width - dims.thumb - 4 : 2 }],
               },
             ]}
-          >
-            <View
-              style={[
-                styles.thumb,
-                {
-                  width: dims.thumb,
-                  height: dims.thumb,
-                  borderRadius: RadiusScale.full,
-                  backgroundColor: thumbColor,
-                  transform: [{ translateX: value ? dims.width - dims.thumb - 4 : 2 }],
-                },
-              ]}
-            />
+          />
+        </View>
+
+        {label ? (
+          <View style={styles.textBlock}>
+            <Text color={disabled ? 'textMuted' : 'textPrimary'}>
+              {label}
+            </Text>
+            {helperText ? (
+              <Caption color="textMuted">
+                {helperText}
+              </Caption>
+            ) : null}
           </View>
-        </Pressable>
-      </View>
-    </FieldControl>
+        ) : null}
+      </Pressable>
+    </View>
   );
 });
 
@@ -96,12 +112,12 @@ const styles = StyleSheet.create({
   touchContainer: {
     minHeight: InteractiveTouchTargetMinimum,
     justifyContent: 'center',
+    paddingVertical: SpacingScale.xs,
   },
-  pressableArea: {
+  pressableRow: {
     minHeight: InteractiveTouchTargetMinimum,
-    minWidth: InteractiveTouchTargetMinimum,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   track: {
     borderWidth: 1,
@@ -109,5 +125,10 @@ const styles = StyleSheet.create({
   },
   thumb: {
     position: 'absolute',
+  },
+  textBlock: {
+    marginLeft: SpacingScale.xs,
+    flexDirection: 'column',
+    flex: 1,
   },
 });

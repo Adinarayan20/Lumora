@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet, Platform } from 'react-native';
 import {
   useTheme,
   IndicatorDimensions,
@@ -10,13 +10,18 @@ import {
 import { Text } from '../typography/Text';
 import type { RadioProps } from './Selection.types';
 
-export const Radio: React.FC<RadioProps> = memo(({
+export interface ExtendedRadioProps<T = string> extends RadioProps<T> {
+  readonly onKeyDown?: (e: React.KeyboardEvent) => void;
+}
+
+export const Radio: React.FC<ExtendedRadioProps> = memo(({
   selected,
   onSelect,
   label,
   description,
   disabled = false,
   testID,
+  onKeyDown,
 }) => {
   const { colors } = useTheme();
 
@@ -28,9 +33,19 @@ export const Radio: React.FC<RadioProps> = memo(({
   const outerBgColor = selected ? colors.surface : colors.surface;
   const dotColor = selected ? colors.primary : 'transparent';
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (onKeyDown) {
+      onKeyDown(e);
+    } else if (Platform.OS === 'web' && (e.key === ' ' || e.key === 'Enter')) {
+      e.preventDefault();
+      if (!disabled) onSelect();
+    }
+  };
+
   return (
     <Pressable
       onPress={disabled ? undefined : onSelect}
+      onKeyDown={Platform.OS === 'web' ? (handleKeyDown as any) : undefined}
       disabled={disabled}
       accessibilityRole="radio"
       accessibilityLabel={label}

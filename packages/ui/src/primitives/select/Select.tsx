@@ -1,13 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { View, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
-import { useTheme, useViewport } from '@lumora/theme';
+import { View, Pressable, StyleSheet, ActivityIndicator, Platform } from 'react-native';
+import { useTheme, useViewport, SpacingScale, RadiusScale } from '@lumora/theme';
 import { Icon } from '../icon/Icon';
 import { Text } from '../typography/Text';
 import { FieldControl } from '../field/FieldControl';
 import { Popover } from '../overlay/Popover';
 import { BottomSheet } from '../overlay/BottomSheet';
 import type { OverlayAnchorRect } from '../overlay/Overlay.types';
-import type { SelectProps } from './Select.types';
+import type { SelectProps, SelectOption } from './Select.types';
 import { resolveSelectStyles } from './Select.styles';
 
 export function Select<T = string>({
@@ -30,13 +30,16 @@ export function Select<T = string>({
   const triggerRef = useRef<View>(null);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [anchorRect, setAnchorRect] = useState<OverlayAnchorRect>({ x: 0, y: 0, width: 0, height: 0 });
 
   const isError = Boolean(errorText);
   const isInteractive = !disabled && !loading;
 
-  // Find selected option object safely (handles unknown / unresolved values gracefully)
+  // Selected option object (handles unknown / unresolved values gracefully)
   const selectedOption = options.find((opt) => opt.value === value);
+
+  const enabledOptions = options.filter((opt) => !opt.disabled);
 
   const {
     triggerStyle,
@@ -60,15 +63,62 @@ export function Select<T = string>({
       triggerRef.current.measureInWindow((x, y, width, height) => {
         setAnchorRect({ x, y, width, height });
         setIsOpen(true);
+        setHighlightedIndex(0);
       });
     } else {
       setIsOpen(true);
+      setHighlightedIndex(0);
     }
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
   };
 
   const handleSelectOption = (optValue: T) => {
     onChange(optValue);
-    setIsOpen(false);
+    handleClose();
+  };
+
+  const navigateHighlight = (step: number) => {
+    if (options.length === 0) return;
+
+    let nextIndex = highlightedIndex + step;
+    while (nextIndex >= 0 && nextIndex < options.length && options[nextIndex].disabled) {
+      nextIndex += step;
+    }
+
+    if (nextIndex >= 0 && nextIndex < options.length) {
+      setHighlightedIndex(nextIndex);
+    }
+  };
+
+  const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
+    if (Platform.OS !== 'web' || !isInteractive) return;
+
+    if (!isOpen) {
+      if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        handleOpen();
+      }
+    } else {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        navigateHighlight(1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        navigateHighlight(-1);
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const targetOpt = options[highlightedIndex];
+        if (targetOpt && !targetOpt.disabled) {
+          handleSelectOption(targetOpt.value);
+        }
+      } else if (e.key === 'Escape' || e.key === 'Tab') {
+        e.preventDefault();
+        handleClose();
+      }
+    }
   };
 
   const effectiveAccessibilityLabel = accessibilityLabel || label || placeholder;
@@ -83,8 +133,9 @@ export function Select<T = string>({
       );
     }
 
-    return options.map((opt) => {
+    return options.map((opt, idx) => {
       const isSelected = value === opt.value;
+      const isHighlighted = highlightedIndex === idx;
       const isOptionDisabled = Boolean(opt.disabled);
 
       return (
@@ -100,6 +151,7 @@ export function Select<T = string>({
           }}
           style={[
             styles.optionItem,
+            isHighlighted && { backgroundColor: colors.backgroundSecondary },
             isSelected && { backgroundColor: colors.primaryGlow },
             isOptionDisabled && { opacity: colors.disabledOpacity },
           ]}
@@ -139,6 +191,7 @@ export function Select<T = string>({
       <View ref={triggerRef} style={styles.touchContainer}>
         <Pressable
           onPress={handleOpen}
+          onKeyDown={Platform.OS === 'web' ? (handleTriggerKeyDown as any) : undefined}
           disabled={!isInteractive}
           accessibilityRole="combobox"
           accessibilityLabel={effectiveAccessibilityLabel}
@@ -164,7 +217,7 @@ export function Select<T = string>({
               <ActivityIndicator size="small" color={colors.primary} />
             ) : (
               <Icon
-                name={isOpen ? 'nav.back' : 'nav.more'}
+                name="nav.more"
                 size="sm"
                 color="icon.secondary"
               />
@@ -177,7 +230,7 @@ export function Select<T = string>({
       {isMobileView ? (
         <BottomSheet
           visible={isOpen}
-          onRequestClose={() => setIsOpen(false)}
+          onRequestClose={handleClose}
           title={label || placeholder}
           testID={testID ? `${testID}-sheet` : undefined}
         >
@@ -186,7 +239,7 @@ export function Select<T = string>({
       ) : (
         <Popover
           visible={isOpen}
-          onRequestClose={() => setIsOpen(false)}
+          onRequestClose={handleClose}
           anchor={anchorRect}
           testID={testID ? `${testID}-popover` : undefined}
         >
@@ -212,8 +265,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    paddingVertical: SpacingScale.xs,
+    paddingHorizontal: SpacingScale.sm,
   },
   optionLeftBlock: {
     flexDirection: 'row',
@@ -225,7 +278,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   emptyContainer: {
-    padding: 16,
+    padding: SpacingScale.md,
     alignItems: 'center',
     justifyContent: 'center',
   },

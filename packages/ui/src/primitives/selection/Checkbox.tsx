@@ -1,13 +1,15 @@
 import React, { memo } from 'react';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet, Platform } from 'react-native';
 import {
   useTheme,
   IndicatorDimensions,
   InteractiveTouchTargetMinimum,
   RadiusScale,
+  SpacingScale,
 } from '@lumora/theme';
 import { Icon } from '../icon/Icon';
-import { FieldControl } from '../field/FieldControl';
+import { Text } from '../typography/Text';
+import { Caption } from '../typography/Caption';
 import type { CheckboxProps } from './Selection.types';
 
 export const Checkbox: React.FC<CheckboxProps> = memo(({
@@ -34,50 +36,64 @@ export const Checkbox: React.FC<CheckboxProps> = memo(({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (Platform.OS === 'web' && (e.key === ' ' || e.key === 'Enter')) {
+      e.preventDefault();
+      handlePress();
+    }
+  };
+
   const effectiveAccessibilityLabel = accessibilityLabel || label || 'Checkbox';
 
   return (
-    <FieldControl
-      label={label}
-      helperText={helperText}
-      disabled={disabled}
-      testID={testID}
-    >
-      <View style={styles.touchContainer}>
-        <Pressable
-          onPress={handlePress}
-          disabled={disabled}
-          accessibilityRole="checkbox"
-          accessibilityLabel={effectiveAccessibilityLabel}
-          accessibilityState={{
-            checked,
-            disabled,
-          }}
-          testID={testID}
+    <View style={styles.touchContainer} testID={testID ? `${testID}-checkbox-container` : undefined}>
+      <Pressable
+        onPress={handlePress}
+        onKeyDown={Platform.OS === 'web' ? (handleKeyDown as any) : undefined}
+        disabled={disabled}
+        accessibilityRole="checkbox"
+        accessibilityLabel={effectiveAccessibilityLabel}
+        accessibilityState={{
+          checked,
+          disabled,
+        }}
+        testID={testID}
+        style={[
+          styles.pressableRow,
+          { opacity },
+        ]}
+      >
+        <View
           style={[
-            styles.pressableArea,
-            { opacity },
+            styles.box,
+            {
+              width: sizePx,
+              height: sizePx,
+              borderRadius: RadiusScale.md,
+              backgroundColor: boxBackgroundColor,
+              borderColor: boxBorderColor,
+            },
           ]}
         >
-          <View
-            style={[
-              styles.box,
-              {
-                width: sizePx,
-                height: sizePx,
-                borderRadius: RadiusScale.md,
-                backgroundColor: boxBackgroundColor,
-                borderColor: boxBorderColor,
-              },
-            ]}
-          >
-            {checked && (
-              <Icon name="action.check" size="sm" color="icon.primary" />
-            )}
+          {checked && (
+            <Icon name="action.check" size="sm" color="icon.primary" />
+          )}
+        </View>
+
+        {label ? (
+          <View style={styles.textBlock}>
+            <Text color={disabled ? 'textMuted' : 'textPrimary'}>
+              {label}
+            </Text>
+            {helperText ? (
+              <Caption color="textMuted">
+                {helperText}
+              </Caption>
+            ) : null}
           </View>
-        </Pressable>
-      </View>
-    </FieldControl>
+        ) : null}
+      </Pressable>
+    </View>
   );
 });
 
@@ -87,16 +103,21 @@ const styles = StyleSheet.create({
   touchContainer: {
     minHeight: InteractiveTouchTargetMinimum,
     justifyContent: 'center',
+    paddingVertical: SpacingScale.xs,
   },
-  pressableArea: {
+  pressableRow: {
     minHeight: InteractiveTouchTargetMinimum,
-    minWidth: InteractiveTouchTargetMinimum,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   box: {
     borderWidth: 1,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
+  },
+  textBlock: {
+    marginLeft: SpacingScale.xs,
+    flexDirection: 'column',
+    flex: 1,
   },
 });
