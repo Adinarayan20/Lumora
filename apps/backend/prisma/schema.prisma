@@ -718,7 +718,6 @@ model Object {
 
   @@unique([workspaceId, objectKey])
   @@index([workspaceId, status])
-  @@index([workspaceId, typeKey])
   @@index([workspaceId, typeKey, status])
   @@index([workspaceId, updatedAt(sort: Desc), id])
   @@index([workspaceId, isFavorite])
