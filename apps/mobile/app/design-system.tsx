@@ -594,7 +594,7 @@ export default function DesignSystemPlayground() {
               <VStack gap="md">
                 <Heading level={2}>IconButton Gallery & Touch Boundary Debugger</Heading>
                 <Text role="Body" color="textSecondary">
-                  Validates minimum 44×44dp / 48×48dp interactive touch target containers around visual icon controls.
+                  Validates minimum 48×48dp interactive touch target containers around visual icon controls.
                 </Text>
                 <Stack padding="lg" radius="card" background={colors.surface}>
                   <VStack gap="md">

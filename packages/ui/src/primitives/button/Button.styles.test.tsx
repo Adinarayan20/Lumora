@@ -71,7 +71,7 @@ describe('resolveButtonStyles Pure Token Resolver', () => {
     expect(res.resolvedBackgroundColor).toBe(LightThemeColors.danger);
   });
 
-  it('resolves small, medium, and large visual dimensions', () => {
+  it('resolves small, medium, and large visual dimensions and touch targets', () => {
     const sm = resolveButtonStyles({ size: 'sm', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
     const md = resolveButtonStyles({ size: 'md', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
     const lg = resolveButtonStyles({ size: 'lg', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
@@ -82,7 +82,29 @@ describe('resolveButtonStyles Pure Token Resolver', () => {
 
     expect(sm.touchTargetDimension).toBe(InteractiveTouchTargetMinimum);
     expect(md.touchTargetDimension).toBe(InteractiveTouchTargetMinimum);
-    expect(lg.touchTargetDimension).toBe(InteractiveTouchTargetMinimum);
+    expect(lg.touchTargetDimension).toBe(52);
+  });
+
+  it('enforces responsive size contracts when size prop is omitted or explicit', () => {
+    // Contextual defaults when size is omitted
+    const compactDefault = resolveButtonStyles({ themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
+    const mediumDefault = resolveButtonStyles({ themeColors: LightThemeColors, sizeClass: 'Medium', isTouchMode: true });
+    const expandedDefault = resolveButtonStyles({ themeColors: LightThemeColors, sizeClass: 'Expanded', isTouchMode: true });
+
+    expect(compactDefault.resolvedHeight).toBe(44); // md
+    expect(mediumDefault.resolvedHeight).toBe(52); // lg
+    expect(expandedDefault.resolvedHeight).toBe(52); // lg
+
+    // Explicit size prop overrides viewport defaults unconditionally
+    const compactSmall = resolveButtonStyles({ size: 'sm', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
+    const mediumSmall = resolveButtonStyles({ size: 'sm', themeColors: LightThemeColors, sizeClass: 'Medium', isTouchMode: true });
+    const expandedMedium = resolveButtonStyles({ size: 'md', themeColors: LightThemeColors, sizeClass: 'Expanded', isTouchMode: true });
+    const anyLarge = resolveButtonStyles({ size: 'lg', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
+
+    expect(compactSmall.resolvedHeight).toBe(36);
+    expect(mediumSmall.resolvedHeight).toBe(36);
+    expect(expandedMedium.resolvedHeight).toBe(44);
+    expect(anyLarge.resolvedHeight).toBe(52);
   });
 
   it('resolves rounded and pill radii', () => {

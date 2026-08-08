@@ -127,12 +127,12 @@ export const InteractiveAction: React.FC<InteractiveActionProps> = memo(({
   
   const focusStyle: ViewStyle | null = isFocused && focusRingColor
     ? {
-        borderWidth: 2,
         borderColor: focusRingColor,
+        borderWidth: Math.max(StyleSheet.flatten(innerStyle)?.borderWidth ?? 0, 1),
       }
     : null;
 
-  const hoverStyle: ViewStyle | null = isHovered && !isPressed && hoverBackgroundColor
+  const hoverStyle: ViewStyle | null = isHovered && !isPressed && isInteractive && hoverBackgroundColor
     ? {
         backgroundColor: hoverBackgroundColor,
       }

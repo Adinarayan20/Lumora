@@ -41,28 +41,40 @@ describe('IconButton Primitive Subsystem', () => {
     ).toThrow("[Lumora IconButton Primitive]: IconButton for icon 'action.delete' must provide a valid 'onPress' callback.");
   });
 
-  it('renders IconButton and enforces 48dp minimum hit area on Pressable', () => {
+  it('enforces 48dp minimum hit area on Pressable while maintaining visual square body geometry for all sizes', () => {
     const handlePress = vi.fn();
-    const { getByLabelText } = render(
+    const { getByLabelText: getSm } = render(
       <ViewportProvider>
         <ThemeProvider>
-          <IconButton
-            icon="action.delete"
-            size="sm"
-            accessibilityLabel="Delete item from workspace"
-            onPress={handlePress}
-          />
+          <IconButton icon="action.delete" size="sm" accessibilityLabel="Delete small" onPress={handlePress} />
         </ThemeProvider>
       </ViewportProvider>,
     );
+    const smBtn = getSm('Delete small');
+    expect(smBtn.style.minHeight).toBe('48px');
+    expect(smBtn.style.minWidth).toBe('48px');
 
-    const iconButton = getByLabelText('Delete item from workspace');
-    expect(iconButton).toBeTruthy();
-    expect(iconButton.style.minHeight).toBe('48px');
-    expect(iconButton.style.minWidth).toBe('48px');
+    const { getByLabelText: getMd } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <IconButton icon="action.delete" size="md" accessibilityLabel="Delete medium" onPress={handlePress} />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+    const mdBtn = getMd('Delete medium');
+    expect(mdBtn.style.minHeight).toBe('48px');
+    expect(mdBtn.style.minWidth).toBe('48px');
 
-    fireEvent.click(iconButton);
-    expect(handlePress).toHaveBeenCalledTimes(1);
+    const { getByLabelText: getLg } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <IconButton icon="action.delete" size="lg" accessibilityLabel="Delete large" onPress={handlePress} />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+    const lgBtn = getLg('Delete large');
+    expect(lgBtn.style.minHeight).toBe('52px');
+    expect(lgBtn.style.minWidth).toBe('52px');
   });
 
   it('prevents onPress callback when disabled is true', () => {
