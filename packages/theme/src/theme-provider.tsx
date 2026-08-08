@@ -21,10 +21,24 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, initialM
   const colors = useMemo<ColorPalette>(() => {
     switch (mode) {
       case 'dark':
-      case 'amoled':
         return DarkThemeColors;
-      case 'light':
+      case 'amoled':
+        return {
+          ...DarkThemeColors,
+          background: '#000000',
+          backgroundSecondary: '#0A0D12',
+          surface: '#0E1117',
+          surfaceElevated: '#161B22',
+        };
       case 'highContrast':
+        return {
+          ...LightThemeColors,
+          textPrimary: '#000000',
+          textSecondary: '#111827',
+          border: '#000000',
+          disabledOpacity: 0.6,
+        };
+      case 'light':
       case 'system':
       default:
         return LightThemeColors;

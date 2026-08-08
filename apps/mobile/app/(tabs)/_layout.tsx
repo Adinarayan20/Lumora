@@ -1,15 +1,7 @@
 import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
 import { useTheme } from '@lumora/theme';
-
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
-}
+import { Icon } from '@lumora/ui';
 
 export default function TabLayout() {
   const { colors } = useTheme();
@@ -36,21 +28,25 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <Icon
+              name="nav.home"
+              size="md"
+              color={focused ? 'icon.brand' : 'icon.muted'}
+              isSelected={focused}
+            />
+          ),
           headerRight: () => (
             <React.Fragment>
               {__DEV__ && (
                 <Link href="/design-system" asChild>
-                  <Pressable>
-                    {({ pressed }) => (
-                      <FontAwesome
-                        name="flask"
-                        size={22}
-                        color={colors.primary}
-                        style={{ marginRight: 16, opacity: pressed ? 0.5 : 1 }}
-                      />
-                    )}
-                  </Pressable>
+                  <Icon
+                    name="settings.gear"
+                    size="md"
+                    color="icon.brand"
+                    accessibilityLabel="Open Design System Playground"
+                    style={{ marginRight: 16 }}
+                  />
                 </Link>
               )}
             </React.Fragment>
@@ -61,7 +57,14 @@ export default function TabLayout() {
         name="two"
         options={{
           title: 'Timeline',
-          tabBarIcon: ({ color }) => <TabBarIcon name="clock-o" color={color} />,
+          tabBarIcon: ({ focused }) => (
+            <Icon
+              name="nav.timeline"
+              size="md"
+              color={focused ? 'icon.brand' : 'icon.muted'}
+              isSelected={focused}
+            />
+          ),
         }}
       />
     </Tabs>
