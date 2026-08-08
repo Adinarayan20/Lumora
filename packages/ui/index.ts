@@ -10,3 +10,7 @@ export * from './src/primitives/input/index';
 export * from './src/primitives/selection/index';
 export * from './src/primitives/overlay/index';
 export * from './src/primitives/select/index';
+export * from './src/primitives/badge/index';
+export * from './src/primitives/card/index';
+export * from './src/primitives/modal/index';
+export * from './src/primitives/feedback/index';

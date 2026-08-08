@@ -1,0 +1,14 @@
+{
+  "toastDimensions": {
+    "toastAutoDismissMs": 4000,
+    "toastMaxWidth": 420,
+    "toastZIndex": 9999,
+    "shadowOffset": {
+      "width": 0,
+      "height": 4
+    },
+    "shadowOpacity": 0.15,
+    "shadowRadius": 10,
+    "elevation": 8
+  }
+}

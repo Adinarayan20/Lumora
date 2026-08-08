@@ -45,6 +45,12 @@ import {
   RadioGroup,
   Select,
   resolveSelectStyles,
+  Badge,
+  Card,
+  Modal,
+  Dialog,
+  ToastProvider,
+  useToast,
 } from '@lumora/ui';
 
 const ALL_FOUNDATIONAL_ICONS: { domain: string; icons: SemanticIconName[] }[] = [
@@ -74,13 +80,89 @@ const ALL_FOUNDATIONAL_ICONS: { domain: string; icons: SemanticIconName[] }[] = 
   },
 ];
 
-export default function DesignSystemPlayground() {
+function ToastDemoSection() {
+  const { colors } = useTheme();
+  const { showToast } = useToast();
+
+  return (
+    <Stack padding="md" radius="card" background={colors.surface}>
+      <VStack gap="md">
+        <Label color="primary">Toast Feedback Notifications</Label>
+        <HStack gap="sm" style={{ flexWrap: 'wrap' }}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onPress={() =>
+              showToast({
+                title: 'Task Created',
+                message: 'New task object added to workspace.',
+                variant: 'success',
+              })
+            }
+          >
+            Trigger Success Toast
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="sm"
+            onPress={() =>
+              showToast({
+                title: 'Storage Warning',
+                message: 'Workspace file storage is 85% full.',
+                variant: 'warning',
+              })
+            }
+          >
+            Trigger Warning Toast
+          </Button>
+
+          <Button
+            variant="secondary"
+            size="sm"
+            onPress={() =>
+              showToast({
+                title: 'Sync Failure',
+                message: 'Failed to update remote metadata.',
+                variant: 'danger',
+              })
+            }
+          >
+            Trigger Danger Toast
+          </Button>
+
+          <Button
+            variant="primary"
+            size="sm"
+            onPress={() =>
+              showToast({
+                title: 'Object Archived',
+                message: 'Note object moved to archive.',
+                variant: 'info',
+                action: {
+                  label: 'Undo',
+                  onPress: () => {
+                    showToast({ message: 'Archive undone', variant: 'success' });
+                  },
+                },
+              })
+            }
+          >
+            Trigger Toast With Action
+          </Button>
+        </HStack>
+      </VStack>
+    </Stack>
+  );
+}
+
+function DesignSystemPlaygroundBody() {
   const { mode, setThemeMode, colors } = useTheme();
   const viewport = useViewport();
 
   // Navigation Tab Section State
   const [activeSection, setActiveSection] = useState<
-    'Overview' | 'Typography' | 'Icons' | 'Buttons' | 'Motion' | 'Materials' | 'Colors' | 'Accessibility' | 'Responsive' | 'Anti-Patterns'
+    'Overview' | 'Typography' | 'Icons' | 'Buttons' | 'Motion' | 'Materials' | 'Colors' | 'Accessibility' | 'Responsive' | 'Anti-Patterns' | 'Surfaces & Feedback'
   >('Overview');
 
   // Inspection Mode Toggles
@@ -133,6 +215,11 @@ export default function DesignSystemPlayground() {
   const [selectLoading, setSelectLoading] = useState(false);
   const [selectHasError, setSelectHasError] = useState(false);
 
+  // Surfaces & Feedback Inspection State
+  const [modalVisible, setModalVisible] = useState(false);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [cardSelected, setCardSelected] = useState(false);
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <Container max="wide">
@@ -155,7 +242,7 @@ export default function DesignSystemPlayground() {
           {/* Section Navigation Tabs */}
           <Stack padding="sm" radius="card" background={colors.surfaceElevated}>
             <HStack gap="xs" style={{ flexWrap: 'wrap' }}>
-              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Inputs', 'Selection', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
+              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Inputs', 'Selection', 'Surfaces & Feedback', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
                 <Pressable key={tab} onPress={() => setActiveSection(tab)}>
                   <Stack
                     padding="sm"
@@ -924,6 +1011,133 @@ export default function DesignSystemPlayground() {
             </VStack>
           )}
 
+          {/* 3.5. SURFACES & FEEDBACK LABORATORY SECTION */}
+          {activeSection === 'Surfaces & Feedback' && (
+            <VStack gap="lg">
+              <Heading level={2}>Component #7 & #8 — Surface & Feedback Laboratory</Heading>
+
+              {/* Badges Inspection Card */}
+              <Stack padding="md" radius="card" background={colors.surface}>
+                <VStack gap="md">
+                  <Label color="primary">Status & Categorization Badges</Label>
+                  <HStack gap="sm" style={{ flexWrap: 'wrap' }}>
+                    <Badge variant="neutral">Neutral Tag</Badge>
+                    <Badge variant="primary" icon="object.task">Primary Object</Badge>
+                    <Badge variant="success" icon="status.success">Active / Complete</Badge>
+                    <Badge variant="warning" icon="status.warning">Pending Review</Badge>
+                    <Badge variant="danger" icon="status.error">Overdue Item</Badge>
+                    <Badge variant="info" icon="status.info">System Info</Badge>
+                  </HStack>
+                  <HStack gap="sm" style={{ flexWrap: 'wrap' }}>
+                    <Badge variant="primary" size="sm">Small Pill</Badge>
+                    <Badge variant="primary" size="md">Medium Pill</Badge>
+                    <Badge variant="primary" size="lg">Large Pill</Badge>
+                  </HStack>
+                </VStack>
+              </Stack>
+
+              {/* Cards Inspection Card */}
+              <Stack padding="md" radius="card" background={colors.surface}>
+                <VStack gap="md">
+                  <Label color="primary">Universal Object Cards & Containers</Label>
+                  <VStack gap="sm">
+                    <Card variant="flat" padding="md">
+                      <VStack gap="xs">
+                        <Text role="Title Medium">Flat Surface Card</Text>
+                        <Caption color="textMuted">Used for grouped items inside elevated parent containers.</Caption>
+                      </VStack>
+                    </Card>
+
+                    <Card variant="outlined" padding="md">
+                      <VStack gap="xs">
+                        <HStack justify="space-between" align="center">
+                          <Text role="Title Medium">Outlined Object Card</Text>
+                          <Badge variant="success" icon="status.success">Active</Badge>
+                        </HStack>
+                        <Text role="Body" color="textSecondary">Standard Universal Object container with crisp border token.</Text>
+                      </VStack>
+                    </Card>
+
+                    <Card variant="elevated" padding="md">
+                      <VStack gap="xs">
+                        <Text role="Title Medium">Elevated Object Card</Text>
+                        <Caption color="textMuted">Shadow & elevation tokens applied for floating cards.</Caption>
+                      </VStack>
+                    </Card>
+
+                    <Card
+                      variant="interactive"
+                      padding="md"
+                      selected={cardSelected}
+                      onPress={() => setCardSelected((v) => !v)}
+                    >
+                      <VStack gap="xs">
+                        <HStack justify="space-between" align="center">
+                          <Text role="Title Medium">Interactive Object Card (Clickable)</Text>
+                          <Badge variant={cardSelected ? 'primary' : 'neutral'}>
+                            {cardSelected ? 'SELECTED' : 'UNSELECTED'}
+                          </Badge>
+                        </HStack>
+                        <Caption color="textMuted">Click or press Space/Enter to toggle selection state.</Caption>
+                      </VStack>
+                    </Card>
+                  </VStack>
+                </VStack>
+              </Stack>
+
+              {/* Modal & Dialog Inspection Card */}
+              <Stack padding="md" radius="card" background={colors.surface}>
+                <VStack gap="md">
+                  <Label color="primary">Modals & Confirmation Dialogs</Label>
+                  <HStack gap="sm" style={{ flexWrap: 'wrap' }}>
+                    <Button variant="secondary" size="md" onPress={() => setModalVisible(true)}>
+                      Open Standard Modal
+                    </Button>
+                    <Button variant="danger" size="md" onPress={() => setDialogVisible(true)}>
+                      Open Delete Dialog
+                    </Button>
+                  </HStack>
+                </VStack>
+              </Stack>
+
+              {/* Toast Feedback Inspection Card */}
+              <ToastDemoSection />
+
+              {/* Modal Component */}
+              <Modal
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+                title="Universal Object Details"
+              >
+                <VStack gap="md">
+                  <Text role="Body" color="textSecondary">
+                    This is an accessible modal window built on top of the Overlay system. Pressing Escape on Web or clicking the close button dismisses the overlay.
+                  </Text>
+                  <Button variant="primary" size="md" onPress={() => setModalVisible(false)}>
+                    Close Details
+                  </Button>
+                </VStack>
+              </Modal>
+
+              {/* Confirmation Dialog Component */}
+              <Dialog
+                visible={dialogVisible}
+                onRequestClose={() => setDialogVisible(false)}
+                title="Delete Object Confirmation"
+                description="Are you sure you want to delete this Universal Object? This action will move it to the workspace archive."
+                primaryAction={{
+                  label: 'Delete Permanently',
+                  variant: 'danger',
+                  onPress: () => setDialogVisible(false),
+                }}
+                secondaryAction={{
+                  label: 'Cancel',
+                  onPress: () => setDialogVisible(false),
+                }}
+              />
+            </VStack>
+          )}
+
           {/* 4. MOTION PLAYGROUND SECTION */}
           {activeSection === 'Motion' && (
             <VStack gap="md">
@@ -1047,5 +1261,13 @@ export default function DesignSystemPlayground() {
         </VStack>
       </Container>
     </ScrollView>
+  );
+}
+
+export default function DesignSystemPlayground() {
+  return (
+    <ToastProvider>
+      <DesignSystemPlaygroundBody />
+    </ToastProvider>
   );
 }

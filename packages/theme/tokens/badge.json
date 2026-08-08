@@ -1,0 +1,22 @@
+{
+  "badgeDimensions": {
+    "sm": {
+      "height": 18,
+      "paddingHorizontal": 6,
+      "fontSize": 10,
+      "iconSize": 10
+    },
+    "md": {
+      "height": 24,
+      "paddingHorizontal": 10,
+      "fontSize": 12,
+      "iconSize": 14
+    },
+    "lg": {
+      "height": 30,
+      "paddingHorizontal": 14,
+      "fontSize": 14,
+      "iconSize": 16
+    }
+  }
+}
