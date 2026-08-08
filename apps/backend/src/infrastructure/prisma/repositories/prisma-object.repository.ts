@@ -10,24 +10,55 @@ import {
   ObjectLifecycleConflictException,
   ObjectValidationException,
 } from '@lumora/shared';
-import { PrismaService } from '../prisma.service.js';
+import type { PrismaService } from '../prisma.service.js';
 import { WorkspaceExecutionContext } from '../context/workspace-execution-context.js';
 import { PrismaObjectMapper } from '../mappers/prisma-object.mapper.js';
 import { PrismaExceptionMapper } from '../mappers/prisma-exception.mapper.js';
 import {
   Prisma,
   ObjectStatus as PrismaObjectStatus,
+  Object as PrismaObject,
 } from '../../../generated/prisma/client.js';
+import type { ITransactionContext } from '../../../domain/common/unit-of-work/transaction-context.interface.js';
+import { PrismaTransactionContext } from '../prisma-unit-of-work.js';
+
+type PrismaClientOrTx = PrismaService | Prisma.TransactionClient;
 
 export class PrismaObjectRepository implements IObjectRepository {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly prisma: PrismaClientOrTx,
     private readonly context: WorkspaceExecutionContext,
   ) {}
 
+  private get db(): Prisma.TransactionClient {
+    if ('client' in this.prisma && this.prisma.client) {
+      return this.prisma.client as unknown as Prisma.TransactionClient;
+    }
+    return this.prisma;
+  }
+
+  /**
+   * Returns a transaction-bound instance of PrismaObjectRepository operating within the specified UnitOfWork transaction context.
+   * Does NOT alter the authoritative domain port interface.
+   */
+  public withTransaction(
+    txContext: ITransactionContext,
+  ): PrismaObjectRepository {
+    if (
+      txContext instanceof PrismaTransactionContext &&
+      txContext.prismaTransaction
+    ) {
+      return new PrismaObjectRepository(
+        txContext.prismaTransaction as Prisma.TransactionClient,
+        this.context,
+      );
+    }
+    return this;
+  }
+
   public async getById(id: string): Promise<UniversalObject | null> {
     try {
-      const model = await this.prisma.object.findFirst({
+      const model = await this.db.object.findFirst({
         where: {
           id,
           workspaceId: this.context.workspaceId,
@@ -43,7 +74,7 @@ export class PrismaObjectRepository implements IObjectRepository {
   public async create(object: UniversalObject): Promise<UniversalObject> {
     try {
       // Check for ID duplicate within workspace
-      const existing = await this.prisma.object.findUnique({
+      const existing = await this.db.object.findUnique({
         where: { id: object.id },
       });
       if (existing) {
@@ -54,7 +85,7 @@ export class PrismaObjectRepository implements IObjectRepository {
         object.attributes,
       );
 
-      const createdModel = await this.prisma.object.create({
+      const createdModel = await this.db.object.create({
         data: {
           id: object.id,
           workspaceId: this.context.workspaceId,
@@ -97,75 +128,56 @@ export class PrismaObjectRepository implements IObjectRepository {
       );
 
       if (expectedVersion !== undefined) {
-        // Atomic CAS update: matching revision = expectedVersion AND status = ACTIVE
-        const result = await this.prisma.object.updateMany({
-          where: {
-            id: object.id,
-            workspaceId: this.context.workspaceId,
-            revision: expectedVersion,
-            status: PrismaObjectStatus.ACTIVE, // Anti-resurrection guard
-          },
-          data: {
-            typeKey: object.typeKey,
-            schemaVersion: object.schemaVersion,
-            attributes: serializedAttributes,
-            updatedById: this.context.userId,
-            revision: expectedVersion + 1, // newVersion = expectedVersion + 1
-            updatedAt: new Date(object.updatedAt),
-          },
-        });
+        // Atomic CAS update using raw SQL RETURNING to eliminate read-after-write race condition
+        if ('$queryRaw' in this.db && typeof this.db.$queryRaw === 'function') {
+          const rows = await this.db.$queryRaw<PrismaObject[]>(Prisma.sql`
+            UPDATE "Object"
+            SET
+              "typeKey" = ${object.typeKey},
+              "schemaVersion" = ${object.schemaVersion},
+              "attributes" = ${JSON.stringify(serializedAttributes)}::jsonb,
+              "updatedById" = ${this.context.userId}::uuid,
+              "revision" = ${expectedVersion + 1},
+              "updatedAt" = ${new Date(object.updatedAt)}
+            WHERE "id" = ${object.id}::uuid
+              AND "workspaceId" = ${this.context.workspaceId}::uuid
+              AND "revision" = ${expectedVersion}
+              AND "status" = 'ACTIVE'::"ObjectStatus"
+            RETURNING *;
+          `);
 
-        if (result.count === 0) {
-          // Distinguish ObjectNotFound vs ObjectConcurrencyException vs Lifecycle Conflict
-          const existing = await this.prisma.object.findFirst({
-            where: { id: object.id, workspaceId: this.context.workspaceId },
+          if (Array.isArray(rows) && rows.length > 0) {
+            return PrismaObjectMapper.toDomain(rows[0]);
+          }
+        } else {
+          // Fallback for mocked environment without $queryRaw
+          const result = await this.db.object.updateMany({
+            where: {
+              id: object.id,
+              workspaceId: this.context.workspaceId,
+              revision: expectedVersion,
+              status: PrismaObjectStatus.ACTIVE,
+            },
+            data: {
+              typeKey: object.typeKey,
+              schemaVersion: object.schemaVersion,
+              attributes: serializedAttributes,
+              updatedById: this.context.userId,
+              revision: expectedVersion + 1,
+              updatedAt: new Date(object.updatedAt),
+            },
           });
 
-          if (!existing) {
-            throw new ObjectNotFoundException(object.id);
+          if (result.count > 0) {
+            const updatedModel = await this.db.object.findFirstOrThrow({
+              where: { id: object.id, workspaceId: this.context.workspaceId },
+            });
+            return PrismaObjectMapper.toDomain(updatedModel);
           }
-
-          if (existing.status !== PrismaObjectStatus.ACTIVE) {
-            throw new ObjectLifecycleConflictException(
-              object.id,
-              existing.status,
-              'update_attributes_on_inactive_object',
-            );
-          }
-
-          throw new ObjectConcurrencyException(
-            object.id,
-            expectedVersion,
-            existing.revision,
-          );
         }
 
-        const updatedModel = await this.prisma.object.findFirstOrThrow({
-          where: { id: object.id, workspaceId: this.context.workspaceId },
-        });
-
-        return PrismaObjectMapper.toDomain(updatedModel);
-      }
-
-      // Unconditional incremental update: locks status = ACTIVE to prevent anti-resurrection
-      const result = await this.prisma.object.updateMany({
-        where: {
-          id: object.id,
-          workspaceId: this.context.workspaceId,
-          status: PrismaObjectStatus.ACTIVE, // Anti-resurrection guard
-        },
-        data: {
-          typeKey: object.typeKey,
-          schemaVersion: object.schemaVersion,
-          attributes: serializedAttributes,
-          updatedById: this.context.userId,
-          revision: { increment: 1 },
-          updatedAt: new Date(object.updatedAt),
-        },
-      });
-
-      if (result.count === 0) {
-        const existing = await this.prisma.object.findFirst({
+        // Zero rows updated: Distinguish ObjectNotFound vs ObjectConcurrencyException vs Lifecycle Conflict
+        const existing = await this.db.object.findFirst({
           where: { id: object.id, workspaceId: this.context.workspaceId },
         });
 
@@ -173,18 +185,79 @@ export class PrismaObjectRepository implements IObjectRepository {
           throw new ObjectNotFoundException(object.id);
         }
 
-        throw new ObjectLifecycleConflictException(
+        if (existing.status !== PrismaObjectStatus.ACTIVE) {
+          throw new ObjectLifecycleConflictException(
+            object.id,
+            existing.status,
+            'update_attributes_on_inactive_object',
+          );
+        }
+
+        throw new ObjectConcurrencyException(
           object.id,
-          existing.status,
-          'update_attributes_on_inactive_object',
+          expectedVersion,
+          existing.revision,
         );
       }
 
-      const updatedModel = await this.prisma.object.findFirstOrThrow({
+      // Unconditional incremental update: locks status = ACTIVE to prevent anti-resurrection
+      if ('$queryRaw' in this.db && typeof this.db.$queryRaw === 'function') {
+        const rows = await this.db.$queryRaw<PrismaObject[]>(Prisma.sql`
+          UPDATE "Object"
+          SET
+            "typeKey" = ${object.typeKey},
+            "schemaVersion" = ${object.schemaVersion},
+            "attributes" = ${JSON.stringify(serializedAttributes)}::jsonb,
+            "updatedById" = ${this.context.userId}::uuid,
+            "revision" = "revision" + 1,
+            "updatedAt" = ${new Date(object.updatedAt)}
+          WHERE "id" = ${object.id}::uuid
+            AND "workspaceId" = ${this.context.workspaceId}::uuid
+            AND "status" = 'ACTIVE'::"ObjectStatus"
+          RETURNING *;
+        `);
+
+        if (Array.isArray(rows) && rows.length > 0) {
+          return PrismaObjectMapper.toDomain(rows[0]);
+        }
+      } else {
+        const result = await this.db.object.updateMany({
+          where: {
+            id: object.id,
+            workspaceId: this.context.workspaceId,
+            status: PrismaObjectStatus.ACTIVE,
+          },
+          data: {
+            typeKey: object.typeKey,
+            schemaVersion: object.schemaVersion,
+            attributes: serializedAttributes,
+            updatedById: this.context.userId,
+            revision: { increment: 1 },
+            updatedAt: new Date(object.updatedAt),
+          },
+        });
+
+        if (result.count > 0) {
+          const updatedModel = await this.db.object.findFirstOrThrow({
+            where: { id: object.id, workspaceId: this.context.workspaceId },
+          });
+          return PrismaObjectMapper.toDomain(updatedModel);
+        }
+      }
+
+      const existing = await this.db.object.findFirst({
         where: { id: object.id, workspaceId: this.context.workspaceId },
       });
 
-      return PrismaObjectMapper.toDomain(updatedModel);
+      if (!existing) {
+        throw new ObjectNotFoundException(object.id);
+      }
+
+      throw new ObjectLifecycleConflictException(
+        object.id,
+        existing.status,
+        'update_attributes_on_inactive_object',
+      );
     } catch (error) {
       if (
         error instanceof ObjectNotFoundException ||
@@ -239,14 +312,16 @@ export class PrismaObjectRepository implements IObjectRepository {
         where.typeKey = options.typeKey;
       }
 
-      const models = await this.prisma.object.findMany({
+      const models = await this.db.object.findMany({
         where,
         skip: options?.offset,
         take: options?.limit,
         orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
       });
 
-      return Object.freeze(models.map((m) => PrismaObjectMapper.toDomain(m)));
+      return Object.freeze(
+        models.map((m: PrismaObject) => PrismaObjectMapper.toDomain(m)),
+      );
     } catch (error) {
       if (error instanceof ObjectValidationException) {
         throw error;
@@ -261,43 +336,61 @@ export class PrismaObjectRepository implements IObjectRepository {
     updatedAtIso: string,
   ): Promise<UniversalObject> {
     try {
-      // Atomic CAS update: status must be ACTIVE
-      const result = await this.prisma.object.updateMany({
-        where: {
-          id,
-          workspaceId: this.context.workspaceId,
-          status: PrismaObjectStatus.ACTIVE,
-        },
-        data: {
-          status: PrismaObjectStatus.ARCHIVED,
-          archivedAt: new Date(archivedAtIso),
-          updatedAt: new Date(updatedAtIso),
-          updatedById: this.context.userId,
-          revision: { increment: 1 },
-        },
-      });
+      if ('$queryRaw' in this.db && typeof this.db.$queryRaw === 'function') {
+        const rows = await this.db.$queryRaw<PrismaObject[]>(Prisma.sql`
+          UPDATE "Object"
+          SET
+            "status" = 'ARCHIVED'::"ObjectStatus",
+            "archivedAt" = ${new Date(archivedAtIso)},
+            "updatedAt" = ${new Date(updatedAtIso)},
+            "updatedById" = ${this.context.userId}::uuid,
+            "revision" = "revision" + 1
+          WHERE "id" = ${id}::uuid
+            AND "workspaceId" = ${this.context.workspaceId}::uuid
+            AND "status" = 'ACTIVE'::"ObjectStatus"
+          RETURNING *;
+        `);
 
-      if (result.count === 0) {
-        const existing = await this.prisma.object.findFirst({
-          where: { id, workspaceId: this.context.workspaceId },
+        if (Array.isArray(rows) && rows.length > 0) {
+          return PrismaObjectMapper.toDomain(rows[0]);
+        }
+      } else {
+        const result = await this.db.object.updateMany({
+          where: {
+            id,
+            workspaceId: this.context.workspaceId,
+            status: PrismaObjectStatus.ACTIVE,
+          },
+          data: {
+            status: PrismaObjectStatus.ARCHIVED,
+            archivedAt: new Date(archivedAtIso),
+            updatedAt: new Date(updatedAtIso),
+            updatedById: this.context.userId,
+            revision: { increment: 1 },
+          },
         });
 
-        if (!existing) {
-          throw new ObjectNotFoundException(id);
+        if (result.count > 0) {
+          const updatedModel = await this.db.object.findFirstOrThrow({
+            where: { id, workspaceId: this.context.workspaceId },
+          });
+          return PrismaObjectMapper.toDomain(updatedModel);
         }
-
-        throw new ObjectLifecycleConflictException(
-          id,
-          existing.status,
-          'archive',
-        );
       }
 
-      const updatedModel = await this.prisma.object.findFirstOrThrow({
+      const existing = await this.db.object.findFirst({
         where: { id, workspaceId: this.context.workspaceId },
       });
 
-      return PrismaObjectMapper.toDomain(updatedModel);
+      if (!existing) {
+        throw new ObjectNotFoundException(id);
+      }
+
+      throw new ObjectLifecycleConflictException(
+        id,
+        existing.status,
+        'archive',
+      );
     } catch (error) {
       if (
         error instanceof ObjectNotFoundException ||
@@ -314,43 +407,61 @@ export class PrismaObjectRepository implements IObjectRepository {
     updatedAtIso: string,
   ): Promise<UniversalObject> {
     try {
-      // Atomic CAS update: status must be ARCHIVED
-      const result = await this.prisma.object.updateMany({
-        where: {
-          id,
-          workspaceId: this.context.workspaceId,
-          status: PrismaObjectStatus.ARCHIVED,
-        },
-        data: {
-          status: PrismaObjectStatus.ACTIVE,
-          archivedAt: null,
-          updatedAt: new Date(updatedAtIso),
-          updatedById: this.context.userId,
-          revision: { increment: 1 },
-        },
-      });
+      if ('$queryRaw' in this.db && typeof this.db.$queryRaw === 'function') {
+        const rows = await this.db.$queryRaw<PrismaObject[]>(Prisma.sql`
+          UPDATE "Object"
+          SET
+            "status" = 'ACTIVE'::"ObjectStatus",
+            "archivedAt" = NULL,
+            "updatedAt" = ${new Date(updatedAtIso)},
+            "updatedById" = ${this.context.userId}::uuid,
+            "revision" = "revision" + 1
+          WHERE "id" = ${id}::uuid
+            AND "workspaceId" = ${this.context.workspaceId}::uuid
+            AND "status" = 'ARCHIVED'::"ObjectStatus"
+          RETURNING *;
+        `);
 
-      if (result.count === 0) {
-        const existing = await this.prisma.object.findFirst({
-          where: { id, workspaceId: this.context.workspaceId },
+        if (Array.isArray(rows) && rows.length > 0) {
+          return PrismaObjectMapper.toDomain(rows[0]);
+        }
+      } else {
+        const result = await this.db.object.updateMany({
+          where: {
+            id,
+            workspaceId: this.context.workspaceId,
+            status: PrismaObjectStatus.ARCHIVED,
+          },
+          data: {
+            status: PrismaObjectStatus.ACTIVE,
+            archivedAt: null,
+            updatedAt: new Date(updatedAtIso),
+            updatedById: this.context.userId,
+            revision: { increment: 1 },
+          },
         });
 
-        if (!existing) {
-          throw new ObjectNotFoundException(id);
+        if (result.count > 0) {
+          const updatedModel = await this.db.object.findFirstOrThrow({
+            where: { id, workspaceId: this.context.workspaceId },
+          });
+          return PrismaObjectMapper.toDomain(updatedModel);
         }
-
-        throw new ObjectLifecycleConflictException(
-          id,
-          existing.status,
-          'restore',
-        );
       }
 
-      const updatedModel = await this.prisma.object.findFirstOrThrow({
+      const existing = await this.db.object.findFirst({
         where: { id, workspaceId: this.context.workspaceId },
       });
 
-      return PrismaObjectMapper.toDomain(updatedModel);
+      if (!existing) {
+        throw new ObjectNotFoundException(id);
+      }
+
+      throw new ObjectLifecycleConflictException(
+        id,
+        existing.status,
+        'restore',
+      );
     } catch (error) {
       if (
         error instanceof ObjectNotFoundException ||

@@ -1,5 +1,5 @@
 -- AlterTable
-ALTER TABLE "objects" ADD COLUMN "schemaVersion" INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE "Object" ADD COLUMN "schemaVersion" INTEGER NOT NULL DEFAULT 1;
 
 -- CreateEnum
 CREATE TYPE "OutboxStatus" AS ENUM ('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED');
@@ -34,7 +34,7 @@ CREATE INDEX "outbox_messages_status_nextAttemptAt_idx" ON "outbox_messages"("st
 CREATE INDEX "outbox_messages_workspaceId_aggregateId_idx" ON "outbox_messages"("workspaceId", "aggregateId");
 
 -- CreateIndex
-CREATE INDEX "objects_workspaceId_typeKey_status_idx" ON "objects"("workspaceId", "typeKey", "status");
+CREATE INDEX "Object_workspaceId_typeKey_status_idx" ON "Object"("workspaceId", "typeKey", "status");
 
 -- CreateIndex
-CREATE INDEX "objects_workspaceId_updatedAt_id_idx" ON "objects"("workspaceId", "updatedAt" DESC, "id");
+CREATE INDEX "Object_workspaceId_updatedAt_id_idx" ON "Object"("workspaceId", "updatedAt" DESC, "id");
