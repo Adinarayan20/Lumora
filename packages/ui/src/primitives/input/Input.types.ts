@@ -1,18 +1,8 @@
-import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle, TextInputProps } from 'react-native';
 import type { SemanticIconName } from '../icon/Icon.types';
 
 export type InputVariant = 'default' | 'filled' | 'ghost';
 export type InputSize = 'sm' | 'md' | 'lg';
-
-export interface FieldControlProps {
-  readonly children: ReactNode;
-  readonly label?: string;
-  readonly helperText?: string;
-  readonly errorText?: string;
-  readonly disabled?: boolean;
-  readonly testID?: string;
-}
 
 export interface InputProps {
   readonly value: string;

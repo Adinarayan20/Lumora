@@ -7,4 +7,6 @@ export * from './src/primitives/typography/index';
 export * from './src/primitives/icon/index';
 export * from './src/primitives/button/index';
 export * from './src/primitives/input/index';
-
+export * from './src/primitives/selection/index';
+export * from './src/primitives/overlay/index';
+export * from './src/primitives/select/index';

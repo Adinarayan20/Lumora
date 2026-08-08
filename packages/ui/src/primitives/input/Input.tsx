@@ -8,7 +8,7 @@ import {
 import { useTheme, useViewport, InputMultilineTokens } from '@lumora/theme';
 import { Icon } from '../icon/Icon';
 import { IconButton } from '../button/IconButton';
-import { FieldControl } from './FieldControl';
+import { FieldControl } from '../field/FieldControl';
 import type { InputProps } from './Input.types';
 import { resolveInputStyles } from './Input.styles';
 

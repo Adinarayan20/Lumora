@@ -3,16 +3,18 @@ import { View, StyleSheet } from 'react-native';
 import { useTheme, SpacingScale } from '@lumora/theme';
 import { Label } from '../typography/Label';
 import { Caption } from '../typography/Caption';
-import type { FieldControlProps } from './Input.types';
+import type { FieldControlProps } from './FieldControl.types';
 
 /**
- * FieldControl — Reusable Layout & Accessibility Composition Helper
+ * FieldControl — Neutral Internal Layout & Accessibility Composition Helper
+ *
+ * Internal primitive shared across Input, TextArea, Toggle, Checkbox, RadioGroup, and Select.
  *
  * Contract:
  * - Renders visible field Label primitive when label prop is provided.
- * - Renders helperText / errorText block below input container smoothly (helper text is
- *   replaced by error text without animated jitter or unnecessary permanent vertical blank space).
- * - Reusable across Input, TextArea, and future Selection/Picker controls.
+ * - Renders helperText / errorText block below field control smoothly (errorText replaces helperText
+ *   without animated jitter or unnecessary permanent vertical blank space).
+ * - Internal to @lumora/ui (not exported in public package root).
  */
 export const FieldControl: React.FC<FieldControlProps> = memo(({
   children,
@@ -38,10 +40,10 @@ export const FieldControl: React.FC<FieldControlProps> = memo(({
         </View>
       )}
 
-      {/* Main Field Body Control */}
+      {/* Main Field Control Body */}
       {children}
 
-      {/* Helper / Error Text Block (smooth message replacement without permanent empty margin) */}
+      {/* Helper / Error Text Block */}
       {activeMessage ? (
         <View style={styles.messageContainer}>
           <Caption color={isError ? 'danger' : 'textMuted'}>

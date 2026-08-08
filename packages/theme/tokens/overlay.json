@@ -1,0 +1,11 @@
+{
+  "name": "Lumora Overlay System Tokens",
+  "version": "1.0.0",
+  "backdropOpacity": 0.40,
+  "selectionMenuMaxHeight": 280,
+  "bottomSheetContentMaxHeight": 400,
+  "overlayElevation": {
+    "popover": 8,
+    "sheet": 16
+  }
+}

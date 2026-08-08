@@ -40,6 +40,10 @@ import {
   resolveInputStyles,
   InputVariant,
   InputSize,
+  Toggle,
+  Checkbox,
+  RadioGroup,
+  Select,
 } from '@lumora/ui';
 
 const ALL_FOUNDATIONAL_ICONS: { domain: string; icons: SemanticIconName[] }[] = [
@@ -119,6 +123,15 @@ export default function DesignSystemPlayground() {
   const [inputHasLeftIcon, setInputHasLeftIcon] = useState(true);
   const [inputHasRightIcon, setInputHasRightIcon] = useState(true);
 
+  // Selection Inspection State
+  const [toggleVal, setToggleVal] = useState(true);
+  const [checkboxVal, setCheckboxVal] = useState(true);
+  const [radioVal, setRadioVal] = useState('medium');
+  const [selectVal, setSelectVal] = useState<string | null>('in_progress');
+  const [selectionDisabled, setSelectionDisabled] = useState(false);
+  const [selectLoading, setSelectLoading] = useState(false);
+  const [selectHasError, setSelectHasError] = useState(false);
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <Container max="wide">
@@ -141,7 +154,7 @@ export default function DesignSystemPlayground() {
           {/* Section Navigation Tabs */}
           <Stack padding="sm" radius="card" background={colors.surfaceElevated}>
             <HStack gap="xs" style={{ flexWrap: 'wrap' }}>
-              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Inputs', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
+              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Inputs', 'Selection', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
                 <Pressable key={tab} onPress={() => setActiveSection(tab)}>
                   <Stack
                     padding="sm"
@@ -774,6 +787,118 @@ export default function DesignSystemPlayground() {
                       );
                     })()}
                   </VStack>
+                </VStack>
+              </Stack>
+            </VStack>
+          )}
+
+          {/* SELECTION & OVERLAY LABORATORY SECTION */}
+          {activeSection === 'Selection' && (
+            <VStack gap="md">
+              <Heading level={2}>Selection & Overlay Control Primitives</Heading>
+              <Text role="Body" color="textSecondary">
+                Token-driven option selection controls (`Toggle`, `Checkbox`, `RadioGroup`, `Select`) with viewport-adaptive `Overlay` menu presentations (`Popover` / `BottomSheet`).
+              </Text>
+
+              {/* Live Interactive Selection Controls */}
+              <Stack padding="lg" radius="card" background={colors.surface}>
+                <VStack gap="lg">
+                  <Text role="Title Medium">Interactive Component Previews</Text>
+
+                  {/* Toggle Preview */}
+                  <VStack gap="xs">
+                    <Label color="textMuted">Toggle Primitive</Label>
+                    <Toggle
+                      value={toggleVal}
+                      onValueChange={setToggleVal}
+                      label="Enable Push Notifications"
+                      helperText="Receive real-time alerts for system events"
+                      disabled={selectionDisabled}
+                    />
+                  </VStack>
+
+                  {/* Checkbox Preview */}
+                  <VStack gap="xs">
+                    <Label color="textMuted">Checkbox Primitive</Label>
+                    <Checkbox
+                      checked={checkboxVal}
+                      onChange={setCheckboxVal}
+                      label="I agree to platform terms and privacy policy"
+                      helperText="Required for workspace registration"
+                      disabled={selectionDisabled}
+                    />
+                  </VStack>
+
+                  {/* RadioGroup Preview */}
+                  <VStack gap="xs">
+                    <Label color="textMuted">RadioGroup Primitive</Label>
+                    <RadioGroup
+                      value={radioVal}
+                      onChange={setRadioVal}
+                      label="Priority Level"
+                      helperText="Select task execution priority"
+                      disabled={selectionDisabled}
+                      options={[
+                        { label: 'Low Priority', value: 'low', description: 'Background queue processing' },
+                        { label: 'Medium Priority', value: 'medium', description: 'Standard execution window' },
+                        { label: 'High Priority', value: 'high', description: 'Immediate notification push' },
+                      ]}
+                    />
+                  </VStack>
+
+                  {/* Select Dropdown Preview */}
+                  <VStack gap="xs">
+                    <Label color="textMuted">Select Dropdown Primitive</Label>
+                    <Select
+                      value={selectVal}
+                      onChange={setSelectVal}
+                      label="Task Status"
+                      placeholder="Select object status"
+                      helperText="Viewport adaptive overlay presentation"
+                      errorText={selectHasError ? 'Status validation error activated' : undefined}
+                      disabled={selectionDisabled}
+                      loading={selectLoading}
+                      options={[
+                        { label: 'Pending', value: 'pending', icon: 'status.warning' },
+                        { label: 'In Progress', value: 'in_progress', icon: 'status.sync' },
+                        { label: 'Completed', value: 'completed', icon: 'status.success' },
+                        { label: 'Archived (Disabled)', value: 'archived', disabled: true },
+                      ]}
+                    />
+                  </VStack>
+
+                  {/* Interactive Toggles & Metrics Panel */}
+                  <Stack padding="md" radius="card" background={colors.backgroundSecondary}>
+                    <VStack gap="xs">
+                      <Label color="primary">Selection Laboratory Controls</Label>
+                      <HStack gap="sm" style={{ flexWrap: 'wrap' }}>
+                        <Pressable onPress={() => setSelectionDisabled((v) => !v)}>
+                          <Stack padding="xs" radius="pill" background={selectionDisabled ? colors.primary : colors.surface}>
+                            <Caption color={selectionDisabled ? 'inverse' : 'textPrimary'}>
+                              Disabled: {selectionDisabled ? 'ON' : 'OFF'}
+                            </Caption>
+                          </Stack>
+                        </Pressable>
+                        <Pressable onPress={() => setSelectLoading((v) => !v)}>
+                          <Stack padding="xs" radius="pill" background={selectLoading ? colors.primary : colors.surface}>
+                            <Caption color={selectLoading ? 'inverse' : 'textPrimary'}>
+                              Select Loading: {selectLoading ? 'ON' : 'OFF'}
+                            </Caption>
+                          </Stack>
+                        </Pressable>
+                        <Pressable onPress={() => setSelectHasError((v) => !v)}>
+                          <Stack padding="xs" radius="pill" background={selectHasError ? colors.danger : colors.surface}>
+                            <Caption color={selectHasError ? 'inverse' : 'textPrimary'}>
+                              Select Error: {selectHasError ? 'ON' : 'OFF'}
+                            </Caption>
+                          </Stack>
+                        </Pressable>
+                      </HStack>
+                      <Metadata color="textMuted">
+                        Active State Values — Toggle: {String(toggleVal)} | Checkbox: {String(checkboxVal)} | Radio: {radioVal} | Select: {String(selectVal)}
+                      </Metadata>
+                    </VStack>
+                  </Stack>
                 </VStack>
               </Stack>
             </VStack>
