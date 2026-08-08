@@ -6,7 +6,11 @@ export interface IconRegistryEntry {
   readonly autoMirror?: boolean;
 }
 
-const REGISTRY: Record<string, IconRegistryEntry> = {
+/**
+ * Closed, strongly typed Core Semantic Registry.
+ * Guarantees every legal SemanticIconName maps to an entry at compile-time.
+ */
+const CORE_REGISTRY: Record<SemanticIconName, IconRegistryEntry> = {
   // Navigation
   'nav.home': { family: 'Feather', glyph: 'home' },
   'nav.timeline': { family: 'Feather', glyph: 'clock' },
@@ -47,22 +51,33 @@ const REGISTRY: Record<string, IconRegistryEntry> = {
 };
 
 /**
- * O(1) lookup in semantic registry.
- * Fails loudly if an unconfigured semantic icon is requested.
+ * Extensible Domain Registry for dynamic domain objects.
+ */
+const EXTENSION_REGISTRY: Record<string, IconRegistryEntry> = {};
+
+/**
+ * Multi-layer lookup: Core Semantic Registry -> Extension Registry.
+ * Fails loudly if an un-configured icon is requested.
  */
 export function getRegisteredIcon(name: SemanticIconName | string): IconRegistryEntry {
-  const entry = REGISTRY[name];
-  if (!entry) {
-    throw new Error(
-      `[Lumora Icon Registry]: Icon '${name}' is not registered in the semantic registry. Ensure it is added to Icon.registry.ts.`,
-    );
+  const coreEntry = CORE_REGISTRY[name as SemanticIconName];
+  if (coreEntry) {
+    return coreEntry;
   }
-  return entry;
+
+  const extensionEntry = EXTENSION_REGISTRY[name];
+  if (extensionEntry) {
+    return extensionEntry;
+  }
+
+  throw new Error(
+    `[Lumora Icon Registry]: Icon '${name}' is not registered in the core semantic registry or extension registry.`,
+  );
 }
 
 /**
- * Extension hook to register dynamic domain icons at runtime.
+ * Extension hook to register domain-specific icons at runtime.
  */
-export function registerIcon(name: string, entry: IconRegistryEntry): void {
-  REGISTRY[name] = entry;
+export function registerDomainIcon(name: string, entry: IconRegistryEntry): void {
+  EXTENSION_REGISTRY[name] = entry;
 }

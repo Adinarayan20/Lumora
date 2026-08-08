@@ -50,7 +50,11 @@ const ALL_FOUNDATIONAL_ICONS: { domain: string; icons: SemanticIconName[] }[] = 
   },
   {
     domain: 'Settings & Security',
-    icons: ['settings.gear', 'settings.theme', 'security.user', 'security.lock', 'system.playground'],
+    icons: ['settings.gear', 'settings.theme', 'security.user', 'security.lock'],
+  },
+  {
+    domain: 'System Infrastructure',
+    icons: ['system.playground'],
   },
 ];
 
@@ -339,7 +343,7 @@ export default function DesignSystemPlayground() {
 
               {/* FOUNDATIONAL 26 ICONS GALLERY */}
               <VStack gap="md">
-                <Heading level={2}>Foundational 26 Semantic Icons Registry</Heading>
+                <Heading level={2}>Core Foundation Icons (26) & System Registry</Heading>
                 <Text role="Body" color="textSecondary">
                   Tap any icon below to set it as the active target in the Inspection Panel above.
                 </Text>

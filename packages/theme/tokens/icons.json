@@ -25,5 +25,6 @@
     "md": 12,
     "lg": 16
   },
-  "disabledOpacity": 0.38
+  "disabledOpacity": 0.38,
+  "pressedOpacity": 0.70
 }

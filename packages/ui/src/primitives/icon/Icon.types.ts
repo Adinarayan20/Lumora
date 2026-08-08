@@ -35,6 +35,8 @@ export type SemanticIconName =
   | 'security.lock'
   | 'system.playground';
 
+export type ExtensionIconName = `ext:${string}`;
+
 export type SemanticIconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'display';
 
 export type IconStrokeWeight = 'auto' | 'thin' | 'regular' | 'strong';
@@ -54,8 +56,8 @@ export type SemanticIconColor =
 export type IconAccessibilityMode = 'interactive' | 'decorative' | 'informative';
 
 export interface IconProps {
-  /** Semantic icon identifier from the Lumora Registry */
-  readonly name: SemanticIconName;
+  /** Semantic icon identifier from the Lumora Registry or registered domain extension */
+  readonly name: SemanticIconName | ExtensionIconName;
   /** Semantic size token (default: contextual viewport size or 'md') */
   readonly size?: SemanticIconSize;
   /** Semantic stroke weight token (default: 'auto') */

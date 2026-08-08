@@ -115,24 +115,4 @@ export class MotionEngine {
       springStiffness: 0,
     };
   }
-
-  public static iconStateChange(): MotionConfig {
-    'worklet';
-    return {
-      duration: 200,
-      scale: 1.0,
-      springDamping: 18,
-      springStiffness: 220,
-    };
-  }
-
-  public static iconAppear(): MotionConfig {
-    'worklet';
-    return {
-      duration: 220,
-      scale: 1.0,
-      springDamping: 18,
-      springStiffness: 220,
-    };
-  }
 }

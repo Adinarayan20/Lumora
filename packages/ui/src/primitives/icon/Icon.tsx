@@ -15,7 +15,7 @@ import {
   MaterialCommunityIcons,
   Octicons,
 } from '@expo/vector-icons';
-import { useTheme, useViewport, MotionEngine } from '@lumora/theme';
+import { useTheme, useViewport, MotionEngine, IconPressedOpacity } from '@lumora/theme';
 import type { IconProps } from './Icon.types';
 import { getRegisteredIcon } from './Icon.registry';
 import { resolveIconStyles } from './Icon.styles';
@@ -46,11 +46,41 @@ export const Icon: React.FC<IconProps> = memo(({
   const { mode, colors } = useTheme();
   const viewport = useViewport();
 
-  // Development Quality Gate: Interactive Icon buttons MUST provide explicit accessibilityLabel
-  if (__DEV__ && onPress && !accessibilityLabel) {
-    throw new Error(
-      `[Lumora Icon Primitive]: Interactive icon button for '${name}' must provide an explicit 'accessibilityLabel' (e.g. accessibilityLabel="Close modal") for accessibility compliance.`,
-    );
+  // Determine Effective Accessibility Mode
+  const effectiveMode =
+    accessibilityMode ?? (onPress ? 'interactive' : accessibilityLabel ? 'informative' : 'decorative');
+
+  // Development Quality Gate State Machine Validation
+  if (__DEV__) {
+    if (effectiveMode === 'interactive') {
+      if (!onPress) {
+        throw new Error(
+          `[Lumora Icon Primitive]: Icon '${name}' with explicit accessibilityMode="interactive" must provide an 'onPress' handler.`,
+        );
+      }
+      if (!accessibilityLabel) {
+        throw new Error(
+          `[Lumora Icon Primitive]: Interactive icon button for '${name}' must provide an explicit 'accessibilityLabel' (e.g. accessibilityLabel="Close modal") for screen reader accessibility compliance.`,
+        );
+      }
+    } else if (effectiveMode === 'informative') {
+      if (onPress) {
+        throw new Error(
+          `[Lumora Icon Primitive]: Informational icon '${name}' cannot accept an 'onPress' handler. Use accessibilityMode="interactive" for clickable icon buttons.`,
+        );
+      }
+      if (!accessibilityLabel) {
+        throw new Error(
+          `[Lumora Icon Primitive]: Informational icon '${name}' must provide an explicit 'accessibilityLabel'.`,
+        );
+      }
+    } else if (effectiveMode === 'decorative') {
+      if (onPress) {
+        throw new Error(
+          `[Lumora Icon Primitive]: Decorative icon '${name}' cannot accept an 'onPress' handler. Decorative elements cannot be interactive.`,
+        );
+      }
+    }
   }
 
   // Reduced Motion Detection
@@ -73,7 +103,7 @@ export const Icon: React.FC<IconProps> = memo(({
     };
   }, []);
 
-  // Motion Configuration from Theme MotionEngine
+  // Motion Configurations from Theme MotionEngine
   const pressMotionConfig = MotionEngine.iconPress();
   const loadingMotionConfig = MotionEngine.iconLoading();
 
@@ -103,8 +133,8 @@ export const Icon: React.FC<IconProps> = memo(({
 
   const handlePressIn = () => {
     if (reduceMotion) {
-      // Non-motion visual feedback for reduced motion users
-      setPressedOpacity(0.7);
+      // Tokenized non-motion visual feedback for reduced motion users
+      setPressedOpacity(IconPressedOpacity);
       return;
     }
     Animated.spring(scaleAnim, {
@@ -191,11 +221,8 @@ export const Icon: React.FC<IconProps> = memo(({
     </Animated.View>
   );
 
-  // 5. Determine Semantic Accessibility Mode
-  const effectiveMode =
-    accessibilityMode ?? (onPress ? 'interactive' : accessibilityLabel ? 'informative' : 'decorative');
-
-  if (effectiveMode === 'interactive' || onPress) {
+  // 5. Interactive Accessibility Branch
+  if (effectiveMode === 'interactive') {
     return (
       <Pressable
         onPress={onPress}
@@ -219,6 +246,7 @@ export const Icon: React.FC<IconProps> = memo(({
     );
   }
 
+  // 6. Informative Accessibility Branch
   if (effectiveMode === 'informative') {
     return (
       <View
@@ -233,7 +261,7 @@ export const Icon: React.FC<IconProps> = memo(({
     );
   }
 
-  // Decorative Mode
+  // 7. Decorative Accessibility Branch
   return (
     <View
       accessibilityElementsHidden={true}
