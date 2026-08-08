@@ -1,0 +1,8 @@
+{
+  "toastDimensions": {
+    "toastAutoDismissMs": 4000,
+    "toastMaxWidth": 420,
+    "toastZIndex": 9999,
+    "modalMaxWidth": 520
+  }
+}
