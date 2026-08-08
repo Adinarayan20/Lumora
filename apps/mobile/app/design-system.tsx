@@ -52,8 +52,9 @@ import {
   ToastProvider,
   useToast,
   DynamicForm,
+  DynamicObjectDetail,
 } from '@lumora/ui';
-import { FieldType, type FieldSchema } from '@lumora/shared';
+import { FieldType, type FieldSchema, type ObjectDefinition, type SchemaDefinition } from '@lumora/shared';
 
 const ALL_FOUNDATIONAL_ICONS: { domain: string; icons: SemanticIconName[] }[] = [
   {
@@ -242,13 +243,110 @@ function DynamicFormDemoSection() {
   );
 }
 
+function Batch5DetailDemoSection() {
+  const { colors } = useTheme();
+  const { showToast } = useToast();
+  const [detailMode, setDetailMode] = useState<'view' | 'edit'>('view');
+  const [objectData, setObjectData] = useState({
+    id: 'obj-demo-888',
+    typeKey: 'task',
+    status: 'ACTIVE',
+    attributes: {
+      title: 'Senior Staff Batch 5 Architecture Verification',
+      priority: 1,
+      status: 'ACTIVE',
+      isReminderEnabled: true,
+    },
+  });
+
+  const sampleDefinition: ObjectDefinition = {
+    typeKey: 'task',
+    name: 'Task Object',
+    pluralName: 'Task Objects',
+    description: 'Universal Task Object instance in Lumora',
+    icon: 'task',
+    allowedCapabilities: ['reminder', 'timeline'],
+    traits: ['assignable'],
+    schemaVersion: 1,
+  };
+
+  const sampleSchema: SchemaDefinition = {
+    typeKey: 'task',
+    schemaVersion: 1,
+    fields: [
+      { key: 'title', label: 'Task Title', type: FieldType.STRING },
+      { key: 'priority', label: 'Priority Weight', type: FieldType.NUMBER },
+      { key: 'status', label: 'Object Status', type: FieldType.ENUM, validation: { options: ['ACTIVE', 'COMPLETED', 'ARCHIVED'] } },
+      { key: 'isReminderEnabled', label: 'Reminder Trigger', type: FieldType.BOOLEAN },
+    ],
+  };
+
+  return (
+    <VStack gap="md">
+      <Heading level={2}>Batch 5 — Universal Object Detail Laboratory</Heading>
+      <Stack padding="lg" radius="card" background={colors.surfaceElevated}>
+        <VStack gap="md">
+          <Text role="Body" color="textSecondary">
+            Demonstrating generic, schema-driven detail view rendering across arbitrary Universal Object schemas. Zero custom detail screen components.
+          </Text>
+
+          {detailMode === 'view' ? (
+            <DynamicObjectDetail
+              object={objectData}
+              definition={sampleDefinition}
+              schema={sampleSchema}
+              onEdit={() => setDetailMode('edit')}
+              onArchive={(obj) =>
+                showToast({
+                  title: 'Object Archived',
+                  message: `${obj.attributes.title} archived cleanly.`,
+                  variant: 'info',
+                })
+              }
+              onDelete={(obj) =>
+                showToast({
+                  title: 'Object Deleted',
+                  message: `${obj.attributes.title} deleted cleanly.`,
+                  variant: 'danger',
+                })
+              }
+            />
+          ) : (
+            <VStack gap="sm">
+              <Text role="Heading 3" color="primary">Edit Object via DynamicForm Engine</Text>
+              <DynamicForm
+                fields={sampleSchema.fields}
+                initialValues={objectData.attributes}
+                onSubmit={(newValues) => {
+                  setObjectData((prev) => ({
+                    ...prev,
+                    attributes: { ...prev.attributes, ...newValues },
+                  }));
+                  setDetailMode('view');
+                  showToast({
+                    title: 'Object Updated',
+                    message: 'Universal Object details updated via DynamicForm.',
+                    variant: 'success',
+                  });
+                }}
+                onCancel={() => setDetailMode('view')}
+                submitLabel="Save Changes"
+              />
+            </VStack>
+          )}
+        </VStack>
+      </Stack>
+    </VStack>
+  );
+}
+
 function DesignSystemPlaygroundBody() {
   const { mode, setThemeMode, colors } = useTheme();
   const viewport = useViewport();
 
   // Navigation Tab Section State
   const [activeSection, setActiveSection] = useState<
-    'Overview' | 'Typography' | 'Icons' | 'Buttons' | 'Inputs' | 'Selection' | 'Surfaces & Feedback' | 'Dynamic Forms' | 'Motion' | 'Materials' | 'Colors' | 'Accessibility' | 'Responsive' | 'Anti-Patterns'
+    'Overview' | 'Typography' | 'Icons' | 'Buttons' | 'Inputs' | 'Selection' | 'Surfaces & Feedback' | 'Dynamic Forms' | 'Object Detail' | 'Motion' | 'Materials' | 'Colors' | 'Accessibility' | 'Responsive' | 'Anti-Patterns'
   >('Overview');
 
   // Inspection Mode Toggles
@@ -328,7 +426,7 @@ function DesignSystemPlaygroundBody() {
           {/* Section Navigation Tabs */}
           <Stack padding="sm" radius="card" background={colors.surfaceElevated}>
             <HStack gap="xs" style={{ flexWrap: 'wrap' }}>
-              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Inputs', 'Selection', 'Surfaces & Feedback', 'Dynamic Forms', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
+              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Inputs', 'Selection', 'Surfaces & Feedback', 'Dynamic Forms', 'Object Detail', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
                 <Pressable key={tab} onPress={() => setActiveSection(tab)}>
                   <Stack
                     padding="sm"
@@ -1226,6 +1324,9 @@ function DesignSystemPlaygroundBody() {
 
           {/* DYNAMIC FORMS SECTION */}
           {activeSection === 'Dynamic Forms' && <DynamicFormDemoSection />}
+
+          {/* OBJECT DETAIL SECTION */}
+          {activeSection === 'Object Detail' && <Batch5DetailDemoSection />}
 
           {/* 4. MOTION PLAYGROUND SECTION */}
           {activeSection === 'Motion' && (

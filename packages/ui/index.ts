@@ -15,3 +15,5 @@ export * from './src/primitives/card/index';
 export * from './src/primitives/modal/index';
 export * from './src/primitives/feedback/index';
 export * from './src/components/form/index';
+export * from './src/components/detail/index';
+export * from './src/components/object/index';
