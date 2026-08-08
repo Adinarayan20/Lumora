@@ -8,7 +8,6 @@ describe('resolveButtonStyles Pure Token Resolver', () => {
       variant: 'primary',
       themeColors: LightThemeColors,
       sizeClass: 'Compact',
-      isTouchMode: true,
     });
 
     expect(res.textColorToken).toBe('inverse');
@@ -23,7 +22,6 @@ describe('resolveButtonStyles Pure Token Resolver', () => {
       variant: 'secondary',
       themeColors: LightThemeColors,
       sizeClass: 'Compact',
-      isTouchMode: true,
     });
 
     expect(res.textColorToken).toBe('textPrimary');
@@ -37,7 +35,6 @@ describe('resolveButtonStyles Pure Token Resolver', () => {
       variant: 'outline',
       themeColors: LightThemeColors,
       sizeClass: 'Compact',
-      isTouchMode: true,
     });
 
     expect(res.textColorToken).toBe('textPrimary');
@@ -51,7 +48,6 @@ describe('resolveButtonStyles Pure Token Resolver', () => {
       variant: 'ghost',
       themeColors: LightThemeColors,
       sizeClass: 'Compact',
-      isTouchMode: true,
     });
 
     expect(res.textColorToken).toBe('textPrimary');
@@ -64,7 +60,6 @@ describe('resolveButtonStyles Pure Token Resolver', () => {
       variant: 'destructive',
       themeColors: LightThemeColors,
       sizeClass: 'Compact',
-      isTouchMode: true,
     });
 
     expect(res.textColorToken).toBe('inverse');
@@ -72,9 +67,9 @@ describe('resolveButtonStyles Pure Token Resolver', () => {
   });
 
   it('resolves small, medium, and large visual dimensions and touch targets', () => {
-    const sm = resolveButtonStyles({ size: 'sm', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
-    const md = resolveButtonStyles({ size: 'md', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
-    const lg = resolveButtonStyles({ size: 'lg', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
+    const sm = resolveButtonStyles({ size: 'sm', themeColors: LightThemeColors, sizeClass: 'Compact' });
+    const md = resolveButtonStyles({ size: 'md', themeColors: LightThemeColors, sizeClass: 'Compact' });
+    const lg = resolveButtonStyles({ size: 'lg', themeColors: LightThemeColors, sizeClass: 'Compact' });
 
     expect(sm.resolvedHeight).toBe(36);
     expect(md.resolvedHeight).toBe(44);
@@ -87,19 +82,19 @@ describe('resolveButtonStyles Pure Token Resolver', () => {
 
   it('enforces responsive size contracts when size prop is omitted or explicit', () => {
     // Contextual defaults when size is omitted
-    const compactDefault = resolveButtonStyles({ themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
-    const mediumDefault = resolveButtonStyles({ themeColors: LightThemeColors, sizeClass: 'Medium', isTouchMode: true });
-    const expandedDefault = resolveButtonStyles({ themeColors: LightThemeColors, sizeClass: 'Expanded', isTouchMode: true });
+    const compactDefault = resolveButtonStyles({ themeColors: LightThemeColors, sizeClass: 'Compact' });
+    const mediumDefault = resolveButtonStyles({ themeColors: LightThemeColors, sizeClass: 'Medium' });
+    const expandedDefault = resolveButtonStyles({ themeColors: LightThemeColors, sizeClass: 'Expanded' });
 
     expect(compactDefault.resolvedHeight).toBe(44); // md
     expect(mediumDefault.resolvedHeight).toBe(52); // lg
     expect(expandedDefault.resolvedHeight).toBe(52); // lg
 
     // Explicit size prop overrides viewport defaults unconditionally
-    const compactSmall = resolveButtonStyles({ size: 'sm', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
-    const mediumSmall = resolveButtonStyles({ size: 'sm', themeColors: LightThemeColors, sizeClass: 'Medium', isTouchMode: true });
-    const expandedMedium = resolveButtonStyles({ size: 'md', themeColors: LightThemeColors, sizeClass: 'Expanded', isTouchMode: true });
-    const anyLarge = resolveButtonStyles({ size: 'lg', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
+    const compactSmall = resolveButtonStyles({ size: 'sm', themeColors: LightThemeColors, sizeClass: 'Compact' });
+    const mediumSmall = resolveButtonStyles({ size: 'sm', themeColors: LightThemeColors, sizeClass: 'Medium' });
+    const expandedMedium = resolveButtonStyles({ size: 'md', themeColors: LightThemeColors, sizeClass: 'Expanded' });
+    const anyLarge = resolveButtonStyles({ size: 'lg', themeColors: LightThemeColors, sizeClass: 'Compact' });
 
     expect(compactSmall.resolvedHeight).toBe(36);
     expect(mediumSmall.resolvedHeight).toBe(36);
@@ -108,15 +103,15 @@ describe('resolveButtonStyles Pure Token Resolver', () => {
   });
 
   it('resolves rounded and pill radii', () => {
-    const rounded = resolveButtonStyles({ shape: 'rounded', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
-    const pill = resolveButtonStyles({ shape: 'pill', themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
+    const rounded = resolveButtonStyles({ shape: 'rounded', themeColors: LightThemeColors, sizeClass: 'Compact' });
+    const pill = resolveButtonStyles({ shape: 'pill', themeColors: LightThemeColors, sizeClass: 'Compact' });
 
     expect(rounded.resolvedRadius).toBe(RadiusScale.md);
     expect(pill.resolvedRadius).toBe(RadiusScale.full);
   });
 
   it('applies theme disabled opacity when disabled is true', () => {
-    const disabled = resolveButtonStyles({ disabled: true, themeColors: LightThemeColors, sizeClass: 'Compact', isTouchMode: true });
+    const disabled = resolveButtonStyles({ disabled: true, themeColors: LightThemeColors, sizeClass: 'Compact' });
     expect(disabled.resolvedOpacity).toBe(LightThemeColors.disabledOpacity);
   });
 });

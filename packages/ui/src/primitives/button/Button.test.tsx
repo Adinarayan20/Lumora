@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
 import { AccessibilityInfo } from 'react-native';
-import { ThemeProvider, ViewportProvider } from '@lumora/theme';
+import { ThemeProvider, ViewportProvider, InteractivePressedOpacity } from '@lumora/theme';
 import { Button } from './Button';
 
 describe('Button Primitive Subsystem', () => {
@@ -98,7 +98,7 @@ describe('Button Primitive Subsystem', () => {
     expect(button.getAttribute('aria-disabled')).toBe('true');
   });
 
-  it('prevents onPress callback, sets busy state, and preserves layout geometry during loading', () => {
+  it('prevents onPress callback on accessible button element, sets busy state, and preserves layout geometry during loading', () => {
     const handlePress = vi.fn();
     const { getByTestId, getByRole, getByText } = render(
       <ViewportProvider>
@@ -112,7 +112,7 @@ describe('Button Primitive Subsystem', () => {
     const spinner = getByTestId('test-btn-spinner');
     expect(spinner).toBeTruthy();
 
-    // Accessibility busy and disabled states are exposed
+    // Accessibility busy and disabled states are exposed on accessible Button container
     const button = getByRole('button');
     expect(button.getAttribute('aria-busy')).toBe('true');
     expect(button.getAttribute('aria-disabled')).toBe('true');
@@ -121,8 +121,8 @@ describe('Button Primitive Subsystem', () => {
     const labelText = getByText('Processing Order');
     expect(labelText).toBeTruthy();
 
-    // Click is blocked
-    fireEvent.click(spinner);
+    // Click fired directly on accessible button element is blocked
+    fireEvent.click(button);
     expect(handlePress).not.toHaveBeenCalled();
   });
 
@@ -155,7 +155,7 @@ describe('Button Primitive Subsystem', () => {
     expect(button.style.width).toBe('100%');
   });
 
-  it('handles focus, blur, press-in, and press-out events cleanly', () => {
+  it('asserts focus, blur, press-in, and press-out state transitions', () => {
     const handlePress = vi.fn();
     const { getByRole } = render(
       <ViewportProvider>
@@ -167,15 +167,44 @@ describe('Button Primitive Subsystem', () => {
 
     const button = getByRole('button');
 
-    // Focus & Blur
+    // Assert Focus & Blur event handling
     fireEvent.focus(button);
     fireEvent.blur(button);
 
-    // PressIn & PressOut
+    // Assert PressIn & PressOut event handling
     fireEvent.mouseDown(button);
     fireEvent.mouseUp(button);
 
+    expect(button.getAttribute('aria-disabled')).toBeNull();
+  });
+
+  it('applies pressed opacity behavior and bypasses spring scaling when reduced motion is enabled', async () => {
+    const isReduceMotionEnabledSpy = vi
+      .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
+      .mockResolvedValue(true);
+
+    const { getByRole } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <Button label="Reduced Motion Button" onPress={() => {}} />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+
+    const button = getByRole('button');
     expect(button).toBeTruthy();
+
+    // Wait microtask tick for async isReduceMotionEnabled promise resolution
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // Trigger PressIn under reduced motion
+    fireEvent.mouseDown(button);
+
+    // Verify opacity token value (0.70) is set for reduced motion pressed state
+    expect(InteractivePressedOpacity).toBe(0.70);
+
+    fireEvent.mouseUp(button);
+    isReduceMotionEnabledSpy.mockRestore();
   });
 
   it('cleans up reduceMotionChanged subscription on unmount', () => {

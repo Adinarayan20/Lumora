@@ -460,7 +460,6 @@ export default function DesignSystemPlayground() {
                           shape: btnShape,
                           themeColors: colors,
                           sizeClass: viewport.sizeClass,
-                          isTouchMode: viewport.touchMode,
                           disabled: btnDisabled,
                         });
                         return (

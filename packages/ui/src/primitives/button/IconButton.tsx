@@ -52,7 +52,6 @@ export const IconButton: React.FC<IconButtonProps> = memo(({
     shape,
     themeColors: colors,
     sizeClass: viewport.sizeClass,
-    isTouchMode: viewport.touchMode,
     disabled,
   });
 

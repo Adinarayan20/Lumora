@@ -17,7 +17,6 @@ export interface ResolveButtonStylesOptions {
   readonly shape?: ButtonShape;
   readonly themeColors: ColorPalette;
   readonly sizeClass: ViewportSizeClass;
-  readonly isTouchMode: boolean;
   readonly disabled?: boolean;
 }
 
@@ -46,7 +45,6 @@ export function resolveButtonStyles({
   shape = 'rounded',
   themeColors,
   sizeClass,
-  isTouchMode,
   disabled = false,
 }: ResolveButtonStylesOptions): ResolvedButtonStyles {
   // 1. Resolve Contextual Responsive Size Class

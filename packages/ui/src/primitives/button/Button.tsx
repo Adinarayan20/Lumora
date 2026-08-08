@@ -50,7 +50,6 @@ export const Button: React.FC<ButtonProps> = memo(({
     shape,
     themeColors: colors,
     sizeClass: viewport.sizeClass,
-    isTouchMode: viewport.touchMode,
     disabled,
   });
 
