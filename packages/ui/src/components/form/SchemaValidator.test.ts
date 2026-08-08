@@ -17,6 +17,12 @@ describe('SchemaValidator Contract', () => {
       validation: { min: 1, max: 5 },
     },
     {
+      key: 'category',
+      label: 'Category',
+      type: FieldType.ENUM,
+      validation: { options: ['Work', 'Personal', 'Health'] },
+    },
+    {
       key: 'isCompleted',
       label: 'Completed Status',
       type: FieldType.BOOLEAN,
@@ -28,6 +34,7 @@ describe('SchemaValidator Contract', () => {
     const values = {
       title: 'Valid Task Title',
       priority: 3,
+      category: 'Work',
       isCompleted: false,
     };
 
@@ -39,11 +46,41 @@ describe('SchemaValidator Contract', () => {
     const values = {
       title: '  ',
       priority: 3,
+      category: 'Work',
       isCompleted: false,
     };
 
     const errors = SchemaValidator.validate(fields, values);
     expect(errors.title).toBe('Task Title is required.');
+  });
+
+  it('rejects values not included in enum validation options', () => {
+    const values = {
+      title: 'Task Title',
+      priority: 2,
+      category: 'InvalidCategory',
+      isCompleted: true,
+    };
+
+    const errors = SchemaValidator.validate(fields, values);
+    expect(errors.category).toBe('Category must be one of: Work, Personal, Health.');
+  });
+
+  it('safely handles invalid regex pattern without throwing an unhandled exception', () => {
+    const badRegexFields: FieldSchema[] = [
+      {
+        key: 'code',
+        label: 'Product Code',
+        type: FieldType.STRING,
+        validation: { pattern: '[unclosed-character-class' },
+      },
+    ];
+
+    const values = { code: 'ABC' };
+    expect(() => {
+      const errors = SchemaValidator.validate(badRegexFields, values);
+      expect(errors.code).toBe('Product Code contains an invalid pattern.');
+    }).not.toThrow();
   });
 
   it('handles zero (0) and false correctly as non-empty valid values', () => {

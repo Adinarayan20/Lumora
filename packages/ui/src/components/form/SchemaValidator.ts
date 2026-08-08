@@ -1,4 +1,4 @@
-import type { FieldSchema } from '@lumora/shared';
+import { FieldType, type FieldSchema } from '@lumora/shared';
 
 export interface ValidationErrorResult {
   readonly [fieldKey: string]: string;
@@ -34,7 +34,17 @@ export class SchemaValidator {
       // Skip non-required empty fields
       if (isValueEmpty) continue;
 
-      // 2. String Length Validation
+      // 2. Enum Options Validation
+      if (rules.options && rules.options.length > 0) {
+        if (typeof val === 'string' && !rules.options.includes(val)) {
+          errors[field.key] =
+            rules.customErrorMessage ||
+            `${field.label} must be one of: ${rules.options.join(', ')}.`;
+          continue;
+        }
+      }
+
+      // 3. String Length & Pattern Validation
       if (typeof val === 'string') {
         if (rules.minLength !== undefined && val.length < rules.minLength) {
           errors[field.key] =
@@ -51,16 +61,22 @@ export class SchemaValidator {
         }
 
         if (rules.pattern) {
-          const regex = new RegExp(rules.pattern);
-          if (!regex.test(val)) {
+          try {
+            const regex = new RegExp(rules.pattern);
+            if (!regex.test(val)) {
+              errors[field.key] =
+                rules.customErrorMessage || `${field.label} format is invalid.`;
+              continue;
+            }
+          } catch {
             errors[field.key] =
-              rules.customErrorMessage || `${field.label} format is invalid.`;
+              rules.customErrorMessage || `${field.label} contains an invalid pattern.`;
             continue;
           }
         }
       }
 
-      // 3. Numeric Range Validation
+      // 4. Numeric Range Validation
       if (typeof val === 'number' && !isNaN(val)) {
         if (rules.min !== undefined && val < rules.min) {
           errors[field.key] =

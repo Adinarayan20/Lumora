@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { FieldType } from '@lumora/shared';
+import type { FieldControlComponent } from './DynamicForm.types';
 import { FieldRegistry, defaultFieldRegistry } from './FieldRegistry';
 import { StringFieldAdapter } from './adapters/StringFieldAdapter';
 import { NumberFieldAdapter } from './adapters/NumberFieldAdapter';
@@ -23,11 +24,11 @@ describe('FieldRegistry Architecture Contract', () => {
 
   it('allows isolated registry instantiation without global state mutation', () => {
     const customRegistry = new FieldRegistry();
-    const mockAdapter = vi.fn();
+    const mockAdapter = vi.fn() as unknown as FieldControlComponent;
 
     expect(customRegistry.has(FieldType.STRING)).toBe(false);
 
-    customRegistry.register(FieldType.STRING, mockAdapter as any);
+    customRegistry.register(FieldType.STRING, mockAdapter);
     expect(customRegistry.get(FieldType.STRING)).toBe(mockAdapter);
 
     // Global default registry remains unaffected
@@ -36,11 +37,11 @@ describe('FieldRegistry Architecture Contract', () => {
 
   it('supports hierarchical child registries', () => {
     const childRegistry = defaultFieldRegistry.createChild();
-    const mockCustomString = vi.fn();
+    const mockCustomString = vi.fn() as unknown as FieldControlComponent;
 
     expect(childRegistry.get(FieldType.BOOLEAN)).toBe(BooleanFieldAdapter);
 
-    childRegistry.register(FieldType.STRING, mockCustomString as any);
+    childRegistry.register(FieldType.STRING, mockCustomString);
     expect(childRegistry.get(FieldType.STRING)).toBe(mockCustomString);
     expect(defaultFieldRegistry.get(FieldType.STRING)).toBe(StringFieldAdapter);
   });

@@ -18,8 +18,11 @@ export interface DynamicFormProps {
   readonly initialValues?: Record<string, unknown>;
   readonly onSubmit: (values: Record<string, unknown>) => void | Promise<void>;
   readonly onCancel?: () => void;
+  readonly onReset?: () => void;
   readonly submitLabel?: string;
   readonly cancelLabel?: string;
+  readonly resetLabel?: string;
+  readonly showResetButton?: boolean;
   readonly disabled?: boolean;
   readonly isLoading?: boolean;
   readonly registry?: IFieldRegistry;

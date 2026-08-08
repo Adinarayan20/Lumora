@@ -34,6 +34,21 @@ export function useDynamicForm({ fields, initialValues, onSubmit }: UseDynamicFo
     };
   }, []);
 
+  // Synchronize internal values state when initialValues or fields change dynamically
+  const prevInitialValuesRef = useRef<Record<string, unknown>>(normalizedInitialValues);
+  useEffect(() => {
+    const prev = prevInitialValuesRef.current;
+    const hasChanged =
+      Object.keys(normalizedInitialValues).length !== Object.keys(prev).length ||
+      Object.keys(normalizedInitialValues).some((key) => normalizedInitialValues[key] !== prev[key]);
+
+    if (hasChanged) {
+      setValues(normalizedInitialValues);
+      setTouched({});
+      prevInitialValuesRef.current = normalizedInitialValues;
+    }
+  }, [normalizedInitialValues]);
+
   const errors = useMemo(() => {
     return SchemaValidator.validate(fields, values);
   }, [fields, values]);

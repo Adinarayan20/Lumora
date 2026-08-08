@@ -11,14 +11,17 @@ export const DynamicForm: React.FC<DynamicFormProps> = memo(({
   initialValues,
   onSubmit,
   onCancel,
+  onReset,
   submitLabel = 'Submit',
   cancelLabel = 'Cancel',
+  resetLabel = 'Reset',
+  showResetButton = false,
   disabled = false,
   isLoading = false,
   registry = defaultFieldRegistry,
   testID,
 }) => {
-  const { formState, setFieldValue, handleSubmit } = useDynamicForm({
+  const { formState, setFieldValue, handleSubmit, resetForm } = useDynamicForm({
     fields,
     initialValues,
     onSubmit,
@@ -26,8 +29,20 @@ export const DynamicForm: React.FC<DynamicFormProps> = memo(({
 
   const isFormDisabled = disabled || isLoading || formState.isSubmitting;
 
+  const handleResetClick = () => {
+    resetForm();
+    if (onReset) {
+      onReset();
+    }
+  };
+
   return (
-    <View style={styles.formContainer} testID={testID}>
+    <View
+      style={styles.formContainer}
+      accessibilityRole="form"
+      accessibilityLabel={`Dynamic form containing ${fields.length} fields`}
+      testID={testID}
+    >
       {/* Field List Rendering */}
       <View style={styles.fieldList}>
         {fields.map((field) => {
@@ -65,6 +80,21 @@ export const DynamicForm: React.FC<DynamicFormProps> = memo(({
               testID={testID ? `${testID}-cancel-button` : 'form-cancel-button'}
             >
               {cancelLabel}
+            </Button>
+          </View>
+        ) : null}
+
+        {showResetButton || onReset ? (
+          <View style={styles.buttonWrapper}>
+            <Button
+              variant="ghost"
+              size="md"
+              onPress={handleResetClick}
+              disabled={isFormDisabled}
+              accessibilityLabel={resetLabel}
+              testID={testID ? `${testID}-reset-button` : 'form-reset-button'}
+            >
+              {resetLabel}
             </Button>
           </View>
         ) : null}
