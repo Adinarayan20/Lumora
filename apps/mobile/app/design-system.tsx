@@ -29,6 +29,12 @@ import {
   SemanticIconSize,
   IconStrokeWeight,
   SemanticIconColor,
+  Button,
+  IconButton,
+  resolveButtonStyles,
+  ButtonVariant,
+  ButtonSize,
+  ButtonShape,
 } from '@lumora/ui';
 
 const ALL_FOUNDATIONAL_ICONS: { domain: string; icons: SemanticIconName[] }[] = [
@@ -64,7 +70,7 @@ export default function DesignSystemPlayground() {
 
   // Navigation Tab Section State
   const [activeSection, setActiveSection] = useState<
-    'Overview' | 'Typography' | 'Icons' | 'Motion' | 'Materials' | 'Colors' | 'Accessibility' | 'Responsive' | 'Anti-Patterns'
+    'Overview' | 'Typography' | 'Icons' | 'Buttons' | 'Motion' | 'Materials' | 'Colors' | 'Accessibility' | 'Responsive' | 'Anti-Patterns'
   >('Overview');
 
   // Inspection Mode Toggles
@@ -88,6 +94,16 @@ export default function DesignSystemPlayground() {
   const [iconSelectedState, setIconSelectedState] = useState(false);
   const [iconDisabledState, setIconDisabledState] = useState(false);
 
+  // Button Inspection State
+  const [btnVariant, setBtnVariant] = useState<ButtonVariant>('primary');
+  const [btnSize, setBtnSize] = useState<ButtonSize>('md');
+  const [btnShape, setBtnShape] = useState<ButtonShape>('rounded');
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [btnDisabled, setBtnDisabled] = useState(false);
+  const [btnFullWidth, setBtnFullWidth] = useState(false);
+  const [btnHasLeftIcon, setBtnHasLeftIcon] = useState(true);
+  const [btnHasRightIcon, setBtnHasRightIcon] = useState(false);
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <Container max="wide">
@@ -110,7 +126,7 @@ export default function DesignSystemPlayground() {
           {/* Section Navigation Tabs */}
           <Stack padding="sm" radius="card" background={colors.surfaceElevated}>
             <HStack gap="xs" style={{ flexWrap: 'wrap' }}>
-              {(['Overview', 'Typography', 'Icons', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
+              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
                 <Pressable key={tab} onPress={() => setActiveSection(tab)}>
                   <Stack
                     padding="sm"
@@ -411,6 +427,208 @@ export default function DesignSystemPlayground() {
                     <HStack gap="xs" align="center">
                       <Icon name="security.lock" size="xs" color="icon.muted" />
                       <Metadata>Metadata: Encrypted with E2EE private key • Verified</Metadata>
+                    </HStack>
+                  </VStack>
+                </Stack>
+              </VStack>
+            </VStack>
+          )}
+
+          {/* 4. BUTTONS LABORATORY SECTION (COMPONENT #3) */}
+          {activeSection === 'Buttons' && (
+            <VStack gap="lg">
+              <Heading level={2}>Component #3 — Button & Interactive Action System Laboratory</Heading>
+
+              {/* BUTTON INSPECTION PANEL */}
+              <Stack padding="lg" radius="card" background={colors.surface}>
+                <VStack gap="md">
+                  <HStack justify="space-between" align="center">
+                    <Overline color="primary">BUTTON INSPECTION PANEL</Overline>
+                    <Stack padding="xs" radius="pill" background={colors.primaryGlow}>
+                      <Metadata color="primary">FOUNDATION: COMPONENT #3</Metadata>
+                    </Stack>
+                  </HStack>
+
+                  {/* Resolved Token Metrics */}
+                  <Stack padding="md" radius="control" background={colors.backgroundSecondary}>
+                    <VStack gap="xs">
+                      {(() => {
+                        const resolved = resolveButtonStyles({
+                          variant: btnVariant,
+                          size: btnSize,
+                          shape: btnShape,
+                          themeColors: colors,
+                          sizeClass: viewport.sizeClass,
+                          isTouchMode: viewport.touchMode,
+                          disabled: btnDisabled,
+                          loading: btnLoading,
+                        });
+                        return (
+                          <React.Fragment>
+                            <HStack justify="space-between">
+                              <Label color="textMuted">variant: <Code>{btnVariant}</Code></Label>
+                              <Label color="textMuted">resolved height: <Code>{resolved.resolvedHeight}px</Code></Label>
+                            </HStack>
+                            <HStack justify="space-between">
+                              <Label color="textMuted">size: <Code>{btnSize}</Code></Label>
+                              <Label color="textMuted">touch target: <Code>{resolved.touchTargetDimension}px</Code></Label>
+                            </HStack>
+                            <HStack justify="space-between">
+                              <Label color="textMuted">shape: <Code>{btnShape}</Code></Label>
+                              <Label color="textMuted">icon gap: <Code>{resolved.resolvedIconGap}px</Code></Label>
+                            </HStack>
+                            <HStack justify="space-between">
+                              <Label color="textMuted">text color: <Code>{resolved.textColorToken}</Code></Label>
+                              <Label color="textMuted">opacity: <Code>{resolved.resolvedOpacity}</Code></Label>
+                            </HStack>
+                          </React.Fragment>
+                        );
+                      })()}
+                    </VStack>
+                  </Stack>
+
+                  {/* Live Target Preview */}
+                  <Stack padding="xl" radius="control" background={colors.backgroundSecondary} style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <Button
+                      label="Execute Target Action"
+                      variant={btnVariant}
+                      size={btnSize}
+                      shape={btnShape}
+                      loading={btnLoading}
+                      disabled={btnDisabled}
+                      fullWidth={btnFullWidth}
+                      leftIcon={btnHasLeftIcon ? 'action.search' : undefined}
+                      rightIcon={btnHasRightIcon ? 'nav.forward' : undefined}
+                      onPress={() => alert('Button Pressed!')}
+                    />
+                  </Stack>
+
+                  {/* Interactive Controls Grid */}
+                  <VStack gap="sm">
+                    <Text role="Title Small">Variant Selector</Text>
+                    <HStack gap="xs" style={{ flexWrap: 'wrap' }}>
+                      {(['primary', 'secondary', 'outline', 'ghost', 'destructive'] as ButtonVariant[]).map((v) => (
+                        <Pressable key={v} onPress={() => setBtnVariant(v)}>
+                          <Stack padding="xs" radius="pill" background={btnVariant === v ? colors.primary : colors.backgroundSecondary}>
+                            <Caption color={btnVariant === v ? 'inverse' : 'textPrimary'}>{v}</Caption>
+                          </Stack>
+                        </Pressable>
+                      ))}
+                    </HStack>
+
+                    <Text role="Title Small">Size & Shape</Text>
+                    <HStack gap="sm" style={{ flexWrap: 'wrap' }}>
+                      {(['sm', 'md', 'lg'] as ButtonSize[]).map((s) => (
+                        <Pressable key={s} onPress={() => setBtnSize(s)}>
+                          <Stack padding="xs" radius="pill" background={btnSize === s ? colors.primary : colors.backgroundSecondary}>
+                            <Caption color={btnSize === s ? 'inverse' : 'textPrimary'}>{s.toUpperCase()}</Caption>
+                          </Stack>
+                        </Pressable>
+                      ))}
+                      <HStack gap="xs" style={{ marginLeft: 16 }}>
+                        {(['rounded', 'pill'] as ButtonShape[]).map((sh) => (
+                          <Pressable key={sh} onPress={() => setBtnShape(sh)}>
+                            <Stack padding="xs" radius="pill" background={btnShape === sh ? colors.primary : colors.backgroundSecondary}>
+                              <Caption color={btnShape === sh ? 'inverse' : 'textPrimary'}>{sh}</Caption>
+                            </Stack>
+                          </Pressable>
+                        ))}
+                      </HStack>
+                    </HStack>
+
+                    <Text role="Title Small">State & Modifier Toggles</Text>
+                    <HStack gap="xs" style={{ flexWrap: 'wrap' }}>
+                      <Pressable onPress={() => setBtnLoading((v) => !v)}>
+                        <Stack padding="xs" radius="pill" background={btnLoading ? colors.primary : colors.backgroundSecondary}>
+                          <Caption color={btnLoading ? 'inverse' : 'textPrimary'}>Loading: {btnLoading ? 'ON' : 'OFF'}</Caption>
+                        </Stack>
+                      </Pressable>
+                      <Pressable onPress={() => setBtnDisabled((v) => !v)}>
+                        <Stack padding="xs" radius="pill" background={btnDisabled ? colors.primary : colors.backgroundSecondary}>
+                          <Caption color={btnDisabled ? 'inverse' : 'textPrimary'}>Disabled: {btnDisabled ? 'ON' : 'OFF'}</Caption>
+                        </Stack>
+                      </Pressable>
+                      <Pressable onPress={() => setBtnFullWidth((v) => !v)}>
+                        <Stack padding="xs" radius="pill" background={btnFullWidth ? colors.primary : colors.backgroundSecondary}>
+                          <Caption color={btnFullWidth ? 'inverse' : 'textPrimary'}>FullWidth: {btnFullWidth ? 'ON' : 'OFF'}</Caption>
+                        </Stack>
+                      </Pressable>
+                      <Pressable onPress={() => setBtnHasLeftIcon((v) => !v)}>
+                        <Stack padding="xs" radius="pill" background={btnHasLeftIcon ? colors.primary : colors.backgroundSecondary}>
+                          <Caption color={btnHasLeftIcon ? 'inverse' : 'textPrimary'}>Left Icon: {btnHasLeftIcon ? 'ON' : 'OFF'}</Caption>
+                        </Stack>
+                      </Pressable>
+                      <Pressable onPress={() => setBtnHasRightIcon((v) => !v)}>
+                        <Stack padding="xs" radius="pill" background={btnHasRightIcon ? colors.primary : colors.backgroundSecondary}>
+                          <Caption color={btnHasRightIcon ? 'inverse' : 'textPrimary'}>Right Icon: {btnHasRightIcon ? 'ON' : 'OFF'}</Caption>
+                        </Stack>
+                      </Pressable>
+                    </HStack>
+                  </VStack>
+                </VStack>
+              </Stack>
+
+              {/* ALL BUTTON VARIANTS MATRIX */}
+              <VStack gap="md">
+                <Heading level={2}>Variant Hierarchy Matrix</Heading>
+                <Stack padding="lg" radius="card" background={colors.surface}>
+                  <VStack gap="md">
+                    <HStack gap="md" align="center" style={{ flexWrap: 'wrap' }}>
+                      <Button label="Primary CTA" variant="primary" leftIcon="action.add" onPress={() => {}} />
+                      <Button label="Secondary Action" variant="secondary" leftIcon="object.task" onPress={() => {}} />
+                      <Button label="Outline Action" variant="outline" leftIcon="action.filter" onPress={() => {}} />
+                      <Button label="Ghost Action" variant="ghost" leftIcon="nav.more" onPress={() => {}} />
+                      <Button label="Destructive Delete" variant="destructive" leftIcon="action.delete" onPress={() => {}} />
+                    </HStack>
+
+                    <HStack gap="md" align="center" style={{ flexWrap: 'wrap' }}>
+                      <Button label="Small" size="sm" variant="primary" onPress={() => {}} />
+                      <Button label="Medium (Default)" size="md" variant="primary" onPress={() => {}} />
+                      <Button label="Large Display" size="lg" variant="primary" onPress={() => {}} />
+                      <Button label="Pill Geometry" size="md" shape="pill" variant="secondary" leftIcon="security.user" onPress={() => {}} />
+                    </HStack>
+                  </VStack>
+                </Stack>
+              </VStack>
+
+              {/* ICONBUTTON GALLERY & TOUCH TARGET DEBUGGER */}
+              <VStack gap="md">
+                <Heading level={2}>IconButton Gallery & Touch Boundary Debugger</Heading>
+                <Text role="Body" color="textSecondary">
+                  Validates minimum 44×44dp / 48×48dp interactive touch target containers around visual icon controls.
+                </Text>
+                <Stack padding="lg" radius="card" background={colors.surface}>
+                  <VStack gap="md">
+                    <HStack gap="lg" align="center" style={{ flexWrap: 'wrap' }}>
+                      <VStack gap="xs" style={{ alignItems: 'center' }}>
+                        <IconButton icon="action.search" accessibilityLabel="Search catalog" variant="primary" onPress={() => {}} />
+                        <Caption color="textMuted">primary</Caption>
+                      </VStack>
+
+                      <VStack gap="xs" style={{ alignItems: 'center' }}>
+                        <IconButton icon="action.edit" accessibilityLabel="Edit item" variant="secondary" onPress={() => {}} />
+                        <Caption color="textMuted">secondary</Caption>
+                      </VStack>
+
+                      <VStack gap="xs" style={{ alignItems: 'center' }}>
+                        <IconButton icon="action.filter" accessibilityLabel="Filter list" variant="outline" onPress={() => {}} />
+                        <Caption color="textMuted">outline</Caption>
+                      </VStack>
+
+                      <VStack gap="xs" style={{ alignItems: 'center' }}>
+                        <IconButton icon="nav.more" accessibilityLabel="More options" variant="ghost" onPress={() => {}} />
+                        <Caption color="textMuted">ghost</Caption>
+                      </VStack>
+
+                      <VStack gap="xs" style={{ alignItems: 'center' }}>
+                        <IconButton icon="action.delete" accessibilityLabel="Delete item" variant="destructive" onPress={() => {}} />
+                        <Caption color="textMuted">destructive</Caption>
+                      </VStack>
+
+                      <VStack gap="xs" style={{ alignItems: 'center' }}>
+                        <IconButton icon="nav.close" accessibilityLabel="Cancel processing" loading={true} variant="secondary" onPress={() => {}} />
+                        <Caption color="textMuted">loading</Caption>
+                      </VStack>
                     </HStack>
                   </VStack>
                 </Stack>
