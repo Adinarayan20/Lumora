@@ -13,6 +13,8 @@ export interface ObjectActionConfig {
   readonly icon?: string;
   readonly variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
   readonly requiresConfirmation?: boolean;
+  readonly confirmTitle?: string;
+  readonly confirmDescription?: string;
   readonly disabled?: boolean;
   readonly loading?: boolean;
   readonly onPress?: (object: UniversalObjectData) => void;
@@ -26,9 +28,9 @@ export interface DynamicObjectDetailProps {
   readonly blocks?: readonly BlockTypeKey[];
   readonly actions?: readonly ObjectActionConfig[];
   readonly onEdit?: (object: UniversalObjectData) => void;
+  readonly onSave?: (newAttributes: Record<string, unknown>, object: UniversalObjectData) => void;
   readonly onDelete?: (object: UniversalObjectData) => void;
   readonly onArchive?: (object: UniversalObjectData) => void;
-  readonly onStatusChange?: (object: UniversalObjectData, newStatus: string) => void;
   readonly isLoading?: boolean;
   readonly isError?: boolean;
   readonly errorMessage?: string;

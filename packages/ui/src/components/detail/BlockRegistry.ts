@@ -57,8 +57,16 @@ export class BlockRegistry implements IBlockRegistry {
 }
 
 /**
+ * Factory function creating a fresh isolated BlockRegistry pre-populated with core built-in detail block adapters.
+ */
+export function createCoreBlockRegistry(): BlockRegistry {
+  const registry = new BlockRegistry();
+  registry.register('header', HeaderBlockAdapter);
+  registry.register('properties', PropertiesBlockAdapter);
+  return registry;
+}
+
+/**
  * Shared default instance pre-populated with core built-in detail block adapters.
  */
-export const defaultBlockRegistry = new BlockRegistry();
-defaultBlockRegistry.register('header', HeaderBlockAdapter);
-defaultBlockRegistry.register('properties', PropertiesBlockAdapter);
+export const defaultBlockRegistry = createCoreBlockRegistry();

@@ -5,10 +5,11 @@ import type { UniversalObjectData } from '../detail/BlockRegistry.types';
 export interface UseObjectDetailResult {
   readonly isEditing: boolean;
   readonly setIsEditing: (editing: boolean) => void;
-  readonly isDeleteDialogOpen: boolean;
-  readonly openDeleteDialog: () => void;
-  readonly closeDeleteDialog: () => void;
-  readonly handleConfirmDelete: () => void;
+  readonly pendingAction: ObjectActionConfig | null;
+  readonly isConfirmationOpen: boolean;
+  readonly requestActionConfirmation: (action: ObjectActionConfig) => void;
+  readonly handleConfirmPendingAction: () => void;
+  readonly handleCancelPendingAction: () => void;
   readonly resolvedActions: readonly ObjectActionConfig[];
 }
 
@@ -16,22 +17,30 @@ export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetai
   const { object, actions, onEdit, onDelete, onArchive } = props;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<ObjectActionConfig | null>(null);
 
-  const openDeleteDialog = useCallback(() => {
-    setIsDeleteDialogOpen(true);
+  const requestActionConfirmation = useCallback((action: ObjectActionConfig) => {
+    setPendingAction(action);
   }, []);
 
-  const closeDeleteDialog = useCallback(() => {
-    setIsDeleteDialogOpen(false);
+  const handleCancelPendingAction = useCallback(() => {
+    setPendingAction(null);
   }, []);
 
-  const handleConfirmDelete = useCallback(() => {
-    setIsDeleteDialogOpen(false);
-    if (object && onDelete) {
+  const handleConfirmPendingAction = useCallback(() => {
+    const actionToExecute = pendingAction;
+    setPendingAction(null);
+
+    if (!object || !actionToExecute) return;
+
+    if (actionToExecute.key === 'delete' && onDelete) {
       onDelete(object);
     }
-  }, [object, onDelete]);
+
+    if (actionToExecute.onPress) {
+      actionToExecute.onPress(object);
+    }
+  }, [object, pendingAction, onDelete]);
 
   const defaultActions: ObjectActionConfig[] = [];
 
@@ -67,9 +76,6 @@ export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetai
       icon: 'trash',
       variant: 'danger',
       requiresConfirmation: true,
-      onPress: () => {
-        openDeleteDialog();
-      },
     });
   }
 
@@ -78,10 +84,11 @@ export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetai
   return {
     isEditing,
     setIsEditing,
-    isDeleteDialogOpen,
-    openDeleteDialog,
-    closeDeleteDialog,
-    handleConfirmDelete,
+    pendingAction,
+    isConfirmationOpen: pendingAction !== null,
+    requestActionConfirmation,
+    handleConfirmPendingAction,
+    handleCancelPendingAction,
     resolvedActions,
   };
 }

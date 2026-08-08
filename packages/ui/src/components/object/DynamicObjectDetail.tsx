@@ -5,6 +5,7 @@ import { Text } from '../../primitives/typography/Text';
 import { Card } from '../../primitives/card/Card';
 import { Button } from '../../primitives/button/Button';
 import { Dialog } from '../../primitives/modal/Dialog';
+import { DynamicForm } from '../form/DynamicForm';
 import { defaultBlockRegistry } from '../detail/BlockRegistry';
 import type { DynamicObjectDetailProps } from './DynamicObjectDetail.types';
 import { useObjectDetail } from './useObjectDetail';
@@ -17,9 +18,9 @@ export const DynamicObjectDetail: React.FC<DynamicObjectDetailProps> = ({
   blocks = ['header', 'properties'],
   actions,
   onEdit,
+  onSave,
   onDelete,
   onArchive,
-  onStatusChange,
   isLoading = false,
   isError = false,
   errorMessage = 'Failed to load object details.',
@@ -28,10 +29,13 @@ export const DynamicObjectDetail: React.FC<DynamicObjectDetailProps> = ({
   const theme = useTheme();
 
   const {
-    isDeleteDialogOpen,
-    closeDeleteDialog,
-    handleConfirmDelete,
-    openDeleteDialog,
+    isEditing,
+    setIsEditing,
+    pendingAction,
+    isConfirmationOpen,
+    requestActionConfirmation,
+    handleConfirmPendingAction,
+    handleCancelPendingAction,
     resolvedActions,
   } = useObjectDetail({
     object,
@@ -41,7 +45,6 @@ export const DynamicObjectDetail: React.FC<DynamicObjectDetailProps> = ({
     onEdit,
     onDelete,
     onArchive,
-    onStatusChange,
   });
 
   // 1. Loading State
@@ -119,13 +122,62 @@ export const DynamicObjectDetail: React.FC<DynamicObjectDetailProps> = ({
     );
   }
 
-  // 4. Content View
   const objectTitle =
     String(
       object.attributes.title ??
         object.attributes.name ??
         `${definition.name} #${object.id.slice(0, 4)}`,
     );
+
+  // 4. Inline Edit Mode (Powered by DynamicForm Engine)
+  if (isEditing && schema?.fields) {
+    return (
+      <ScrollView style={styles.container} testID={`${testID}-edit-mode`}>
+        <Card
+          elevation="subtle"
+          padding="l"
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.colors.surfacePrimary,
+              borderColor: theme.colors.borderSubtle,
+            },
+          ]}
+        >
+          <Text variant="headingM" color="textPrimary" style={styles.editHeader}>
+            Edit {definition.name}
+          </Text>
+          <DynamicForm
+            fields={schema.fields}
+            initialValues={object.attributes}
+            submitLabel="Save Changes"
+            cancelLabel="Cancel Edit"
+            onSubmit={(newAttributes) => {
+              if (onSave) {
+                onSave(newAttributes, object);
+              }
+              setIsEditing(false);
+            }}
+            onCancel={() => {
+              setIsEditing(false);
+            }}
+          />
+        </Card>
+      </ScrollView>
+    );
+  }
+
+  // 5. Normal Detail View Mode
+  const dialogTitle =
+    pendingAction?.confirmTitle ??
+    `${pendingAction?.label ?? 'Confirm'} ${definition.name}?`;
+
+  const dialogDescription =
+    pendingAction?.confirmDescription ??
+    `Are you sure you want to ${pendingAction?.label.toLowerCase() ?? 'proceed with'} "${objectTitle}"?`;
+
+  const isDangerAction =
+    pendingAction?.variant === 'danger' || pendingAction?.key === 'delete';
 
   return (
     <ScrollView
@@ -173,8 +225,11 @@ export const DynamicObjectDetail: React.FC<DynamicObjectDetailProps> = ({
                 disabled={action.disabled}
                 isLoading={action.loading}
                 onPress={() => {
-                  if (action.requiresConfirmation) {
-                    openDeleteDialog();
+                  if (action.key === 'edit') {
+                    setIsEditing(true);
+                    if (onEdit) onEdit(object);
+                  } else if (action.requiresConfirmation) {
+                    requestActionConfirmation(action);
                   } else if (action.onPress) {
                     action.onPress(object);
                   }
@@ -186,17 +241,17 @@ export const DynamicObjectDetail: React.FC<DynamicObjectDetailProps> = ({
         </Card>
       ) : null}
 
-      {/* Delete Confirmation Dialog */}
+      {/* Generic Action Confirmation Dialog */}
       <Dialog
-        visible={isDeleteDialogOpen}
-        title={`Delete ${definition.name}?`}
-        description={`Are you sure you want to delete "${objectTitle}"? This action cannot be undone.`}
-        confirmLabel="Delete"
+        visible={isConfirmationOpen}
+        title={dialogTitle}
+        description={dialogDescription}
+        confirmLabel={pendingAction?.label ?? 'Confirm'}
         cancelLabel="Cancel"
-        isDanger={true}
-        onConfirm={handleConfirmDelete}
-        onCancel={closeDeleteDialog}
-        testID={`${testID}-delete-dialog`}
+        isDanger={isDangerAction}
+        onConfirm={handleConfirmPendingAction}
+        onCancel={handleCancelPendingAction}
+        testID={`${testID}-confirmation-dialog`}
       />
     </ScrollView>
   );
@@ -212,6 +267,9 @@ const styles = StyleSheet.create({
   },
   card: {
     borderRadius: 12,
+  },
+  editHeader: {
+    marginBottom: 16,
   },
   errorTitle: {
     marginBottom: 4,

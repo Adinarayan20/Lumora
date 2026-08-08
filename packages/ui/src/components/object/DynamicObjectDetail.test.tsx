@@ -171,9 +171,11 @@ describe('DynamicObjectDetail Universal Object Contract', () => {
     expect(getByText('Object Not Found')).toBeTruthy();
   });
 
-  it('triggers onEdit callback when Edit action button is pressed', () => {
+  it('launches DynamicForm edit mode and emits onSave when form is submitted', () => {
     const handleEdit = vi.fn();
-    const { getByText } = render(
+    const handleSave = vi.fn();
+
+    const { getByText, getByDisplayValue } = render(
       <ThemeProvider>
         <ViewportProvider>
           <DynamicObjectDetail
@@ -181,15 +183,84 @@ describe('DynamicObjectDetail Universal Object Contract', () => {
             definition={dummyTaskDefinition}
             schema={dummyTaskSchema}
             onEdit={handleEdit}
+            onSave={handleSave}
           />
         </ViewportProvider>
       </ThemeProvider>,
     );
 
+    // 1. Click Edit action button
     const editBtn = getByText('Edit');
     fireEvent.click(editBtn);
 
     expect(handleEdit).toHaveBeenCalledWith(dummyTaskObject);
+
+    // 2. Assert DynamicForm is rendered with initial values
+    expect(getByText('Edit Task')).toBeTruthy();
+    const titleInput = getByDisplayValue('Complete Lumora Batch 5 Verification');
+    expect(titleInput).toBeTruthy();
+
+    // 3. Edit input value and submit form
+    fireEvent.change(titleInput, { target: { value: 'Updated Task Title' } });
+    const saveBtn = getByText('Save Changes');
+    fireEvent.click(saveBtn);
+
+    expect(handleSave).toHaveBeenCalledTimes(1);
+    expect(handleSave).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Updated Task Title' }),
+      dummyTaskObject,
+    );
+  });
+
+  it('handles arbitrary confirmed actions (e.g. Archive) dynamically without calling onDelete', () => {
+    const handleArchive = vi.fn();
+    const handleDelete = vi.fn();
+
+    const customActions = [
+      {
+        key: 'archive',
+        label: 'Archive Object',
+        variant: 'secondary' as const,
+        requiresConfirmation: true,
+        confirmTitle: 'Archive Task Confirmation',
+        confirmDescription: 'Are you sure you want to move this task to archive?',
+        onPress: handleArchive,
+      },
+    ];
+
+    const { getByText, queryByText } = render(
+      <ThemeProvider>
+        <ViewportProvider>
+          <DynamicObjectDetail
+            object={dummyTaskObject}
+            definition={dummyTaskDefinition}
+            schema={dummyTaskSchema}
+            actions={customActions}
+            onDelete={handleDelete}
+          />
+        </ViewportProvider>
+      </ThemeProvider>,
+    );
+
+    // 1. Click Archive action button
+    const archiveBtn = getByText('Archive Object');
+    fireEvent.click(archiveBtn);
+
+    // 2. Assert custom confirmation dialog title & description appear
+    expect(getByText('Archive Task Confirmation')).toBeTruthy();
+    expect(getByText('Are you sure you want to move this task to archive?')).toBeTruthy();
+    expect(handleArchive).not.toHaveBeenCalled();
+    expect(handleDelete).not.toHaveBeenCalled();
+
+    // 3. Confirm action inside Dialog
+    const confirmBtn = getByText('Archive Object');
+    fireEvent.click(confirmBtn);
+
+    // 4. Assert handleArchive executed, onDelete NOT executed
+    expect(handleArchive).toHaveBeenCalledTimes(1);
+    expect(handleArchive).toHaveBeenCalledWith(dummyTaskObject);
+    expect(handleDelete).not.toHaveBeenCalled();
+    expect(queryByText('Archive Task Confirmation')).toBeNull();
   });
 
   it('requires confirmation before executing Delete action', () => {

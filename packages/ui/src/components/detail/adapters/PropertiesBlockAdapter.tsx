@@ -101,7 +101,13 @@ export const PropertiesBlockAdapter: React.FC<BlockAdapterProps> = ({
         </Text>
         <View style={styles.grid}>
           {displayProperties.map((prop) => (
-            <View key={prop.key} style={styles.propertyItem}>
+            <View
+              key={prop.key}
+              style={[
+                styles.propertyItem,
+                { borderBottomColor: theme.colors.borderSubtle },
+              ]}
+            >
               <Text variant="label" color="textSecondary">
                 {prop.label}
               </Text>
@@ -131,7 +137,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 2,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
     paddingBottom: 8,
   },
   propertyValue: {
