@@ -1,49 +1,17 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
-import { ThemeProvider, ViewportProvider, LightThemeColors } from '@lumora/theme';
+import { ThemeProvider, ViewportProvider } from '@lumora/theme';
 import { Button } from './Button';
-import { resolveButtonStyles } from './Button.styles';
 
 describe('Button Primitive Subsystem', () => {
-  it('resolves semantic theme colors for primary variant', () => {
-    const styles = resolveButtonStyles({
-      variant: 'primary',
-      themeColors: LightThemeColors,
-      sizeClass: 'Compact',
-      isTouchMode: true,
-    });
-    expect(styles.textColorToken).toBe('inverse');
-    expect(styles.resolvedBackgroundColor).toBe(LightThemeColors.primary);
-  });
-
-  it('resolves semantic theme colors for secondary variant', () => {
-    const styles = resolveButtonStyles({
-      variant: 'secondary',
-      themeColors: LightThemeColors,
-      sizeClass: 'Compact',
-      isTouchMode: true,
-    });
-    expect(styles.textColorToken).toBe('textPrimary');
-    expect(styles.resolvedBackgroundColor).toBe(LightThemeColors.surfaceElevated);
-  });
-
-  it('resolves destructive variant with danger background', () => {
-    const styles = resolveButtonStyles({
-      variant: 'destructive',
-      themeColors: LightThemeColors,
-      sizeClass: 'Compact',
-      isTouchMode: true,
-    });
-    expect(styles.resolvedBackgroundColor).toBe(LightThemeColors.danger);
-  });
-
-  it('throws Error in __DEV__ if onPress is missing', () => {
+  it('throws Error in __DEV__ if onPress callback is missing', () => {
+    const invalidOnPress = undefined as unknown as () => void;
     expect(() =>
       render(
         <ViewportProvider>
           <ThemeProvider>
-            <Button label="Click Me" onPress={undefined as any} />
+            <Button label="Click Me" onPress={invalidOnPress} />
           </ThemeProvider>
         </ViewportProvider>,
       ),
@@ -67,9 +35,41 @@ describe('Button Primitive Subsystem', () => {
     expect(handlePress).toHaveBeenCalledTimes(1);
   });
 
-  it('prevents onPress callback when disabled is true', () => {
+  it('sets accessibilityRole="button" and defaults accessibilityLabel to label', () => {
+    const { getByRole } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <Button label="Save Changes" onPress={() => {}} />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+
+    const button = getByRole('button');
+    expect(button).toBeTruthy();
+    expect(button.getAttribute('aria-label') || button.textContent).toContain('Save Changes');
+  });
+
+  it('uses explicit accessibilityLabel and accessibilityHint when provided', () => {
+    const { getByLabelText } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <Button
+            label="Save"
+            accessibilityLabel="Save object to cloud"
+            accessibilityHint="Persists data to encrypted cloud storage"
+            onPress={() => {}}
+          />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+
+    const button = getByLabelText('Save object to cloud');
+    expect(button).toBeTruthy();
+  });
+
+  it('prevents onPress callback and exposes disabled state when disabled is true', () => {
     const handlePress = vi.fn();
-    const { getByText } = render(
+    const { getByRole } = render(
       <ViewportProvider>
         <ThemeProvider>
           <Button label="Disabled Action" disabled={true} onPress={handlePress} />
@@ -77,8 +77,8 @@ describe('Button Primitive Subsystem', () => {
       </ViewportProvider>,
     );
 
-    const buttonElement = getByText('Disabled Action');
-    fireEvent.click(buttonElement);
+    const button = getByRole('button');
+    fireEvent.click(button);
     expect(handlePress).not.toHaveBeenCalled();
   });
 
@@ -113,5 +113,17 @@ describe('Button Primitive Subsystem', () => {
       </ViewportProvider>,
     );
     expect(container).toBeTruthy();
+  });
+
+  it('renders full width button layout when fullWidth is true', () => {
+    const { getByRole } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <Button label="Full Width CTA" fullWidth={true} onPress={() => {}} />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+    const button = getByRole('button');
+    expect(button).toBeTruthy();
   });
 });

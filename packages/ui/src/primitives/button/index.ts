@@ -1,5 +1,7 @@
 export { Button } from './Button';
 export { IconButton } from './IconButton';
+export { InteractiveAction } from './InteractiveAction';
+export type { InteractiveActionProps } from './InteractiveAction';
 export type {
   ButtonProps,
   IconButtonProps,

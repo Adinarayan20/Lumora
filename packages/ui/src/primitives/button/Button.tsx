@@ -1,17 +1,11 @@
-import React, { memo, useState, useEffect } from 'react';
-import {
-  Pressable,
-  View,
-  AccessibilityInfo,
-  Animated,
-  ActivityIndicator,
-  StyleSheet,
-} from 'react-native';
-import { useTheme, useViewport, MotionEngine, IconPressedOpacity } from '@lumora/theme';
+import React, { memo } from 'react';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { useTheme, useViewport } from '@lumora/theme';
 import { ButtonText } from '../typography/ButtonText';
 import { Icon } from '../icon/Icon';
 import type { ButtonProps } from './Button.types';
 import { resolveButtonStyles } from './Button.styles';
+import { InteractiveAction } from './InteractiveAction';
 
 export const Button: React.FC<ButtonProps> = memo(({
   label,
@@ -29,72 +23,15 @@ export const Button: React.FC<ButtonProps> = memo(({
   testID,
   style,
 }) => {
-  const { mode, colors } = useTheme();
+  const { colors } = useTheme();
   const viewport = useViewport();
 
-  // Development Quality Gate: Button MUST provide an onPress handler
+  // Development Quality Gate: Button MUST provide a valid onPress handler
   if (__DEV__ && typeof onPress !== 'function') {
     throw new Error(
       `[Lumora Button Primitive]: Button for '${label}' must provide a valid 'onPress' callback.`,
     );
   }
-
-  // Reduced Motion Detection
-  const [reduceMotion, setReduceMotion] = useState(false);
-  useEffect(() => {
-    let isMounted = true;
-    AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
-      if (isMounted) setReduceMotion(enabled);
-    });
-
-    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', (enabled) => {
-      if (isMounted) setReduceMotion(enabled);
-    });
-
-    return () => {
-      isMounted = false;
-      if (subscription && typeof subscription.remove === 'function') {
-        subscription.remove();
-      }
-    };
-  }, []);
-
-  // Motion Configuration from Theme MotionEngine
-  const pressMotionConfig = MotionEngine.buttonPress();
-
-  // Animated Scale & Opacity for Press State
-  const [scaleAnim] = useState(() => new Animated.Value(1));
-  const [pressedOpacity, setPressedOpacity] = useState(1);
-
-  const isInteractive = !disabled && !loading;
-
-  const handlePressIn = () => {
-    if (!isInteractive) return;
-    if (reduceMotion) {
-      setPressedOpacity(IconPressedOpacity);
-      return;
-    }
-    Animated.spring(scaleAnim, {
-      toValue: pressMotionConfig.scale,
-      damping: pressMotionConfig.springDamping,
-      stiffness: pressMotionConfig.springStiffness,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    if (!isInteractive) return;
-    if (reduceMotion) {
-      setPressedOpacity(1);
-      return;
-    }
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      damping: pressMotionConfig.springDamping,
-      stiffness: pressMotionConfig.springStiffness,
-      useNativeDriver: true,
-    }).start();
-  };
 
   // Resolve Styles from Theme Tokens
   const {
@@ -102,10 +39,10 @@ export const Button: React.FC<ButtonProps> = memo(({
     textColorToken,
     iconColorToken,
     spinnerColor,
+    focusRingColor,
+    hoverBackgroundColor,
     resolvedIconGap,
     resolvedIconSize,
-    touchTargetDimension,
-    resolvedHeight,
   } = resolveButtonStyles({
     variant,
     size,
@@ -114,82 +51,77 @@ export const Button: React.FC<ButtonProps> = memo(({
     sizeClass: viewport.sizeClass,
     isTouchMode: viewport.touchMode,
     disabled,
-    loading,
   });
 
-  const transformStyle = isInteractive && !reduceMotion ? [{ scale: scaleAnim }] : [];
-
   return (
-    <View
-      style={[
-        styles.outerWrapper,
-        fullWidth && styles.fullWidth,
-        {
-          minHeight: Math.max(touchTargetDimension, resolvedHeight),
-        },
-      ]}
+    <InteractiveAction
+      onPress={onPress}
+      disabled={disabled}
+      loading={loading}
+      fullWidth={fullWidth}
+      accessibilityLabel={accessibilityLabel || label}
+      accessibilityHint={accessibilityHint}
+      testID={testID}
+      focusRingColor={focusRingColor}
+      hoverBackgroundColor={hoverBackgroundColor}
+      innerStyle={[containerStyle, style]}
     >
-      <Pressable
-        onPress={isInteractive ? onPress : undefined}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        disabled={!isInteractive}
-        accessibilityRole="button"
-        accessibilityLabel={accessibilityLabel || label}
-        accessibilityHint={accessibilityHint}
-        accessibilityState={{
-          disabled: disabled || loading,
-          busy: loading,
-        }}
-        testID={testID}
-        style={[styles.touchable, fullWidth && styles.fullWidth]}
-      >
-        <Animated.View
-          style={[
-            containerStyle,
-            fullWidth && styles.fullWidth,
-            {
-              opacity: containerStyle.opacity * pressedOpacity,
-              transform: transformStyle,
-            },
-            style,
-          ]}
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color={spinnerColor} testID={`${testID || 'button'}-spinner`} />
-          ) : (
-            <React.Fragment>
-              {leftIcon && (
-                <View style={{ marginRight: resolvedIconGap }}>
-                  <Icon name={leftIcon} size={resolvedIconSize} color={iconColorToken} />
-                </View>
-              )}
+      {() => (
+        <View style={[styles.contentContainer, fullWidth && styles.fullWidth]}>
+          {/* Main Visual Content (Hidden when loading to preserve width & layout geometry) */}
+          <View style={[styles.labelRow, loading && styles.hiddenContent]}>
+            {leftIcon && (
+              <View style={{ marginRight: resolvedIconGap }}>
+                <Icon name={leftIcon} size={resolvedIconSize} color={iconColorToken} />
+              </View>
+            )}
 
-              <ButtonText color={textColorToken} numberOfLines={1}>
-                {label}
-              </ButtonText>
+            <ButtonText color={textColorToken} numberOfLines={1}>
+              {label}
+            </ButtonText>
 
-              {rightIcon && (
-                <View style={{ marginLeft: resolvedIconGap }}>
-                  <Icon name={rightIcon} size={resolvedIconSize} color={iconColorToken} />
-                </View>
-              )}
-            </React.Fragment>
+            {rightIcon && (
+              <View style={{ marginLeft: resolvedIconGap }}>
+                <Icon name={rightIcon} size={resolvedIconSize} color={iconColorToken} />
+              </View>
+            )}
+          </View>
+
+          {/* Centered Spinner during Loading */}
+          {loading && (
+            <View style={styles.spinnerOverlay}>
+              <ActivityIndicator
+                size="small"
+                color={spinnerColor}
+                testID={`${testID || 'button'}-spinner`}
+              />
+            </View>
           )}
-        </Animated.View>
-      </Pressable>
-    </View>
+        </View>
+      )}
+    </InteractiveAction>
   );
 });
 
 Button.displayName = 'Button';
 
 const styles = StyleSheet.create({
-  outerWrapper: {
+  contentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  labelRow: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  touchable: {
+  hiddenContent: {
+    opacity: 0,
+  },
+  spinnerOverlay: {
+    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
   },

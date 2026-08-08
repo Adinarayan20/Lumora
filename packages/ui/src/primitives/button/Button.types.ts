@@ -47,11 +47,16 @@ export interface ButtonProps {
   /** Custom test ID for automated QA */
   readonly testID?: string;
 
-  /** Safe container layout style overrides (height, transform, colors, radii are owned by primitive) */
+  /** Safe container layout style overrides (height, padding, colors, radii are owned by primitive) */
   readonly style?: StyleProp<
     Omit<
       ViewStyle,
       | 'height'
+      | 'minHeight'
+      | 'maxHeight'
+      | 'padding'
+      | 'paddingHorizontal'
+      | 'paddingVertical'
       | 'transform'
       | 'backgroundColor'
       | 'borderRadius'
@@ -66,7 +71,7 @@ export interface IconButtonProps {
   /** Semantic icon identifier from the Lumora Registry */
   readonly icon: SemanticIconName | ExtensionIconName;
 
-  /** MANDATORY explicit accessibility label for screen readers */
+  /** MANDATORY explicit non-empty accessibility label for screen readers */
   readonly accessibilityLabel: string;
 
   /** Visual hierarchy variant (default: 'ghost') */
@@ -93,12 +98,19 @@ export interface IconButtonProps {
   /** Custom test ID for automated QA */
   readonly testID?: string;
 
-  /** Safe container layout style overrides */
+  /** Safe container layout style overrides (geometry is owned by primitive) */
   readonly style?: StyleProp<
     Omit<
       ViewStyle,
       | 'width'
+      | 'minWidth'
+      | 'maxWidth'
       | 'height'
+      | 'minHeight'
+      | 'maxHeight'
+      | 'padding'
+      | 'paddingHorizontal'
+      | 'paddingVertical'
       | 'transform'
       | 'backgroundColor'
       | 'borderRadius'

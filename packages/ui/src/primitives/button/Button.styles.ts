@@ -4,6 +4,7 @@ import {
   ButtonHeights,
   ButtonPaddingHorizontal,
   ButtonIconGaps,
+  InteractiveTouchTargetMinimum,
 } from '@lumora/theme';
 import type { ColorPalette, ViewportSizeClass } from '@lumora/theme';
 import type { SemanticIconColor, SemanticIconSize } from '../icon/Icon.types';
@@ -18,7 +19,6 @@ export interface ResolveButtonStylesOptions {
   readonly sizeClass: ViewportSizeClass;
   readonly isTouchMode: boolean;
   readonly disabled?: boolean;
-  readonly loading?: boolean;
 }
 
 export interface ResolvedButtonStyles {
@@ -26,6 +26,8 @@ export interface ResolvedButtonStyles {
   readonly textColorToken: TypographyColorToken;
   readonly iconColorToken: SemanticIconColor;
   readonly spinnerColor: string;
+  readonly focusRingColor: string;
+  readonly hoverBackgroundColor: string;
   readonly resolvedHeight: number;
   readonly resolvedPaddingHorizontal: number;
   readonly resolvedIconGap: number;
@@ -57,16 +59,19 @@ export function resolveButtonStyles({
     }
   }
 
-  // 2. Resolve Height & Touch Target
-  const resolvedHeight = ButtonHeights[resolvedSize] || 44;
-  const resolvedPaddingHorizontal = ButtonPaddingHorizontal[resolvedSize] || 16;
-  const resolvedIconGap = ButtonIconGaps[resolvedSize] || 8;
+  // Strictly guarded token mapping
+  const resolvedHeight = ButtonHeights[resolvedSize];
+  const resolvedPaddingHorizontal = ButtonPaddingHorizontal[resolvedSize];
+  const resolvedIconGap = ButtonIconGaps[resolvedSize];
 
-  const touchTargetDimension = isTouchMode
-    ? sizeClass === 'Compact'
-      ? 44
-      : 48
-    : 36;
+  if (__DEV__ && (!resolvedHeight || !resolvedPaddingHorizontal || !resolvedIconGap)) {
+    throw new Error(
+      `[Lumora Button Token Error]: Invalid or missing button size token for size '${resolvedSize}'.`,
+    );
+  }
+
+  // 2. Resolve Interactive Touch Target Minimum
+  const touchTargetDimension = isTouchMode ? InteractiveTouchTargetMinimum : 36;
 
   // 3. Resolve Icon Size Token
   const resolvedIconSize: SemanticIconSize =
@@ -82,6 +87,8 @@ export function resolveButtonStyles({
   let resolvedBorderColor = 'transparent';
   let resolvedBorderWidth = 0;
   let spinnerColor = themeColors.surface;
+  let hoverBackgroundColor = themeColors.primaryHover;
+  const focusRingColor = themeColors.primary;
 
   switch (variant) {
     case 'secondary':
@@ -89,6 +96,7 @@ export function resolveButtonStyles({
       textColorToken = 'textPrimary';
       iconColorToken = 'icon.primary';
       spinnerColor = themeColors.textPrimary;
+      hoverBackgroundColor = themeColors.surface;
       break;
 
     case 'outline':
@@ -98,6 +106,7 @@ export function resolveButtonStyles({
       textColorToken = 'textPrimary';
       iconColorToken = 'icon.primary';
       spinnerColor = themeColors.textPrimary;
+      hoverBackgroundColor = themeColors.backgroundSecondary;
       break;
 
     case 'ghost':
@@ -105,6 +114,7 @@ export function resolveButtonStyles({
       textColorToken = 'textPrimary';
       iconColorToken = 'icon.primary';
       spinnerColor = themeColors.textPrimary;
+      hoverBackgroundColor = themeColors.backgroundSecondary;
       break;
 
     case 'destructive':
@@ -112,6 +122,7 @@ export function resolveButtonStyles({
       textColorToken = 'inverse';
       iconColorToken = 'icon.inverse';
       spinnerColor = themeColors.surface;
+      hoverBackgroundColor = themeColors.danger;
       break;
 
     case 'primary':
@@ -120,6 +131,7 @@ export function resolveButtonStyles({
       textColorToken = 'inverse';
       iconColorToken = 'icon.inverse';
       spinnerColor = themeColors.surface;
+      hoverBackgroundColor = themeColors.primaryHover;
       break;
   }
 
@@ -145,6 +157,8 @@ export function resolveButtonStyles({
     textColorToken,
     iconColorToken,
     spinnerColor,
+    focusRingColor,
+    hoverBackgroundColor,
     resolvedHeight,
     resolvedPaddingHorizontal,
     resolvedIconGap,

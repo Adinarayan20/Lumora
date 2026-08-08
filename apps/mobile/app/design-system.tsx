@@ -461,7 +461,6 @@ export default function DesignSystemPlayground() {
                           sizeClass: viewport.sizeClass,
                           isTouchMode: viewport.touchMode,
                           disabled: btnDisabled,
-                          loading: btnLoading,
                         });
                         return (
                           <React.Fragment>
