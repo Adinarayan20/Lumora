@@ -26,13 +26,20 @@ export const NumberFieldAdapter: React.FC<FieldControlAdapterProps<unknown>> = m
   const handleChangeText = (text: string) => {
     setRawText(text);
 
-    if (text.trim() === '') {
+    const trimmed = text.trim();
+    if (trimmed === '') {
       onChange(undefined);
       return;
     }
 
+    const isIntermediate =
+      trimmed === '-' ||
+      trimmed === '.' ||
+      trimmed === '-.' ||
+      text.endsWith('.');
+
     const parsed = Number(text);
-    if (!isNaN(parsed) && text.trim() !== '-' && text.trim() !== '.' && !text.endsWith('.')) {
+    if (!isNaN(parsed) && Number.isFinite(parsed) && !isIntermediate) {
       onChange(parsed);
     }
   };

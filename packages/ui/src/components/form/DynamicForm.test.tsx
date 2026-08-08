@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
 import { ThemeProvider, ViewportProvider } from '@lumora/theme';
@@ -90,7 +90,7 @@ describe('DynamicForm Integration Contract', () => {
     expect(getByDisplayValue('Task B')).toBeTruthy();
   });
 
-  it('resets form values when reset button is pressed', () => {
+  it('proves state transition during form reset (Initial -> Edited -> Reset -> Initial)', () => {
     const handleSubmit = vi.fn();
     const handleReset = vi.fn();
 
@@ -108,15 +108,21 @@ describe('DynamicForm Integration Contract', () => {
       </ThemeProvider>,
     );
 
+    // 1. Initial State Assert
     const input = getByDisplayValue('Initial Value');
+    expect(input).toBeTruthy();
+
+    // 2. Edit Action & Assert
     fireEvent.change(input, { target: { value: 'Edited Value' } });
     expect(getByDisplayValue('Edited Value')).toBeTruthy();
 
+    // 3. Reset Action
     const resetBtn = getByText('Reset');
     fireEvent.click(resetBtn);
 
-    expect(handleReset).toHaveBeenCalledTimes(1);
+    // 4. Assert Reset State Restored & Callback Invoked Exactly Once
     expect(getByDisplayValue('Initial Value')).toBeTruthy();
+    expect(handleReset).toHaveBeenCalledTimes(1);
   });
 
   it('blocks submission and displays error when validation fails', () => {
@@ -138,5 +144,27 @@ describe('DynamicForm Integration Contract', () => {
 
     expect(handleSubmit).not.toHaveBeenCalled();
     expect(getByText('Task Title is required.')).toBeTruthy();
+  });
+
+  it('triggers onCancel callback when Cancel button is clicked', () => {
+    const handleSubmit = vi.fn();
+    const handleCancel = vi.fn();
+
+    const { getByText } = render(
+      <ThemeProvider>
+        <ViewportProvider>
+          <DynamicForm
+            fields={sampleSchema}
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+          />
+        </ViewportProvider>
+      </ThemeProvider>,
+    );
+
+    const cancelBtn = getByText('Cancel');
+    fireEvent.click(cancelBtn);
+
+    expect(handleCancel).toHaveBeenCalledTimes(1);
   });
 });

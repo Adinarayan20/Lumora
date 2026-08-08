@@ -1,4 +1,4 @@
-import { FieldType, type FieldSchema } from '@lumora/shared';
+import type { FieldSchema } from '@lumora/shared';
 
 export interface ValidationErrorResult {
   readonly [fieldKey: string]: string;
