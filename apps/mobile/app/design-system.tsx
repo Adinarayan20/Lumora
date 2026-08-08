@@ -35,6 +35,11 @@ import {
   ButtonVariant,
   ButtonSize,
   ButtonShape,
+  Input,
+  TextArea,
+  resolveInputStyles,
+  InputVariant,
+  InputSize,
 } from '@lumora/ui';
 
 const ALL_FOUNDATIONAL_ICONS: { domain: string; icons: SemanticIconName[] }[] = [
@@ -105,6 +110,15 @@ export default function DesignSystemPlayground() {
   const [btnHasRightIcon, setBtnHasRightIcon] = useState(false);
   const [btnPressCount, setBtnPressCount] = useState(0);
 
+  // Input Inspection State
+  const [inputValue, setInputValue] = useState('');
+  const [inputVariant, setInputVariant] = useState<InputVariant>('default');
+  const [inputSize, setInputSize] = useState<InputSize>('md');
+  const [inputHasError, setInputHasError] = useState(false);
+  const [inputDisabled, setInputDisabled] = useState(false);
+  const [inputHasLeftIcon, setInputHasLeftIcon] = useState(true);
+  const [inputHasRightIcon, setInputHasRightIcon] = useState(true);
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <Container max="wide">
@@ -127,7 +141,7 @@ export default function DesignSystemPlayground() {
           {/* Section Navigation Tabs */}
           <Stack padding="sm" radius="card" background={colors.surfaceElevated}>
             <HStack gap="xs" style={{ flexWrap: 'wrap' }}>
-              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
+              {(['Overview', 'Typography', 'Icons', 'Buttons', 'Inputs', 'Motion', 'Materials', 'Colors', 'Accessibility', 'Responsive', 'Anti-Patterns'] as const).map((tab) => (
                 <Pressable key={tab} onPress={() => setActiveSection(tab)}>
                   <Stack
                     padding="sm"
@@ -632,6 +646,136 @@ export default function DesignSystemPlayground() {
                   </VStack>
                 </Stack>
               </VStack>
+            </VStack>
+          )}
+
+          {/* COMPONENT #4 — INPUT & FORM CONTROL SYSTEM LABORATORY */}
+          {activeSection === 'Inputs' && (
+            <VStack gap="md">
+              <Heading level={2}>Component #4 — Input & Form Control System Laboratory</Heading>
+              
+              {/* INTERACTIVE INSPECTOR CARD */}
+              <Stack padding="lg" radius="card" background={colors.surface}>
+                <VStack gap="md">
+                  <HStack justify="space-between" align="center">
+                    <Text role="Title Medium">Interactive Token & Geometry Inspector</Text>
+                    <Stack padding="xs" radius="pill" background={colors.primaryGlow}>
+                      <Caption color="primary">SYSTEM: ACTIVE</Caption>
+                    </Stack>
+                  </HStack>
+
+                  {/* PREVIEW CONTAINER */}
+                  <Stack padding="xl" radius="card" background={colors.backgroundSecondary} style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <VStack gap="md" style={{ width: '100%', maxWidth: 400 }}>
+                      <Input
+                        value={inputValue}
+                        onChangeText={setInputValue}
+                        label="Object Title"
+                        placeholder="e.g. Purchase Grocery Items"
+                        helperText={inputHasError ? undefined : "Enter a clear descriptive title for this object."}
+                        errorText={inputHasError ? "Title is required and must be at least 3 characters." : undefined}
+                        variant={inputVariant}
+                        size={inputSize}
+                        disabled={inputDisabled}
+                        leftIcon={inputHasLeftIcon ? 'action.search' : undefined}
+                        rightIcon={inputHasRightIcon ? 'nav.close' : undefined}
+                        onRightIconPress={inputHasRightIcon ? () => setInputValue('') : undefined}
+                        rightIconAccessibilityLabel="Clear text"
+                        accessibilityLabel="Object Title Input"
+                      />
+
+                      <TextArea
+                        value={inputValue}
+                        onChangeText={setInputValue}
+                        label="Object Description (Multi-line)"
+                        placeholder="Detailed notes and specifications..."
+                        helperText="Supports multi-line narrative notes."
+                        variant={inputVariant}
+                        size={inputSize}
+                        disabled={inputDisabled}
+                        numberOfLines={3}
+                      />
+                    </VStack>
+                  </Stack>
+
+                  {/* CONTROLS GRID */}
+                  <VStack gap="sm">
+                    <Text role="Title Small">Variant Selector</Text>
+                    <HStack gap="xs" style={{ flexWrap: 'wrap' }}>
+                      {(['default', 'filled', 'ghost'] as InputVariant[]).map((v) => (
+                        <Pressable key={v} onPress={() => setInputVariant(v)}>
+                          <Stack padding="xs" radius="pill" background={inputVariant === v ? colors.primary : colors.backgroundSecondary}>
+                            <Caption color={inputVariant === v ? 'inverse' : 'textPrimary'}>{v}</Caption>
+                          </Stack>
+                        </Pressable>
+                      ))}
+                    </HStack>
+
+                    <Text role="Title Small">Size Selector</Text>
+                    <HStack gap="sm" style={{ flexWrap: 'wrap' }}>
+                      {(['sm', 'md', 'lg'] as InputSize[]).map((s) => (
+                        <Pressable key={s} onPress={() => setInputSize(s)}>
+                          <Stack padding="xs" radius="pill" background={inputSize === s ? colors.primary : colors.backgroundSecondary}>
+                            <Caption color={inputSize === s ? 'inverse' : 'textPrimary'}>{s.toUpperCase()}</Caption>
+                          </Stack>
+                        </Pressable>
+                      ))}
+                    </HStack>
+
+                    <Text role="Title Small">State Toggles</Text>
+                    <HStack gap="sm" style={{ flexWrap: 'wrap' }}>
+                      <Pressable onPress={() => setInputHasError(!inputHasError)}>
+                        <Stack padding="xs" radius="pill" background={inputHasError ? colors.danger : colors.backgroundSecondary}>
+                          <Caption color={inputHasError ? 'inverse' : 'textPrimary'}>Error: {inputHasError ? 'ON' : 'OFF'}</Caption>
+                        </Stack>
+                      </Pressable>
+
+                      <Pressable onPress={() => setInputDisabled(!inputDisabled)}>
+                        <Stack padding="xs" radius="pill" background={inputDisabled ? colors.primary : colors.backgroundSecondary}>
+                          <Caption color={inputDisabled ? 'inverse' : 'textPrimary'}>Disabled: {inputDisabled ? 'ON' : 'OFF'}</Caption>
+                        </Stack>
+                      </Pressable>
+
+                      <Pressable onPress={() => setInputHasLeftIcon(!inputHasLeftIcon)}>
+                        <Stack padding="xs" radius="pill" background={inputHasLeftIcon ? colors.primary : colors.backgroundSecondary}>
+                          <Caption color={inputHasLeftIcon ? 'inverse' : 'textPrimary'}>Left Icon: {inputHasLeftIcon ? 'ON' : 'OFF'}</Caption>
+                        </Stack>
+                      </Pressable>
+
+                      <Pressable onPress={() => setInputHasRightIcon(!inputHasRightIcon)}>
+                        <Stack padding="xs" radius="pill" background={inputHasRightIcon ? colors.primary : colors.backgroundSecondary}>
+                          <Caption color={inputHasRightIcon ? 'inverse' : 'textPrimary'}>Right Action: {inputHasRightIcon ? 'ON' : 'OFF'}</Caption>
+                        </Stack>
+                      </Pressable>
+                    </HStack>
+
+                    {/* LIVE COMPUTED RESOLVED METRICS */}
+                    {(() => {
+                      const res = resolveInputStyles({
+                        variant: inputVariant,
+                        size: inputSize,
+                        themeColors: colors,
+                        sizeClass: viewport.sizeClass,
+                        disabled: inputDisabled,
+                        error: inputHasError,
+                      });
+                      return (
+                        <Stack padding="sm" radius="control" background={colors.backgroundSecondary}>
+                          <VStack gap="xs">
+                            <Text role="Body Small" color="primary">Computed Token Metrics</Text>
+                            <Metadata color="textMuted">
+                              Visual Body Height: {res.resolvedHeight}px | Touch Target Min: {res.touchTargetDimension}dp | Icon Gap: {res.resolvedIconGap}px
+                            </Metadata>
+                            <Metadata color="textMuted">
+                              Padding H: {res.resolvedPaddingHorizontal}px | Border Color: {res.resolvedBorderColor}
+                            </Metadata>
+                          </VStack>
+                        </Stack>
+                      );
+                    })()}
+                  </VStack>
+                </VStack>
+              </Stack>
             </VStack>
           )}
 
