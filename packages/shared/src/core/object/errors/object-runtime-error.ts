@@ -62,18 +62,30 @@ export class ObjectLifecycleConflictException extends ObjectRuntimeError {
 }
 
 /**
- * Thrown when an object's type key does not match the provided ObjectDefinition or SchemaDefinition.
+ * Thrown when an object's type key or schemaVersion does not match the provided ObjectDefinition or SchemaDefinition.
  */
 export class ObjectSchemaMismatchException extends ObjectRuntimeError {
   constructor(
     public readonly objectTypeKey: string,
     public readonly expectedTypeKey: string,
+    public readonly schemaVersion?: number,
+    public readonly expectedSchemaVersion?: number,
   ) {
-    super(
-      `Object typeKey '${objectTypeKey}' does not match schema typeKey '${expectedTypeKey}'.`,
-      ErrorCode.DOMAIN_VALIDATION_ERROR,
-      { objectTypeKey, expectedTypeKey },
-    );
+    const isVersionMismatch =
+      schemaVersion !== undefined &&
+      expectedSchemaVersion !== undefined &&
+      schemaVersion !== expectedSchemaVersion;
+
+    const message = isVersionMismatch
+      ? `Schema version mismatch for type '${objectTypeKey}': provided schemaVersion ${schemaVersion} does not match expected version ${expectedSchemaVersion}.`
+      : `Object typeKey '${objectTypeKey}' does not match schema typeKey '${expectedTypeKey}'.`;
+
+    super(message, ErrorCode.DOMAIN_VALIDATION_ERROR, {
+      objectTypeKey,
+      expectedTypeKey,
+      schemaVersion,
+      expectedSchemaVersion,
+    });
   }
 }
 

@@ -124,7 +124,7 @@ export class ObjectRuntime {
       version: existing.version + 1,
     });
 
-    return this.repository.update(updatedObject);
+    return this.repository.update(updatedObject, expectedVersion);
   }
 
   /**

@@ -11,6 +11,7 @@ import {
   ObjectValidationException,
   ObjectLifecycleConflictException,
   ObjectConcurrencyException,
+  ObjectSchemaMismatchException,
 } from '../../errors/object-runtime-error.js';
 
 class MockClock implements ClockProvider {
@@ -33,7 +34,7 @@ class MockIdGenerator implements IdGeneratorProvider {
   }
 }
 
-describe('Universal Object Runtime Engine Contract', () => {
+describe('Universal Object Runtime Engine Contract & Hardening', () => {
   let repo: InMemoryObjectRepository;
   let mockClock: MockClock;
   let mockIdGen: MockIdGenerator;
@@ -148,6 +149,46 @@ describe('Universal Object Runtime Engine Contract', () => {
     const finalState = await runtime.getObject(created.id);
     expect(finalState.status).toBe(ObjectStatus.ACTIVE);
     expect(finalState.attributes.purchasePrice).toBe(125000);
+  });
+
+  it('enforces schema version integrity during creation and update', async () => {
+    // 1. Mismatched definition vs schema version on creation
+    const mismatchedSchema: SchemaDefinition = {
+      ...taskSchema,
+      schemaVersion: 99, // Mismatch with taskDef.schemaVersion = 1
+    };
+
+    await expect(
+      runtime.createObject({
+        definition: taskDef,
+        schema: mismatchedSchema,
+        attributes: { title: 'Schema Version Test Task' },
+      }),
+    ).rejects.toThrow(ObjectSchemaMismatchException);
+
+    // 2. Valid creation
+    const obj = await runtime.createObject({
+      definition: taskDef,
+      schema: taskSchema,
+      attributes: { title: 'Valid Task' },
+    });
+
+    // 3. Attempt update with mismatched schemaVersion
+    mockClock.setTime('2026-08-08T15:00:00.000Z');
+    await expect(
+      runtime.updateObject({
+        id: obj.id,
+        schema: mismatchedSchema, // schemaVersion 99 != obj.schemaVersion 1
+        attributes: { title: 'Failed Update Attempt' },
+      }),
+    ).rejects.toThrow(ObjectSchemaMismatchException);
+
+    // 4. Verify failed schema version update did NOT modify stored object
+    const stored = await runtime.getObject(obj.id);
+    expect(stored.attributes.title).toBe('Valid Task');
+    expect(stored.updatedAt).toBe('2026-08-08T10:00:00.000Z');
+    expect(stored.version).toBe(1);
+    expect(stored.schemaVersion).toBe(1);
   });
 
   it('preserves falsy values 0 and false during object creation and update', async () => {

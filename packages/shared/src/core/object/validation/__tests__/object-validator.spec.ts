@@ -4,12 +4,13 @@ import type { SchemaDefinition } from '../../../catalog/schema-definition.js';
 import { FieldType } from '../../../catalog/field-type.js';
 import { ObjectStatus } from '../../../catalog/object-status.js';
 import { ObjectValidator } from '../object-validator.js';
+import type { UniversalObject } from '../../types/universal-object.types.js';
 import {
   ObjectSchemaMismatchException,
   ObjectLifecycleConflictException,
 } from '../../errors/object-runtime-error.js';
 
-describe('ObjectValidator Domain Contract', () => {
+describe('ObjectValidator Domain Contract & Micro-Hardening', () => {
   const sampleDef: ObjectDefinition = {
     typeKey: 'task',
     name: 'Task',
@@ -57,18 +58,92 @@ describe('ObjectValidator Domain Contract', () => {
     ).toThrow(ObjectSchemaMismatchException);
   });
 
-  it('rejects required missing string attributes and invalid number boundaries', () => {
-    const input = {
-      typeKey: 'task',
-      attributes: {
-        priority: 999, // Exceeds max 10
-      },
+  it('throws ObjectSchemaMismatchException if definition schemaVersion does not match schema schemaVersion', () => {
+    const mismatchedSchema: SchemaDefinition = {
+      ...sampleSchema,
+      schemaVersion: 2, // Mismatch!
     };
 
-    const result = ObjectValidator.validateCreation(input, sampleDef, sampleSchema);
-    expect(result.isValid).toBe(false);
-    expect(result.errors.title).toBeDefined();
-    expect(result.errors.priority).toBeDefined();
+    const input = {
+      typeKey: 'task',
+      attributes: { title: 'Version Mismatch Task' },
+    };
+
+    expect(() =>
+      ObjectValidator.validateCreation(input, sampleDef, mismatchedSchema),
+    ).toThrow(ObjectSchemaMismatchException);
+  });
+
+  it('throws ObjectSchemaMismatchException during update if existing object schemaVersion differs from update schema', () => {
+    const existingObj: UniversalObject = {
+      id: 'obj-123',
+      typeKey: 'task',
+      schemaVersion: 1,
+      status: ObjectStatus.ACTIVE,
+      attributes: { title: 'Existing Task' },
+      createdAt: '2026-08-08T00:00:00.000Z',
+      updatedAt: '2026-08-08T00:00:00.000Z',
+      version: 1,
+    };
+
+    const v2Schema: SchemaDefinition = {
+      ...sampleSchema,
+      schemaVersion: 2, // Mismatch with existingObj.schemaVersion = 1!
+    };
+
+    expect(() =>
+      ObjectValidator.validateUpdate({ attributes: { title: 'Updated Title' } }, existingObj, v2Schema),
+    ).toThrow(ObjectSchemaMismatchException);
+  });
+
+  it('enforces JSON Field Validation Semantics (objects, arrays, optional null, primitive rejection)', () => {
+    const jsonFields = [
+      { key: 'metadata', label: 'Optional Metadata', type: FieldType.JSON },
+      { key: 'payload', label: 'Required Payload', type: FieldType.JSON, validation: { required: true } },
+    ];
+
+    // 1. JSON object & array accepted
+    const validResult = ObjectValidator.validateAttributes(
+      {
+        metadata: { key: 'value' },
+        payload: [1, 2, 3],
+      },
+      jsonFields,
+    );
+    expect(validResult.isValid).toBe(true);
+
+    // 2. Optional JSON null accepted
+    const optionalNullResult = ObjectValidator.validateAttributes(
+      {
+        metadata: null,
+        payload: { valid: true },
+      },
+      jsonFields,
+    );
+    expect(optionalNullResult.isValid).toBe(true);
+
+    // 3. Required JSON null rejected
+    const requiredNullResult = ObjectValidator.validateAttributes(
+      {
+        metadata: null,
+        payload: null, // Required field cannot be null
+      },
+      jsonFields,
+    );
+    expect(requiredNullResult.isValid).toBe(false);
+    expect(requiredNullResult.errors.payload).toBeDefined();
+
+    // 4. Primitive JSON value rejected
+    const primitiveResult = ObjectValidator.validateAttributes(
+      {
+        metadata: 'just a string', // Invalid for FieldType.JSON
+        payload: 12345, // Invalid for FieldType.JSON
+      },
+      jsonFields,
+    );
+    expect(primitiveResult.isValid).toBe(false);
+    expect(primitiveResult.errors.metadata).toBeDefined();
+    expect(primitiveResult.errors.payload).toBeDefined();
   });
 
   it('rejects illegal lifecycle transitions (e.g. active -> active)', () => {

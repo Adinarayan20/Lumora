@@ -17,8 +17,9 @@ export interface IObjectRepository {
 
   /**
    * Updates an existing Universal Object. Throws ObjectNotFoundException or ObjectConcurrencyException.
+   * If expectedVersion is provided, atomic compare-and-swap verification is required.
    */
-  update(object: UniversalObject): Promise<UniversalObject>;
+  update(object: UniversalObject, expectedVersion?: number): Promise<UniversalObject>;
 
   /**
    * Queries Universal Objects matching optional filter criteria.

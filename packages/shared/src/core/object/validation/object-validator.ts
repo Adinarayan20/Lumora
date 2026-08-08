@@ -31,6 +31,14 @@ export class ObjectValidator {
     if (schema.typeKey !== definition.typeKey) {
       throw new ObjectSchemaMismatchException(schema.typeKey, definition.typeKey);
     }
+    if (definition.schemaVersion !== schema.schemaVersion) {
+      throw new ObjectSchemaMismatchException(
+        schema.typeKey,
+        definition.typeKey,
+        schema.schemaVersion,
+        definition.schemaVersion,
+      );
+    }
 
     return ObjectValidator.validateAttributes(input.attributes, schema.fields);
   }
@@ -45,6 +53,14 @@ export class ObjectValidator {
   ): ValidationResult {
     if (existingObject.typeKey !== schema.typeKey) {
       throw new ObjectSchemaMismatchException(existingObject.typeKey, schema.typeKey);
+    }
+    if (existingObject.schemaVersion !== schema.schemaVersion) {
+      throw new ObjectSchemaMismatchException(
+        schema.typeKey,
+        existingObject.typeKey,
+        schema.schemaVersion,
+        existingObject.schemaVersion,
+      );
     }
 
     if (!changes.attributes || Object.keys(changes.attributes).length === 0) {
@@ -101,7 +117,7 @@ export class ObjectValidator {
         errors[field.key] = list;
       };
 
-      // 1. Required Check — 0, false, "", null are valid, only undefined is missing!
+      // 1. Required Check — 0, false, "", null (if optional) are valid, only undefined is missing!
       if (value === undefined) {
         if (field.defaultValue !== undefined) {
           normalized[field.key] = field.defaultValue;
@@ -161,8 +177,9 @@ export class ObjectValidator {
           break;
 
         case FieldType.JSON:
+          // FieldType.JSON semantics: plain object or array required; null/undefined handled above
           if (typeof value !== 'object') {
-            addFieldError(`Field '${field.label}' must be an object or array.`);
+            addFieldError(`Field '${field.label}' must be a JSON object or array.`);
           }
           break;
 
