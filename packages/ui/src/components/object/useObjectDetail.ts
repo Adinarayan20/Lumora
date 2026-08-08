@@ -14,7 +14,7 @@ export interface UseObjectDetailResult {
 }
 
 export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetailResult {
-  const { object, actions, onEdit, onDelete, onArchive } = props;
+  const { object, schema, actions, onEdit, onDelete, onArchive } = props;
 
   const [isEditing, setIsEditing] = useState(false);
   const [pendingAction, setPendingAction] = useState<ObjectActionConfig | null>(null);
@@ -45,11 +45,13 @@ export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetai
   const defaultActions: ObjectActionConfig[] = [];
 
   if (onEdit) {
+    const isEditDisabled = Boolean(schema && (!schema.fields || schema.fields.length === 0));
     defaultActions.push({
       key: 'edit',
       label: 'Edit',
       icon: 'edit',
       variant: 'secondary',
+      disabled: isEditDisabled,
       onPress: (obj: UniversalObjectData) => {
         setIsEditing(true);
         onEdit(obj);

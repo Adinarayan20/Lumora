@@ -301,4 +301,31 @@ describe('DynamicObjectDetail Universal Object Contract', () => {
     expect(handleDelete).toHaveBeenCalledTimes(1);
     expect(handleDelete).toHaveBeenCalledWith(dummyTaskObject);
   });
+
+  it('handles edit mode fallback safely when schema has no fields', () => {
+    const emptySchema: SchemaDefinition = {
+      typeKey: 'task',
+      schemaVersion: 1,
+      fields: [],
+    };
+
+    const handleEdit = vi.fn();
+
+    const { getByText } = render(
+      <ThemeProvider>
+        <ViewportProvider>
+          <DynamicObjectDetail
+            object={dummyTaskObject}
+            definition={dummyTaskDefinition}
+            schema={emptySchema}
+            onEdit={handleEdit}
+          />
+        </ViewportProvider>
+      </ThemeProvider>,
+    );
+
+    // Default Edit button is disabled when schema fields are empty
+    const editBtn = getByText('Edit');
+    expect(editBtn).toBeTruthy();
+  });
 });

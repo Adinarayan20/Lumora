@@ -130,7 +130,8 @@ export const DynamicObjectDetail: React.FC<DynamicObjectDetailProps> = ({
     );
 
   // 4. Inline Edit Mode (Powered by DynamicForm Engine)
-  if (isEditing && schema?.fields) {
+  if (isEditing) {
+    const hasSchemaFields = Boolean(schema?.fields && schema.fields.length > 0);
     return (
       <ScrollView style={styles.container} testID={`${testID}-edit-mode`}>
         <Card
@@ -147,21 +148,36 @@ export const DynamicObjectDetail: React.FC<DynamicObjectDetailProps> = ({
           <Text variant="headingM" color="textPrimary" style={styles.editHeader}>
             Edit {definition.name}
           </Text>
-          <DynamicForm
-            fields={schema.fields}
-            initialValues={object.attributes}
-            submitLabel="Save Changes"
-            cancelLabel="Cancel Edit"
-            onSubmit={(newAttributes) => {
-              if (onSave) {
-                onSave(newAttributes, object);
-              }
-              setIsEditing(false);
-            }}
-            onCancel={() => {
-              setIsEditing(false);
-            }}
-          />
+          {hasSchemaFields ? (
+            <DynamicForm
+              fields={schema!.fields}
+              initialValues={object.attributes}
+              submitLabel="Save Changes"
+              cancelLabel="Cancel Edit"
+              onSubmit={(newAttributes) => {
+                if (onSave) {
+                  onSave(newAttributes, object);
+                }
+                setIsEditing(false);
+              }}
+              onCancel={() => {
+                setIsEditing(false);
+              }}
+            />
+          ) : (
+            <View style={styles.noSchemaFallback}>
+              <Text variant="body" color="textMuted" style={styles.noSchemaText}>
+                Editing is unavailable because no schema fields are defined for this object type.
+              </Text>
+              <Button
+                label="Back to Object Details"
+                variant="secondary"
+                size="m"
+                onPress={() => setIsEditing(false)}
+                testID={`${testID}-cancel-no-schema-edit`}
+              />
+            </View>
+          )}
         </Card>
       </ScrollView>
     );
@@ -284,5 +300,13 @@ const styles = StyleSheet.create({
     gap: 8,
     alignItems: 'center',
     justifyContent: 'flex-end',
+  },
+  noSchemaFallback: {
+    paddingVertical: 16,
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  noSchemaText: {
+    marginBottom: 8,
   },
 });
