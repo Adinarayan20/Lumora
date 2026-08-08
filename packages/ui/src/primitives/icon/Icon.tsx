@@ -33,7 +33,7 @@ export const Icon: React.FC<IconProps> = memo(({
   size,
   strokeWeight = 'auto',
   color = 'icon.primary',
-  variant = 'default',
+  accessibilityMode,
   accessibilityLabel,
   accessibilityHint,
   onPress,
@@ -45,6 +45,13 @@ export const Icon: React.FC<IconProps> = memo(({
 }) => {
   const { mode, colors } = useTheme();
   const viewport = useViewport();
+
+  // Development Quality Gate: Interactive Icon buttons MUST provide explicit accessibilityLabel
+  if (__DEV__ && onPress && !accessibilityLabel) {
+    throw new Error(
+      `[Lumora Icon Primitive]: Interactive icon button for '${name}' must provide an explicit 'accessibilityLabel' (e.g. accessibilityLabel="Close modal") for accessibility compliance.`,
+    );
+  }
 
   // Reduced Motion Detection
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -66,6 +73,10 @@ export const Icon: React.FC<IconProps> = memo(({
     };
   }, []);
 
+  // Motion Configuration from Theme MotionEngine
+  const pressMotionConfig = MotionEngine.iconPress();
+  const loadingMotionConfig = MotionEngine.iconLoading();
+
   // Animated Rotation for Loading State
   const [spinAnim] = useState(() => new Animated.Value(0));
   useEffect(() => {
@@ -74,7 +85,7 @@ export const Icon: React.FC<IconProps> = memo(({
       const animation = Animated.loop(
         Animated.timing(spinAnim, {
           toValue: 1,
-          duration: 1000,
+          duration: loadingMotionConfig.duration,
           easing: Easing.linear,
           useNativeDriver: true,
         }),
@@ -84,28 +95,35 @@ export const Icon: React.FC<IconProps> = memo(({
     } else {
       spinAnim.setValue(0);
     }
-  }, [isLoading, reduceMotion, spinAnim]);
+  }, [isLoading, reduceMotion, spinAnim, loadingMotionConfig.duration]);
 
-  // Animated Scale for Press State
+  // Animated Scale & Opacity for Press State
   const [scaleAnim] = useState(() => new Animated.Value(1));
+  const [pressedOpacity, setPressedOpacity] = useState(1);
 
   const handlePressIn = () => {
-    if (reduceMotion) return;
-    const pressConfig = MotionEngine.press();
+    if (reduceMotion) {
+      // Non-motion visual feedback for reduced motion users
+      setPressedOpacity(0.7);
+      return;
+    }
     Animated.spring(scaleAnim, {
-      toValue: pressConfig.scale,
-      damping: pressConfig.springDamping,
-      stiffness: pressConfig.springStiffness,
+      toValue: pressMotionConfig.scale,
+      damping: pressMotionConfig.springDamping,
+      stiffness: pressMotionConfig.springStiffness,
       useNativeDriver: true,
     }).start();
   };
 
   const handlePressOut = () => {
-    if (reduceMotion) return;
+    if (reduceMotion) {
+      setPressedOpacity(1);
+      return;
+    }
     Animated.spring(scaleAnim, {
       toValue: 1,
-      damping: 20,
-      stiffness: 250,
+      damping: pressMotionConfig.springDamping,
+      stiffness: pressMotionConfig.springStiffness,
       useNativeDriver: true,
     }).start();
   };
@@ -117,7 +135,6 @@ export const Icon: React.FC<IconProps> = memo(({
   // 2. Resolve Styles from Theme Tokens
   const {
     resolvedSize,
-    resolvedStrokeWidth,
     resolvedColor,
     resolvedOpacity,
     touchTargetDimension,
@@ -161,7 +178,7 @@ export const Icon: React.FC<IconProps> = memo(({
         {
           width: resolvedSize,
           height: resolvedSize,
-          opacity: resolvedOpacity,
+          opacity: resolvedOpacity * pressedOpacity,
           transform: transformStyle,
         },
       ]}
@@ -174,19 +191,20 @@ export const Icon: React.FC<IconProps> = memo(({
     </Animated.View>
   );
 
-  // 5. Interactive Mode (onPress Provided)
-  if (onPress) {
-    const effectiveLabel = accessibilityLabel || name;
+  // 5. Determine Semantic Accessibility Mode
+  const effectiveMode =
+    accessibilityMode ?? (onPress ? 'interactive' : accessibilityLabel ? 'informative' : 'decorative');
+
+  if (effectiveMode === 'interactive' || onPress) {
     return (
       <Pressable
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         accessibilityRole="button"
-        accessibilityLabel={effectiveLabel}
+        accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}
         testID={testID}
-        hitSlop={Math.max(0, (touchTargetDimension - resolvedSize) / 2)}
         style={[
           styles.touchTarget,
           {
@@ -201,8 +219,7 @@ export const Icon: React.FC<IconProps> = memo(({
     );
   }
 
-  // 6. Standalone Informational Mode (accessibilityLabel provided without onPress)
-  if (accessibilityLabel) {
+  if (effectiveMode === 'informative') {
     return (
       <View
         accessibilityRole="image"
@@ -216,7 +233,7 @@ export const Icon: React.FC<IconProps> = memo(({
     );
   }
 
-  // 7. Decorative Mode (Default: hidden from assistive technology)
+  // Decorative Mode
   return (
     <View
       accessibilityElementsHidden={true}

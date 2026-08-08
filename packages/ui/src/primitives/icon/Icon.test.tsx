@@ -1,13 +1,12 @@
 import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
-import { ThemeProvider, ViewportProvider } from '@lumora/theme';
+import { ThemeProvider, ViewportProvider, LightThemeColors } from '@lumora/theme';
 import { Icon } from './Icon';
 import { getRegisteredIcon, registerIcon } from './Icon.registry';
 import { resolveIconStyles } from './Icon.styles';
-import { LightThemeColors } from '@lumora/theme';
 
-describe('Icon Primitive & Registry', () => {
+describe('Icon Primitive & Registry Subsystem', () => {
   it('resolves foundational icons from semantic registry in O(1)', () => {
     const homeIcon = getRegisteredIcon('nav.home');
     expect(homeIcon.family).toBe('Feather');
@@ -16,17 +15,23 @@ describe('Icon Primitive & Registry', () => {
     const searchIcon = getRegisteredIcon('action.search');
     expect(searchIcon.glyph).toBe('search');
 
-    const backIcon = getRegisteredIcon('nav.back');
-    expect(backIcon.autoMirror).toBe(true);
+    const playgroundIcon = getRegisteredIcon('system.playground');
+    expect(playgroundIcon.glyph).toBe('flask');
   });
 
-  it('allows dynamic registration of new icon entries without breaking contract', () => {
-    registerIcon('security.lock' as any, { family: 'Feather', glyph: 'lock' });
-    const lockIcon = getRegisteredIcon('security.lock');
-    expect(lockIcon.glyph).toBe('lock');
+  it('allows dynamic registration of custom domain icons with type safety', () => {
+    registerIcon('security.user', { family: 'Feather', glyph: 'user' });
+    const lockIcon = getRegisteredIcon('security.user');
+    expect(lockIcon.glyph).toBe('user');
   });
 
-  it('resolves semantic theme colors dynamically without raw hex', () => {
+  it('throws loud Error if an unregistered semantic icon is requested', () => {
+    expect(() => getRegisteredIcon('unregistered.icon' as any)).toThrow(
+      "[Lumora Icon Registry]: Icon 'unregistered.icon' is not registered",
+    );
+  });
+
+  it('resolves semantic theme colors dynamically without raw hex values', () => {
     const primaryStyles = resolveIconStyles({
       color: 'icon.primary',
       themeColors: LightThemeColors,
@@ -35,6 +40,15 @@ describe('Icon Primitive & Registry', () => {
       isTouchMode: true,
     });
     expect(primaryStyles.resolvedColor).toBe(LightThemeColors.textPrimary);
+
+    const accentStyles = resolveIconStyles({
+      color: 'icon.accent',
+      themeColors: LightThemeColors,
+      themeMode: 'light',
+      sizeClass: 'Compact',
+      isTouchMode: true,
+    });
+    expect(accentStyles.resolvedColor).toBe(LightThemeColors.accent);
 
     const disabledStyles = resolveIconStyles({
       color: 'icon.disabled',
@@ -67,7 +81,34 @@ describe('Icon Primitive & Registry', () => {
     expect(strongStyles.resolvedStrokeWidth).toBe(2.25);
   });
 
-  it('renders Icon primitive component without crashing', () => {
+  it('throws Error in development if interactive icon (onPress) lacks accessibilityLabel', () => {
+    expect(() =>
+      render(
+        <ViewportProvider>
+          <ThemeProvider>
+            <Icon name="action.delete" onPress={() => {}} />
+          </ThemeProvider>
+        </ViewportProvider>,
+      ),
+    ).toThrow('[Lumora Icon Primitive]: Interactive icon button for \'action.delete\' must provide an explicit \'accessibilityLabel\'');
+  });
+
+  it('renders interactive Icon component correctly when accessibilityLabel is provided', () => {
+    const { container } = render(
+      <ViewportProvider>
+        <ThemeProvider>
+          <Icon
+            name="action.delete"
+            onPress={() => {}}
+            accessibilityLabel="Delete item from workspace"
+          />
+        </ThemeProvider>
+      </ViewportProvider>,
+    );
+    expect(container).toBeTruthy();
+  });
+
+  it('renders decorative Icon component when onPress is omitted', () => {
     const { container } = render(
       <ViewportProvider>
         <ThemeProvider>

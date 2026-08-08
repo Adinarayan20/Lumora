@@ -95,4 +95,44 @@ export class MotionEngine {
       springStiffness: 230,
     };
   }
+
+  public static iconPress(): MotionConfig {
+    'worklet';
+    return {
+      duration: 180,
+      scale: 0.95,
+      springDamping: 20,
+      springStiffness: 250,
+    };
+  }
+
+  public static iconLoading(): MotionConfig {
+    'worklet';
+    return {
+      duration: 1000,
+      scale: 1.0,
+      springDamping: 0,
+      springStiffness: 0,
+    };
+  }
+
+  public static iconStateChange(): MotionConfig {
+    'worklet';
+    return {
+      duration: 200,
+      scale: 1.0,
+      springDamping: 18,
+      springStiffness: 220,
+    };
+  }
+
+  public static iconAppear(): MotionConfig {
+    'worklet';
+    return {
+      duration: 220,
+      scale: 1.0,
+      springDamping: 18,
+      springStiffness: 220,
+    };
+  }
 }

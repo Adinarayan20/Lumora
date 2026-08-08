@@ -50,7 +50,7 @@ const ALL_FOUNDATIONAL_ICONS: { domain: string; icons: SemanticIconName[] }[] = 
   },
   {
     domain: 'Settings & Security',
-    icons: ['settings.gear', 'settings.theme', 'security.user', 'security.lock'],
+    icons: ['settings.gear', 'settings.theme', 'security.user', 'security.lock', 'system.playground'],
   },
 ];
 

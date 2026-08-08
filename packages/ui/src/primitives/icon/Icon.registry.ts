@@ -6,7 +6,7 @@ export interface IconRegistryEntry {
   readonly autoMirror?: boolean;
 }
 
-const REGISTRY: Record<SemanticIconName, IconRegistryEntry> = {
+const REGISTRY: Record<string, IconRegistryEntry> = {
   // Navigation
   'nav.home': { family: 'Feather', glyph: 'home' },
   'nav.timeline': { family: 'Feather', glyph: 'clock' },
@@ -38,28 +38,31 @@ const REGISTRY: Record<SemanticIconName, IconRegistryEntry> = {
   'status.error': { family: 'Feather', glyph: 'alert-circle' },
   'status.info': { family: 'Feather', glyph: 'info' },
 
-  // Settings & Security
+  // Settings & Security & System
   'settings.gear': { family: 'Feather', glyph: 'settings' },
   'settings.theme': { family: 'Feather', glyph: 'moon' },
   'security.user': { family: 'Feather', glyph: 'user' },
   'security.lock': { family: 'Feather', glyph: 'lock' },
+  'system.playground': { family: 'Feather', glyph: 'flask' },
 };
 
 /**
  * O(1) lookup in semantic registry.
+ * Fails loudly if an unconfigured semantic icon is requested.
  */
-export function getRegisteredIcon(name: SemanticIconName): IconRegistryEntry {
+export function getRegisteredIcon(name: SemanticIconName | string): IconRegistryEntry {
   const entry = REGISTRY[name];
   if (!entry) {
-    // Graceful fallback to info glyph if icon name is unregistered
-    return { family: 'Feather', glyph: 'info' };
+    throw new Error(
+      `[Lumora Icon Registry]: Icon '${name}' is not registered in the semantic registry. Ensure it is added to Icon.registry.ts.`,
+    );
   }
   return entry;
 }
 
 /**
- * Extension hook to register dynamic or domain-specific icons at runtime.
+ * Extension hook to register dynamic domain icons at runtime.
  */
-export function registerIcon(name: SemanticIconName, entry: IconRegistryEntry): void {
+export function registerIcon(name: string, entry: IconRegistryEntry): void {
   REGISTRY[name] = entry;
 }

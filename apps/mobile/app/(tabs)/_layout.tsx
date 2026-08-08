@@ -41,7 +41,7 @@ export default function TabLayout() {
               {__DEV__ && (
                 <Link href="/design-system" asChild>
                   <Icon
-                    name="settings.gear"
+                    name="system.playground"
                     size="md"
                     color="icon.brand"
                     accessibilityLabel="Open Design System Playground"

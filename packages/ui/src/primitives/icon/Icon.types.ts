@@ -28,11 +28,12 @@ export type SemanticIconName =
   | 'status.warning'
   | 'status.error'
   | 'status.info'
-  // Settings & Security
+  // Settings & Security & System
   | 'settings.gear'
   | 'settings.theme'
   | 'security.user'
-  | 'security.lock';
+  | 'security.lock'
+  | 'system.playground';
 
 export type SemanticIconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'display';
 
@@ -50,7 +51,7 @@ export type SemanticIconColor =
   | 'icon.warning'
   | 'icon.danger';
 
-export type IconVariant = 'default' | 'filled' | 'duotone' | 'compact';
+export type IconAccessibilityMode = 'interactive' | 'decorative' | 'informative';
 
 export interface IconProps {
   /** Semantic icon identifier from the Lumora Registry */
@@ -61,9 +62,9 @@ export interface IconProps {
   readonly strokeWeight?: IconStrokeWeight;
   /** Semantic color token resolved via @lumora/theme (default: 'icon.primary') */
   readonly color?: SemanticIconColor;
-  /** Future variant extension (default: 'default') */
-  readonly variant?: IconVariant;
-  /** Accessible label required for interactive standalone icons */
+  /** Explicit accessibility classification override */
+  readonly accessibilityMode?: IconAccessibilityMode;
+  /** Accessible label required for interactive icon buttons */
   readonly accessibilityLabel?: string;
   /** Accessible hint for screen readers */
   readonly accessibilityHint?: string;
@@ -71,8 +72,8 @@ export interface IconProps {
   readonly onPress?: () => void;
   /** Custom test ID for automated QA */
   readonly testID?: string;
-  /** Container style overrides */
-  readonly style?: StyleProp<ViewStyle>;
+  /** Safe container style overrides (width/height/transform are controlled by primitive) */
+  readonly style?: StyleProp<Omit<ViewStyle, 'width' | 'height' | 'transform'>>;
   /** Indicates active loading state */
   readonly isLoading?: boolean;
   /** Indicates selected/active state */
