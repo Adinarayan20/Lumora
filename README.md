@@ -1,64 +1,31 @@
-# Lumora — AI-Ready Life Operating System
+# Lumora — AI-Ready Personal Life Operating System
 
-[![CI & Quality Gates](https://github.com/Adinarayan20/Lumora/actions/workflows/ci.yml/badge.svg)](https://github.com/Adinarayan20/Lumora/actions/workflows/ci.yml)
-
-Lumora is built around a **Universal Object Model** (Everything is an Object: Reminder, Note, Task, Event, Habit, Document, Collection) with deterministic business logic and layered architecture (`UI → Application → Domain → Infrastructure`).
+Lumora is a Personal Life Operating System built on a **Universal Object Model** (*Everything is an Object*: Task, Note, Medicine, Grocery, Plant, Pet, Vehicle, Bill, Document, Habit, Event, Subscription, Custom Object).
 
 ---
 
-## Workspace Setup Instructions
+## Current Status
 
-### Prerequisites
-* **Node.js**: `v22.x` or higher
-* **pnpm**: `v11.x` (`corepack enable pnpm`)
-* **PostgreSQL**: `v16.x` or higher
-
-### Fresh Clone Setup & Verification
-
-Execute the following commands from the repository root:
-
-```bash
-# 1. Install dependencies across all workspace packages
-pnpm install
-
-# 2. Generate Prisma Client bindings
-pnpm prisma generate
-
-# 3. Build all workspace packages and apps
-pnpm turbo build
-
-# 4. Run all workspace unit tests
-pnpm turbo test
-```
-
-### Approved Native Dependencies
-In `pnpm-workspace.yaml`, native build scripts are configured under `allowBuilds` for seamless installation:
-- `@firebase/util`
-- `@prisma/client`
-- `@prisma/engines`
-- `@scarf/scarf`
-- `@swc/core`
-- `bcrypt`
-- `esbuild`
-- `msgpackr-extract`
-- `prisma`
-- `protobufjs`
+- **Completed Phases**: Phase A–C (DDD Infrastructure), Phase D (Runtime & Capabilities), Phase E (Persistence & CAS Concurrency).
+- **Current Phase**: Foundation Reconciliation Pass (Documentation Truth & Architecture Audit).
+- **Next Phase**: Product Construction (UI Experience & Feature Wiring).
 
 ---
 
-## Core Monorepo Packages & Apps
+## Documentation & Architecture
 
-- `packages/shared`: Shared domain contracts, primitives, validation errors, catalog registry, and event schemas.
-- `apps/backend`: NestJS backend application with Prisma PostgreSQL persistence, soft-delete extensions, and Transactional Outbox workers.
-- `apps/admin`: Next.js web application.
-- `apps/mobile`: Expo / React Native mobile application.
+All documentation is reconciled and maintained as a single source of truth in the [`docs/`](docs/) directory:
+
+- **[Master Documentation Index](docs/README.md)**: [`docs/README.md`](docs/README.md)
+- **Current Architecture**: [`docs/architecture/CURRENT_ARCHITECTURE.md`](docs/architecture/CURRENT_ARCHITECTURE.md)
+- **Team Ownership Boundaries**: [`docs/architecture/DEVELOPMENT_BOUNDARIES.md`](docs/architecture/DEVELOPMENT_BOUNDARIES.md)
+- **Product Roadmap**: [`docs/architecture/PRODUCT_ROADMAP.md`](docs/architecture/PRODUCT_ROADMAP.md)
+- **Technical Debt Registry**: [`docs/architecture/TECH_DEBT.md`](docs/architecture/TECH_DEBT.md)
+- **Architecture Decision Records**: [`docs/architecture/adr/`](docs/architecture/adr/)
 
 ---
 
-## Architectural & Operational Documentation
+## Quick Start & Operations
 
-- **[Architecture Decisions (ADR)](docs/architecture/adr/)**: Architectural decision records (ADR-001 through ADR-012).
-- **[Deployment Guide](docs/operations/DEPLOYMENT_GUIDE.md)**: Production deployment requirements and pipeline instructions.
-- **[Operational Runbook](docs/operations/RUNBOOK.md)**: Severity definitions, incident response runbook, and debugging procedures.
-- **[Performance Baseline](docs/architecture/PERFORMANCE_BASELINE.md)**: Latency SLAs, memory budgets, and query optimization rules.
-- **[Technical Debt Registry](docs/architecture/TECH_DEBT.md)**: Technical debt tracking and deferral registry.
+See [`docs/operations/RUNBOOK.md`](docs/operations/RUNBOOK.md) for local environment setup, database migrations, and operational guidelines.
+See [`docs/operations/DEPLOYMENT_GUIDE.md`](docs/operations/DEPLOYMENT_GUIDE.md) for production deployment pipelines.

@@ -1,5 +1,8 @@
 # Lumora Phase 5 Senior Staff Architecture Review
 
+> **STATUS: HISTORICAL / PARTIALLY SUPERSEDED**
+> This is a historical architecture review document. For current authoritative platform architecture and implementation status, see [CURRENT_ARCHITECTURE.md](CURRENT_ARCHITECTURE.md).
+
 > **Review Panel**: Lead Staff Software Architect & Principal Engineering Committee  
 > **Target System**: Lumora Personal Life Operating System Platform (Phase 5)  
 > **Evaluation Criteria**: Clean Architecture, Domain-Driven Design, SOLID, Performance Budget, Scalability SLA, 10-Year Platform Survivability.

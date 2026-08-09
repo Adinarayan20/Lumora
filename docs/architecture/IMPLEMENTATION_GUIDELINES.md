@@ -104,7 +104,7 @@ Infrastructure Layer (Prisma Repositories, Outbox Workers, External Adapters)
 - [ ] `pnpm test` executes all unit and integration test suites cleanly.
 - [ ] No raw ORM/Prisma types exposed in public controller APIs or DTOs.
 - [ ] New domain events registered in `@lumora/shared` `DomainEventName` union.
-- [ ] Architectural recommendations categorized and recorded in `Roadmap.md` / `TECH_DEBT.md`.
+- [ ] Architectural recommendations categorized and recorded in `PRODUCT_ROADMAP.md` / `TECH_DEBT.md`.
 
 ---
 

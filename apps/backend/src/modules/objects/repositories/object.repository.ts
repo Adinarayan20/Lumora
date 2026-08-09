@@ -62,6 +62,35 @@ export interface UpdateObjectData {
   deletedAt?: Date | null;
 }
 
+/**
+ * Architecture status: SUPERSEDED / LEGACY / ACTIVE
+ *
+ * This class is a pre-DDD raw Prisma data access object that predates the
+ * Phase D/E Universal Object architecture.
+ *
+ * IT IS SUPERSEDED BY: PrismaObjectRepository (Tier 1) in
+ *   apps/backend/src/infrastructure/prisma/repositories/prisma-object.repository.ts
+ *
+ * CURRENT STATUS: Still has active consumers (ObjectsService, objects.module.ts DI)
+ * and cannot be deleted until those consumers are migrated.
+ *
+ * VIOLATIONS:
+ *   - Returns Prisma model types (LumoraObject, ObjectWithRelations) to the module layer
+ *   - Implements no domain interface (IObjectAggregateRepository or IObjectRepository)
+ *   - Bypasses all domain aggregate and capability architecture
+ *   - The 'revision' increment using { increment: 1 } is NOT atomic CAS — it is racy
+ *
+ * MIGRATION TARGET:
+ *   Replace with ObjectAggregateRepositoryAdapter implementing IObjectAggregateRepository
+ *   that delegates to PrismaObjectRepository for atomic CAS and workspace isolation.
+ *   See ADR-016 — Three-Tier Object Repository Migration Path.
+ *
+ * RULES:
+ *   - DO NOT add new methods to this class.
+ *   - DO NOT add new consumers that depend on this class.
+ *   - DO NOT inject this class into new use cases or services.
+ *   - DO NOT use this for object creation from new endpoints.
+ */
 @Injectable()
 export class ObjectRepository {
   constructor(private readonly prisma: PrismaService) {}

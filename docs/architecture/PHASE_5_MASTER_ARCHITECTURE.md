@@ -1,5 +1,8 @@
 # Lumora Phase 5 Master Architecture Blueprint: Universal Life Operating System Platform
 
+> **STATUS: HISTORICAL / PARTIALLY SUPERSEDED**
+> This is a historical architectural blueprint document. For current authoritative platform architecture and implementation status, see [CURRENT_ARCHITECTURE.md](CURRENT_ARCHITECTURE.md).
+
 > **Core Mandate**: *"Lumora is a platform, not a collection of features. Every architectural decision must increase the platform's ability to support future object types without requiring rewrites."*
 
 ---

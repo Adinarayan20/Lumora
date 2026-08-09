@@ -10,7 +10,7 @@ import {
   ObjectNotFoundException,
 } from '@lumora/shared';
 
-describe('PrismaObjectRepository Integration & Real CAS Concurrency Spec', () => {
+describe('PrismaObjectRepository Unit & Mock CAS Concurrency Spec', () => {
   let repositoryA: PrismaObjectRepository;
   let repositoryB: PrismaObjectRepository;
   let mockPrisma: {

@@ -1,16 +1,16 @@
 # Lumora Technical Debt & Deferred Architectural Backlog
 
-This document records architectural recommendations, infrastructure components, and enterprise capabilities deferred from current units (Unit 1 & Unit 2) to maintain strict scope control and prevent premature optimization.
+This document records architectural recommendations, infrastructure components, and enterprise capabilities deferred from current phases to maintain strict scope control and prevent premature optimization.
 
 ---
 
 ## Technical Debt & Deferral Registry
 
-| ID | Capability / Recommendation | Priority | Target Phase | Status | Reason for Deferral | Estimated Effort |
+| ID | Capability / Recommendation | Priority | Target Phase | Status | Reason for Deferral / Current State | Estimated Effort |
 |---|---|:---:|:---:|:---:|---|:---:|
 | **TD-001** | **Kafka Event Bus Integration** | High | Phase 3 (Scale) | `Deferred` | In-process transactional outbox worker satisfies current single-node processing throughput requirements without introducing cluster operational overhead. | 2 Sprints |
 | **TD-002** | **RabbitMQ Task Queue Cluster** | Medium | Phase 3 (Scale) | `Deferred` | Current outbox polling pattern handles asynchronous event processing reliably. RabbitMQ will be integrated when background task workload demands dedicated message queuing. | 1 Sprint |
-| **TD-003** | **Elasticsearch / Meilisearch Engine** | High | Phase 3 (Search) | `Deferred` | PostgreSQL full-text indexing and basic keyword search satisfy initial object search requirements for Unit 2. Dedicated search indexing engine scheduled for Phase 3. | 2 Sprints |
+| **TD-003** | **Elasticsearch / Meilisearch Engine** | High | Phase 3 (Search) | `Deferred` | PostgreSQL full-text indexing and basic keyword search satisfy initial object search requirements. Dedicated search indexing engine scheduled for scale milestone. | 2 Sprints |
 | **TD-004** | **OpenTelemetry APM & Distributed Tracing** | Medium | Phase 3 (Observability) | `Deferred` | NestJS JSON Logger and Correlation ID middleware provide adequate request context tracing. OpenTelemetry collector integration deferred to enterprise deployment phase. | 1 Sprint |
 | **TD-005** | **PostgreSQL Read Replicas & CQRS Projections** | High | Phase 3 (Scale) | `Deferred` | Single PostgreSQL instance with optimized indexes handles current read workload. Read replicas and separate CQRS read models will be provisioned under scale benchmark milestones. | 3 Sprints |
 | **TD-006** | **Redis Distributed Cache Layer** | Medium | Phase 3 (Scale) | `Deferred` | In-memory caching and direct database reads satisfy early phase performance targets. Distributed cache layer deferred to prevent cache invalidation complexity during domain construction. | 1 Sprint |
@@ -26,11 +26,18 @@ This document records architectural recommendations, infrastructure components, 
 | **TD-016** | **Structured Exception Code Mapping in Transport Adapters** | Low | Phase 3 (Unit 1) | `Resolved` | Implemented global `ApplicationExceptionFilter` and typed `ErrorCode` enum mapping (ADR-001). Removed all fragile string matching from controllers. | 1 Sprint |
 | **TD-017** | **Auth Bounded Context CQRS Migration** | Medium | Phase 3 (Unit 2) | `Resolved` | Standardized application services and use cases to monadic `Result<T, ApplicationException>` contracts (ADR-002). | 1 Sprint |
 | **TD-018** | **Repository Aggregate Rehydration Synthetic Fields** | Low | Phase 3 (Unit 3) | `Resolved` | `PrismaTimelineRepository` rehydrates true audit properties from database columns; synthetic placeholder fallbacks removed (ADR-003). | 1 Sprint |
+| **TD-019** | **Real PostgreSQL Integration & Concurrency Suite** | High | Current Reconciliation Pass | `Verified (Suite Written)` | Authored `prisma-object.postgres.concurrency.integration.spec.ts` with `POSTGRES_INTEGRATION_TEST=true` environment guard. Renamed mock test to `prisma-object.concurrency.mock.spec.ts`. | 1 Sprint |
+| **TD-020** | **LumoraPlatformKernel Real Registry Wiring** | Medium | Product Construction | `Partially Implemented (Shell)` | `LumoraPlatformKernel` logs boot steps deterministically but does not yet load schema definitions into cache at boot. Wires during Product Construction boot initialization. | 1 Sprint |
+| **TD-021** | **FieldRegistry Dynamic Form Engine** | High | Product Construction Milestone 1 | `Approved / Not Implemented` | Input control registry for dynamic object forms (ADR-014). Deferred to Product Construction phase. | 1 Sprint |
+| **TD-022** | **BlockRegistry Dynamic Detail Engine** | High | Product Construction Milestone 1 | `Approved / Not Implemented` | Detail block component registry for dynamic object views (ADR-014). Deferred to Product Construction phase. | 1 Sprint |
+| **TD-023** | **Universal Relationship Engine Aggregate** | Medium | Product Construction Milestone 2 | `Approved / Not Implemented` | Object-to-object relationship graph model. Deferred to Product Construction phase. | 2 Sprints |
+| **TD-024** | **Smart Collections Query Evaluator** | Medium | Product Construction Milestone 2 | `Approved / Not Implemented` | Evaluator for dynamic collection queries (`CollectionType.DYNAMIC`). Deferred to Product Construction phase. | 1 Sprint |
+| **TD-025** | **Tier 3 ObjectRepository Migration** | High | Product Construction Milestone 1 | `Legacy / Active (Migration Required)` | Legacy raw Prisma `ObjectRepository` bypasses domain architecture. Authored ADR-016; must build `ObjectAggregateRepositoryAdapter` to retire Tier 3. | 1 Sprint |
 
 ---
 
 ## Architectural Deferral Policy
 
 1. **Premature Optimization Protection**: Enterprise infrastructure (Kafka, K8s, Redis clusters, Read Replicas) MUST NOT be introduced during domain engineering phases unless benchmark evidence demonstrates performance degradation.
-2. **Tracked Milestones**: Every deferred item must remain recorded in this registry until formally scheduled in `Roadmap.md` and assigned an implementation issue.
-3. **Zero Technical Debt Inflation**: Code implemented during Unit 2 must adhere strictly to `IMPLEMENTATION_GUIDELINES.md` so that future integration of deferred capabilities requires zero refactoring of domain core logic.
+2. **Tracked Milestones**: Every deferred item must remain recorded in this registry until formally scheduled in `PRODUCT_ROADMAP.md` and assigned an implementation issue.
+3. **Zero Technical Debt Inflation**: Code implemented during future units must adhere strictly to `IMPLEMENTATION_GUIDELINES.md` so that future integration of deferred capabilities requires zero refactoring of domain core logic.

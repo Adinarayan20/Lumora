@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
@@ -19,8 +19,12 @@ export class TokenService {
   ) {}
 
   async generateAccessToken(payload: JwtPayload): Promise<string> {
-    const secret =
-      this.configService.get<string>('JWT_SECRET') || 'lumora_jwt_secret';
+    const secret = this.configService.get<string>('JWT_SECRET');
+    if (!secret) {
+      throw new InternalServerErrorException(
+        'JWT_SECRET environment variable is not configured.',
+      );
+    }
     const expiresInConfig =
       this.configService.get<string>('JWT_EXPIRES_IN') || '15m';
 
@@ -31,9 +35,12 @@ export class TokenService {
   }
 
   async generateRefreshToken(payload: JwtPayload): Promise<string> {
-    const secret =
-      this.configService.get<string>('JWT_REFRESH_SECRET') ||
-      'lumora_jwt_refresh_secret';
+    const secret = this.configService.get<string>('JWT_REFRESH_SECRET');
+    if (!secret) {
+      throw new InternalServerErrorException(
+        'JWT_REFRESH_SECRET environment variable is not configured.',
+      );
+    }
     const expiresInConfig =
       this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') || '7d';
 
@@ -45,21 +52,30 @@ export class TokenService {
 
   async verifyAccessToken(token: string): Promise<JwtPayload> {
     try {
-      const secret =
-        this.configService.get<string>('JWT_SECRET') || 'lumora_jwt_secret';
+      const secret = this.configService.get<string>('JWT_SECRET');
+      if (!secret) {
+        throw new InternalServerErrorException(
+          'JWT_SECRET environment variable is not configured.',
+        );
+      }
       return await this.jwtService.verifyAsync<JwtPayload>(token, { secret });
-    } catch {
+    } catch (err) {
+      if (err instanceof InternalServerErrorException) throw err;
       throw new UnauthorizedException('Invalid or expired access token');
     }
   }
 
   async verifyRefreshToken(token: string): Promise<JwtPayload> {
     try {
-      const secret =
-        this.configService.get<string>('JWT_REFRESH_SECRET') ||
-        'lumora_jwt_refresh_secret';
+      const secret = this.configService.get<string>('JWT_REFRESH_SECRET');
+      if (!secret) {
+        throw new InternalServerErrorException(
+          'JWT_REFRESH_SECRET environment variable is not configured.',
+        );
+      }
       return await this.jwtService.verifyAsync<JwtPayload>(token, { secret });
-    } catch {
+    } catch (err) {
+      if (err instanceof InternalServerErrorException) throw err;
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }

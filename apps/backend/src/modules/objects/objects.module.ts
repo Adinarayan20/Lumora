@@ -18,6 +18,23 @@ import { DeleteObjectUseCase } from './use-cases/delete-object.use-case.js';
   providers: [
     ObjectsService,
     ObjectRepository,
+    /**
+     * Architecture status: LEGACY / ACTIVE — MIGRATION REQUIRED
+     *
+     * OBJECT_REPOSITORY_TOKEN currently resolves to the Tier 3 legacy ObjectRepository,
+     * which directly accesses Prisma without implementing any domain interface.
+     *
+     * This binding is incorrect. It should resolve to an implementation of
+     * IObjectAggregateRepository that delegates to PrismaObjectRepository (Tier 1).
+     *
+     * KNOWN DEFECT: CreateObjectUseCase.execute() calls .save(aggregate) which does not
+     * exist on the Tier 3 ObjectRepository. The endpoint will throw a runtime TypeError.
+     *
+     * Migration target: Replace useClass with an ObjectAggregateRepositoryAdapter
+     * implementing IObjectAggregateRepository. See ADR-016.
+     *
+     * DO NOT add new consumers that depend on this token resolving to Tier 3.
+     */
     {
       provide: OBJECT_REPOSITORY_TOKEN,
       useClass: ObjectRepository,

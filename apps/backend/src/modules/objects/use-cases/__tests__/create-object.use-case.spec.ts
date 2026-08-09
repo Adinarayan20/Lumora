@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { IdGenerator } from '@lumora/shared';
 import { CreateObjectUseCase } from '../create-object.use-case.js';
-import type { IObjectRepository } from '../../../../domain/objects/repositories/object.repository.interface.js';
+import type { IObjectAggregateRepository } from '../../../../domain/objects/repositories/object-aggregate.repository.interface.js';
 
 describe('CreateObjectUseCase', () => {
   let useCase: CreateObjectUseCase;
-  let mockObjectRepository: IObjectRepository;
+  let mockObjectRepository: IObjectAggregateRepository;
 
   beforeEach(() => {
     mockObjectRepository = {
