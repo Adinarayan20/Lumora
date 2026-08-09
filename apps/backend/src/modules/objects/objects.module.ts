@@ -1,50 +1,58 @@
 import { Module } from '@nestjs/common';
 import { ObjectsController } from './objects.controller.js';
 import { ObjectsService } from './objects.service.js';
-import { ObjectRepository } from './repositories/object.repository.js';
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module.js';
+import { PrismaService } from '../../infrastructure/prisma/prisma.service.js';
 import { RbacModule } from '../rbac/rbac.module.js';
 import { AuthModule } from '../auth/auth.module.js';
-import { OBJECT_REPOSITORY_TOKEN } from './objects.tokens.js';
+import { AuditLogRepository } from '../auth/repositories/audit-log.repository.js';
+import {
+  OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN,
+  type ObjectAggregateRepositoryFactory,
+} from './objects.tokens.js';
+import { ObjectAggregateRepositoryAdapter } from '../../infrastructure/prisma/repositories/object-aggregate.repository.adapter.js';
+import { WorkspaceExecutionContext } from '../../infrastructure/prisma/context/workspace-execution-context.js';
 import { CreateObjectUseCase } from './use-cases/create-object.use-case.js';
 import { GetWorkspaceObjectsQuery } from './use-cases/get-workspace-objects.query.js';
 import { GetObjectQuery } from './use-cases/get-object.query.js';
 import { UpdateObjectUseCase } from './use-cases/update-object.use-case.js';
 import { DeleteObjectUseCase } from './use-cases/delete-object.use-case.js';
 
+/**
+ * ObjectsModule — ADR-016 migration complete.
+ *
+ * OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN provides a workspace-scoped
+ * IObjectAggregateRepository factory. Tier 3 ObjectRepository is retired.
+ */
 @Module({
   imports: [PrismaModule, RbacModule, AuthModule],
   controllers: [ObjectsController],
   providers: [
     ObjectsService,
-    ObjectRepository,
-    /**
-     * Architecture status: LEGACY / ACTIVE — MIGRATION REQUIRED
-     *
-     * OBJECT_REPOSITORY_TOKEN currently resolves to the Tier 3 legacy ObjectRepository,
-     * which directly accesses Prisma without implementing any domain interface.
-     *
-     * This binding is incorrect. It should resolve to an implementation of
-     * IObjectAggregateRepository that delegates to PrismaObjectRepository (Tier 1).
-     *
-     * KNOWN DEFECT: CreateObjectUseCase.execute() calls .save(aggregate) which does not
-     * exist on the Tier 3 ObjectRepository. The endpoint will throw a runtime TypeError.
-     *
-     * Migration target: Replace useClass with an ObjectAggregateRepositoryAdapter
-     * implementing IObjectAggregateRepository. See ADR-016.
-     *
-     * DO NOT add new consumers that depend on this token resolving to Tier 3.
-     */
+    AuditLogRepository,
+
+    // Adapter factory: creates workspace-scoped IObjectAggregateRepository per command
     {
-      provide: OBJECT_REPOSITORY_TOKEN,
-      useClass: ObjectRepository,
+      provide: OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN,
+      useFactory: (prisma: PrismaService): ObjectAggregateRepositoryFactory => {
+        return (workspaceId: string, userId: string) => {
+          const context = new WorkspaceExecutionContext(workspaceId, userId);
+          return new ObjectAggregateRepositoryAdapter(prisma, context);
+        };
+      },
+      inject: [PrismaService],
     },
+
     CreateObjectUseCase,
     GetWorkspaceObjectsQuery,
     GetObjectQuery,
     UpdateObjectUseCase,
     DeleteObjectUseCase,
   ],
-  exports: [ObjectsService, ObjectRepository, OBJECT_REPOSITORY_TOKEN],
+  exports: [
+    ObjectsService,
+    AuditLogRepository,
+    OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN,
+  ],
 })
 export class ObjectsModule {}

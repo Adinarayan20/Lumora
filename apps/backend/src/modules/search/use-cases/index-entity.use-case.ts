@@ -24,10 +24,12 @@ export class IndexEntityUseCase {
   ): Promise<Result<SearchResultDto, ApplicationException>> {
     try {
       const { dto } = command;
+      const workspaceId = new UniqueEntityId(dto.workspaceId);
       const categoryObj = SearchEntityCategory.create(dto.entityCategory);
       const entityIdObj = new UniqueEntityId(dto.entityId);
 
       let projection = await this.searchRepository.findByEntity(
+        workspaceId,
         categoryObj,
         entityIdObj,
       );
@@ -36,6 +38,7 @@ export class IndexEntityUseCase {
         projection.updateContent(dto.title, dto.content);
       } else {
         projection = SearchIndexEntity.create({
+          workspaceId,
           entityCategory: categoryObj,
           entityId: entityIdObj,
           title: dto.title,
@@ -44,13 +47,9 @@ export class IndexEntityUseCase {
       }
 
       await this.searchRepository.save(projection);
-
-      const responseDto = SearchResponseMapper.toResponseDto(projection);
-      return Result.ok(responseDto);
+      return Result.ok(SearchResponseMapper.toResponseDto(projection));
     } catch (error) {
-      if (error instanceof ApplicationException) {
-        return Result.fail(error);
-      }
+      if (error instanceof ApplicationException) return Result.fail(error);
       throw error;
     }
   }

@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
+import { KernelModule } from './infrastructure/kernel/kernel.module.js';
+import { OutboxModule } from './infrastructure/events/outbox/outbox.module.js';
 import { CollectionsModule } from './modules/collections/collections.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
@@ -24,6 +26,8 @@ import { ApplicationExceptionFilter } from './common/filters/index.js';
     ConfigModule.forRoot({ isGlobal: true }),
     LoggerModule,
     PrismaModule,
+    OutboxModule,
+    KernelModule,
     AuthModule,
     UsersModule,
     WorkspacesModule,

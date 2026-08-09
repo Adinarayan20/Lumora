@@ -1,6 +1,10 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class IndexEntityDto {
+  @IsString()
+  @IsNotEmpty()
+  workspaceId!: string;
+
   @IsString()
   @IsNotEmpty()
   entityCategory!: string;

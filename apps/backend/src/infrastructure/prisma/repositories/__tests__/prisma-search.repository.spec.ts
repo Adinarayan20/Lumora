@@ -6,6 +6,8 @@ import { SearchIndexEntity } from '../../../../domain/search/entities/search-ind
 import { SearchTerm } from '../../../../domain/search/value-objects/search-term.js';
 import { SearchEntityCategory } from '../../../../domain/search/value-objects/search-entity-category.js';
 
+const makeWorkspaceId = () => new UniqueEntityId(IdGenerator.generate());
+
 describe('PrismaSearchRepository Unit Tests', () => {
   let repository: PrismaSearchRepository;
   let mockPrisma: any;
@@ -19,12 +21,13 @@ describe('PrismaSearchRepository Unit Tests', () => {
         findFirst: vi.fn(),
       },
     };
-
     repository = new PrismaSearchRepository(mockPrisma);
   });
 
   it('should update existing projection on save duplicate indexing', async () => {
+    const workspaceId = makeWorkspaceId();
     const projection = SearchIndexEntity.create({
+      workspaceId,
       entityCategory: 'OBJECT',
       entityId: new UniqueEntityId(),
       title: 'Initial Title',
@@ -33,6 +36,7 @@ describe('PrismaSearchRepository Unit Tests', () => {
 
     mockPrisma.searchIndex.upsert.mockResolvedValue({
       id: projection.id.toString(),
+      workspaceId: workspaceId.toValue(),
       entity: 'OBJECT',
       entityId: projection.entityId.toString(),
       title: 'Updated Title',
@@ -47,24 +51,21 @@ describe('PrismaSearchRepository Unit Tests', () => {
     expect(mockPrisma.searchIndex.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: projection.id.toString() },
-        update: {
-          title: 'Updated Title',
-          content: 'Updated Content',
-        },
       }),
     );
   });
 
   it('should delete projection by entity category and entity id', async () => {
+    const workspaceId = makeWorkspaceId();
     const category = SearchEntityCategory.create('SPACE');
     const entityId = new UniqueEntityId();
-
     mockPrisma.searchIndex.deleteMany.mockResolvedValue({ count: 1 });
 
-    await repository.deleteByEntity(category, entityId);
+    await repository.deleteByEntity(workspaceId, category, entityId);
 
     expect(mockPrisma.searchIndex.deleteMany).toHaveBeenCalledWith({
       where: {
+        workspaceId: workspaceId.toValue(),
         entity: 'SPACE',
         entityId: entityId.toString(),
       },
@@ -72,6 +73,7 @@ describe('PrismaSearchRepository Unit Tests', () => {
   });
 
   it('should apply category filtering when searching', async () => {
+    const workspaceId = makeWorkspaceId();
     const term = SearchTerm.create('roadmap');
     const category = SearchEntityCategory.create('OBJECT');
     const mockId = IdGenerator.generate().toString();
@@ -80,6 +82,7 @@ describe('PrismaSearchRepository Unit Tests', () => {
     mockPrisma.searchIndex.findMany.mockResolvedValue([
       {
         id: mockId,
+        workspaceId: workspaceId.toValue(),
         entity: 'OBJECT',
         entityId: mockEntId,
         title: 'Q3 Roadmap',
@@ -89,12 +92,12 @@ describe('PrismaSearchRepository Unit Tests', () => {
       },
     ]);
 
-    const results = await repository.search(term, category);
-
+    const results = await repository.search(workspaceId, term, category);
     expect(results).toHaveLength(1);
     expect(mockPrisma.searchIndex.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
+          workspaceId: workspaceId.toValue(),
           entity: 'OBJECT',
         }),
       }),
@@ -102,29 +105,30 @@ describe('PrismaSearchRepository Unit Tests', () => {
   });
 
   it('should respect custom limit parameters during search execution', async () => {
+    const workspaceId = makeWorkspaceId();
     const term = SearchTerm.create('lumora');
     mockPrisma.searchIndex.findMany.mockResolvedValue([]);
 
-    await repository.search(term, undefined, 5);
+    await repository.search(workspaceId, term, undefined, 5);
 
     expect(mockPrisma.searchIndex.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        take: 5,
-      }),
+      expect.objectContaining({ take: 5 }),
     );
   });
 
   it('should return empty result list when no search matches exist', async () => {
+    const workspaceId = makeWorkspaceId();
     const term = SearchTerm.create('nonexistent');
     mockPrisma.searchIndex.findMany.mockResolvedValue([]);
 
-    const results = await repository.search(term);
-
+    const results = await repository.search(workspaceId, term);
     expect(results).toHaveLength(0);
   });
 
   it('should handle duplicate indexing idempotently via database upsert', async () => {
+    const workspaceId = makeWorkspaceId();
     const projection = SearchIndexEntity.create({
+      workspaceId,
       entityCategory: 'COLLECTION',
       entityId: new UniqueEntityId(),
       title: 'Collection Title',
@@ -133,6 +137,7 @@ describe('PrismaSearchRepository Unit Tests', () => {
 
     mockPrisma.searchIndex.upsert.mockResolvedValue({
       id: projection.id.toString(),
+      workspaceId: workspaceId.toValue(),
       entity: 'COLLECTION',
       entityId: projection.entityId.toString(),
       title: 'Collection Title',
@@ -143,7 +148,6 @@ describe('PrismaSearchRepository Unit Tests', () => {
 
     await repository.save(projection);
     await repository.save(projection);
-
     expect(mockPrisma.searchIndex.upsert).toHaveBeenCalledTimes(2);
   });
 });

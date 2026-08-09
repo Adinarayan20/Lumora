@@ -7,7 +7,15 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { ObjectStatus } from '../../../generated/prisma/client.js';
+
+/**
+ * Valid object status transitions accepted by the update endpoint.
+ * Matches domain ObjectStatus — does NOT import from generated/prisma.
+ */
+enum ObjectStatusInput {
+  ACTIVE = 'ACTIVE',
+  ARCHIVED = 'ARCHIVED',
+}
 
 export class UpdateObjectDto {
   @IsOptional()
@@ -37,7 +45,7 @@ export class UpdateObjectDto {
 
   @IsOptional()
   @IsString()
-  color?: string; // Semantic token
+  color?: string;
 
   @IsOptional()
   @IsDateString()
@@ -48,8 +56,8 @@ export class UpdateObjectDto {
   isFavorite?: boolean;
 
   @IsOptional()
-  @IsEnum(ObjectStatus)
-  status?: ObjectStatus;
+  @IsEnum(ObjectStatusInput)
+  status?: string;
 
   @IsOptional()
   systemData?: Record<string, unknown>;
@@ -59,5 +67,5 @@ export class UpdateObjectDto {
 
   @IsOptional()
   @IsInt()
-  revision?: number; // Optimistic concurrency version check
+  revision?: number;
 }

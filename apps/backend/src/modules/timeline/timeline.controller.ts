@@ -9,13 +9,16 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { PermissionsGuard } from '../rbac/guards/permissions.guard.js';
+import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator.js';
+import { Permissions } from '../rbac/constants/permissions.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { RecordTimelineActivityUseCase } from './use-cases/record-timeline-activity.use-case.js';
 import { GetWorkspaceTimelineQuery } from './use-cases/get-workspace-timeline.query.js';
 import { RecordTimelineActivityDto } from './dto/record-timeline-activity.dto.js';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('workspaces/:workspaceId/timeline')
 export class TimelineController {
   constructor(
@@ -63,7 +66,8 @@ export class TimelineController {
    * during synchronous workflows that do not yet use the Outbox.
    */
   @Post()
-  async recordActivity(
+  @RequirePermissions(Permissions.Object.Read)
+    async recordActivity(
     @CurrentUser('id') _userId: string,
     @Body() dto: RecordTimelineActivityDto,
   ) {
@@ -76,3 +80,4 @@ export class TimelineController {
     return result.getValue();
   }
 }
+

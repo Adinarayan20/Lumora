@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Result, ApplicationException } from '@lumora/shared';
+import { Result, ApplicationException, UniqueEntityId } from '@lumora/shared';
 import { SearchTerm } from '../../../domain/search/value-objects/search-term.js';
 import { SearchEntityCategory } from '../../../domain/search/value-objects/search-entity-category.js';
 import type { ISearchRepository } from '../../../domain/search/repositories/search.repository.interface.js';
@@ -9,6 +9,7 @@ import { SearchResultDto } from '../dto/search-result.dto.js';
 import { SearchResponseMapper } from '../mappers/search-response.mapper.js';
 
 export interface SearchObjectsQueryInput {
+  workspaceId: string;
   dto: SearchQueryDto;
 }
 
@@ -23,13 +24,15 @@ export class SearchObjectsQuery {
     input: SearchObjectsQueryInput,
   ): Promise<Result<SearchResultDto[], ApplicationException>> {
     try {
-      const { dto } = input;
+      const { workspaceId, dto } = input;
       const termObj = SearchTerm.create(dto.query);
       const categoryObj = dto.category
         ? SearchEntityCategory.create(dto.category)
         : undefined;
 
+      // Workspace-scoped search — mandatory isolation
       const projections = await this.searchRepository.search(
+        new UniqueEntityId(workspaceId),
         termObj,
         categoryObj,
       );

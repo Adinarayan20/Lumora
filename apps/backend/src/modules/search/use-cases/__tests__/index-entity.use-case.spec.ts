@@ -1,10 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { IdGenerator } from '@lumora/shared';
+import { IdGenerator, UniqueEntityId } from '@lumora/shared';
 import { IndexEntityUseCase } from '../index-entity.use-case.js';
 import type { ISearchRepository } from '../../../../domain/search/repositories/search.repository.interface.js';
 
 describe('IndexEntityUseCase', () => {
   it('should create new search projection and return SearchResultDto', async () => {
+    const workspaceId = new UniqueEntityId(IdGenerator.generate());
     const entityId = IdGenerator.generate();
 
     const mockRepo: ISearchRepository = {
@@ -17,6 +18,7 @@ describe('IndexEntityUseCase', () => {
     const useCase = new IndexEntityUseCase(mockRepo);
     const result = await useCase.execute({
       dto: {
+        workspaceId: workspaceId.toValue(),
         entityCategory: 'OBJECT',
         entityId,
         title: 'Project Roadmap',
@@ -28,6 +30,7 @@ describe('IndexEntityUseCase', () => {
     const dto = result.getValue();
     expect(dto.title).toBe('Project Roadmap');
     expect(dto.entityCategory).toBe('OBJECT');
+    expect(dto.workspaceId).toBe(workspaceId.toValue());
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockRepo.save).toHaveBeenCalled();
   });

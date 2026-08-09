@@ -6,8 +6,11 @@ import type { ISearchRepository } from '../../../../domain/search/repositories/s
 
 describe('SearchObjectsQuery', () => {
   it('should execute keyword search query and return matching SearchResultDto list', async () => {
+    const workspaceId = new UniqueEntityId(IdGenerator.generate());
     const entityId = IdGenerator.generate();
+
     const projection = SearchIndexEntity.create({
+      workspaceId,
       entityCategory: 'OBJECT',
       entityId: new UniqueEntityId(entityId),
       title: 'Roadmap Object',
@@ -23,15 +26,14 @@ describe('SearchObjectsQuery', () => {
 
     const queryHandler = new SearchObjectsQuery(mockRepo);
     const result = await queryHandler.execute({
-      dto: {
-        query: 'roadmap',
-        category: 'OBJECT',
-      },
+      workspaceId: workspaceId.toValue(),
+      dto: { query: 'roadmap', category: 'OBJECT' },
     });
 
     expect(result.isSuccess).toBe(true);
     const results = result.getValue();
     expect(results).toHaveLength(1);
     expect(results[0].title).toBe('Roadmap Object');
+    expect(results[0].workspaceId).toBe(workspaceId.toValue());
   });
 });

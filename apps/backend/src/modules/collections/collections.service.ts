@@ -7,7 +7,7 @@ import {
   RevisionConflictException,
 } from '@lumora/shared';
 import { CollectionRepository } from './repositories/collection.repository';
-import { ObjectRepository } from '../objects/repositories/object.repository';
+import { ObjectsService } from '../objects/objects.service.js';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { FilterCollectionDto } from './dto/filter-collection.dto';
@@ -25,7 +25,7 @@ import {
 export class CollectionsService {
   constructor(
     private readonly collectionRepository: CollectionRepository,
-    private readonly objectRepository: ObjectRepository,
+    private readonly objectsService: ObjectsService,
     private readonly auditLogRepository: AuditLogRepository,
   ) {}
 
@@ -220,15 +220,15 @@ export class CollectionsService {
 
     const collection = collectionResult.getValue();
 
-    const object = await this.objectRepository.findById(dto.objectId);
-    if (!object || object.workspaceId !== workspaceId) {
+    const objectExists = await this.objectsService.verifyObjectInWorkspace(workspaceId, dto.objectId);
+    if (!objectExists) {
       return Result.fail(new EntityNotFoundException('Object', dto.objectId));
     }
 
     try {
       const item = await this.collectionRepository.addItem(
         collection.id,
-        object.id,
+        dto.objectId,
         dto.order ?? 0,
       );
 
@@ -239,7 +239,7 @@ export class CollectionsService {
         action: AuditAction.CREATE,
         newData: {
           collectionId: collection.id,
-          objectId: object.id,
+          objectId: dto.objectId,
         },
       });
 
@@ -317,3 +317,8 @@ export class CollectionsService {
     return candidate;
   }
 }
+
+
+
+
+

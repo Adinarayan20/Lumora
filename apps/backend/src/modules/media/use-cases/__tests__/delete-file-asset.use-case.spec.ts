@@ -7,19 +7,23 @@ import type { IFileAssetRepository } from '../../../../domain/media/repositories
 import type { IStorageProvider } from '../../../../domain/media/interfaces/storage-provider.interface.js';
 
 describe('DeleteFileAssetUseCase', () => {
-  it('should mark asset as deleted and remove from storage provider', async () => {
-    const userId = IdGenerator.generate();
-    const assetId = IdGenerator.generate();
-
-    const aggregate = FileAssetAggregate.create({
+  const makeAggregate = (userId: string, assetId: string, workspaceId?: string) =>
+    FileAssetAggregate.create({
       id: new UniqueEntityId(assetId),
       uploadedById: new UniqueEntityId(userId),
+      workspaceId: workspaceId ? new UniqueEntityId(workspaceId) : undefined,
       provider: FileProvider.LOCAL,
       path: 'uploads/2026/doc.pdf',
       filename: 'doc.pdf',
       mimeType: 'application/pdf',
       size: 5000,
     });
+
+  it('should mark asset as deleted and remove from storage provider', async () => {
+    const workspaceId = IdGenerator.generate();
+    const userId = IdGenerator.generate();
+    const assetId = IdGenerator.generate();
+    const aggregate = makeAggregate(userId, assetId, workspaceId);
 
     const mockRepo: IFileAssetRepository = {
       findById: vi.fn().mockResolvedValue(aggregate),
@@ -29,7 +33,6 @@ describe('DeleteFileAssetUseCase', () => {
       findByUploadedUserId: vi.fn(),
       calculateUserTotalStorageBytes: vi.fn(),
     };
-
     const mockStorage: IStorageProvider = {
       upload: vi.fn(),
       delete: vi.fn().mockResolvedValue(undefined),
@@ -38,6 +41,7 @@ describe('DeleteFileAssetUseCase', () => {
 
     const useCase = new DeleteFileAssetUseCase(mockRepo, mockStorage);
     const result = await useCase.execute({
+      workspaceId,
       fileAssetId: assetId,
       requestedById: userId,
     });
@@ -50,19 +54,11 @@ describe('DeleteFileAssetUseCase', () => {
   });
 
   it('should fail if unauthorized user attempts deletion', async () => {
+    const workspaceId = IdGenerator.generate();
     const userId = IdGenerator.generate();
     const otherUserId = IdGenerator.generate();
     const assetId = IdGenerator.generate();
-
-    const aggregate = FileAssetAggregate.create({
-      id: new UniqueEntityId(assetId),
-      uploadedById: new UniqueEntityId(userId),
-      provider: FileProvider.LOCAL,
-      path: 'uploads/2026/doc.pdf',
-      filename: 'doc.pdf',
-      mimeType: 'application/pdf',
-      size: 5000,
-    });
+    const aggregate = makeAggregate(userId, assetId, workspaceId);
 
     const mockRepo: IFileAssetRepository = {
       findById: vi.fn().mockResolvedValue(aggregate),
@@ -72,7 +68,6 @@ describe('DeleteFileAssetUseCase', () => {
       findByUploadedUserId: vi.fn(),
       calculateUserTotalStorageBytes: vi.fn(),
     };
-
     const mockStorage: IStorageProvider = {
       upload: vi.fn(),
       delete: vi.fn(),
@@ -81,11 +76,12 @@ describe('DeleteFileAssetUseCase', () => {
 
     const useCase = new DeleteFileAssetUseCase(mockRepo, mockStorage);
     const result = await useCase.execute({
+      workspaceId,
       fileAssetId: assetId,
       requestedById: otherUserId,
     });
 
     expect(result.isSuccess).toBe(false);
-    expect(result.getError().message).toContain('cannot delete');
+    expect(result.getError().message).toContain('Only the uploader');
   });
 });

@@ -3,6 +3,7 @@ import {
   Result,
   UniqueEntityId,
   EntityNotFoundException,
+  ForbiddenException,
   ApplicationException,
 } from '@lumora/shared';
 import type { IFileAssetRepository } from '../../../domain/media/repositories/file-asset.repository.interface.js';
@@ -15,7 +16,9 @@ import { FileAssetResponseDto } from '../dto/file-asset-response.dto.js';
 import { FileAssetResponseMapper } from '../mappers/file-asset-response.mapper.js';
 
 export interface GetFileAssetQueryInput {
+  workspaceId: string;
   fileAssetId: string;
+  requestedById: string;
 }
 
 export interface GetFileAssetQueryOutput {
@@ -36,31 +39,24 @@ export class GetFileAssetQuery {
     input: GetFileAssetQueryInput,
   ): Promise<Result<GetFileAssetQueryOutput, ApplicationException>> {
     try {
-      const { fileAssetId } = input;
-
+      const { workspaceId, fileAssetId, requestedById } = input;
       const aggregate = await this.fileAssetRepository.findById(
         new UniqueEntityId(fileAssetId),
       );
-
       if (!aggregate) {
-        return Result.fail(
-          new EntityNotFoundException('FileAsset', fileAssetId),
-        );
+        return Result.fail(new EntityNotFoundException('FileAsset', fileAssetId));
       }
-
-      const downloadUrl = await this.storageProvider.getSignedUrl(
-        aggregate.path,
-      );
-      const assetDto = FileAssetResponseMapper.toResponseDto(aggregate);
-
-      return Result.ok({
-        asset: assetDto,
-        downloadUrl,
-      });
+      // Workspace ownership check
+      if (
+        aggregate.workspaceId &&
+        aggregate.workspaceId.toValue() !== workspaceId
+      ) {
+        return Result.fail(new EntityNotFoundException('FileAsset', fileAssetId));
+      }
+      const downloadUrl = await this.storageProvider.getSignedUrl(aggregate.path);
+      return Result.ok({ asset: FileAssetResponseMapper.toResponseDto(aggregate), downloadUrl });
     } catch (error) {
-      if (error instanceof ApplicationException) {
-        return Result.fail(error);
-      }
+      if (error instanceof ApplicationException) return Result.fail(error);
       throw error;
     }
   }

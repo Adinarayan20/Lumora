@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Result, ApplicationException } from '@lumora/shared';
 import { ObjectsService } from '../objects.service.js';
-import { Object as LumoraObject } from '../../../generated/prisma/client.js';
+import { ObjectResponseDto } from '../dto/object-response.dto.js';
 
 export interface GetObjectQueryInput {
   workspaceId: string;
@@ -14,7 +14,7 @@ export class GetObjectQuery {
 
   public async execute(
     input: GetObjectQueryInput,
-  ): Promise<Result<LumoraObject, ApplicationException>> {
+  ): Promise<Result<ObjectResponseDto, ApplicationException>> {
     return this.objectsService.getObjectByIdOrKey(
       input.workspaceId,
       input.idOrKey,

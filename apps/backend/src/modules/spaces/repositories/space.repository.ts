@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
+import { PrismaService } from '../../../infrastructure/prisma/prisma.service.js';
 import {
   Space as LumoraSpace,
   SpaceStatus,
   ObjectStatus,
   Prisma,
 } from '../../../generated/prisma/client.js';
-import { PrismaTransaction } from '../../auth/repositories/audit-log.repository';
-import { FilterSpaceDto } from '../dto/filter-space.dto';
-import { USER_PUBLIC_SELECT } from '../../objects/repositories/object.repository';
+import { PrismaTransaction } from '../../auth/repositories/audit-log.repository.js';
+import { FilterSpaceDto } from '../dto/filter-space.dto.js';
+import { USER_PUBLIC_SELECT } from '../../common/prisma-select.constants.js';
 
 export const SPACE_RELATIONS_INCLUDE = {
   createdBy: { select: USER_PUBLIC_SELECT },
@@ -33,7 +33,7 @@ export interface CreateSpaceData {
   color?: string;
   pinnedAt?: Date;
   isFavorite?: boolean;
-  settings?: Record<string, any>;
+  settings?: Record<string, unknown>;
 }
 
 export interface UpdateSpaceData {
@@ -48,7 +48,7 @@ export interface UpdateSpaceData {
   pinnedAt?: Date | null;
   isFavorite?: boolean;
   status?: SpaceStatus;
-  settings?: Record<string, any>;
+  settings?: Record<string, unknown>;
   archivedAt?: Date | null;
   deletedAt?: Date | null;
 }
@@ -63,10 +63,7 @@ export class SpaceRepository {
   ): Promise<SpaceWithRelations | null> {
     const client = tx ?? this.prisma;
     return client.space.findFirst({
-      where: {
-        id,
-        status: { not: SpaceStatus.DELETED },
-      },
+      where: { id, status: { not: SpaceStatus.DELETED } },
       include: SPACE_RELATIONS_INCLUDE,
     });
   }
@@ -78,11 +75,7 @@ export class SpaceRepository {
   ): Promise<SpaceWithRelations | null> {
     const client = tx ?? this.prisma;
     return client.space.findFirst({
-      where: {
-        workspaceId,
-        slug,
-        status: { not: SpaceStatus.DELETED },
-      },
+      where: { workspaceId, slug, status: { not: SpaceStatus.DELETED } },
       include: SPACE_RELATIONS_INCLUDE,
     });
   }
@@ -93,9 +86,7 @@ export class SpaceRepository {
     tx?: PrismaTransaction,
   ): Promise<boolean> {
     const client = tx ?? this.prisma;
-    const count = await client.space.count({
-      where: { workspaceId, slug },
-    });
+    const count = await client.space.count({ where: { workspaceId, slug } });
     return count > 0;
   }
 
@@ -109,20 +100,14 @@ export class SpaceRepository {
       workspaceId,
       status: filter.status ?? { not: SpaceStatus.DELETED },
     };
-
-    if (filter.parentId !== undefined) {
-      where.parentId = filter.parentId || null;
-    }
-    if (filter.isFavorite !== undefined) {
-      where.isFavorite = filter.isFavorite;
-    }
+    if (filter.parentId !== undefined) where.parentId = filter.parentId || null;
+    if (filter.isFavorite !== undefined) where.isFavorite = filter.isFavorite;
     if (filter.search) {
       where.OR = [
         { name: { contains: filter.search, mode: 'insensitive' } },
         { description: { contains: filter.search, mode: 'insensitive' } },
       ];
     }
-
     return client.space.findMany({
       where,
       include: SPACE_RELATIONS_INCLUDE,
@@ -165,7 +150,7 @@ export class SpaceRepository {
         color: data.color,
         pinnedAt: data.pinnedAt,
         isFavorite: data.isFavorite ?? false,
-        settings: data.settings,
+        settings: data.settings as Prisma.InputJsonValue,
       },
     });
   }
@@ -190,7 +175,7 @@ export class SpaceRepository {
         pinnedAt: data.pinnedAt,
         isFavorite: data.isFavorite,
         status: data.status,
-        settings: data.settings,
+        settings: data.settings as Prisma.InputJsonValue,
         archivedAt: data.archivedAt,
         deletedAt: data.deletedAt,
         revision: { increment: 1 },

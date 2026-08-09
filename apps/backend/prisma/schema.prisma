@@ -508,6 +508,8 @@ model FileAsset {
 
   uploadedById String @db.Uuid
 
+  workspaceId String? @db.Uuid
+
   provider FileProvider
 
   bucket String?
@@ -527,6 +529,7 @@ model FileAsset {
   uploadedBy User @relation(fields: [uploadedById], references: [id])
 
   @@index([uploadedById])
+  @@index([workspaceId])
 }
 
 model AuditLog {
@@ -574,6 +577,8 @@ model Event {
 model SearchIndex {
   id String @id @default(uuid()) @db.Uuid
 
+  workspaceId String? @db.Uuid
+
   entity String
 
   entityId String
@@ -586,6 +591,7 @@ model SearchIndex {
 
   updatedAt DateTime @updatedAt
 
+  @@index([workspaceId, entity])
   @@index([entity])
   @@index([entityId])
 }

@@ -3,6 +3,7 @@ import { SearchEntityCategory } from '../value-objects/search-entity-category.js
 
 export interface SearchIndexEntityProps {
   id?: UniqueEntityId;
+  workspaceId: UniqueEntityId;
   entityCategory: SearchEntityCategory;
   entityId: UniqueEntityId;
   title: string;
@@ -14,14 +15,17 @@ export interface SearchIndexEntityProps {
 /**
  * Read-Side Projection Entity (CQRS Read Model) representing an indexed search document.
  *
- * ARCHITECTURE DESIGN DECISION:
+ * workspaceId is REQUIRED — all search projections are workspace-scoped.
+ * Cross-workspace search is forbidden: SearchIndex must never reveal objects
+ * from other workspaces.
+ *
  * SearchIndex is strictly a READ-SIDE PROJECTION ENTITY, not an Aggregate Root.
  * It carries no state-transition business invariants or domain events.
- * It is populated asynchronously from Outbox Domain Events (e.g., ObjectCreatedEvent, SpaceCreatedEvent)
- * to maintain high-performance, decoupled full-text and keyword search capabilities.
+ * It is populated asynchronously from Outbox Domain Events.
  */
 export class SearchIndexEntity {
   public readonly id: UniqueEntityId;
+  public readonly workspaceId: UniqueEntityId;
   public readonly entityCategory: SearchEntityCategory;
   public readonly entityId: UniqueEntityId;
   public title: string;
@@ -31,6 +35,7 @@ export class SearchIndexEntity {
 
   private constructor(props: SearchIndexEntityProps) {
     this.id = props.id ?? new UniqueEntityId();
+    this.workspaceId = props.workspaceId;
     this.entityCategory = props.entityCategory;
     this.entityId = props.entityId;
     this.title = props.title;
@@ -44,21 +49,17 @@ export class SearchIndexEntity {
       entityCategory: SearchEntityCategory | string;
     },
   ): SearchIndexEntity {
+    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    if (wsGuard.isFailure) throw wsGuard.getError();
     const entGuard = Guard.againstNullOrUndefined(props.entityId, 'entityId');
     if (entGuard.isFailure) throw entGuard.getError();
-
     const titleGuard = Guard.againstEmptyString(props.title, 'title');
     if (titleGuard.isFailure) throw titleGuard.getError();
-
     const catObj =
       typeof props.entityCategory === 'string'
         ? SearchEntityCategory.create(props.entityCategory)
         : props.entityCategory;
-
-    return new SearchIndexEntity({
-      ...props,
-      entityCategory: catObj,
-    });
+    return new SearchIndexEntity({ ...props, entityCategory: catObj });
   }
 
   public static reconstitute(props: SearchIndexEntityProps): SearchIndexEntity {
@@ -68,7 +69,6 @@ export class SearchIndexEntity {
   public updateContent(title: string, content: string): void {
     const titleGuard = Guard.againstEmptyString(title, 'title');
     if (titleGuard.isFailure) throw titleGuard.getError();
-
     this.title = title;
     this.content = content;
     this.updatedAt = new Date();

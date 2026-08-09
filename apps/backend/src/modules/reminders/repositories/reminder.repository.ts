@@ -10,7 +10,7 @@ import {
 } from '../../../generated/prisma/client.js';
 import { PrismaTransaction } from '../../auth/repositories/audit-log.repository';
 import { FilterReminderDto } from '../dto/filter-reminder.dto';
-import { USER_PUBLIC_SELECT } from '../../objects/repositories/object.repository';
+import { USER_PUBLIC_SELECT } from '../../common/prisma-select.constants.js';
 
 export const REMINDER_RELATIONS_INCLUDE = {
   createdBy: { select: USER_PUBLIC_SELECT },
@@ -187,3 +187,4 @@ export class ReminderRepository {
     });
   }
 }
+

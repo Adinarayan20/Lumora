@@ -3,119 +3,80 @@ import {
   Result,
   ApplicationException,
   EntityNotFoundException,
-  ConflictException,
   RevisionConflictException,
 } from '@lumora/shared';
-import { ObjectRepository } from './repositories/object.repository';
-import { CreateObjectDto } from './dto/create-object.dto';
-import { UpdateObjectDto } from './dto/update-object.dto';
-import { FilterObjectDto } from './dto/filter-object.dto';
-import { AuditLogRepository } from '../auth/repositories/audit-log.repository';
+import { PrismaService } from '../../infrastructure/prisma/prisma.service.js';
+import { PrismaExceptionMapper } from '../../infrastructure/prisma/mappers/prisma-exception.mapper.js';
+import { AuditLogRepository } from '../auth/repositories/audit-log.repository.js';
+import { UpdateObjectDto } from './dto/update-object.dto.js';
+import { FilterObjectDto } from './dto/filter-object.dto.js';
+import { ObjectResponseDto } from './dto/object-response.dto.js';
 import {
-  Object as LumoraObject,
+  ObjectStatus as PrismaObjectStatus,
+  Prisma,
   AuditAction,
-  ObjectStatus,
 } from '../../generated/prisma/client.js';
 
 @Injectable()
 export class ObjectsService {
   constructor(
-    private readonly objectRepository: ObjectRepository,
+    private readonly prisma: PrismaService,
     private readonly auditLogRepository: AuditLogRepository,
   ) {}
-
-  async createObject(
-    workspaceId: string,
-    createdById: string,
-    dto: CreateObjectDto,
-  ): Promise<Result<LumoraObject, ApplicationException>> {
-    let objectKey = dto.objectKey?.trim();
-    if (!objectKey) {
-      objectKey = await this.generateUniqueObjectKey(workspaceId, dto.typeKey);
-    } else {
-      const exists = await this.objectRepository.doesObjectKeyExist(
-        workspaceId,
-        objectKey,
-      );
-      if (exists) {
-        return Result.fail(
-          new ConflictException(
-            'Object',
-            `key '${objectKey}' already exists in this workspace`,
-          ),
-        );
-      }
-    }
-
-    const pinnedAt = dto.pinnedAt ? new Date(dto.pinnedAt) : undefined;
-
-    const object = await this.objectRepository.create({
-      workspaceId,
-      createdById,
-      objectKey,
-      typeKey: dto.typeKey,
-      title: dto.title,
-      description: dto.description,
-      spaceId: dto.spaceId,
-      icon: dto.icon,
-      emoji: dto.emoji,
-      cover: dto.cover,
-      color: dto.color,
-      pinnedAt,
-      isFavorite: dto.isFavorite,
-      systemData: dto.systemData,
-      attributes: dto.attributes,
-    });
-
-    await this.auditLogRepository.create({
-      userId: createdById,
-      entity: 'Object',
-      entityId: object.id,
-      action: AuditAction.CREATE,
-      newData: {
-        workspaceId,
-        objectKey,
-        typeKey: dto.typeKey,
-        title: dto.title,
-      },
-    });
-
-    return Result.ok(object);
-  }
 
   async getWorkspaceObjects(
     workspaceId: string,
     filter: FilterObjectDto,
-  ): Promise<Result<LumoraObject[], ApplicationException>> {
-    const objects = await this.objectRepository.findWorkspaceObjects(
-      workspaceId,
-      filter,
-    );
-    return Result.ok(objects);
+  ): Promise<Result<ObjectResponseDto[], ApplicationException>> {
+    try {
+      const where: Prisma.ObjectWhereInput = { workspaceId };
+
+      if (filter.status) {
+        where.status = filter.status as PrismaObjectStatus;
+      } else {
+        where.status = { not: PrismaObjectStatus.DELETED };
+      }
+
+      if (filter.typeKey) where.typeKey = filter.typeKey;
+      if (filter.spaceId) where.spaceId = filter.spaceId;
+      if (filter.isFavorite !== undefined) where.isFavorite = filter.isFavorite;
+      if (filter.search) {
+        where.OR = [
+          { title: { contains: filter.search, mode: 'insensitive' } },
+          { description: { contains: filter.search, mode: 'insensitive' } },
+        ];
+      }
+
+      const rows = await this.prisma.object.findMany({
+        where,
+        orderBy: [{ pinnedAt: 'desc' }, { updatedAt: 'desc' }],
+      });
+
+      return Result.ok(rows.map((r) => this.rowToDto(r)));
+    } catch (error) {
+      throw PrismaExceptionMapper.toDomainException(error, 'Object');
+    }
   }
 
   async getObjectByIdOrKey(
     workspaceId: string,
     idOrKey: string,
-  ): Promise<Result<LumoraObject, ApplicationException>> {
-    const isUuid =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-        idOrKey,
-      );
-    let object = isUuid ? await this.objectRepository.findById(idOrKey) : null;
+  ): Promise<Result<ObjectResponseDto, ApplicationException>> {
+    try {
+      const isUuid =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrKey);
 
-    if (!object) {
-      object = await this.objectRepository.findByObjectKey(
-        workspaceId,
-        idOrKey,
-      );
+      const row = await this.prisma.object.findFirst({
+        where: isUuid
+          ? { id: idOrKey, workspaceId, status: { not: PrismaObjectStatus.DELETED } }
+          : { workspaceId, objectKey: idOrKey, status: { not: PrismaObjectStatus.DELETED } },
+      });
+
+      if (!row) return Result.fail(new EntityNotFoundException('Object', idOrKey));
+      return Result.ok(this.rowToDto(row));
+    } catch (error) {
+      throw PrismaExceptionMapper.toDomainException(error, 'Object');
     }
-
-    if (!object || object.workspaceId !== workspaceId) {
-      return Result.fail(new EntityNotFoundException('Object', idOrKey));
-    }
-
-    return Result.ok(object);
   }
 
   async updateObject(
@@ -123,99 +84,135 @@ export class ObjectsService {
     objectId: string,
     userId: string,
     dto: UpdateObjectDto,
-  ): Promise<Result<LumoraObject, ApplicationException>> {
-    const objectResult = await this.getObjectByIdOrKey(workspaceId, objectId);
-    if (objectResult.isFailure) {
-      return Result.fail(objectResult.getError());
+  ): Promise<Result<ObjectResponseDto, ApplicationException>> {
+    try {
+      const existing = await this.prisma.object.findFirst({
+        where: { id: objectId, workspaceId, status: { not: PrismaObjectStatus.DELETED } },
+      });
+
+      if (!existing) return Result.fail(new EntityNotFoundException('Object', objectId));
+
+      if (dto.revision !== undefined && dto.revision !== existing.revision) {
+        return Result.fail(new RevisionConflictException('Object', existing.revision, dto.revision));
+      }
+
+      const now = new Date();
+
+      // Use unchecked update input so scalar IDs (updatedById, spaceId) work directly
+      const updateData: Prisma.ObjectUncheckedUpdateInput = {
+        updatedById: userId,
+        revision: { increment: 1 },
+        updatedAt: now,
+      };
+
+      if (dto.title !== undefined) updateData.title = dto.title;
+      if (dto.description !== undefined) updateData.description = dto.description;
+      if (dto.spaceId !== undefined) updateData.spaceId = dto.spaceId;
+      if (dto.icon !== undefined) updateData.icon = dto.icon;
+      if (dto.emoji !== undefined) updateData.emoji = dto.emoji;
+      if (dto.cover !== undefined) updateData.cover = dto.cover;
+      if (dto.color !== undefined) updateData.color = dto.color;
+      if (dto.isFavorite !== undefined) updateData.isFavorite = dto.isFavorite;
+      if (dto.attributes !== undefined) updateData.attributes = dto.attributes as Prisma.InputJsonValue;
+      if (dto.systemData !== undefined) updateData.systemData = dto.systemData as Prisma.InputJsonValue;
+      if (dto.pinnedAt !== undefined) updateData.pinnedAt = dto.pinnedAt ? new Date(dto.pinnedAt) : null;
+
+      if (dto.status !== undefined) {
+        updateData.status = dto.status as PrismaObjectStatus;
+        if (dto.status === PrismaObjectStatus.ARCHIVED) updateData.archivedAt = now;
+        else if (dto.status === PrismaObjectStatus.ACTIVE) updateData.archivedAt = null;
+      }
+
+      const result = await this.prisma.object.updateMany({
+        where: { id: objectId, workspaceId, status: { not: PrismaObjectStatus.DELETED } },
+        data: updateData as Prisma.ObjectUncheckedUpdateManyInput,
+      });
+
+      if (result.count === 0) return Result.fail(new EntityNotFoundException('Object', objectId));
+
+      const updated = await this.prisma.object.findFirstOrThrow({ where: { id: objectId, workspaceId } });
+
+      await this.auditLogRepository.create({
+        userId,
+        entity: 'Object',
+        entityId: objectId,
+        action: AuditAction.UPDATE,
+        newData: { typeKey: updated.typeKey, revision: updated.revision },
+      });
+
+      return Result.ok(this.rowToDto(updated));
+    } catch (error) {
+      if (error instanceof ApplicationException) return Result.fail(error);
+      throw PrismaExceptionMapper.toDomainException(error, 'Object');
     }
-
-    const object = objectResult.getValue();
-
-    if (dto.revision !== undefined && dto.revision !== object.revision) {
-      return Result.fail(
-        new RevisionConflictException('Object', object.revision, dto.revision),
-      );
-    }
-
-    const pinnedAt =
-      dto.pinnedAt === null
-        ? null
-        : dto.pinnedAt
-          ? new Date(dto.pinnedAt)
-          : undefined;
-    const archivedAt =
-      dto.status === ObjectStatus.ARCHIVED ? new Date() : undefined;
-
-    const updated = await this.objectRepository.update(object.id, {
-      updatedById: userId,
-      title: dto.title,
-      description: dto.description,
-      spaceId: dto.spaceId,
-      icon: dto.icon,
-      emoji: dto.emoji,
-      cover: dto.cover,
-      color: dto.color,
-      pinnedAt,
-      isFavorite: dto.isFavorite,
-      status: dto.status,
-      systemData: dto.systemData,
-      attributes: dto.attributes,
-      archivedAt,
-    });
-
-    await this.auditLogRepository.create({
-      userId,
-      entity: 'Object',
-      entityId: object.id,
-      action: AuditAction.UPDATE,
-      newData: {
-        title: dto.title,
-        typeKey: object.typeKey,
-        revision: updated.revision,
-      },
-    });
-
-    return Result.ok(updated);
   }
 
   async softDeleteObject(
     workspaceId: string,
     objectId: string,
     userId: string,
-  ): Promise<Result<LumoraObject, ApplicationException>> {
-    const objectResult = await this.getObjectByIdOrKey(workspaceId, objectId);
-    if (objectResult.isFailure) {
-      return Result.fail(objectResult.getError());
+  ): Promise<Result<ObjectResponseDto, ApplicationException>> {
+    try {
+      const now = new Date();
+      const result = await this.prisma.object.updateMany({
+        where: { id: objectId, workspaceId, status: { not: PrismaObjectStatus.DELETED } },
+        data: {
+          status: PrismaObjectStatus.DELETED,
+          deletedAt: now,
+          updatedById: userId,
+          revision: { increment: 1 },
+          updatedAt: now,
+        },
+      });
+
+      if (result.count === 0) return Result.fail(new EntityNotFoundException('Object', objectId));
+
+      const deleted = await this.prisma.object.findFirstOrThrow({ where: { id: objectId, workspaceId } });
+
+      await this.auditLogRepository.create({
+        userId,
+        entity: 'Object',
+        entityId: objectId,
+        action: AuditAction.DELETE,
+      });
+
+      return Result.ok(this.rowToDto(deleted));
+    } catch (error) {
+      if (error instanceof ApplicationException) return Result.fail(error);
+      throw PrismaExceptionMapper.toDomainException(error, 'Object');
     }
-
-    const object = objectResult.getValue();
-    const deleted = await this.objectRepository.softDelete(object.id, userId);
-
-    await this.auditLogRepository.create({
-      userId,
-      entity: 'Object',
-      entityId: object.id,
-      action: AuditAction.DELETE,
-    });
-
-    return Result.ok(deleted);
   }
 
-  private async generateUniqueObjectKey(
-    workspaceId: string,
-    typeKey: string,
-  ): Promise<string> {
-    const prefix = typeKey.split('.').pop()?.toUpperCase() || 'OBJ';
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const candidate = `${prefix}-${Date.now().toString(36).toUpperCase()}`;
-      const exists = await this.objectRepository.doesObjectKeyExist(
-        workspaceId,
-        candidate,
-      );
-      if (!exists) {
-        return candidate;
-      }
-    }
-    return `${prefix}-${Date.now()}`;
+  async verifyObjectInWorkspace(workspaceId: string, objectId: string): Promise<boolean> {
+    const count = await this.prisma.object.count({
+      where: { id: objectId, workspaceId, status: { not: PrismaObjectStatus.DELETED } },
+    });
+    return count > 0;
+  }
+
+  private rowToDto(row: Prisma.ObjectGetPayload<object>): ObjectResponseDto {
+    return {
+      id: row.id,
+      workspaceId: row.workspaceId,
+      spaceId: row.spaceId ?? undefined,
+      createdById: row.createdById,
+      updatedById: row.updatedById ?? undefined,
+      objectKey: row.objectKey,
+      typeKey: row.typeKey,
+      title: row.title,
+      description: row.description ?? undefined,
+      icon: row.icon ?? undefined,
+      emoji: row.emoji ?? undefined,
+      cover: row.cover ?? undefined,
+      color: row.color ?? undefined,
+      pinnedAt: row.pinnedAt?.toISOString(),
+      isFavorite: row.isFavorite,
+      status: row.status,
+      attributes: (row.attributes as Record<string, unknown>) ?? {},
+      revision: row.revision,
+      archivedAt: row.archivedAt?.toISOString(),
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    };
   }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Result, ApplicationException } from '@lumora/shared';
 import { ObjectsService } from '../objects.service.js';
 import { UpdateObjectDto } from '../dto/update-object.dto.js';
-import { Object as LumoraObject } from '../../../generated/prisma/client.js';
+import { ObjectResponseDto } from '../dto/object-response.dto.js';
 
 export interface UpdateObjectCommand {
   workspaceId: string;
@@ -17,7 +17,7 @@ export class UpdateObjectUseCase {
 
   public async execute(
     command: UpdateObjectCommand,
-  ): Promise<Result<LumoraObject, ApplicationException>> {
+  ): Promise<Result<ObjectResponseDto, ApplicationException>> {
     return this.objectsService.updateObject(
       command.workspaceId,
       command.objectId,

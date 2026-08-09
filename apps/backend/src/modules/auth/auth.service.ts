@@ -20,7 +20,7 @@ import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { OAuthLoginDto } from './dto/oauth-login.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
+import { AuthResponseDto, UserPublicDto } from './dto/auth-response.dto.js';
 import { AuditAction, User } from '../../generated/prisma/client.js';
 import {
   UserRegisteredEvent,
@@ -43,10 +43,21 @@ export class AuthService {
     private readonly workspacesService: WorkspacesService,
   ) {}
 
-  private sanitizeUser(user: User): Omit<User, 'passwordHash'> {
-    const userWithoutPassword = { ...user };
-    delete (userWithoutPassword as Record<string, any>).passwordHash;
-    return userWithoutPassword;
+  private sanitizeUser(user: User): UserPublicDto {
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      displayName: user.displayName,
+      avatarUrl: user.avatarUrl ?? undefined,
+      timezone: user.timezone,
+      locale: user.locale,
+      emailVerified: user.emailVerified,
+      onboardingDone: user.onboardingDone,
+      status: user.status,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    };
   }
 
   async register(
@@ -427,3 +438,4 @@ export class AuthService {
     });
   }
 }
+

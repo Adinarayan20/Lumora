@@ -5,6 +5,7 @@ import type { ISearchRepository } from '../../../domain/search/repositories/sear
 import { SEARCH_REPOSITORY_TOKEN } from '../search.tokens.js';
 
 export interface RemoveSearchIndexCommand {
+  workspaceId: string;
   entityCategory: string;
   entityId: string;
 }
@@ -20,16 +21,14 @@ export class RemoveSearchIndexUseCase {
     command: RemoveSearchIndexCommand,
   ): Promise<Result<void, ApplicationException>> {
     try {
-      const { entityCategory, entityId } = command;
-      const categoryObj = SearchEntityCategory.create(entityCategory);
-      const entityIdObj = new UniqueEntityId(entityId);
-
-      await this.searchRepository.deleteByEntity(categoryObj, entityIdObj);
+      await this.searchRepository.deleteByEntity(
+        new UniqueEntityId(command.workspaceId),
+        SearchEntityCategory.create(command.entityCategory),
+        new UniqueEntityId(command.entityId),
+      );
       return Result.ok<void, ApplicationException>(undefined);
     } catch (error) {
-      if (error instanceof ApplicationException) {
-        return Result.fail(error);
-      }
+      if (error instanceof ApplicationException) return Result.fail(error);
       throw error;
     }
   }

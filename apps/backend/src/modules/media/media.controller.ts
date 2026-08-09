@@ -7,15 +7,20 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { RegisterFileAssetUseCase } from './use-cases/register-file-asset.use-case.js';
 import { DeleteFileAssetUseCase } from './use-cases/delete-file-asset.use-case.js';
 import { GetFileAssetQuery } from './use-cases/get-file-asset.query.js';
 import { RegisterFileAssetDto } from './dto/register-file-asset.dto.js';
 
+/**
+ * MediaController — workspace-scoped (Phase F).
+ * Route: /workspaces/:workspaceId/media
+ * workspaceId is mandatory to enforce ownership boundaries.
+ */
 @UseGuards(JwtAuthGuard)
-@Controller('media')
+@Controller('workspaces/:workspaceId/media')
 export class MediaController {
   constructor(
     private readonly registerFileAssetUseCase: RegisterFileAssetUseCase,
@@ -23,16 +28,14 @@ export class MediaController {
     private readonly getFileAssetQuery: GetFileAssetQuery,
   ) {}
 
-  /**
-   * POST /media
-   * Registers a new file asset record and validates storage quota.
-   */
   @Post()
   async registerFileAsset(
+    @Param('workspaceId') workspaceId: string,
     @CurrentUser('id') userId: string,
     @Body() dto: RegisterFileAssetDto,
   ) {
     const result = await this.registerFileAssetUseCase.execute({
+      workspaceId,
       uploadedById: userId,
       dto,
     });
@@ -40,28 +43,29 @@ export class MediaController {
     return result.getValue();
   }
 
-  /**
-   * GET /media/:id
-   * Retrieves file asset metadata and a signed download URL.
-   */
   @Get(':id')
-  async getFileAsset(@Param('id') fileAssetId: string) {
-    const result = await this.getFileAssetQuery.execute({ fileAssetId });
+  async getFileAsset(
+    @Param('workspaceId') workspaceId: string,
+    @Param('id') fileAssetId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    const result = await this.getFileAssetQuery.execute({
+      workspaceId,
+      fileAssetId,
+      requestedById: userId,
+    });
     if (result.isFailure) throw result.getError();
     return result.getValue();
   }
 
-  /**
-   * DELETE /media/:id
-   * Soft-deletes a file asset and removes the object from storage.
-   * Only the uploader may delete their own assets.
-   */
   @Delete(':id')
   async deleteFileAsset(
+    @Param('workspaceId') workspaceId: string,
     @Param('id') fileAssetId: string,
     @CurrentUser('id') userId: string,
   ) {
     const result = await this.deleteFileAssetUseCase.execute({
+      workspaceId,
       fileAssetId,
       requestedById: userId,
     });

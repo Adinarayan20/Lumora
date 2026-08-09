@@ -5,6 +5,7 @@ export class SearchResponseMapper {
   public static toResponseDto(entity: SearchIndexEntity): SearchResultDto {
     return {
       id: entity.id.toString(),
+      workspaceId: entity.workspaceId.toValue(),
       entityCategory: entity.entityCategory.getValue(),
       entityId: entity.entityId.toString(),
       title: entity.title,

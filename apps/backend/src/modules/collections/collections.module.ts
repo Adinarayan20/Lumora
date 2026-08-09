@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CollectionsController } from './collections.controller';
-import { CollectionsService } from './collections.service';
-import { CollectionRepository } from './repositories/collection.repository';
-import { ObjectRepository } from '../objects/repositories/object.repository';
-import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
-import { RbacModule } from '../rbac/rbac.module';
-import { AuthModule } from '../auth/auth.module';
+import { CollectionsController } from './collections.controller.js';
+import { CollectionsService } from './collections.service.js';
+import { CollectionRepository } from './repositories/collection.repository.js';
+import { PrismaModule } from '../../infrastructure/prisma/prisma.module.js';
+import { RbacModule } from '../rbac/rbac.module.js';
+import { AuthModule } from '../auth/auth.module.js';
+import { ObjectsModule } from '../objects/objects.module.js';
 import {
   CreateCollectionUseCase,
   GetWorkspaceCollectionsQuery,
@@ -14,15 +14,14 @@ import {
   DeleteCollectionUseCase,
   AddCollectionItemUseCase,
   RemoveCollectionItemUseCase,
-} from './use-cases/collection-use-cases';
+} from './use-cases/collection-use-cases.js';
 
 @Module({
-  imports: [PrismaModule, RbacModule, AuthModule],
+  imports: [PrismaModule, RbacModule, AuthModule, ObjectsModule],
   controllers: [CollectionsController],
   providers: [
     CollectionsService,
     CollectionRepository,
-    ObjectRepository,
     CreateCollectionUseCase,
     GetWorkspaceCollectionsQuery,
     GetCollectionQuery,

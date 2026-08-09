@@ -2,23 +2,25 @@ import { Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { PasswordService } from './services/password.service';
-import { TokenService } from './services/token.service';
-import { DeviceService } from './services/device.service';
-import { SessionService } from './services/session.service';
-import { OAuthService } from './services/oauth.service';
-import { GoogleOAuthProvider } from './providers/google-oauth.provider';
-import { EventPublisherService } from './services/event-publisher.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { SessionRepository } from './repositories/session.repository';
-import { DeviceRepository } from './repositories/device.repository';
-import { OAuthAccountRepository } from './repositories/oauth-account.repository';
-import { AuditLogRepository } from './repositories/audit-log.repository';
-import { EventRepository } from './repositories/event.repository';
-import { UsersModule } from '../users/users.module';
-import { WorkspacesModule } from '../workspaces/workspaces.module';
+import { AuthController } from './auth.controller.js';
+import { AuthService } from './auth.service.js';
+import { PasswordService } from './services/password.service.js';
+import { TokenService } from './services/token.service.js';
+import { DeviceService } from './services/device.service.js';
+import { SessionService } from './services/session.service.js';
+import { OAuthService } from './services/oauth.service.js';
+import { GoogleOAuthProvider } from './providers/google-oauth.provider.js';
+import { EventPublisherService } from './services/event-publisher.service.js';
+import { JwtStrategy } from './strategies/jwt.strategy.js';
+import { SessionRepository } from './repositories/session.repository.js';
+import { DeviceRepository } from './repositories/device.repository.js';
+import { OAuthAccountRepository } from './repositories/oauth-account.repository.js';
+import { AuditLogRepository } from './repositories/audit-log.repository.js';
+import { EventRepository } from './repositories/event.repository.js';
+import { UsersModule } from '../users/users.module.js';
+import { WorkspacesModule } from '../workspaces/workspaces.module.js';
+import { RedisRateLimiterGuard } from '../../common/guards/redis-rate-limiter.guard.js';
+import { NetworkIdentityResolver } from '../../common/services/network-identity.resolver.js';
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { WorkspacesModule } from '../workspaces/workspaces.module';
     JwtModule.register({}),
     UsersModule,
     forwardRef(() => WorkspacesModule),
+    // RedisModule is @Global — RATE_LIMIT_STORE_TOKEN + RedisTtlPolicies available without import
   ],
   controllers: [AuthController],
   providers: [
@@ -44,6 +47,9 @@ import { WorkspacesModule } from '../workspaces/workspaces.module';
     OAuthAccountRepository,
     AuditLogRepository,
     EventRepository,
+    // Rate limiting
+    NetworkIdentityResolver,
+    RedisRateLimiterGuard,
   ],
   exports: [
     AuthService,

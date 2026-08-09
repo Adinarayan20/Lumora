@@ -14,6 +14,7 @@ import {
 export interface FileAssetAggregateProps {
   id?: UniqueEntityId;
   uploadedById: UniqueEntityId;
+  workspaceId?: UniqueEntityId;
   provider: FileProvider;
   bucket?: string;
   path: StorageKey;
@@ -27,9 +28,13 @@ export interface FileAssetAggregateProps {
 
 /**
  * Domain Aggregate Root representing an uploaded media asset and storage lifecycle.
+ *
+ * workspaceId is optional for backward compatibility with pre-Phase-F assets.
+ * New uploads MUST provide workspaceId.
  */
 export class FileAssetAggregate extends AggregateRoot<UniqueEntityId> {
   public readonly uploadedById: UniqueEntityId;
+  public readonly workspaceId?: UniqueEntityId | undefined;
   public readonly provider: FileProvider;
   public readonly bucket?: string | undefined;
   public path: StorageKey;
@@ -43,6 +48,7 @@ export class FileAssetAggregate extends AggregateRoot<UniqueEntityId> {
   private constructor(props: FileAssetAggregateProps) {
     super(props.id);
     this.uploadedById = props.uploadedById;
+    this.workspaceId = props.workspaceId;
     this.provider = props.provider;
     this.bucket = props.bucket;
     this.path = props.path;

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module.js';
+import { RbacModule } from '../rbac/rbac.module.js';
 import { PrismaTimelineRepository } from '../../infrastructure/prisma/repositories/prisma-timeline.repository.js';
 import { TimelineService } from './timeline.service.js';
 import { TimelineController } from './timeline.controller.js';
@@ -8,7 +9,7 @@ import { RecordTimelineActivityUseCase } from './use-cases/record-timeline-activ
 import { GetWorkspaceTimelineQuery } from './use-cases/get-workspace-timeline.query.js';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, RbacModule],
   providers: [
     TimelineService,
     {

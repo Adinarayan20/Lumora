@@ -8,7 +8,7 @@ import {
   DomainValidationException,
 } from '@lumora/shared';
 import { ReminderRepository } from './repositories/reminder.repository';
-import { ObjectRepository } from '../objects/repositories/object.repository';
+import { ObjectsService } from '../objects/objects.service.js';
 import { AuditLogRepository } from '../auth/repositories/audit-log.repository';
 import { ReminderSchedulerService } from './services/reminder-scheduler.service';
 import { CreateReminderDto } from './dto/create-reminder.dto';
@@ -33,7 +33,7 @@ import {
 export class RemindersService {
   constructor(
     private readonly reminderRepository: ReminderRepository,
-    private readonly objectRepository: ObjectRepository,
+    private readonly objectsService: ObjectsService,
     private readonly auditLogRepository: AuditLogRepository,
     private readonly schedulerService: ReminderSchedulerService,
   ) {}
@@ -44,8 +44,8 @@ export class RemindersService {
     userId: string,
     dto: CreateReminderDto,
   ): Promise<Result<Reminder, ApplicationException>> {
-    const object = await this.objectRepository.findById(objectId);
-    if (!object || object.workspaceId !== workspaceId) {
+    const objectExists = await this.objectsService.verifyObjectInWorkspace(workspaceId, objectId);
+    if (!objectExists) {
       return Result.fail(new EntityNotFoundException('Object', objectId));
     }
 
@@ -70,7 +70,7 @@ export class RemindersService {
 
     const reminder = await this.reminderRepository.create({
       workspaceId,
-      objectId: object.id,
+      objectId: objectId,
       createdById: userId,
       remindAt,
       timezone: dto.timezone,
@@ -125,8 +125,8 @@ export class RemindersService {
     workspaceId: string,
     objectId: string,
   ): Promise<Result<Reminder[], ApplicationException>> {
-    const object = await this.objectRepository.findById(objectId);
-    if (!object || object.workspaceId !== workspaceId) {
+    const objectExists = await this.objectsService.verifyObjectInWorkspace(workspaceId, objectId);
+    if (!objectExists) {
       return Result.fail(new EntityNotFoundException('Object', objectId));
     }
     const reminders = await this.reminderRepository.findByObjectId(
@@ -423,3 +423,7 @@ export class RemindersService {
     return Result.ok(deleted);
   }
 }
+
+
+
+

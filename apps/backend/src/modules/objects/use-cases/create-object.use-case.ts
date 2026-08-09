@@ -8,45 +8,34 @@ import {
 import { ObjectAggregate } from '../../../domain/objects/object.aggregate.js';
 import { ObjectTitle } from '../../../domain/objects/value-objects/object-title.js';
 import { ObjectKey } from '../../../domain/objects/value-objects/object-key.js';
-import type { IObjectAggregateRepository } from '../../../domain/objects/repositories/object-aggregate.repository.interface.js';
 import { CreateObjectDto } from '../dto/create-object.dto.js';
 import { ObjectResponseDto } from '../dto/object-response.dto.js';
 import { ObjectResponseMapper } from '../mappers/object-response.mapper.js';
+import {
+  OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN,
+  type ObjectAggregateRepositoryFactory,
+} from '../objects.tokens.js';
 
-import { OBJECT_REPOSITORY_TOKEN } from '../objects.tokens.js';
-
-/**
- * Architecture status: PARTIALLY MIGRATED — LEGACY / ACTIVE
- *
- * This use case was authored as part of the Phase D/E domain aggregate migration.
- * It correctly imports IObjectAggregateRepository (domain port operating on ObjectAggregate)
- * and calls .save(aggregate) as intended.
- *
- * CURRENT DEFECT: The DI token OBJECT_REPOSITORY_TOKEN is bound to the legacy
- * Tier 3 ObjectRepository (apps/backend/src/modules/objects/repositories/object.repository.ts)
- * which does NOT implement IObjectAggregateRepository and has no .save() method.
- * This means this use case will throw a runtime TypeError when invoked.
- *
- * The ObjectsController.createObject() endpoint currently routes through this use case.
- *
- * MIGRATION TARGET: Wire OBJECT_REPOSITORY_TOKEN to an IObjectAggregateRepository
- * adapter that delegates to PrismaObjectRepository (Tier 1, @lumora/shared IObjectRepository).
- * See ADR-016 — Three-Tier Object Repository Migration Path.
- *
- * DO NOT add new features or methods to Tier 3 ObjectRepository to "fix" this.
- * DO NOT change this use case to call ObjectRepository.create() directly.
- */
 export interface CreateObjectCommand {
   workspaceId: string;
   createdById: string;
   dto: CreateObjectDto;
 }
 
+/**
+ * Creates a new Universal Object via the domain aggregate path.
+ *
+ * Uses the OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN to obtain a workspace-scoped
+ * IObjectAggregateRepository for each command invocation, ensuring correct
+ * WorkspaceExecutionContext without REQUEST-scoped DI complexity.
+ *
+ * ADR-016: This use case now correctly routes through ObjectAggregateRepositoryAdapter → Tier 1.
+ */
 @Injectable()
 export class CreateObjectUseCase {
   constructor(
-    @Inject(OBJECT_REPOSITORY_TOKEN)
-    private readonly objectRepository: IObjectAggregateRepository,
+    @Inject(OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN)
+    private readonly repositoryFactory: ObjectAggregateRepositoryFactory,
   ) {}
 
   public async execute(
@@ -55,20 +44,32 @@ export class CreateObjectUseCase {
     try {
       const { workspaceId, createdById, dto } = command;
 
+      const objectRepository = this.repositoryFactory(workspaceId, createdById);
+
       let keyStr = dto.objectKey?.trim();
       if (!keyStr) {
         const randomSuffix = IdGenerator.generate().substring(0, 8);
         keyStr = `${dto.typeKey.toLowerCase()}-${randomSuffix}`;
       }
 
-      const titleObj = ObjectTitle.create(dto.title);
+      // Guarantee unique objectKey within workspace
       const keyObj = ObjectKey.create(keyStr);
+      const keyExists = await objectRepository.existsByObjectKey(
+        new UniqueEntityId(workspaceId),
+        keyObj,
+      );
+      if (keyExists) {
+        keyStr = `${dto.typeKey.toLowerCase()}-${IdGenerator.generate().substring(0, 8)}`;
+      }
+
+      const titleObj = ObjectTitle.create(dto.title);
+      const finalKeyObj = ObjectKey.create(keyStr);
 
       const aggregate = ObjectAggregate.create({
         workspaceId: new UniqueEntityId(workspaceId),
         createdById: new UniqueEntityId(createdById),
         spaceId: dto.spaceId ? new UniqueEntityId(dto.spaceId) : undefined,
-        objectKey: keyObj,
+        objectKey: finalKeyObj,
         typeKey: dto.typeKey as ObjectTypeKey,
         title: titleObj,
         description: dto.description,
@@ -78,10 +79,10 @@ export class CreateObjectUseCase {
         color: dto.color,
         pinnedAt: dto.pinnedAt ? new Date(dto.pinnedAt) : undefined,
         isFavorite: dto.isFavorite ?? false,
-        attributes: dto.attributes,
+        attributes: dto.attributes ?? {},
       });
 
-      await this.objectRepository.save(aggregate);
+      await objectRepository.save(aggregate);
 
       const responseDto = ObjectResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);

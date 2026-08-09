@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Result, ApplicationException } from '@lumora/shared';
 import { ObjectsService } from '../objects.service.js';
-import { Object as LumoraObject } from '../../../generated/prisma/client.js';
+import { ObjectResponseDto } from '../dto/object-response.dto.js';
 
 export interface DeleteObjectCommand {
   workspaceId: string;
@@ -15,7 +15,7 @@ export class DeleteObjectUseCase {
 
   public async execute(
     command: DeleteObjectCommand,
-  ): Promise<Result<LumoraObject, ApplicationException>> {
+  ): Promise<Result<ObjectResponseDto, ApplicationException>> {
     return this.objectsService.softDeleteObject(
       command.workspaceId,
       command.objectId,

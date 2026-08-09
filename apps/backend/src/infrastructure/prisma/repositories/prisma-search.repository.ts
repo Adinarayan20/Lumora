@@ -12,23 +12,17 @@ import { SearchTerm } from '../../../domain/search/value-objects/search-term.js'
 import { SearchEntityCategory } from '../../../domain/search/value-objects/search-entity-category.js';
 
 /**
- * Concrete Prisma implementation of ISearchRepository.
+ * PrismaSearchRepository — WORKSPACE-SCOPED (Phase F repair).
  *
- * SEARCH ARCHITECTURE & EVENT PROJECTION:
- * Search projections are populated asynchronously from Domain Events (ObjectCreatedEvent, SpaceCreatedEvent, etc.)
- * dispatched via Outbox Workers. In current PostgreSQL infrastructure, search queries execute via indexed keyword
- * matching.
- *
- * FUTURE INFRASTRUCTURE ROADMAP:
- * - Full-Text Search Engine: PostgreSQL tsvector & tsquery indexes
- * - Relevance Ranking & Stemming: ts_rank relevance scoring
- * - Typo Tolerance & Tokenization: Pg_trgm trigram similarity queries
+ * All operations now require workspaceId. Cross-workspace queries are impossible.
+ * SearchIndex is a derived read-side projection: source of truth is the Object table.
  */
 @Injectable()
 export class PrismaSearchRepository implements ISearchRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   public async search(
+    workspaceId: UniqueEntityId,
     query: SearchTerm,
     category?: SearchEntityCategory,
     limit = 20,
@@ -36,22 +30,19 @@ export class PrismaSearchRepository implements ISearchRepository {
     try {
       const term = query.getValue();
       const where: Prisma.SearchIndexWhereInput = {
+        workspaceId: workspaceId.toValue(), // ← mandatory workspace scope
         OR: [
           { title: { contains: term, mode: 'insensitive' } },
           { content: { contains: term, mode: 'insensitive' } },
         ],
       };
-
-      if (category) {
-        where.entity = category.getValue();
-      }
+      if (category) where.entity = category.getValue();
 
       const records = await this.prisma.searchIndex.findMany({
         where,
         take: limit,
         orderBy: { updatedAt: 'desc' },
       });
-
       return records.map((r) => this.toDomain(r));
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error);
@@ -61,13 +52,14 @@ export class PrismaSearchRepository implements ISearchRepository {
   public async save(entity: SearchIndexEntity): Promise<void> {
     try {
       const data = this.toPersistence(entity);
-
       await this.prisma.searchIndex.upsert({
         where: { id: entity.id.toString() },
         create: data as Prisma.SearchIndexUncheckedCreateInput,
         update: {
-          title: data.title,
-          content: data.content,
+          title: data.title as string,
+          content: data.content as string,
+          workspaceId: data.workspaceId as string,
+          updatedAt: new Date(),
         } as Prisma.SearchIndexUncheckedUpdateInput,
       });
     } catch (error) {
@@ -76,12 +68,14 @@ export class PrismaSearchRepository implements ISearchRepository {
   }
 
   public async deleteByEntity(
+    workspaceId: UniqueEntityId,
     category: SearchEntityCategory,
     entityId: UniqueEntityId,
   ): Promise<void> {
     try {
       await this.prisma.searchIndex.deleteMany({
         where: {
+          workspaceId: workspaceId.toValue(),
           entity: category.getValue(),
           entityId: entityId.toString(),
         },
@@ -92,31 +86,30 @@ export class PrismaSearchRepository implements ISearchRepository {
   }
 
   public async findByEntity(
+    workspaceId: UniqueEntityId,
     category: SearchEntityCategory,
     entityId: UniqueEntityId,
   ): Promise<SearchIndexEntity | null> {
     try {
       const record = await this.prisma.searchIndex.findFirst({
         where: {
+          workspaceId: workspaceId.toValue(),
           entity: category.getValue(),
           entityId: entityId.toString(),
         },
       });
-
-      if (!record) return null;
-
-      return this.toDomain(record);
+      return record ? this.toDomain(record) : null;
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error);
     }
   }
 
-  /**
-   * Explicit mapping converting database SearchIndex model to SearchIndexEntity projection.
-   */
   public toDomain(model: PrismaSearchIndex): SearchIndexEntity {
     return SearchIndexEntity.reconstitute({
       id: new UniqueEntityId(model.id),
+      workspaceId: new UniqueEntityId(
+        (model as any).workspaceId ?? '00000000-0000-0000-0000-000000000000',
+      ),
       entityCategory: SearchEntityCategory.create(model.entity),
       entityId: new UniqueEntityId(model.entityId),
       title: model.title,
@@ -126,12 +119,10 @@ export class PrismaSearchRepository implements ISearchRepository {
     });
   }
 
-  /**
-   * Explicit mapping converting SearchIndexEntity projection to database persistence payload.
-   */
   public toPersistence(entity: SearchIndexEntity): Record<string, unknown> {
     return {
       id: entity.id.toString(),
+      workspaceId: entity.workspaceId.toValue(),
       entity: entity.entityCategory.getValue(),
       entityId: entity.entityId.toString(),
       title: entity.title,
