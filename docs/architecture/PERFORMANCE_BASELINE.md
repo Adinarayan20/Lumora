@@ -1,34 +1,28 @@
-# Lumora Platform Performance Baseline & SLA Thresholds
+# Lumora Performance Baseline & SLA Specification
 
-## Key Performance Indicators (KPIs) — Development Environment
-
-> [!NOTE]
-> **Measurement Status**: These benchmarks reflect development environment measurements.
-> They are **NOT** production load test guarantees. Final production benchmarks must be executed against
-> production infrastructure under simulated peak load conditions.
-
-| Metric | Target SLA | Measurement Method | Environment Benchmark Status |
-|---|---|---|---|
-| **API Latency (p95)** | < 100ms | HTTP Response Header Timing (Dev) | `MEASURED — DEV (34ms)` |
-| **API Latency (p99)** | < 250ms | APM Middleware Metrics (Dev) | `MEASURED — DEV (88ms)` |
-| **Cold Start Time** | < 1,500ms | NestJS App Boot Time Logger | `MEASURED — DEV (412ms)` |
-| **Database Query Overhead** | < 15ms | Prisma Middleware Query Logger | `MEASURED — DEV (4.2ms)` |
-| **Memory Footprint** | < 200MB / instance | Node.js process.memoryUsage() | `MEASURED — DEV (114MB)` |
+> **STATUS**: Authoritative Performance Specification
+> **LAST RECONCILED**: 2026-08-10
 
 ---
 
-## Benchmark Parameters & Environment Setup
+## 1. Classification Discipline
 
-- **Environment**: Local Development / Single Node Node.js v22.x
-- **Database**: PostgreSQL 16 (Local / Container)
-- **Dataset Size**: Development fixtures (~100 objects, 10 workspaces)
-- **Methodology**: Micro-benchmarks captured during test suite execution & dev server telemetry
+- **`MEASURED (DEV ONLY)`**: Micro-benchmarks captured during local development execution (Node.js v22, local PostgreSQL 16). These are NOT production load test guarantees.
+- **`NOT MEASURED`**: Metrics that have not been load-tested under production conditions.
+- **`TARGET ONLY`**: Production SLA thresholds targeted under 1,000 req/sec load conditions.
 
 ---
 
-## Architectural Performance Controls
+## 2. Benchmark & SLA Table
 
-1. **Pagination Limits**: All workspace collection queries mandate maximum page size of 50 items (`take: 50`) using cursor-based pagination (`CursorEncoder`).
-2. **N+1 Prevention**: Explicit relation selection (`include: OBJECT_RELATIONS_INCLUDE`) prevents N+1 query multiplication.
-3. **Database Index Coverage**: Composite access paths (`workspaceId`, `userId`, `action`) indexed in PostgreSQL database.
-4. **Atomic Mutation**: Single-statement CAS updates (`UPDATE ... RETURNING *`) eliminate read-after-write network round-trips.
+| Metric | Category | DEV_BENCHMARK (Measured) | PROD_SLA (Target) | Status |
+|---|---|---|---|---|
+| **API Latency (p95)** | HTTP | `34ms` | `< 100ms` | `MEASURED (DEV ONLY)` |
+| **API Latency (p99)** | HTTP | `88ms` | `< 250ms` | `MEASURED (DEV ONLY)` |
+| **Cold Start Time** | App Boot | `412ms` | `< 1,500ms` | `MEASURED (DEV ONLY)` |
+| **DB Query Overhead** | Persistence | `4.2ms` | `< 15ms` | `MEASURED (DEV ONLY)` |
+| **Process Memory** | System | `114MB` | `< 250MB` | `MEASURED (DEV ONLY)` |
+| **Production Peak QPS** | Throughput | `NOT MEASURED` | `1,000 req/sec` | `TARGET ONLY` |
+| **Mobile App Startup** | Client | `NOT MEASURED` | `< 1,200ms` | `TARGET ONLY` |
+| **Mobile Memory Footprint**| Client | `NOT MEASURED` | `< 120MB` | `TARGET ONLY` |
+| **S3 Upload Throughput** | Media | `NOT MEASURED` | `> 10 MB/sec` | `TARGET ONLY` |

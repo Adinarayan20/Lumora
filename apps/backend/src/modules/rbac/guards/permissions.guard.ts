@@ -6,9 +6,9 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RbacService } from '../rbac.service';
-import { PERMISSIONS_KEY } from '../decorators/require-permissions.decorator';
-import { PermissionKey } from '../constants/permissions';
+import { RbacService } from '../rbac.service.js';
+import { PERMISSIONS_KEY } from '../decorators/require-permissions.decorator.js';
+import { PermissionKey } from '../constants/permissions.js';
 
 interface RequestWithUserAndParams {
   user?: { id?: string };
@@ -40,7 +40,7 @@ export class PermissionsGuard implements CanActivate {
       throw new ForbiddenException('Access denied');
     }
 
-    const workspaceId = request.params?.workspaceId || request.params?.id;
+    const workspaceId = request.params?.workspaceId;
     if (!workspaceId) {
       throw new BadRequestException(
         'Workspace context missing from route parameters',

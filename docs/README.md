@@ -1,77 +1,93 @@
-# Lumora Master Documentation Index & Architecture Graph
+# Lumora Master Documentation Index & Information Architecture
 
-Welcome to the Lumora Master Documentation Suite. This directory forms the single source of truth for engineering, product, design, operations, and AI coding agents.
+> **STATUS**: Authoritative Documentation Index & Governance Rule
+> **LAST RECONCILED**: 2026-08-10 (HEAD `92fb2fe`)
 
----
-
-## 1. Documentation Architecture & Flow Graph
-
-```
-                                  docs/README.md
-                                        │
-     ┌──────────────────────────────────┼──────────────────────────────────┐
-     │                                  │                                  │
-     ▼                                  ▼                                  ▼
-TECHNICAL SOURCE OF TRUTH    PRODUCT EXPERIENCE & DESIGN      EXECUTION & DEBT
-(What exists technically)    (Intended experience & UI)    (Sequence & backlog)
-     │                                  │                                  │
-     ├─ CURRENT_ARCHITECTURE.md         ├─ Product Experience Blueprint    ├─ PRODUCT_ROADMAP.md
-     ├─ DEVELOPMENT_BOUNDARIES.md       └─ Icon Platform Constitution      ├─ TECH_DEBT.md
-     ├─ IMPLEMENTATION_GUIDELINES.md                                       └─ PERFORMANCE_BASELINE.md
-     └─ ADR-001 .. ADR-016
-```
-
-### Key Distinction Rules for Future Engineers & AI Agents:
-- **[`CURRENT_ARCHITECTURE.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/CURRENT_ARCHITECTURE.md)** = **TECHNICAL SOURCE OF TRUTH** (Describes what exists technically, data boundaries, CAS concurrency, tenant isolation, and backend rules).
-- **Product Experience Blueprint** = **INTENDED EXPERIENCE & DESIGN DIRECTION** (Describes visual requirements: light/dark themes, liquid/glass motion, haptics, organic/3D visuals, progress/streaks, completion celebrations. *Visual/experience requirements MUST NEVER alter backend persistence architecture.*).
-- **[`PRODUCT_ROADMAP.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/PRODUCT_ROADMAP.md)** = **IMPLEMENTATION SEQUENCE** (Describes past completed phases, current reconciliation, and future build order).
+Welcome to the Lumora Master Documentation Suite. This directory forms Lumora's documentation governance system. Authority is category-based across engineering, product, design, operations, and AI coding agents.
 
 ---
 
-## 2. Documentation Classification Inventory
+## 1. Permanent System Principles
 
-### 2.1 Current Authoritative Technical Architecture
-- **[`CURRENT_ARCHITECTURE.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/CURRENT_ARCHITECTURE.md)**: Authoritative system inventory, dual object model (`UniversalObject` vs `ObjectAggregate`), three-tier repository audit, CAS concurrency, tenant isolation, outbox pattern, and UI Independence Law with Change Impact Matrix.
-- **[`DEVELOPMENT_BOUNDARIES.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/DEVELOPMENT_BOUNDARIES.md)**: Team ownership boundaries (Frontend, Backend, Database, Design, Security) and explicit AI Agent STOP rules.
-- **[`IMPLEMENTATION_GUIDELINES.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/IMPLEMENTATION_GUIDELINES.md)**: Tactical coding standards, layer dependency direction, error handling contracts, and DDD aggregate constraints.
+### 1.1 Category-Based Claim Authority Model
 
-### 2.2 Execution, Roadmap & Backlog
-- **[`PRODUCT_ROADMAP.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/PRODUCT_ROADMAP.md)**: Phase roadmap (Completed A–E, Current Reconciliation Pass, Next Product Construction Stage, Approved/Not Implemented, Deferred infrastructure).
-- **[`TECH_DEBT.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/TECH_DEBT.md)**: Technical debt registry tracking deferred items (TD-001 through TD-025) with trigger criteria and risks.
-- **[`PERFORMANCE_BASELINE.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/PERFORMANCE_BASELINE.md)**: Development environment SLA benchmarks, measurement context, pagination controls, and query limits.
+Documentation authority is **claim-category based**, not a blunt scalar override chain. When a conflict or question arises, authority is determined by the *category of claim*:
 
-### 2.3 Product Experience & Design System Specifications
-- **[`lumora_icon_platform_constitution.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/lumora_icon_platform_constitution.md)**: **DESIGN SYSTEM SPECIFICATION** — Standardizes icon semantics, touch target sizes, visual weights, and presentation tokens.
-- **Product Experience Blueprint**: **PRODUCT EXPERIENCE SPECIFICATION** — Defines the visual direction for Lumora's UI experiences (light/dark themes, liquid/glass motion, haptics, organic/3D visuals, meaningful progress/streaks, subtle completion celebration).
+| Claim Category | Primary Authoritative Source | Secondary Reference | Prohibited Source |
+|---|---|---|---|
+| **Current Execution Behavior & Data Schema** | **Source Code, Prisma Schema, Active Database Migrations & Executable Tests** | [CURRENT_ARCHITECTURE.md](architecture/CURRENT_ARCHITECTURE.md) | Stale Markdown / Legacy Reports |
+| **System Behavioral Contracts & Requirements** | **[SRS.md](product/SRS.md)** | [PRODUCT_REQUIREMENTS.md](product/PRODUCT_REQUIREMENTS.md) | Informal Chat / Stray Comments |
+| **Product Purpose, Core Intent & Scope** | **[PRODUCT_VISION.md](product/PRODUCT_VISION.md)** | [PRODUCT_ROADMAP.md](product/PRODUCT_ROADMAP.md) | Architectural Implementation Details |
+| **Architectural Decision Rationale & History** | **`docs/architecture/adr/ADR-xxx.md` (Immutable)** | [CURRENT_ARCHITECTURE.md](architecture/CURRENT_ARCHITECTURE.md) | Rewritten / Edited ADRs |
+| **Security Law & Permission Governance** | **[SECURITY_ARCHITECTURE.md](architecture/SECURITY_ARCHITECTURE.md)** | Security Test Specs | Code Comments / Implicit Rules |
+| **UI Design System & Token Governance** | **[DESIGN_SYSTEM.md](design/DESIGN_SYSTEM.md)** | Token Source Code (`@lumora/ui`) | Hardcoded Ad-hoc CSS / Inline Styles |
+| **Point-in-Time Diagnostic Evidence** | **`docs/audits/*.md`** | Issue Tracker | Live Architecture Docs |
+| **Historical & Retired System State** | **`docs/archive/*`** | — | Active Documentation Tree |
 
-### 2.4 Current Operational Documentation
-- **[`operations/DEPLOYMENT_GUIDE.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/operations/DEPLOYMENT_GUIDE.md)**: Production environment setup, database migrations, security configuration, and health probes.
-- **[`operations/RUNBOOK.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/operations/RUNBOOK.md)**: Local development setup, Prisma migration workflows, and common operational tasks.
-- **[`architecture/capability-engine-runtime.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/capability-engine-runtime.md)**: Operational guide for `UniversalCapabilityEngine` execution and dependency resolution.
+---
 
-### 2.5 Historical & Review Evidence (Retained)
-- **[`architecture/PHASE_5_MASTER_ARCHITECTURE.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/PHASE_5_MASTER_ARCHITECTURE.md)**: `HISTORICAL / PARTIALLY SUPERSEDED` — Original Phase 5 master platform design blueprint.
-- **[`architecture/PHASE_5_ARCHITECTURE_REVIEW.md`](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/PHASE_5_ARCHITECTURE_REVIEW.md)**: `HISTORICAL / PARTIALLY SUPERSEDED` — Senior staff architecture review panel evaluation.
+### 1.2 UI / Data Independence & State Categorization Rule
+
+> **CORE PRINCIPLE**: Presentation and user experience layers are strictly decoupled from domain semantics and persistence schemas.
+>
+> 1. **Visual Semantics vs Domain Semantics**:
+>    - Visual redesigns (*"make card blue", "change font/padding"*) → **UI / Theme Package Only**.
+>    - New domain capability (*"allow recurring dosage schedule on medicine"*) → **Domain / Application / Persistence**.
+> 2. **State Categorization**:
+>    - **User Domain Data** → Universal Object / DB Persistence (`Object` table).
+>    - **User Account / Workspace Preferences** (*"dark mode choice", "workspace notification preferences"*) → User/Workspace Settings Model (`UserSettings`, `WorkspaceSettings`).
+>    - **Ephemeral UI State** (*"modal open status, active tab, scroll position"*) → Client Component State (`React` / `Zustand`).
+>    - **Design Tokens** → Theme Package (`@lumora/theme`).
+>    - **System Environment Config** → Backend Environment (`.env`).
+
+---
+
+## 2. Reconciled Information Architecture Directory
+
+```
+docs/
+├── README.md                          # Master Directory Index (This file)
+│
+├── product/                           # Product Management & Behavioral Specifications
+│   ├── PRODUCT_VISION.md              # Purpose, core philosophy, non-negotiable principles
+│   ├── SRS.md                         # Software Requirements Specification (21 reconciled requirements)
+│   ├── PRODUCT_REQUIREMENTS.md        # Prioritized feature capability matrix
+│   ├── PRODUCT_EXPERIENCE.md          # UX expectations, screen flows, motion standards
+│   └── PRODUCT_ROADMAP.md             # Master phase map and roadmap milestones
+│
+├── architecture/                      # Technical System Design & Layer Contracts
+│   ├── CURRENT_ARCHITECTURE.md        # System context, boundaries, subsystem status
+│   ├── DATA_ARCHITECTURE.md           # Universal Object schema, JSONB, indexes, migrations
+│   ├── API_ARCHITECTURE.md            # REST contracts, DTOs, error mapping, pagination
+│   ├── RUNTIME_ARCHITECTURE.md        # Outbox worker, Event router, Capability Engine, lifecycle
+│   ├── SECURITY_ARCHITECTURE.md       # Auth, JWT, RBAC, tenant isolation, session hashing, CORS
+│   ├── DEVELOPMENT_BOUNDARIES.md      # Layer rules (UI -> App -> Domain -> Infra, no Prisma leaks)
+│   ├── IMPLEMENTATION_GUIDELINES.md   # Coding patterns, Result<T,E>, value objects, command handlers
+│   ├── CHANGE_IMPACT_MATRIX.md        # Matrix cross-referencing changes vs required reviews
+│   ├── TECH_DEBT.md                   # Strict machine-readable technical debt schema (TD-001..TD-038)
+│   ├── PERFORMANCE_BASELINE.md        # Measured dev benchmarks vs target production SLAs
+│   └── adr/                           # Architectural Decision Records (Immutable ADR-001..ADR-016)
+│
+├── operations/                        # Infrastructure, CI/CD & Operational Runbooks
+│   ├── DEPLOYMENT_GUIDE.md            # Docker, env vars, build pipelines, production startup
+│   └── RUNBOOK.md                     # Operational procedures, incident response, health checks
+│
+├── design/                            # UI, UX, Motion & Accessibility Specs
+│   ├── DESIGN_SYSTEM.md               # HSL color tokens, typography scales, spacing tokens
+│   └── ICON_PLATFORM_CONSTITUTION.md  # Vector asset guidelines, SVG optimization, iconography rules
+│
+├── audits/                            # Historical Point-in-Time Diagnostic Audits
+│   ├── 2026-08-10-source-verified-audit-part1.md
+│   └── 2026-08-10-source-verified-audit-part2.md
+│
+└── archive/                           # Historical Planning & Superseded Reports
+    ├── LUMORA_TRUTH_REPORT.md          # Archived prior truth report (SHA 8bfdc0f)
+    ├── PHASE_5_ARCHITECTURE_REVIEW.md  # Archived historical planning doc
+    └── PHASE_5_MASTER_ARCHITECTURE.md  # Archived historical planning doc
+```
 
 ---
 
 ## 3. Architecture Decision Records (ADR) Index
 
-| ADR ID | Title | Status | Primary Focus |
-|---|---|:---:|---|
-| **[ADR-001](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-001-global-exception-filter.md)** | Global ApplicationException Filter | Accepted | Transport Exception Mapping |
-| **[ADR-002](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-002-result-pattern.md)** | Monadic Result Pattern for Control Flow | Accepted | Error Control Flow |
-| **[ADR-003](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-003-timeline-schema-v2.md)** | Universal Timeline & Audit Engine | Accepted | History & Timeline Audit |
-| **[ADR-004](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-004-facade-cleanup.md)** | CQRS Pattern & Application Use Cases | Accepted | Application Use Cases |
-| **[ADR-005](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-005-redis-infrastructure.md)** | Keyset (Cursor) Pagination Architecture | Accepted | Pagination Infrastructure |
-| **[ADR-006](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-006-universal-search.md)** | Search Indexing Projection Engine | Accepted | Search Projection |
-| **[ADR-007](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-007-media-and-attachments.md)** | File Asset & Media Storage Abstraction | Accepted | Media Storage |
-| **[ADR-008](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-008-notifications-engine.md)** | Notification & Reminder Engine | Accepted | Notifications & Reminders |
-| **[ADR-009](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-009-user-and-workspace-settings.md)** | Settings Engine Bounded Context | Accepted | User & Workspace Settings |
-| **[ADR-010](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-010-design-system-foundations.md)** | Design System Foundation & Motion Engine | Accepted | UI Tokens & Motion Physics |
-| **[ADR-011](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-011-capability-engine-architecture.md)** | Universal Capability Engine Architecture | Accepted | Capability Engine & Lifecycle |
-| **[ADR-012](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-012-starter-library-template-system.md)** | Starter Library & Template Package System | Accepted | Package & Manifest System |
-| **[ADR-013](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-013-universal-platform-architecture.md)** | Universal Life Operating System Platform | Accepted | Platform Architecture |
-| **[ADR-014](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-014-platform-kernel-and-runtime.md)** | Platform Kernel, Runtime & Schema Registry | Accepted | Kernel & Runtime Engine |
-| **[ADR-015](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-015-phase-e-persistence-foundation.md)** | Phase E Persistence Foundation & CAS | Accepted | Atomic CAS Persistence |
-| **[ADR-016](file:///c:/Users/adina/OneDrive/Desktop/Job/Project/Lumora/docs/architecture/adr/ADR-016-object-repository-migration-path.md)** | Three-Tier Object Repository Migration | Accepted | Repository Disambiguation |
+All 16 ADRs (`docs/architecture/adr/ADR-001.md` through `ADR-016.md`) remain **immutable historical records**.

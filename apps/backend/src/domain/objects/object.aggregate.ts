@@ -154,6 +154,54 @@ export class ObjectAggregate extends AggregateRoot<UniqueEntityId> {
     );
   }
 
+  public updateProps(
+    updatedById: UniqueEntityId,
+    props: {
+      title?: ObjectTitle;
+      description?: string;
+      icon?: string;
+      emoji?: string;
+      cover?: string;
+      color?: string;
+      spaceId?: UniqueEntityId;
+      isFavorite?: boolean;
+      status?: ObjectStatus;
+      pinnedAt?: Date;
+      systemData?: Record<string, unknown>;
+      attributes?: Record<string, unknown>;
+    },
+  ): void {
+    if (props.title) this.title = props.title;
+    if (props.description !== undefined) this.description = props.description;
+    if (props.icon !== undefined) this.icon = props.icon;
+    if (props.emoji !== undefined) this.emoji = props.emoji;
+    if (props.cover !== undefined) this.cover = props.cover;
+    if (props.color !== undefined) this.color = props.color;
+    if (props.spaceId !== undefined) this.spaceId = props.spaceId;
+    if (props.isFavorite !== undefined) this.isFavorite = props.isFavorite;
+    if (props.status !== undefined) this.status = props.status;
+    if (props.pinnedAt !== undefined) this.pinnedAt = props.pinnedAt;
+    if (props.systemData) {
+      this.systemData = Object.freeze({
+        ...this.systemData,
+        ...props.systemData,
+      });
+    }
+    if (props.attributes) {
+      this.attributes = Object.freeze({
+        ...this.attributes,
+        ...props.attributes,
+      });
+    }
+    this.updatedById = updatedById;
+    this.revision += 1;
+    this.updatedAt = new Date();
+
+    this.addDomainEvent(
+      new ObjectUpdatedEvent(this.id, this.workspaceId, updatedById),
+    );
+  }
+
   public softDelete(deletedById: UniqueEntityId): void {
     this.status = ObjectStatus.DELETED;
     this.deletedAt = new Date();

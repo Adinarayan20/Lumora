@@ -8,6 +8,18 @@
 
 ---
 
+> [!NOTE]
+> **Historical Context & Current Implementation Status (HEAD `92fb2fe`)**:
+> This ADR documents the repository migration problem as discovered during the Foundation Reconciliation Pass.
+> The migration described in this document was **subsequently completed**:
+> - `ObjectAggregateRepositoryAdapter`: **IMPLEMENTED (FULL)** (`apps/backend/src/infrastructure/prisma/repositories/object-aggregate.repository.adapter.ts`)
+> - Tier 3 legacy `ObjectRepository`: **DELETED** (File removed; zero production consumers remain)
+> - `OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN`: **BOUND AND WIRED** in `ObjectsModule`
+>
+> For current authoritative repository architecture, see [CURRENT_ARCHITECTURE.md](../CURRENT_ARCHITECTURE.md).
+
+---
+
 ## Context & Problem Statement
 
 During the Foundation + Architecture Reconciliation Pass (HEAD: `ce9dc82`), a source audit

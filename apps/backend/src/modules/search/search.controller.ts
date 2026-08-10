@@ -11,6 +11,9 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { PermissionsGuard } from '../rbac/guards/permissions.guard.js';
+import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator.js';
+import { Permissions } from '../rbac/constants/permissions.js';
 import { IndexEntityUseCase } from './use-cases/index-entity.use-case.js';
 import { RemoveSearchIndexUseCase } from './use-cases/remove-search-index.use-case.js';
 import { SearchObjectsQuery } from './use-cases/search-objects.query.js';
@@ -20,12 +23,10 @@ import { IndexEntityDto } from './dto/index-entity.dto.js';
 /**
  * SearchController — workspace-scoped search API.
  *
- * GET /workspaces/:workspaceId/search — workspace-isolated search (Phase F fix).
- * Previously the route was /search with no workspace scope — a security gap.
- *
+ * GET /workspaces/:workspaceId/search — workspace-isolated search protected by JwtAuthGuard + PermissionsGuard.
  * Internal indexing endpoints (POST/DELETE) remain for Outbox worker use.
  */
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('workspaces/:workspaceId/search')
 export class SearchController {
   constructor(
@@ -36,9 +37,10 @@ export class SearchController {
 
   /**
    * GET /workspaces/:workspaceId/search?query=...
-   * Workspace-scoped full-text search.
+   * Workspace-scoped full-text search. Enforces workspace read permissions.
    */
   @Get()
+  @RequirePermissions(Permissions.Object.Read)
   async search(
     @Param('workspaceId') workspaceId: string,
     @Query() dto: SearchQueryDto,

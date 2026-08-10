@@ -1,43 +1,87 @@
-# Lumora Technical Debt & Deferred Architectural Backlog
+# Lumora Technical Debt & Deferred Backlog Registry
 
-This document records architectural recommendations, infrastructure components, and enterprise capabilities deferred from current phases to maintain strict scope control and prevent premature optimization.
-
----
-
-## Technical Debt & Deferral Registry
-
-| ID | Capability / Recommendation | Priority | Target Phase | Status | Reason for Deferral / Current State | Estimated Effort |
-|---|---|:---:|:---:|:---:|---|:---:|
-| **TD-001** | **Kafka Event Bus Integration** | High | Phase 3 (Scale) | `Deferred` | In-process transactional outbox worker satisfies current single-node processing throughput requirements without introducing cluster operational overhead. | 2 Sprints |
-| **TD-002** | **RabbitMQ Task Queue Cluster** | Medium | Phase 3 (Scale) | `Deferred` | Current outbox polling pattern handles asynchronous event processing reliably. RabbitMQ will be integrated when background task workload demands dedicated message queuing. | 1 Sprint |
-| **TD-003** | **Elasticsearch / Meilisearch Engine** | High | Phase 3 (Search) | `Deferred` | PostgreSQL full-text indexing and basic keyword search satisfy initial object search requirements. Dedicated search indexing engine scheduled for scale milestone. | 2 Sprints |
-| **TD-004** | **OpenTelemetry APM & Distributed Tracing** | Medium | Phase 3 (Observability) | `Deferred` | NestJS JSON Logger and Correlation ID middleware provide adequate request context tracing. OpenTelemetry collector integration deferred to enterprise deployment phase. | 1 Sprint |
-| **TD-005** | **PostgreSQL Read Replicas & CQRS Projections** | High | Phase 3 (Scale) | `Deferred` | Single PostgreSQL instance with optimized indexes handles current read workload. Read replicas and separate CQRS read models will be provisioned under scale benchmark milestones. | 3 Sprints |
-| **TD-006** | **Redis Distributed Cache Layer** | Medium | Phase 3 (Scale) | `Deferred` | In-memory caching and direct database reads satisfy early phase performance targets. Distributed cache layer deferred to prevent cache invalidation complexity during domain construction. | 1 Sprint |
-| **TD-007** | **Cloudflare / CloudFront Global CDN** | Low | Phase 4 (Production) | `Deferred` | Asset storage and media delivery are backed by local file asset storage in dev/test environment. CDN integration belongs to production infrastructure setup. | 1 Sprint |
-| **TD-008** | **Multi-Region Active-Active Database Deployment** | Low | Phase 4 (Enterprise) | `Deferred` | Single region deployment meets initial production availability goals. Multi-region active-active replication deferred to global enterprise phase. | 4 Sprints |
-| **TD-009** | **SOC2 Type II Compliance & Audit Controls** | Medium | Phase 4 (Compliance) | `Deferred` | Detailed audit logging is captured in `AuditLogRepository`. Formal SOC2 policies, controls, and external auditing deferred to enterprise compliance milestone. | 3 Sprints |
-| **TD-010** | **ISO27001 Security Management Certification** | Low | Phase 4 (Compliance) | `Deferred` | Security rules (RBAC, JWT, Bcrypt) are implemented at code boundaries. ISO27001 ISMS certification deferred to enterprise launch phase. | 3 Sprints |
-| **TD-011** | **Automated Multi-Region Disaster Recovery (DR)** | Medium | Phase 4 (Infrastructure) | `Deferred` | Database point-in-time recovery and snapshot backups provide initial recovery capability. Automated multi-region DR failover deferred to Phase 4. | 2 Sprints |
-| **TD-012** | **Kubernetes Auto-Scaling (HPA / KEDA)** | Medium | Phase 3 (DevOps) | `Deferred` | Containerized monorepo deploys cleanly on single node / Docker Compose for development and staging. K8s HPA deferred to Phase 3 infrastructure setup. | 2 Sprints |
-| **TD-013** | **Dynamic Micro-Kernel Plugin Architecture** | Low | Phase 4 (Extensibility) | `Deferred` | Universal Object Catalog supports custom types via JSON attributes. Dynamic third-party plugin loading deferred to prevent premature architectural complexity. | 4 Sprints |
-| **TD-014** | **Timeline Schema Migration v2 Audit Columns** | Medium | Phase 3 (Unit 3) | `Resolved` | Migration v2 applied; physical database columns `workspaceId`, `userId`, `action`, `metadata` added and mapped directly in `PrismaTimelineRepository` (ADR-003). | 1 Sprint |
-| **TD-015** | **Application-Layer CQRS Façade Use Cases** | Medium | Phase 3 (Unit 4) | `Partially Resolved` | Replaced legacy façades for `Object` and `Reminder` creation with pure aggregate-backed use cases (`CreateObjectUseCase`, `ScheduleReminderUseCase`). Reclassified thin delegation use cases for Workspaces, Spaces, and Collections as valid domain service wrappers (ADR-004). | 2 Sprints |
-| **TD-016** | **Structured Exception Code Mapping in Transport Adapters** | Low | Phase 3 (Unit 1) | `Resolved` | Implemented global `ApplicationExceptionFilter` and typed `ErrorCode` enum mapping (ADR-001). Removed all fragile string matching from controllers. | 1 Sprint |
-| **TD-017** | **Auth Bounded Context CQRS Migration** | Medium | Phase 3 (Unit 2) | `Resolved` | Standardized application services and use cases to monadic `Result<T, ApplicationException>` contracts (ADR-002). | 1 Sprint |
-| **TD-018** | **Repository Aggregate Rehydration Synthetic Fields** | Low | Phase 3 (Unit 3) | `Resolved` | `PrismaTimelineRepository` rehydrates true audit properties from database columns; synthetic placeholder fallbacks removed (ADR-003). | 1 Sprint |
-| **TD-019** | **Real PostgreSQL Integration & Concurrency Suite** | High | Current Reconciliation Pass | `Verified (Suite Written)` | Authored `prisma-object.postgres.concurrency.integration.spec.ts` with `POSTGRES_INTEGRATION_TEST=true` environment guard. Renamed mock test to `prisma-object.concurrency.mock.spec.ts`. | 1 Sprint |
-| **TD-020** | **LumoraPlatformKernel Real Registry Wiring** | Medium | Product Construction | `Partially Implemented (Shell)` | `LumoraPlatformKernel` logs boot steps deterministically but does not yet load schema definitions into cache at boot. Wires during Product Construction boot initialization. | 1 Sprint |
-| **TD-021** | **FieldRegistry Dynamic Form Engine** | High | Product Construction Milestone 1 | `Approved / Not Implemented` | Input control registry for dynamic object forms (ADR-014). Deferred to Product Construction phase. | 1 Sprint |
-| **TD-022** | **BlockRegistry Dynamic Detail Engine** | High | Product Construction Milestone 1 | `Approved / Not Implemented` | Detail block component registry for dynamic object views (ADR-014). Deferred to Product Construction phase. | 1 Sprint |
-| **TD-023** | **Universal Relationship Engine Aggregate** | Medium | Product Construction Milestone 2 | `Approved / Not Implemented` | Object-to-object relationship graph model. Deferred to Product Construction phase. | 2 Sprints |
-| **TD-024** | **Smart Collections Query Evaluator** | Medium | Product Construction Milestone 2 | `Approved / Not Implemented` | Evaluator for dynamic collection queries (`CollectionType.DYNAMIC`). Deferred to Product Construction phase. | 1 Sprint |
-| **TD-025** | **Tier 3 ObjectRepository Migration** | High | Product Construction Milestone 1 | `Legacy / Active (Migration Required)` | Legacy raw Prisma `ObjectRepository` bypasses domain architecture. Authored ADR-016; must build `ObjectAggregateRepositoryAdapter` to retire Tier 3. | 1 Sprint |
+> **STATUS**: Authoritative Technical Debt Registry
+> **LAST RECONCILED**: 2026-08-10 (HEAD `92fb2fe`)
 
 ---
 
-## Architectural Deferral Policy
+## 1. Active Technical Debt Registry (TD-001 to TD-038)
 
-1. **Premature Optimization Protection**: Enterprise infrastructure (Kafka, K8s, Redis clusters, Read Replicas) MUST NOT be introduced during domain engineering phases unless benchmark evidence demonstrates performance degradation.
-2. **Tracked Milestones**: Every deferred item must remain recorded in this registry until formally scheduled in `PRODUCT_ROADMAP.md` and assigned an implementation issue.
-3. **Zero Technical Debt Inflation**: Code implemented during future units must adhere strictly to `IMPLEMENTATION_GUIDELINES.md` so that future integration of deferred capabilities requires zero refactoring of domain core logic.
+### Active Open / Deferred Debt
+
+```markdown
+### TD-026: Non-Atomic Update Path in ObjectsService
+- **ID**: `TD-026`
+- **Title**: `ObjectsService.updateObject()` uses non-atomic TOCTOU revision check
+- **Description**: `updateObject` executes `findFirst` to read revision, then calls `updateMany`. This leaves a race window where concurrent updates can overwrite revision changes without detection.
+- **Evidence**: `apps/backend/src/modules/objects/objects.service.ts` (Lines 178-240)
+- **Affected Layer**: Application Service / Objects Module
+- **Severity**: `MEDIUM`
+- **Priority**: `P1`
+- **Status**: `OPEN`
+- **Blocking**: `NO` (for dev), `YES` (for concurrent production scale)
+- **Owner**: Backend Team
+- **Recommended Action**: Refactor `UpdateObjectUseCase` to invoke `ObjectAggregateRepositoryAdapter.save()` (Tier 2 CAS) directly.
+
+### TD-029: CapabilityExecutor Pipeline Bypassed
+- **ID**: `TD-029`
+- **Title**: `CapabilityExecutor.registerHandler()` is never called in production
+- **Description**: Capability descriptors are registered at boot, but execution handlers are never registered. Side effects currently execute via `OutboxEventHandlerService` directly.
+- **Evidence**: `apps/backend/src/domain/capabilities/universal-capability-engine.ts`
+- **Affected Layer**: Domain / Capability Engine
+- **Severity**: `HIGH`
+- **Priority**: `P2`
+- **Status**: `OPEN`
+- **Blocking**: `NO`
+- **Recommended Action**: Register production handlers for capability lifecycle execution.
+
+### TD-031: Missing PermissionsGuard on Search Endpoint
+- **ID**: `TD-031`
+- **Title**: `SearchController` GET endpoint missing `@UseGuards(PermissionsGuard)`
+- **Description**: `GET /workspaces/:workspaceId/search` is decorated with `JwtAuthGuard` but lacks `PermissionsGuard`, allowing workspace probing via response status codes.
+- **Evidence**: `apps/backend/src/modules/search/search.controller.ts` (Line 28)
+- **Affected Layer**: API Controller / Security
+- **Severity**: `LOW`
+- **Priority**: `P0`
+- **Status**: `OPEN`
+- **Blocking**: `YES` (before production launch)
+- **Recommended Action**: Add `@UseGuards(PermissionsGuard)` and `@RequirePermissions(Permissions.Search.Read)`.
+
+### TD-032: Missing CORS Configuration
+- **ID**: `TD-032`
+- **Title**: CORS is not configured in NestJS `main.ts`
+- **Description**: `main.ts` lacks `app.enableCors()`, blocking web client cross-origin requests.
+- **Evidence**: `apps/backend/src/main.ts`
+- **Affected Layer**: Infrastructure / Transport
+- **Severity**: `MEDIUM`
+- **Priority**: `P0`
+- **Status**: `OPEN`
+- **Blocking**: `YES` (for web clients)
+- **Recommended Action**: Add `app.enableCors({ origin: true, credentials: true })`.
+
+### TD-033: Zero Real Database Tests Running in CI
+- **ID**: `TD-033`
+- **Title**: CI workflow lacks PostgreSQL service container
+- **Description**: All 85 passing tests run against `vi.fn()` mocks. `POSTGRES_INTEGRATION_TEST=true` is never set in `.github/workflows/ci.yml`.
+- **Evidence**: `.github/workflows/ci.yml`
+- **Affected Layer**: CI/CD / Testing
+- **Severity**: `HIGH`
+- **Priority**: `P1`
+- **Status**: `OPEN`
+- **Blocking**: `YES` (for persistence confidence)
+- **Recommended Action**: Add `postgres:16-alpine` service container to `ci.yml` and enable real PostgreSQL suite execution.
+```
+
+---
+
+## 2. Resolved Technical Debt Summary (TD-014, TD-016, TD-017, TD-018, TD-021, TD-022, TD-023, TD-025, TD-027)
+
+- `TD-014` (Timeline Schema v2): **RESOLVED**
+- `TD-016` (Exception Filter): **RESOLVED**
+- `TD-017` (Auth CQRS Monadic Result): **RESOLVED**
+- `TD-018` (Repository Rehydration): **RESOLVED**
+- `TD-021` (FieldRegistry): **RESOLVED** (`packages/ui`)
+- `TD-022` (BlockRegistry): **RESOLVED** (`packages/ui`)
+- `TD-023` (Universal Relationship Engine): **RESOLVED** (`Relationship` table + API)
+- `TD-025` (Tier 3 Repository Removal): **RESOLVED** (Tier 3 file deleted, ADR-016 complete)
+- `TD-027` (Session Token Hashing): **RESOLVED** (SHA-256 hashing in `SessionRepository`)

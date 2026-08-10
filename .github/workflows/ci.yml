@@ -15,11 +15,8 @@ concurrency:
 env:
   NODE_ENV: test
   CI: true
-  # NOTE: Local mock placeholders for unit test execution.
-  # FUTURE MIGRATION PATH: When live E2E integration test suites are added in future phases,
-  # replace these placeholders with GitHub Service Containers (e.g. services.postgres, services.redis)
-  # or GitHub Secrets for external staging environments.
-  DATABASE_URL: "postgresql://lumora:lumora@localhost:5432/lumora_test?schema=public"
+  DATABASE_URL: "postgresql://lumora_test:lumora_password@localhost:5432/lumora_test_db?schema=public"
+  POSTGRES_INTEGRATION_TEST: "true"
   REDIS_URL: "redis://localhost:6379"
 
 jobs:
@@ -27,6 +24,21 @@ jobs:
     name: Run Release Quality Gates
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lumora_test
+          POSTGRES_PASSWORD: lumora_password
+          POSTGRES_DB: lumora_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout Repository
@@ -47,13 +59,19 @@ jobs:
       - name: Deterministic Prisma Client Generation
         run: pnpm run prisma:generate
 
+      - name: Validate Prisma Schema
+        run: pnpm --filter @lumora/backend prisma validate
+
+      - name: Deploy Prisma Migrations to Test Database
+        run: pnpm --filter @lumora/backend prisma migrate deploy
+
       - name: 1. Typecheck Monorepo
         run: pnpm run typecheck
 
       - name: 2. Lint Source Code
         run: pnpm run lint
 
-      - name: 3. Run Unit Tests
+      - name: 3. Run Unit & Real PostgreSQL Integration Tests
         run: pnpm run test
 
       - name: 4. Build Monorepo Bundles
