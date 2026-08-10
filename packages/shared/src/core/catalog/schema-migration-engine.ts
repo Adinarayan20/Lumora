@@ -19,14 +19,19 @@ export class SchemaMigrationEngine {
 
     // 1. Populate missing fields from field default values
     for (const field of schema.fields) {
-      if (migrated[field.key] === undefined && field.defaultValue !== undefined) {
+      if (
+        migrated[field.key] === undefined &&
+        field.defaultValue !== undefined
+      ) {
         migrated[field.key] = field.defaultValue;
       }
     }
 
     // 2. Apply explicit migration initializers if provided
     if (schema.migrationInitializers) {
-      for (const [key, initValue] of Object.entries(schema.migrationInitializers)) {
+      for (const [key, initValue] of Object.entries(
+        schema.migrationInitializers,
+      )) {
         if (migrated[key] === undefined) {
           migrated[key] = initValue;
         }

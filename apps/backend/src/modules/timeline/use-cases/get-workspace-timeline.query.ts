@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Result, UniqueEntityId, ApplicationException } from '@lumora/shared';
 import type { ITimelineRepository } from '../../../domain/timeline/repositories/timeline.repository.interface.js';
+import { TimelineRecordEntity } from '../../../domain/timeline/entities/timeline-record.entity.js';
 import { TIMELINE_REPOSITORY_TOKEN } from '../timeline.tokens.js';
 import { TimelineRecordResponseDto } from '../dto/timeline-record-response.dto.js';
 import { TimelineRecordResponseMapper } from '../mappers/timeline-record-response.mapper.js';
@@ -27,7 +28,7 @@ export class GetWorkspaceTimelineQuery {
       const { workspaceId, userId, objectId, limit = 50 } = input;
       const wsId = new UniqueEntityId(workspaceId);
 
-      let records;
+      let records: TimelineRecordEntity[];
 
       if (objectId) {
         // Object-level timeline filter — for Object Detail view
@@ -43,10 +44,15 @@ export class GetWorkspaceTimelineQuery {
           limit,
         );
       } else {
-        records = await this.timelineRepository.findWorkspaceTimeline(wsId, limit);
+        records = await this.timelineRepository.findWorkspaceTimeline(
+          wsId,
+          limit,
+        );
       }
 
-      return Result.ok(records.map((r) => TimelineRecordResponseMapper.toResponseDto(r)));
+      return Result.ok(
+        records.map((r) => TimelineRecordResponseMapper.toResponseDto(r)),
+      );
     } catch (error) {
       if (error instanceof ApplicationException) return Result.fail(error);
       throw error;

@@ -1,10 +1,13 @@
-import { FieldType } from '@lumora/shared';
-import type { FieldControlComponent, IFieldRegistry } from './DynamicForm.types';
-import { StringFieldAdapter } from './adapters/StringFieldAdapter';
-import { NumberFieldAdapter } from './adapters/NumberFieldAdapter';
-import { BooleanFieldAdapter } from './adapters/BooleanFieldAdapter';
-import { EnumFieldAdapter } from './adapters/EnumFieldAdapter';
-import { UnresolvedFieldAdapter } from './adapters/UnresolvedFieldAdapter';
+import { FieldType } from "@lumora/shared";
+import type {
+  FieldControlComponent,
+  IFieldRegistry,
+} from "./DynamicForm.types";
+import { StringFieldAdapter } from "./adapters/StringFieldAdapter";
+import { NumberFieldAdapter } from "./adapters/NumberFieldAdapter";
+import { BooleanFieldAdapter } from "./adapters/BooleanFieldAdapter";
+import { EnumFieldAdapter } from "./adapters/EnumFieldAdapter";
+import { UnresolvedFieldAdapter } from "./adapters/UnresolvedFieldAdapter";
 
 export class FieldRegistry implements IFieldRegistry {
   private readonly controls = new Map<FieldType, FieldControlComponent>();
@@ -14,7 +17,10 @@ export class FieldRegistry implements IFieldRegistry {
     this.parent = parent;
   }
 
-  public register(fieldType: FieldType, component: FieldControlComponent): void {
+  public register(
+    fieldType: FieldType,
+    component: FieldControlComponent,
+  ): void {
     this.controls.set(fieldType, component);
   }
 

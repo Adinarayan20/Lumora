@@ -1,56 +1,70 @@
-import { describe, it, expect } from 'vitest';
-import type { ObjectDefinition } from '../../../catalog/object-definition.js';
-import type { SchemaDefinition } from '../../../catalog/schema-definition.js';
-import { FieldType } from '../../../catalog/field-type.js';
-import { ObjectStatus } from '../../../catalog/object-status.js';
-import { ObjectValidator } from '../object-validator.js';
-import type { UniversalObject } from '../../types/universal-object.types.js';
+import { describe, it, expect } from "vitest";
+import type { ObjectDefinition } from "../../../catalog/object-definition.js";
+import type { SchemaDefinition } from "../../../catalog/schema-definition.js";
+import { FieldType } from "../../../catalog/field-type.js";
+import { ObjectStatus } from "../../../catalog/object-status.js";
+import { ObjectValidator } from "../object-validator.js";
+import type { UniversalObject } from "../../types/universal-object.types.js";
 import {
   ObjectSchemaMismatchException,
   ObjectLifecycleConflictException,
-} from '../../errors/object-runtime-error.js';
+} from "../../errors/object-runtime-error.js";
 
-describe('ObjectValidator Domain Contract & Micro-Hardening', () => {
+describe("ObjectValidator Domain Contract & Micro-Hardening", () => {
   const sampleDef: ObjectDefinition = {
-    typeKey: 'task',
-    name: 'Task',
-    pluralName: 'Tasks',
-    icon: 'task',
-    allowedCapabilities: ['reminder'],
+    typeKey: "task",
+    name: "Task",
+    pluralName: "Tasks",
+    icon: "task",
+    allowedCapabilities: ["reminder"],
     traits: [],
     schemaVersion: 1,
   };
 
   const sampleSchema: SchemaDefinition = {
-    typeKey: 'task',
+    typeKey: "task",
     schemaVersion: 1,
     fields: [
-      { key: 'title', label: 'Title', type: FieldType.STRING, validation: { required: true } },
-      { key: 'priority', label: 'Priority', type: FieldType.NUMBER, validation: { min: 0, max: 10 } },
-      { key: 'isDone', label: 'Done Status', type: FieldType.BOOLEAN },
+      {
+        key: "title",
+        label: "Title",
+        type: FieldType.STRING,
+        validation: { required: true },
+      },
+      {
+        key: "priority",
+        label: "Priority",
+        type: FieldType.NUMBER,
+        validation: { min: 0, max: 10 },
+      },
+      { key: "isDone", label: "Done Status", type: FieldType.BOOLEAN },
     ],
   };
 
-  it('validates creation input and preserves 0 and false values correctly', () => {
+  it("validates creation input and preserves 0 and false values correctly", () => {
     const input = {
-      typeKey: 'task',
+      typeKey: "task",
       attributes: {
-        title: 'Build Universal Object Runtime',
+        title: "Build Universal Object Runtime",
         priority: 0, // Must preserve 0!
         isDone: false, // Must preserve false!
       },
     };
 
-    const result = ObjectValidator.validateCreation(input, sampleDef, sampleSchema);
+    const result = ObjectValidator.validateCreation(
+      input,
+      sampleDef,
+      sampleSchema,
+    );
     expect(result.isValid).toBe(true);
     expect(result.normalizedAttributes.priority).toBe(0);
     expect(result.normalizedAttributes.isDone).toBe(false);
   });
 
-  it('throws ObjectSchemaMismatchException if input typeKey does not match definition', () => {
+  it("throws ObjectSchemaMismatchException if input typeKey does not match definition", () => {
     const input = {
-      typeKey: 'medicine',
-      attributes: { title: 'Tylenol' },
+      typeKey: "medicine",
+      attributes: { title: "Tylenol" },
     };
 
     expect(() =>
@@ -58,15 +72,15 @@ describe('ObjectValidator Domain Contract & Micro-Hardening', () => {
     ).toThrow(ObjectSchemaMismatchException);
   });
 
-  it('throws ObjectSchemaMismatchException if definition schemaVersion does not match schema schemaVersion', () => {
+  it("throws ObjectSchemaMismatchException if definition schemaVersion does not match schema schemaVersion", () => {
     const mismatchedSchema: SchemaDefinition = {
       ...sampleSchema,
       schemaVersion: 2, // Mismatch!
     };
 
     const input = {
-      typeKey: 'task',
-      attributes: { title: 'Version Mismatch Task' },
+      typeKey: "task",
+      attributes: { title: "Version Mismatch Task" },
     };
 
     expect(() =>
@@ -74,15 +88,15 @@ describe('ObjectValidator Domain Contract & Micro-Hardening', () => {
     ).toThrow(ObjectSchemaMismatchException);
   });
 
-  it('throws ObjectSchemaMismatchException during update if existing object schemaVersion differs from update schema', () => {
+  it("throws ObjectSchemaMismatchException during update if existing object schemaVersion differs from update schema", () => {
     const existingObj: UniversalObject = {
-      id: 'obj-123',
-      typeKey: 'task',
+      id: "obj-123",
+      typeKey: "task",
       schemaVersion: 1,
       status: ObjectStatus.ACTIVE,
-      attributes: { title: 'Existing Task' },
-      createdAt: '2026-08-08T00:00:00.000Z',
-      updatedAt: '2026-08-08T00:00:00.000Z',
+      attributes: { title: "Existing Task" },
+      createdAt: "2026-08-08T00:00:00.000Z",
+      updatedAt: "2026-08-08T00:00:00.000Z",
       version: 1,
     };
 
@@ -92,20 +106,29 @@ describe('ObjectValidator Domain Contract & Micro-Hardening', () => {
     };
 
     expect(() =>
-      ObjectValidator.validateUpdate({ attributes: { title: 'Updated Title' } }, existingObj, v2Schema),
+      ObjectValidator.validateUpdate(
+        { attributes: { title: "Updated Title" } },
+        existingObj,
+        v2Schema,
+      ),
     ).toThrow(ObjectSchemaMismatchException);
   });
 
-  it('enforces JSON Field Validation Semantics (objects, arrays, optional null, primitive rejection)', () => {
+  it("enforces JSON Field Validation Semantics (objects, arrays, optional null, primitive rejection)", () => {
     const jsonFields = [
-      { key: 'metadata', label: 'Optional Metadata', type: FieldType.JSON },
-      { key: 'payload', label: 'Required Payload', type: FieldType.JSON, validation: { required: true } },
+      { key: "metadata", label: "Optional Metadata", type: FieldType.JSON },
+      {
+        key: "payload",
+        label: "Required Payload",
+        type: FieldType.JSON,
+        validation: { required: true },
+      },
     ];
 
     // 1. JSON object & array accepted
     const validResult = ObjectValidator.validateAttributes(
       {
-        metadata: { key: 'value' },
+        metadata: { key: "value" },
         payload: [1, 2, 3],
       },
       jsonFields,
@@ -136,7 +159,7 @@ describe('ObjectValidator Domain Contract & Micro-Hardening', () => {
     // 4. Primitive JSON value rejected
     const primitiveResult = ObjectValidator.validateAttributes(
       {
-        metadata: 'just a string', // Invalid for FieldType.JSON
+        metadata: "just a string", // Invalid for FieldType.JSON
         payload: 12345, // Invalid for FieldType.JSON
       },
       jsonFields,
@@ -146,18 +169,30 @@ describe('ObjectValidator Domain Contract & Micro-Hardening', () => {
     expect(primitiveResult.errors.payload).toBeDefined();
   });
 
-  it('rejects illegal lifecycle transitions (e.g. active -> active)', () => {
+  it("rejects illegal lifecycle transitions (e.g. active -> active)", () => {
     expect(() =>
-      ObjectValidator.validateLifecycleTransition(ObjectStatus.ACTIVE, ObjectStatus.ACTIVE, 'obj-123'),
+      ObjectValidator.validateLifecycleTransition(
+        ObjectStatus.ACTIVE,
+        ObjectStatus.ACTIVE,
+        "obj-123",
+      ),
     ).toThrow(ObjectLifecycleConflictException);
 
     expect(() =>
-      ObjectValidator.validateLifecycleTransition(ObjectStatus.ARCHIVED, ObjectStatus.ARCHIVED, 'obj-123'),
+      ObjectValidator.validateLifecycleTransition(
+        ObjectStatus.ARCHIVED,
+        ObjectStatus.ARCHIVED,
+        "obj-123",
+      ),
     ).toThrow(ObjectLifecycleConflictException);
 
     // Legal transition does not throw
     expect(() =>
-      ObjectValidator.validateLifecycleTransition(ObjectStatus.ACTIVE, ObjectStatus.ARCHIVED, 'obj-123'),
+      ObjectValidator.validateLifecycleTransition(
+        ObjectStatus.ACTIVE,
+        ObjectStatus.ARCHIVED,
+        "obj-123",
+      ),
     ).not.toThrow();
   });
 });

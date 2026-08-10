@@ -1,4 +1,4 @@
-import type { ViewStyle, TextStyle } from 'react-native';
+import type { ViewStyle, TextStyle } from "react-native";
 import {
   RadiusScale,
   InputHeights,
@@ -6,9 +6,9 @@ import {
   InputIconGaps,
   InputFontSizes,
   InputInteractiveTargetMinimum,
-} from '@lumora/theme';
-import type { ColorPalette, ViewportSizeClass } from '@lumora/theme';
-import type { InputVariant, InputSize } from '../input/Input.types';
+} from "@lumora/theme";
+import type { ColorPalette, ViewportSizeClass } from "@lumora/theme";
+import type { InputVariant, InputSize } from "../input/Input.types";
 
 export interface ResolveSelectStylesOptions {
   readonly variant?: InputVariant;
@@ -31,7 +31,7 @@ export interface ResolvedSelectStyles {
 }
 
 export function resolveSelectStyles({
-  variant = 'default',
+  variant = "default",
   size,
   themeColors,
   sizeClass,
@@ -39,12 +39,12 @@ export function resolveSelectStyles({
   error = false,
   isOpen = false,
 }: ResolveSelectStylesOptions): ResolvedSelectStyles {
-  let resolvedSize: InputSize = size ?? 'md';
+  let resolvedSize: InputSize = size ?? "md";
   if (!size) {
-    if (sizeClass === 'Medium' || sizeClass === 'Expanded') {
-      resolvedSize = 'lg';
+    if (sizeClass === "Medium" || sizeClass === "Expanded") {
+      resolvedSize = "lg";
     } else {
-      resolvedSize = 'md';
+      resolvedSize = "md";
     }
   }
 
@@ -52,23 +52,26 @@ export function resolveSelectStyles({
   const resolvedPaddingHorizontal = InputPaddingHorizontal[resolvedSize];
   const resolvedIconGap = InputIconGaps[resolvedSize];
   const resolvedFontSize = InputFontSizes[resolvedSize];
-  const touchTargetDimension = Math.max(resolvedHeight, InputInteractiveTargetMinimum);
+  const touchTargetDimension = Math.max(
+    resolvedHeight,
+    InputInteractiveTargetMinimum,
+  );
 
   let resolvedBackgroundColor = themeColors.surface;
   let resolvedBorderColor = themeColors.border;
 
   switch (variant) {
-    case 'filled':
+    case "filled":
       resolvedBackgroundColor = themeColors.backgroundSecondary;
-      resolvedBorderColor = 'transparent';
+      resolvedBorderColor = "transparent";
       break;
 
-    case 'ghost':
-      resolvedBackgroundColor = 'transparent';
-      resolvedBorderColor = 'transparent';
+    case "ghost":
+      resolvedBackgroundColor = "transparent";
+      resolvedBorderColor = "transparent";
       break;
 
-    case 'default':
+    case "default":
     default:
       resolvedBackgroundColor = themeColors.surface;
       resolvedBorderColor = themeColors.border;
@@ -94,9 +97,9 @@ export function resolveSelectStyles({
     borderWidth: 1,
     borderColor: resolvedBorderColor,
     opacity: resolvedOpacity,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   };
 
   const textStyle: TextStyle = {

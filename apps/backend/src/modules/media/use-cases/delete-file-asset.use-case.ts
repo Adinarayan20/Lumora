@@ -8,7 +8,10 @@ import {
 } from '@lumora/shared';
 import type { IFileAssetRepository } from '../../../domain/media/repositories/file-asset.repository.interface.js';
 import type { IStorageProvider } from '../../../domain/media/interfaces/storage-provider.interface.js';
-import { MEDIA_REPOSITORY_TOKEN, STORAGE_PROVIDER_TOKEN } from '../media.tokens.js';
+import {
+  MEDIA_REPOSITORY_TOKEN,
+  STORAGE_PROVIDER_TOKEN,
+} from '../media.tokens.js';
 import { FileAssetResponseDto } from '../dto/file-asset-response.dto.js';
 import { FileAssetResponseMapper } from '../mappers/file-asset-response.mapper.js';
 
@@ -33,17 +36,32 @@ export class DeleteFileAssetUseCase {
     try {
       const { workspaceId, fileAssetId, requestedById } = command;
 
-      const aggregate = await this.fileAssetRepository.findById(new UniqueEntityId(fileAssetId));
-      if (!aggregate) return Result.fail(new EntityNotFoundException('FileAsset', fileAssetId));
+      const aggregate = await this.fileAssetRepository.findById(
+        new UniqueEntityId(fileAssetId),
+      );
+      if (!aggregate)
+        return Result.fail(
+          new EntityNotFoundException('FileAsset', fileAssetId),
+        );
 
       // Workspace ownership check
-      if (aggregate.workspaceId && aggregate.workspaceId.toValue() !== workspaceId) {
-        return Result.fail(new EntityNotFoundException('FileAsset', fileAssetId));
+      if (
+        aggregate.workspaceId &&
+        aggregate.workspaceId.toValue() !== workspaceId
+      ) {
+        return Result.fail(
+          new EntityNotFoundException('FileAsset', fileAssetId),
+        );
       }
 
       // Uploader check
       if (aggregate.uploadedById.toString() !== requestedById) {
-        return Result.fail(new ForbiddenException('file.delete', `Only the uploader may delete file '${fileAssetId}'.`));
+        return Result.fail(
+          new ForbiddenException(
+            'file.delete',
+            `Only the uploader may delete file '${fileAssetId}'.`,
+          ),
+        );
       }
 
       aggregate.markAsDeleted();

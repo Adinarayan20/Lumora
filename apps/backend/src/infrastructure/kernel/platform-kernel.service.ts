@@ -4,10 +4,7 @@ import {
   ObjectCatalogRegistry,
 } from '@lumora/shared';
 import type { CapabilityDescriptor } from '@lumora/shared';
-import {
-  ExecutionPolicy,
-  FailurePolicy,
-} from '@lumora/shared';
+import { ExecutionPolicy, FailurePolicy } from '@lumora/shared';
 import type { RedisSchemaCache } from '../catalog/redis-schema.cache.js';
 import { CapabilityRegistry } from '../../domain/capabilities/capability-registry.js';
 import { UniversalCapabilityEngine } from '../../domain/capabilities/universal-capability-engine.js';
@@ -141,7 +138,9 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
     }
 
     const startTime = Date.now();
-    this.logger.log('[LumoraPlatformKernel] Starting platform kernel initialization...');
+    this.logger.log(
+      '[LumoraPlatformKernel] Starting platform kernel initialization...',
+    );
 
     // Step 1: Verify ObjectCatalogRegistry is loaded (static, always ready)
     const registeredTypes = ObjectCatalogRegistry.getAll();
@@ -164,7 +163,9 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
     // Step 3: Verify Redis Schema Cache connectivity (non-blocking if Redis is unavailable)
     try {
       await this.schemaCache.getSchema('__kernel_probe__', '__probe__');
-      this.logger.log('[LumoraPlatformKernel] Step 3/4: Redis Schema Cache — connected.');
+      this.logger.log(
+        '[LumoraPlatformKernel] Step 3/4: Redis Schema Cache — connected.',
+      );
     } catch {
       this.logger.warn(
         '[LumoraPlatformKernel] Step 3/4: Redis Schema Cache — unavailable (non-fatal, cache miss fallback active).',
@@ -183,7 +184,7 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
 
     this.logger.log(
       `[LumoraPlatformKernel] Platform Kernel booted successfully in ${durationMs}ms. ` +
-      `Types: ${registeredTypes.length} | Capabilities: ${capRegistered}`,
+        `Types: ${registeredTypes.length} | Capabilities: ${capRegistered}`,
     );
 
     return { initialized: true, durationMs, bootedAt: new Date() };

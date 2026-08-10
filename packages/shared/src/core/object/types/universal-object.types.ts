@@ -1,4 +1,4 @@
-import type { ObjectStatus } from '../../catalog/object-status.js';
+import type { ObjectStatus } from "../../catalog/object-status.js";
 
 /**
  * Canonical domain model representing an instance of a Universal Object in Lumora.

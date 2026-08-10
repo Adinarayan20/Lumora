@@ -1,10 +1,14 @@
-import type { TextStyle } from 'react-native';
-import type { SemanticTypographyRole, ColorPalette } from '@lumora/theme';
-import type { TypographyColorToken, TypographyAlign, TypographyEmphasis } from '../Typography.types';
-import { TypographyColorResolver } from './TypographyColorResolver';
-import { TypographyScaleResolver } from './TypographyScaleResolver';
-import { TypographyTrackingResolver } from './TypographyTrackingResolver';
-import { TypographyWeightResolver } from './TypographyWeightResolver';
+import type { TextStyle } from "react-native";
+import type { SemanticTypographyRole, ColorPalette } from "@lumora/theme";
+import type {
+  TypographyColorToken,
+  TypographyAlign,
+  TypographyEmphasis,
+} from "../Typography.types";
+import { TypographyColorResolver } from "./TypographyColorResolver";
+import { TypographyScaleResolver } from "./TypographyScaleResolver";
+import { TypographyTrackingResolver } from "./TypographyTrackingResolver";
+import { TypographyWeightResolver } from "./TypographyWeightResolver";
 
 export class TypographyStyleComposer {
   public static composeStyle(options: {
@@ -12,27 +16,40 @@ export class TypographyStyleComposer {
     colorToken: TypographyColorToken;
     emphasis: TypographyEmphasis;
     colors: ColorPalette;
-    deviceType: 'phone' | 'tablet' | 'desktop';
+    deviceType: "phone" | "tablet" | "desktop";
     align?: TypographyAlign;
     italic?: boolean;
     uppercase?: boolean;
-    writingDirection?: 'auto' | 'ltr' | 'rtl';
+    writingDirection?: "auto" | "ltr" | "rtl";
   }): TextStyle {
-    const { fontSize, lineHeight } = TypographyScaleResolver.resolveScale(options.role, options.deviceType);
-    const color = TypographyColorResolver.resolveColor(options.colorToken, options.emphasis, options.colors);
-    const letterSpacing = TypographyTrackingResolver.resolveTracking(options.role, options.uppercase);
-    const fontWeight = TypographyWeightResolver.resolveWeight(options.role, options.emphasis);
+    const { fontSize, lineHeight } = TypographyScaleResolver.resolveScale(
+      options.role,
+      options.deviceType,
+    );
+    const color = TypographyColorResolver.resolveColor(
+      options.colorToken,
+      options.emphasis,
+      options.colors,
+    );
+    const letterSpacing = TypographyTrackingResolver.resolveTracking(
+      options.role,
+      options.uppercase,
+    );
+    const fontWeight = TypographyWeightResolver.resolveWeight(
+      options.role,
+      options.emphasis,
+    );
 
     return {
       fontSize,
       fontWeight,
       lineHeight,
       color,
-      textAlign: options.align ?? 'auto',
-      fontStyle: options.italic ? 'italic' : 'normal',
-      textTransform: options.uppercase ? 'uppercase' : 'none',
+      textAlign: options.align ?? "auto",
+      fontStyle: options.italic ? "italic" : "normal",
+      textTransform: options.uppercase ? "uppercase" : "none",
       letterSpacing,
-      writingDirection: options.writingDirection ?? 'auto',
+      writingDirection: options.writingDirection ?? "auto",
     };
   }
 }

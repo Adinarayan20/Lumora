@@ -7,7 +7,15 @@
  * All imports are lazy-loaded to prevent module resolution failures
  * when the guard is false and PostgreSQL is unavailable.
  */
-import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  beforeEach,
+  vi,
+} from 'vitest';
 
 const RUN = process.env.POSTGRES_INTEGRATION_TEST === 'true';
 
@@ -16,14 +24,25 @@ describe.runIf(RUN)(
   async () => {
     // Lazy imports — only resolved when POSTGRES_INTEGRATION_TEST=true
     const { PrismaService } = await import('../../../prisma.service.js');
-    const { ObjectAggregateRepositoryAdapter } = await import('../../object-aggregate.repository.adapter.js');
-    const { WorkspaceExecutionContext } = await import('../../../context/workspace-execution-context.js');
-    const { PrismaUnitOfWork } = await import('../../../prisma-unit-of-work.js');
-    const { UniqueEntityId, ObjectConcurrencyException, ObjectNotFoundException } = await import('@lumora/shared');
-    const { ObjectAggregate } = await import('../../../../../domain/objects/object.aggregate.js');
-    const { ObjectTitle } = await import('../../../../../domain/objects/value-objects/object-title.js');
-    const { ObjectKey } = await import('../../../../../domain/objects/value-objects/object-key.js');
-    const { ObjectStatus } = await import('../../../../../domain/objects/value-objects/object-status.js');
+    const { ObjectAggregateRepositoryAdapter } =
+      await import('../../object-aggregate.repository.adapter.js');
+    const { WorkspaceExecutionContext } =
+      await import('../../../context/workspace-execution-context.js');
+    const { PrismaUnitOfWork } =
+      await import('../../../prisma-unit-of-work.js');
+    const {
+      UniqueEntityId,
+      ObjectConcurrencyException,
+      ObjectNotFoundException,
+    } = await import('@lumora/shared');
+    const { ObjectAggregate } =
+      await import('../../../../../domain/objects/object.aggregate.js');
+    const { ObjectTitle } =
+      await import('../../../../../domain/objects/value-objects/object-title.js');
+    const { ObjectKey } =
+      await import('../../../../../domain/objects/value-objects/object-key.js');
+    const { ObjectStatus } =
+      await import('../../../../../domain/objects/value-objects/object-status.js');
 
     let prisma: any;
     let adapterA: any;
@@ -46,8 +65,12 @@ describe.runIf(RUN)(
     });
 
     beforeEach(async () => {
-      await prisma.object.deleteMany({ where: { workspaceId: { in: [wsA, wsB] } } });
-      await prisma.outboxMessage.deleteMany({ where: { workspaceId: { in: [wsA, wsB] } } });
+      await prisma.object.deleteMany({
+        where: { workspaceId: { in: [wsA, wsB] } },
+      });
+      await prisma.outboxMessage.deleteMany({
+        where: { workspaceId: { in: [wsA, wsB] } },
+      });
 
       const ctxA = new WorkspaceExecutionContext(wsA, userA);
       const ctxB = new WorkspaceExecutionContext(wsB, userB);
@@ -87,7 +110,12 @@ describe.runIf(RUN)(
     it('CAS update increments revision', async () => {
       const agg = makeAggregate(wsA, userA);
       await adapterA.save(agg);
-      agg.updateDetails(new UniqueEntityId(userA), ObjectTitle.create('Updated Title'), 'desc', { count: 42 });
+      agg.updateDetails(
+        new UniqueEntityId(userA),
+        ObjectTitle.create('Updated Title'),
+        'desc',
+        { count: 42 },
+      );
       await adapterA.save(agg);
       const fetched = await adapterA.findById(agg.id);
       expect(fetched!.revision).toBe(2);
@@ -102,12 +130,28 @@ describe.runIf(RUN)(
       const adapterA2 = new ObjectAggregateRepositoryAdapter(prisma, ctxA2);
       const r1 = await adapterA.findById(new UniqueEntityId(id));
       const r2 = await adapterA2.findById(new UniqueEntityId(id));
-      r1!.updateDetails(new UniqueEntityId(userA), ObjectTitle.create('Writer A'), undefined, {});
-      r2!.updateDetails(new UniqueEntityId(userA), ObjectTitle.create('Writer B'), undefined, {});
-      const results = await Promise.allSettled([adapterA.save(r1!), adapterA2.save(r2!)]);
+      r1!.updateDetails(
+        new UniqueEntityId(userA),
+        ObjectTitle.create('Writer A'),
+        undefined,
+        {},
+      );
+      r2!.updateDetails(
+        new UniqueEntityId(userA),
+        ObjectTitle.create('Writer B'),
+        undefined,
+        {},
+      );
+      const results = await Promise.allSettled([
+        adapterA.save(r1!),
+        adapterA2.save(r2!),
+      ]);
       expect(results.filter((r) => r.status === 'fulfilled').length).toBe(1);
       expect(results.filter((r) => r.status === 'rejected').length).toBe(1);
-      expect((results.find((r) => r.status === 'rejected') as PromiseRejectedResult).reason).toBeInstanceOf(ObjectConcurrencyException);
+      expect(
+        (results.find((r) => r.status === 'rejected') as PromiseRejectedResult)
+          .reason,
+      ).toBeInstanceOf(ObjectConcurrencyException);
     });
 
     it('soft delete: findById returns null after delete', async () => {
@@ -118,12 +162,18 @@ describe.runIf(RUN)(
     });
 
     it('findPaginated returns workspace-scoped cursor page', async () => {
-      for (let i = 0; i < 3; i++) await adapterA.save(makeAggregate(wsA, userA));
+      for (let i = 0; i < 3; i++)
+        await adapterA.save(makeAggregate(wsA, userA));
       await adapterB.save(makeAggregate(wsB, userB));
-      const page = await adapterA.findPaginated({ first: 2 }, { workspaceId: new UniqueEntityId(wsA) });
+      const page = await adapterA.findPaginated(
+        { first: 2 },
+        { workspaceId: new UniqueEntityId(wsA) },
+      );
       expect(page.items.length).toBe(2);
       expect(page.pageInfo.hasNextPage).toBe(true);
-      page.items.forEach((item) => expect(item.workspaceId.toValue()).toBe(wsA));
+      page.items.forEach((item) =>
+        expect(item.workspaceId.toValue()).toBe(wsA),
+      );
     });
 
     it('UnitOfWork: transaction rollback removes object', async () => {
@@ -132,16 +182,25 @@ describe.runIf(RUN)(
         uow.execute(async () => {
           await prisma.object.create({
             data: {
-              id: agg.id.toValue(), workspaceId: wsA, createdById: userA, updatedById: userA,
-              objectKey: agg.objectKey.toValue(), typeKey: 'NOTE', title: 'Rollback Test',
-              schemaVersion: 1, status: 'ACTIVE', attributes: {}, revision: 1,
+              id: agg.id.toValue(),
+              workspaceId: wsA,
+              createdById: userA,
+              updatedById: userA,
+              objectKey: agg.objectKey.toValue(),
+              typeKey: 'NOTE',
+              title: 'Rollback Test',
+              schemaVersion: 1,
+              status: 'ACTIVE',
+              attributes: {},
+              revision: 1,
             },
           });
           throw new Error('Forced rollback');
         }),
       ).rejects.toThrow('Forced rollback');
-      expect(await prisma.object.findUnique({ where: { id: agg.id.toValue() } })).toBeNull();
+      expect(
+        await prisma.object.findUnique({ where: { id: agg.id.toValue() } }),
+      ).toBeNull();
     });
   },
 );
-

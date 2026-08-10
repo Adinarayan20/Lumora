@@ -1,19 +1,20 @@
-import type { TextStyle } from 'react-native';
-import type { SemanticTypographyRole } from '@lumora/theme';
+import type { TextStyle } from "react-native";
+import type { SemanticTypographyRole } from "@lumora/theme";
 
 export type TypographyColorToken =
-  | 'textPrimary'
-  | 'textSecondary'
-  | 'textMuted'
-  | 'primary'
-  | 'success'
-  | 'warning'
-  | 'danger'
-  | 'inverse';
+  | "textPrimary"
+  | "textSecondary"
+  | "textMuted"
+  | "primary"
+  | "success"
+  | "warning"
+  | "danger"
+  | "inverse";
 
-export type TypographyEmphasis = 'default' | 'strong' | 'subtle' | 'disabled' | 'accent';
+export type TypographyEmphasis =
+  "default" | "strong" | "subtle" | "disabled" | "accent";
 
-export type TypographyAlign = 'auto' | 'left' | 'right' | 'center' | 'justify';
+export type TypographyAlign = "auto" | "left" | "right" | "center" | "justify";
 
 export interface TypographyProps {
   readonly children?: React.ReactNode;
@@ -30,8 +31,9 @@ export interface TypographyProps {
   readonly maxFontSizeMultiplier?: number;
   readonly accessibilityHint?: string;
   readonly accessibilityLanguage?: string;
-  readonly importantForAccessibility?: 'auto' | 'yes' | 'no' | 'no-hide-descendants';
-  readonly writingDirection?: 'auto' | 'ltr' | 'rtl';
+  readonly importantForAccessibility?:
+    "auto" | "yes" | "no" | "no-hide-descendants";
+  readonly writingDirection?: "auto" | "ltr" | "rtl";
   readonly gradient?: boolean;
   readonly gradientStops?: readonly string[];
   readonly animated?: boolean;
@@ -45,7 +47,7 @@ export interface TypographyProps {
   readonly testID?: string;
 }
 
-export interface HeadingProps extends Omit<TypographyProps, 'role'> {
+export interface HeadingProps extends Omit<TypographyProps, "role"> {
   readonly level?: 1 | 2 | 3 | 4;
 }
 

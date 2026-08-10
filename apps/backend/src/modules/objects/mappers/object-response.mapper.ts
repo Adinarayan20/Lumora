@@ -23,7 +23,9 @@ export class ObjectResponseMapper {
       status: aggregate.status,
       attributes: aggregate.attributes,
       revision: aggregate.revision,
-      archivedAt: aggregate.archivedAt ? aggregate.archivedAt.toISOString() : undefined,
+      archivedAt: aggregate.archivedAt
+        ? aggregate.archivedAt.toISOString()
+        : undefined,
       createdAt: aggregate.createdAt.toISOString(),
       updatedAt: aggregate.updatedAt.toISOString(),
     };

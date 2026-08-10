@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { UniqueEntityId, SystemException, DomainEventName } from '@lumora/shared';
+import {
+  UniqueEntityId,
+  SystemException,
+  DomainEventName,
+} from '@lumora/shared';
 import type { IOutboxRepository } from '../../../domain/common/repositories/outbox.repository.interface.js';
 import {
   OutboxMessage,
@@ -51,7 +55,9 @@ export class PrismaOutboxRepository implements IOutboxRepository {
         where: { idempotencyKey },
         create: {
           id: message.id.toValue(),
-          workspaceId: message.workspaceId?.toValue() ?? '00000000-0000-0000-0000-000000000000',
+          workspaceId:
+            message.workspaceId?.toValue() ??
+            '00000000-0000-0000-0000-000000000000',
           aggregateId: message.aggregateId.toValue(),
           eventType: message.eventName,
           payload: message.payload as Prisma.InputJsonValue,
@@ -272,14 +278,18 @@ export class PrismaOutboxRepository implements IOutboxRepository {
   private resolveClient(
     transactionContext?: unknown,
   ): typeof this.prisma | Prisma.TransactionClient {
-    if (transactionContext !== null && transactionContext !== undefined && typeof transactionContext === "object") {
+    if (
+      transactionContext !== null &&
+      transactionContext !== undefined &&
+      typeof transactionContext === 'object'
+    ) {
       const ctx = transactionContext as Record<string, unknown>;
       // PrismaTransactionContext wrapper
-      if (ctx["prismaTransaction"] !== undefined) {
-        return ctx["prismaTransaction"] as Prisma.TransactionClient;
+      if (ctx['prismaTransaction'] !== undefined) {
+        return ctx['prismaTransaction'] as Prisma.TransactionClient;
       }
       // Raw Prisma transaction client
-      if ("outboxMessage" in ctx) {
+      if ('outboxMessage' in ctx) {
         return transactionContext as Prisma.TransactionClient;
       }
     }

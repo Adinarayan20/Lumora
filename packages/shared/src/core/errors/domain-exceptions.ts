@@ -65,7 +65,7 @@ export class AggregateCapabilityException extends DomainException {
   public readonly failures: readonly CapabilityFailureDetail[];
 
   constructor(failures: readonly CapabilityFailureDetail[]) {
-    const capList = failures.map((f) => f.capabilityKey).join(', ');
+    const capList = failures.map((f) => f.capabilityKey).join(", ");
     const message = `Aggregate capability execution failure in parallel dispatch (${failures.length} capabilities failed: ${capList}).`;
     super(message, ErrorCode.DOMAIN_VALIDATION_ERROR, { failures });
     this.failures = failures;
@@ -96,7 +96,11 @@ export class RevisionConflictException extends DomainException {
   public readonly currentRevision: number;
   public readonly expectedRevision: number;
 
-  constructor(entityName: string, currentRevision: number, expectedRevision: number) {
+  constructor(
+    entityName: string,
+    currentRevision: number,
+    expectedRevision: number,
+  ) {
     const message = `${entityName} revision mismatch: current is ${currentRevision}, update expected ${expectedRevision}.`;
     super(message, ErrorCode.REVISION_CONFLICT, {
       entityName,
@@ -143,10 +147,7 @@ export class UsernameTakenException extends DomainException {
  */
 export class InvalidCredentialsException extends DomainException {
   constructor() {
-    super(
-      "Invalid email/username or password.",
-      ErrorCode.INVALID_CREDENTIALS,
-    );
+    super("Invalid email/username or password.", ErrorCode.INVALID_CREDENTIALS);
   }
 }
 

@@ -1,17 +1,18 @@
-import type { ObjectDefinition, SchemaDefinition } from '@lumora/shared';
+import type { ObjectDefinition, SchemaDefinition } from "@lumora/shared";
 import type {
   UniversalObjectData,
   BlockTypeKey,
   IBlockRegistry,
-} from '../detail/BlockRegistry.types';
+} from "../detail/BlockRegistry.types";
 
-export type ObjectActionKey = 'edit' | 'delete' | 'archive' | 'complete' | string;
+export type ObjectActionKey =
+  "edit" | "delete" | "archive" | "complete" | string;
 
 export interface ObjectActionConfig {
   readonly key: ObjectActionKey;
   readonly label: string;
   readonly icon?: string;
-  readonly variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  readonly variant?: "primary" | "secondary" | "danger" | "ghost";
   readonly requiresConfirmation?: boolean;
   readonly confirmTitle?: string;
   readonly confirmDescription?: string;
@@ -28,7 +29,10 @@ export interface DynamicObjectDetailProps {
   readonly blocks?: readonly BlockTypeKey[];
   readonly actions?: readonly ObjectActionConfig[];
   readonly onEdit?: (object: UniversalObjectData) => void;
-  readonly onSave?: (newAttributes: Record<string, unknown>, object: UniversalObjectData) => void;
+  readonly onSave?: (
+    newAttributes: Record<string, unknown>,
+    object: UniversalObjectData,
+  ) => void;
   readonly onDelete?: (object: UniversalObjectData) => void;
   readonly onArchive?: (object: UniversalObjectData) => void;
   readonly isLoading?: boolean;

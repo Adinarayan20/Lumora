@@ -33,14 +33,16 @@ export class PrismaRelationshipRepository implements IRelationshipRepository {
           sourceObjectId: relationship.sourceObjectId.toValue(),
           targetObjectId: relationship.targetObjectId.toValue(),
           type: relationship.type,
-          metadata: (relationship.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
+          metadata:
+            (relationship.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
           createdById: relationship.createdById.toValue(),
           createdAt: relationship.createdAt,
           updatedAt: relationship.updatedAt,
           deletedAt: relationship.deletedAt ?? null,
         },
         update: {
-          metadata: (relationship.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
+          metadata:
+            (relationship.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
           updatedAt: relationship.updatedAt,
           deletedAt: relationship.deletedAt ?? null,
         },
@@ -50,7 +52,9 @@ export class PrismaRelationshipRepository implements IRelationshipRepository {
     }
   }
 
-  public async findById(id: UniqueEntityId): Promise<RelationshipAggregate | null> {
+  public async findById(
+    id: UniqueEntityId,
+  ): Promise<RelationshipAggregate | null> {
     try {
       const row = await this.prisma.relationship.findFirst({
         where: { id: id.toValue(), deletedAt: null },
@@ -119,7 +123,10 @@ export class PrismaRelationshipRepository implements IRelationshipRepository {
     }
   }
 
-  public async delete(id: UniqueEntityId, workspaceId: UniqueEntityId): Promise<void> {
+  public async delete(
+    id: UniqueEntityId,
+    workspaceId: UniqueEntityId,
+  ): Promise<void> {
     try {
       await this.prisma.relationship.updateMany({
         where: {
@@ -163,7 +170,7 @@ export class PrismaRelationshipRepository implements IRelationshipRepository {
       sourceObjectId: new UniqueEntityId(row.sourceObjectId),
       targetObjectId: new UniqueEntityId(row.targetObjectId),
       type: row.type,
-      metadata: row.metadata as Record<string, unknown> ?? undefined,
+      metadata: (row.metadata as Record<string, unknown>) ?? undefined,
       createdById: new UniqueEntityId(row.createdById),
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,

@@ -10,7 +10,10 @@ import {
   ObjectConcurrencyException,
   ObjectLifecycleConflictException,
 } from '@lumora/shared';
-import type { IObjectAggregateRepository, ObjectFilter } from '../../../domain/objects/repositories/object-aggregate.repository.interface.js';
+import type {
+  IObjectAggregateRepository,
+  ObjectFilter,
+} from '../../../domain/objects/repositories/object-aggregate.repository.interface.js';
 import { ObjectAggregate } from '../../../domain/objects/object.aggregate.js';
 import { ObjectTitle } from '../../../domain/objects/value-objects/object-title.js';
 import { ObjectKey } from '../../../domain/objects/value-objects/object-key.js';
@@ -45,9 +48,7 @@ import {
  * Bind via: { provide: OBJECT_REPOSITORY_TOKEN, useClass: ObjectAggregateRepositoryAdapter }
  */
 @Injectable()
-export class ObjectAggregateRepositoryAdapter
-  implements IObjectAggregateRepository
-{
+export class ObjectAggregateRepositoryAdapter implements IObjectAggregateRepository {
   constructor(
     private readonly prisma: PrismaService,
     private readonly context: WorkspaceExecutionContext,
@@ -321,7 +322,8 @@ export class ObjectAggregateRepositoryAdapter
           isFavorite: aggregate.isFavorite,
           status: aggregate.status as PrismaObjectStatus,
           schemaVersion: 1,
-          systemData: (aggregate.systemData as Prisma.InputJsonValue) ?? Prisma.JsonNull,
+          systemData:
+            (aggregate.systemData as Prisma.InputJsonValue) ?? Prisma.JsonNull,
           attributes: serializedAttributes,
           revision: 1,
           createdAt: aggregate.createdAt,
@@ -451,9 +453,7 @@ export class ObjectAggregateRepositoryAdapter
     return Buffer.from(payload).toString('base64url');
   }
 
-  private decodeCursor(
-    cursor: string,
-  ): { updatedAt: Date; id: string } | null {
+  private decodeCursor(cursor: string): { updatedAt: Date; id: string } | null {
     try {
       const raw = Buffer.from(cursor, 'base64url').toString('utf-8');
       const sepIdx = raw.indexOf('|');

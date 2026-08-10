@@ -1,16 +1,19 @@
-import type { IObjectRepository } from './object-repository.interface.js';
-import type { UniversalObject, ObjectFilterOptions } from '../types/universal-object.types.js';
-import { ObjectStatus } from '../../catalog/object-status.js';
+import type { IObjectRepository } from "./object-repository.interface.js";
+import type {
+  UniversalObject,
+  ObjectFilterOptions,
+} from "../types/universal-object.types.js";
+import { ObjectStatus } from "../../catalog/object-status.js";
 import {
   ObjectNotFoundException,
   ObjectAlreadyExistsException,
   ObjectLifecycleConflictException,
   ObjectConcurrencyException,
   ObjectValidationException,
-} from '../errors/object-runtime-error.js';
+} from "../errors/object-runtime-error.js";
 
 function deepCloneValue<T>(val: T): T {
-  if (typeof structuredClone === 'function') {
+  if (typeof structuredClone === "function") {
     try {
       return structuredClone(val);
     } catch {
@@ -18,7 +21,7 @@ function deepCloneValue<T>(val: T): T {
     }
   }
 
-  if (val === null || val === undefined || typeof val !== 'object') {
+  if (val === null || val === undefined || typeof val !== "object") {
     return val;
   }
 
@@ -62,14 +65,21 @@ export class InMemoryObjectRepository implements IObjectRepository {
     return this.cloneObject(copy);
   }
 
-  public async update(object: UniversalObject, expectedVersion?: number): Promise<UniversalObject> {
+  public async update(
+    object: UniversalObject,
+    expectedVersion?: number,
+  ): Promise<UniversalObject> {
     const existing = this.store.get(object.id);
     if (!existing) {
       throw new ObjectNotFoundException(object.id);
     }
 
     if (expectedVersion !== undefined && existing.version !== expectedVersion) {
-      throw new ObjectConcurrencyException(object.id, expectedVersion, existing.version);
+      throw new ObjectConcurrencyException(
+        object.id,
+        expectedVersion,
+        existing.version,
+      );
     }
 
     const copy = this.cloneObject(object);
@@ -77,16 +87,32 @@ export class InMemoryObjectRepository implements IObjectRepository {
     return this.cloneObject(copy);
   }
 
-  public async list(options?: ObjectFilterOptions): Promise<readonly UniversalObject[]> {
+  public async list(
+    options?: ObjectFilterOptions,
+  ): Promise<readonly UniversalObject[]> {
     if (options?.offset !== undefined) {
-      if (typeof options.offset !== 'number' || Number.isNaN(options.offset) || !Number.isInteger(options.offset) || options.offset < 0) {
-        throw new ObjectValidationException(`Invalid offset '${options.offset}': must be a non-negative integer.`);
+      if (
+        typeof options.offset !== "number" ||
+        Number.isNaN(options.offset) ||
+        !Number.isInteger(options.offset) ||
+        options.offset < 0
+      ) {
+        throw new ObjectValidationException(
+          `Invalid offset '${options.offset}': must be a non-negative integer.`,
+        );
       }
     }
 
     if (options?.limit !== undefined) {
-      if (typeof options.limit !== 'number' || Number.isNaN(options.limit) || !Number.isInteger(options.limit) || options.limit < 0) {
-        throw new ObjectValidationException(`Invalid limit '${options.limit}': must be a non-negative integer.`);
+      if (
+        typeof options.limit !== "number" ||
+        Number.isNaN(options.limit) ||
+        !Number.isInteger(options.limit) ||
+        options.limit < 0
+      ) {
+        throw new ObjectValidationException(
+          `Invalid limit '${options.limit}': must be a non-negative integer.`,
+        );
       }
     }
 
@@ -109,13 +135,21 @@ export class InMemoryObjectRepository implements IObjectRepository {
     return Object.freeze(result.map((item) => this.cloneObject(item)));
   }
 
-  public async archive(id: string, archivedAtIso: string, updatedAtIso: string): Promise<UniversalObject> {
+  public async archive(
+    id: string,
+    archivedAtIso: string,
+    updatedAtIso: string,
+  ): Promise<UniversalObject> {
     const existing = this.store.get(id);
     if (!existing) {
       throw new ObjectNotFoundException(id);
     }
     if (existing.status === ObjectStatus.ARCHIVED) {
-      throw new ObjectLifecycleConflictException(id, existing.status, 'archive');
+      throw new ObjectLifecycleConflictException(
+        id,
+        existing.status,
+        "archive",
+      );
     }
 
     const updated: UniversalObject = {
@@ -131,13 +165,20 @@ export class InMemoryObjectRepository implements IObjectRepository {
     return this.cloneObject(copy);
   }
 
-  public async restore(id: string, updatedAtIso: string): Promise<UniversalObject> {
+  public async restore(
+    id: string,
+    updatedAtIso: string,
+  ): Promise<UniversalObject> {
     const existing = this.store.get(id);
     if (!existing) {
       throw new ObjectNotFoundException(id);
     }
     if (existing.status === ObjectStatus.ACTIVE) {
-      throw new ObjectLifecycleConflictException(id, existing.status, 'restore');
+      throw new ObjectLifecycleConflictException(
+        id,
+        existing.status,
+        "restore",
+      );
     }
 
     const { archivedAt: _omitted, ...rest } = existing;

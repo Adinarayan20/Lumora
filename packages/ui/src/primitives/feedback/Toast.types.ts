@@ -1,6 +1,7 @@
-import type React from 'react';
+import type React from "react";
 
-export type ToastVariant = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
+export type ToastVariant =
+  "neutral" | "success" | "warning" | "danger" | "info";
 
 export interface ToastAction {
   readonly label: string;

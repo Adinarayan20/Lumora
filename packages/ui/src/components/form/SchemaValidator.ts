@@ -1,4 +1,4 @@
-import type { FieldSchema } from '@lumora/shared';
+import type { FieldSchema } from "@lumora/shared";
 
 export interface ValidationErrorResult {
   readonly [fieldKey: string]: string;
@@ -23,11 +23,12 @@ export class SchemaValidator {
       const isValueEmpty =
         val === undefined ||
         val === null ||
-        (typeof val === 'string' && val.trim() === '');
+        (typeof val === "string" && val.trim() === "");
 
       // 1. Required Check
       if (rules.required && isValueEmpty) {
-        errors[field.key] = rules.customErrorMessage || `${field.label} is required.`;
+        errors[field.key] =
+          rules.customErrorMessage || `${field.label} is required.`;
         continue;
       }
 
@@ -36,16 +37,16 @@ export class SchemaValidator {
 
       // 2. Enum Options Validation
       if (rules.options && rules.options.length > 0) {
-        if (typeof val === 'string' && !rules.options.includes(val)) {
+        if (typeof val === "string" && !rules.options.includes(val)) {
           errors[field.key] =
             rules.customErrorMessage ||
-            `${field.label} must be one of: ${rules.options.join(', ')}.`;
+            `${field.label} must be one of: ${rules.options.join(", ")}.`;
           continue;
         }
       }
 
       // 3. String Length & Pattern Validation
-      if (typeof val === 'string') {
+      if (typeof val === "string") {
         if (rules.minLength !== undefined && val.length < rules.minLength) {
           errors[field.key] =
             rules.customErrorMessage ||
@@ -70,14 +71,15 @@ export class SchemaValidator {
             }
           } catch {
             errors[field.key] =
-              rules.customErrorMessage || `${field.label} contains an invalid pattern.`;
+              rules.customErrorMessage ||
+              `${field.label} contains an invalid pattern.`;
             continue;
           }
         }
       }
 
       // 4. Numeric Range Validation
-      if (typeof val === 'number' && !isNaN(val)) {
+      if (typeof val === "number" && !isNaN(val)) {
         if (rules.min !== undefined && val < rules.min) {
           errors[field.key] =
             rules.customErrorMessage ||

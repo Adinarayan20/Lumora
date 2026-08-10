@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { AccessibilityInfo } from 'react-native';
+import { useState, useEffect } from "react";
+import { AccessibilityInfo } from "react-native";
 
 /**
  * useReducedMotion — Shared Reduced-Motion State Hook
@@ -24,7 +24,7 @@ export function useReducedMotion(): boolean {
       });
 
     const subscription = AccessibilityInfo.addEventListener(
-      'reduceMotionChanged',
+      "reduceMotionChanged",
       (enabled: boolean) => {
         if (isMounted) {
           setReduceMotion(enabled);
@@ -34,7 +34,7 @@ export function useReducedMotion(): boolean {
 
     return () => {
       isMounted = false;
-      if (subscription && typeof subscription.remove === 'function') {
+      if (subscription && typeof subscription.remove === "function") {
         subscription.remove();
       }
     };

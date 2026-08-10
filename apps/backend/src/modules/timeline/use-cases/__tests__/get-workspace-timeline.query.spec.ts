@@ -31,5 +31,3 @@ describe('GetWorkspaceTimelineQuery', () => {
     expect(dtos[0].action).toBe('SPACE_CREATED');
   });
 });
-
-

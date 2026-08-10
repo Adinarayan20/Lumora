@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 export interface OverlayAnchorRect {
   readonly x: number;
@@ -23,7 +23,7 @@ export interface PopoverProps {
   readonly onRequestClose: () => void;
   readonly anchor: OverlayAnchor | OverlayAnchorRect;
   readonly children: ReactNode;
-  readonly placement?: 'bottom-start' | 'top-start';
+  readonly placement?: "bottom-start" | "top-start";
   readonly testID?: string;
 }
 

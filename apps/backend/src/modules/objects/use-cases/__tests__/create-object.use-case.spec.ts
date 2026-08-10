@@ -35,12 +35,18 @@ describe('CreateObjectUseCase', () => {
 
     // UnitOfWork mock: executes the work function immediately (no real transaction)
     mockUnitOfWork = {
-      execute: vi.fn().mockImplementation(async (work: (tx: unknown) => Promise<unknown>) => {
-        return work({});
-      }),
+      execute: vi
+        .fn()
+        .mockImplementation(async (work: (tx: unknown) => Promise<unknown>) => {
+          return work({});
+        }),
     };
 
-    useCase = new CreateObjectUseCase(mockFactory, mockOutboxPublisher, mockUnitOfWork);
+    useCase = new CreateObjectUseCase(
+      mockFactory,
+      mockOutboxPublisher,
+      mockUnitOfWork,
+    );
   });
 
   it('should successfully create an object aggregate and return an ObjectResponseDto', async () => {

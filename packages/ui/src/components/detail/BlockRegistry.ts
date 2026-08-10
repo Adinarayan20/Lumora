@@ -2,10 +2,10 @@ import type {
   BlockTypeKey,
   DetailBlockComponent,
   IBlockRegistry,
-} from './BlockRegistry.types';
-import { HeaderBlockAdapter } from './adapters/HeaderBlockAdapter';
-import { PropertiesBlockAdapter } from './adapters/PropertiesBlockAdapter';
-import { UnresolvedBlockAdapter } from './adapters/UnresolvedBlockAdapter';
+} from "./BlockRegistry.types";
+import { HeaderBlockAdapter } from "./adapters/HeaderBlockAdapter";
+import { PropertiesBlockAdapter } from "./adapters/PropertiesBlockAdapter";
+import { UnresolvedBlockAdapter } from "./adapters/UnresolvedBlockAdapter";
 
 export class BlockRegistry implements IBlockRegistry {
   private readonly map: Map<BlockTypeKey, DetailBlockComponent>;
@@ -44,7 +44,10 @@ export class BlockRegistry implements IBlockRegistry {
   /**
    * Registers a block adapter component for a specific blockKey.
    */
-  public register(blockKey: BlockTypeKey, component: DetailBlockComponent): void {
+  public register(
+    blockKey: BlockTypeKey,
+    component: DetailBlockComponent,
+  ): void {
     this.map.set(blockKey, component);
   }
 
@@ -61,8 +64,8 @@ export class BlockRegistry implements IBlockRegistry {
  */
 export function createCoreBlockRegistry(): BlockRegistry {
   const registry = new BlockRegistry();
-  registry.register('header', HeaderBlockAdapter);
-  registry.register('properties', PropertiesBlockAdapter);
+  registry.register("header", HeaderBlockAdapter);
+  registry.register("properties", PropertiesBlockAdapter);
   return registry;
 }
 

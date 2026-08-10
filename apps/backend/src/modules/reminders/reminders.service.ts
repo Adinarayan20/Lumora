@@ -45,7 +45,10 @@ export class RemindersService {
     userId: string,
     dto: CreateReminderDto,
   ): Promise<Result<ReminderResponseDto, ApplicationException>> {
-    const objectExists = await this.objectsService.verifyObjectInWorkspace(workspaceId, objectId);
+    const objectExists = await this.objectsService.verifyObjectInWorkspace(
+      workspaceId,
+      objectId,
+    );
     if (!objectExists) {
       return Result.fail(new EntityNotFoundException('Object', objectId));
     }
@@ -119,14 +122,17 @@ export class RemindersService {
       workspaceId,
       filter,
     );
-    return Result.ok(reminders.map(r => this.toDto(r)));
+    return Result.ok(reminders.map((r) => this.toDto(r)));
   }
 
   async getObjectReminders(
     workspaceId: string,
     objectId: string,
   ): Promise<Result<ReminderResponseDto[], ApplicationException>> {
-    const objectExists = await this.objectsService.verifyObjectInWorkspace(workspaceId, objectId);
+    const objectExists = await this.objectsService.verifyObjectInWorkspace(
+      workspaceId,
+      objectId,
+    );
     if (!objectExists) {
       return Result.fail(new EntityNotFoundException('Object', objectId));
     }
@@ -134,7 +140,7 @@ export class RemindersService {
       workspaceId,
       objectId,
     );
-    return Result.ok(reminders.map(r => this.toDto(r)));
+    return Result.ok(reminders.map((r) => this.toDto(r)));
   }
 
   async getReminderById(

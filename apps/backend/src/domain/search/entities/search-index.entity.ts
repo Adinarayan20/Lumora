@@ -49,7 +49,10 @@ export class SearchIndexEntity {
       entityCategory: SearchEntityCategory | string;
     },
   ): SearchIndexEntity {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
     const entGuard = Guard.againstNullOrUndefined(props.entityId, 'entityId');
     if (entGuard.isFailure) throw entGuard.getError();

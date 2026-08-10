@@ -74,7 +74,9 @@ describe("Core Domain Primitives", () => {
 
     it("should flatMap value on success and preserve error on failure", () => {
       const okResult = Result.ok<number>(10).flatMap((n) => Result.ok(n + 5));
-      const failResult = Result.fail<number, string>("Error").flatMap((n) => Result.ok(n + 5));
+      const failResult = Result.fail<number, string>("Error").flatMap((n) =>
+        Result.ok(n + 5),
+      );
 
       expect(okResult.getValue()).toBe(15);
       expect(failResult.getError()).toBe("Error");

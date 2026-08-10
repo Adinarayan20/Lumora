@@ -42,7 +42,9 @@ describe('RegisterFileAssetUseCase', () => {
       save: vi.fn(),
       delete: vi.fn(),
       findByUploadedUserId: vi.fn(),
-      calculateUserTotalStorageBytes: vi.fn().mockResolvedValue(1024 * 1024 * 1024 * 100),
+      calculateUserTotalStorageBytes: vi
+        .fn()
+        .mockResolvedValue(1024 * 1024 * 1024 * 100),
     };
 
     const useCase = new RegisterFileAssetUseCase(mockRepo);

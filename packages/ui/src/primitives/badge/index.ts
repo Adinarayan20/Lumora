@@ -1,3 +1,3 @@
-export * from './Badge.types';
-export * from './Badge.styles';
-export * from './Badge';
+export * from "./Badge.types";
+export * from "./Badge.styles";
+export * from "./Badge";

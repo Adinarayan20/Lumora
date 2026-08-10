@@ -1,6 +1,6 @@
-import type { ObjectDefinition } from '../../catalog/object-definition.js';
-import type { SchemaDefinition } from '../../catalog/schema-definition.js';
-import type { IObjectRepository } from '../repository/object-repository.interface.js';
+import type { ObjectDefinition } from "../../catalog/object-definition.js";
+import type { SchemaDefinition } from "../../catalog/schema-definition.js";
+import type { IObjectRepository } from "../repository/object-repository.interface.js";
 
 /**
  * Pluggable clock abstraction for deterministic timestamping in tests and execution environments.

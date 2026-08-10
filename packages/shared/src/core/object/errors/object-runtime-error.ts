@@ -1,5 +1,5 @@
-import { DomainException } from '../../errors/domain-exceptions.js';
-import { ErrorCode } from '../../errors/error-code.js';
+import { DomainException } from "../../errors/domain-exceptions.js";
+import { ErrorCode } from "../../errors/error-code.js";
 
 /**
  * Base exception for all Universal Object Runtime errors.

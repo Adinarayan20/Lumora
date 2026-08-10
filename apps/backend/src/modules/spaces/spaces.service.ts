@@ -11,10 +11,7 @@ import { CreateSpaceDto } from './dto/create-space.dto';
 import { UpdateSpaceDto } from './dto/update-space.dto';
 import { FilterSpaceDto } from './dto/filter-space.dto';
 import { AuditLogRepository } from '../auth/repositories/audit-log.repository';
-import {
-  AuditAction,
-  SpaceStatus,
-} from '../../generated/prisma/client.js';
+import { AuditAction, SpaceStatus } from '../../generated/prisma/client.js';
 import { SpaceResponseDto } from './dto/space-response.dto.js';
 
 @Injectable()
@@ -79,7 +76,7 @@ export class SpacesService {
       workspaceId,
       filter,
     );
-    return Result.ok(spaces.map(s => this.toDto(s)));
+    return Result.ok(spaces.map((s) => this.toDto(s)));
   }
 
   async getSpaceByIdOrSlug(
@@ -251,7 +248,9 @@ export class SpacesService {
     return Result.ok(undefined);
   }
 
-  private toDto(s: import('../../generated/prisma/client.js').Space): SpaceResponseDto {
+  private toDto(
+    s: import('../../generated/prisma/client.js').Space,
+  ): SpaceResponseDto {
     return {
       id: s.id,
       workspaceId: s.workspaceId,
@@ -297,4 +296,3 @@ export class SpacesService {
     return candidate;
   }
 }
-

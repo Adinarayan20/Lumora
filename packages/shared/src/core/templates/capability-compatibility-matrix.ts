@@ -50,7 +50,10 @@ export interface CompatibilityEvaluationResult {
 export interface ICapabilityCompatibilityRegistry {
   registerDefinition(definition: CapabilityCompatibilityDefinition): void;
   unregisterDefinition(definitionId: string): void;
-  getDefinitions(capabilityKey: string, targetCapabilityKey: string): readonly CapabilityCompatibilityDefinition[];
+  getDefinitions(
+    capabilityKey: string,
+    targetCapabilityKey: string,
+  ): readonly CapabilityCompatibilityDefinition[];
   getAllDefinitions(): readonly CapabilityCompatibilityDefinition[];
   clear(): void;
   setMetadataVersion(version: number): void;
@@ -59,11 +62,19 @@ export interface ICapabilityCompatibilityRegistry {
 
 export class CapabilityCompatibilityRegistry implements ICapabilityCompatibilityRegistry {
   // O(1) indexed storage: Map<sourceKey, Map<targetKey, CapabilityCompatibilityDefinition[]>>
-  private readonly definitionsMap = new Map<string, Map<string, CapabilityCompatibilityDefinition[]>>();
-  private readonly allDefinitions = new Map<string, CapabilityCompatibilityDefinition>();
+  private readonly definitionsMap = new Map<
+    string,
+    Map<string, CapabilityCompatibilityDefinition[]>
+  >();
+  private readonly allDefinitions = new Map<
+    string,
+    CapabilityCompatibilityDefinition
+  >();
   private _metadataVersion = 1;
 
-  public registerDefinition(definition: CapabilityCompatibilityDefinition): void {
+  public registerDefinition(
+    definition: CapabilityCompatibilityDefinition,
+  ): void {
     const srcKey = definition.capabilityKey.toLowerCase();
     const targetKey = definition.targetCapabilityKey.toLowerCase();
 
@@ -106,7 +117,11 @@ export class CapabilityCompatibilityRegistry implements ICapabilityCompatibility
     }
   }
 
-  private removeDefinitionFromMap(srcKey: string, targetKey: string, definitionId: string): void {
+  private removeDefinitionFromMap(
+    srcKey: string,
+    targetKey: string,
+    definitionId: string,
+  ): void {
     const targetMap = this.definitionsMap.get(srcKey);
     if (targetMap && targetMap.has(targetKey)) {
       const list = targetMap.get(targetKey)!;
@@ -182,7 +197,10 @@ export class CompatibilityResolver implements ICompatibilityResolver {
           evaluatedCount += 1;
 
           // 1. Evaluate required feature flag
-          if (def.requiredFeatureFlag && !context.featureFlags[def.requiredFeatureFlag]) {
+          if (
+            def.requiredFeatureFlag &&
+            !context.featureFlags[def.requiredFeatureFlag]
+          ) {
             skippedCount += 1;
             warnings.push({
               capabilityKey: reqA.key,
@@ -196,7 +214,9 @@ export class CompatibilityResolver implements ICompatibilityResolver {
             conflicts.push({
               capabilityKey: reqA.key,
               targetCapabilityKey: reqB.key,
-              reason: def.reason ?? `Capability '${reqA.key}' is explicitly incompatible with '${reqB.key}'.`,
+              reason:
+                def.reason ??
+                `Capability '${reqA.key}' is explicitly incompatible with '${reqB.key}'.`,
             });
             incompatibleSet.add(reqA.key);
             incompatibleSet.add(reqB.key);

@@ -1,4 +1,7 @@
-import type { UniversalObject, ObjectFilterOptions } from '../types/universal-object.types.js';
+import type {
+  UniversalObject,
+  ObjectFilterOptions,
+} from "../types/universal-object.types.js";
 
 /**
  * Universal Object Repository Port / Interface.
@@ -19,7 +22,10 @@ export interface IObjectRepository {
    * Updates an existing Universal Object. Throws ObjectNotFoundException or ObjectConcurrencyException.
    * If expectedVersion is provided, atomic compare-and-swap verification is required.
    */
-  update(object: UniversalObject, expectedVersion?: number): Promise<UniversalObject>;
+  update(
+    object: UniversalObject,
+    expectedVersion?: number,
+  ): Promise<UniversalObject>;
 
   /**
    * Queries Universal Objects matching optional filter criteria.
@@ -29,7 +35,11 @@ export interface IObjectRepository {
   /**
    * Soft deletes or archives a Universal Object by ID. Returns updated object.
    */
-  archive(id: string, archivedAtIso: string, updatedAtIso: string): Promise<UniversalObject>;
+  archive(
+    id: string,
+    archivedAtIso: string,
+    updatedAtIso: string,
+  ): Promise<UniversalObject>;
 
   /**
    * Restores an archived Universal Object by ID. Returns updated object.

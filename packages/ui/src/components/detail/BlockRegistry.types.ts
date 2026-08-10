@@ -1,13 +1,17 @@
-import React from 'react';
-import type { ObjectDefinition, SchemaDefinition, FieldSchema } from '@lumora/shared';
+import React from "react";
+import type {
+  ObjectDefinition,
+  SchemaDefinition,
+  FieldSchema,
+} from "@lumora/shared";
 
 export type BlockTypeKey =
-  | 'header'
-  | 'properties'
-  | 'timeline_preview'
-  | 'reminder_summary'
-  | 'attachments_preview'
-  | 'relationship_graph'
+  | "header"
+  | "properties"
+  | "timeline_preview"
+  | "reminder_summary"
+  | "attachments_preview"
+  | "relationship_graph"
   | string;
 
 export interface UniversalObjectData {

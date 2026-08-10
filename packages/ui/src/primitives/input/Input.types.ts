@@ -1,8 +1,8 @@
-import type { StyleProp, ViewStyle, TextInputProps } from 'react-native';
-import type { SemanticIconName } from '../icon/Icon.types';
+import type { StyleProp, ViewStyle, TextInputProps } from "react-native";
+import type { SemanticIconName } from "../icon/Icon.types";
 
-export type InputVariant = 'default' | 'filled' | 'ghost';
-export type InputSize = 'sm' | 'md' | 'lg';
+export type InputVariant = "default" | "filled" | "ghost";
+export type InputSize = "sm" | "md" | "lg";
 
 export interface InputProps {
   readonly value: string;
@@ -25,9 +25,9 @@ export interface InputProps {
   readonly onFocus?: () => void;
   readonly onBlur?: () => void;
   readonly onSubmitEditing?: () => void;
-  readonly keyboardType?: TextInputProps['keyboardType'];
-  readonly returnKeyType?: TextInputProps['returnKeyType'];
-  readonly autoCapitalize?: TextInputProps['autoCapitalize'];
+  readonly keyboardType?: TextInputProps["keyboardType"];
+  readonly returnKeyType?: TextInputProps["returnKeyType"];
+  readonly autoCapitalize?: TextInputProps["autoCapitalize"];
   readonly autoCorrect?: boolean;
   readonly secureTextEntry?: boolean;
   readonly multiline?: boolean;
@@ -35,21 +35,21 @@ export interface InputProps {
   readonly style?: StyleProp<
     Omit<
       ViewStyle,
-      | 'height'
-      | 'minHeight'
-      | 'maxHeight'
-      | 'padding'
-      | 'paddingHorizontal'
-      | 'paddingVertical'
-      | 'backgroundColor'
-      | 'borderRadius'
-      | 'borderWidth'
-      | 'borderColor'
-      | 'opacity'
+      | "height"
+      | "minHeight"
+      | "maxHeight"
+      | "padding"
+      | "paddingHorizontal"
+      | "paddingVertical"
+      | "backgroundColor"
+      | "borderRadius"
+      | "borderWidth"
+      | "borderColor"
+      | "opacity"
     >
   >;
 }
 
-export interface TextAreaProps extends Omit<InputProps, 'multiline'> {
+export interface TextAreaProps extends Omit<InputProps, "multiline"> {
   readonly numberOfLines?: number;
 }

@@ -7,7 +7,11 @@ import type { IFileAssetRepository } from '../../../../domain/media/repositories
 import type { IStorageProvider } from '../../../../domain/media/interfaces/storage-provider.interface.js';
 
 describe('DeleteFileAssetUseCase', () => {
-  const makeAggregate = (userId: string, assetId: string, workspaceId?: string) =>
+  const makeAggregate = (
+    userId: string,
+    assetId: string,
+    workspaceId?: string,
+  ) =>
     FileAssetAggregate.create({
       id: new UniqueEntityId(assetId),
       uploadedById: new UniqueEntityId(userId),

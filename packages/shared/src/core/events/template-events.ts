@@ -1,12 +1,13 @@
-import type { DomainEvent } from './domain-event.interface.js';
-import { UniqueEntityId } from '../primitives/unique-entity-id.js';
-import { TemplateEventName } from './event-names.js';
-import type { InstantString } from './instant-string.js';
-import type { TemplateOperationType } from '../templates/template-operation-context.js';
+import type { DomainEvent } from "./domain-event.interface.js";
+import { UniqueEntityId } from "../primitives/unique-entity-id.js";
+import { TemplateEventName } from "./event-names.js";
+import type { InstantString } from "./instant-string.js";
+import type { TemplateOperationType } from "../templates/template-operation-context.js";
 
-export class TemplateInstalledEvent
-  implements DomainEvent<TemplateEventName, { templateKey: string; version: string }>
-{
+export class TemplateInstalledEvent implements DomainEvent<
+  TemplateEventName,
+  { templateKey: string; version: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = TemplateEventName.INSTALLED;
   public readonly aggregateId: UniqueEntityId;
@@ -30,9 +31,10 @@ export class TemplateInstalledEvent
   }
 }
 
-export class TemplateInstallationFailedEvent
-  implements DomainEvent<TemplateEventName, { templateKey: string; reason: string }>
-{
+export class TemplateInstallationFailedEvent implements DomainEvent<
+  TemplateEventName,
+  { templateKey: string; reason: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = TemplateEventName.INSTALLATION_FAILED;
   public readonly aggregateId: UniqueEntityId;
@@ -56,16 +58,21 @@ export class TemplateInstallationFailedEvent
   }
 }
 
-export class TemplateOperationFailedEvent
-  implements DomainEvent<TemplateEventName, { templateKey: string; operationType: TemplateOperationType; reason: string }>
-{
+export class TemplateOperationFailedEvent implements DomainEvent<
+  TemplateEventName,
+  { templateKey: string; operationType: TemplateOperationType; reason: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = TemplateEventName.OPERATION_FAILED;
   public readonly aggregateId: UniqueEntityId;
   public readonly workspaceId: UniqueEntityId;
   public readonly occurredAt: InstantString;
   public readonly schemaVersion: number;
-  public readonly payload: Readonly<{ templateKey: string; operationType: TemplateOperationType; reason: string }>;
+  public readonly payload: Readonly<{
+    templateKey: string;
+    operationType: TemplateOperationType;
+    reason: string;
+  }>;
 
   constructor(
     aggregateId: UniqueEntityId,
@@ -83,16 +90,21 @@ export class TemplateOperationFailedEvent
   }
 }
 
-export class TemplateUpgradedEvent
-  implements DomainEvent<TemplateEventName, { templateKey: string; previousVersion: string; newVersion: string }>
-{
+export class TemplateUpgradedEvent implements DomainEvent<
+  TemplateEventName,
+  { templateKey: string; previousVersion: string; newVersion: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = TemplateEventName.UPGRADED;
   public readonly aggregateId: UniqueEntityId;
   public readonly workspaceId: UniqueEntityId;
   public readonly occurredAt: InstantString;
   public readonly schemaVersion: number;
-  public readonly payload: Readonly<{ templateKey: string; previousVersion: string; newVersion: string }>;
+  public readonly payload: Readonly<{
+    templateKey: string;
+    previousVersion: string;
+    newVersion: string;
+  }>;
 
   constructor(
     aggregateId: UniqueEntityId,
@@ -110,9 +122,10 @@ export class TemplateUpgradedEvent
   }
 }
 
-export class TemplateRollbackStartedEvent
-  implements DomainEvent<TemplateEventName, { templateKey: string }>
-{
+export class TemplateRollbackStartedEvent implements DomainEvent<
+  TemplateEventName,
+  { templateKey: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = TemplateEventName.ROLLBACK_STARTED;
   public readonly aggregateId: UniqueEntityId;
@@ -135,9 +148,10 @@ export class TemplateRollbackStartedEvent
   }
 }
 
-export class TemplateRollbackCompletedEvent
-  implements DomainEvent<TemplateEventName, { templateKey: string }>
-{
+export class TemplateRollbackCompletedEvent implements DomainEvent<
+  TemplateEventName,
+  { templateKey: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = TemplateEventName.ROLLBACK_COMPLETED;
   public readonly aggregateId: UniqueEntityId;
@@ -160,9 +174,10 @@ export class TemplateRollbackCompletedEvent
   }
 }
 
-export class TemplateArchivedEvent
-  implements DomainEvent<TemplateEventName, { templateKey: string }>
-{
+export class TemplateArchivedEvent implements DomainEvent<
+  TemplateEventName,
+  { templateKey: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = TemplateEventName.ARCHIVED;
   public readonly aggregateId: UniqueEntityId;
@@ -185,9 +200,10 @@ export class TemplateArchivedEvent
   }
 }
 
-export class TemplateDeletedEvent
-  implements DomainEvent<TemplateEventName, { templateKey: string }>
-{
+export class TemplateDeletedEvent implements DomainEvent<
+  TemplateEventName,
+  { templateKey: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = TemplateEventName.DELETED;
   public readonly aggregateId: UniqueEntityId;
@@ -210,9 +226,10 @@ export class TemplateDeletedEvent
   }
 }
 
-export class TemplateImportedEvent
-  implements DomainEvent<TemplateEventName, { templateKey: string }>
-{
+export class TemplateImportedEvent implements DomainEvent<
+  TemplateEventName,
+  { templateKey: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = TemplateEventName.IMPORTED;
   public readonly aggregateId: UniqueEntityId;
@@ -235,9 +252,10 @@ export class TemplateImportedEvent
   }
 }
 
-export class TemplateExportedEvent
-  implements DomainEvent<TemplateEventName, { templateKey: string }>
-{
+export class TemplateExportedEvent implements DomainEvent<
+  TemplateEventName,
+  { templateKey: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = TemplateEventName.EXPORTED;
   public readonly aggregateId: UniqueEntityId;

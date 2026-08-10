@@ -1,9 +1,5 @@
-import {
-  type ColorPalette,
-  BadgeDimensions,
-  RadiusScale,
-} from '@lumora/theme';
-import type { BadgeVariant, BadgeSize } from './Badge.types';
+import { type ColorPalette, BadgeDimensions, RadiusScale } from "@lumora/theme";
+import type { BadgeVariant, BadgeSize } from "./Badge.types";
 
 export interface ResolveBadgeStylesParams {
   readonly variant: BadgeVariant;
@@ -11,7 +7,11 @@ export interface ResolveBadgeStylesParams {
   readonly colors: ColorPalette;
 }
 
-export function resolveBadgeStyles({ variant, size, colors }: ResolveBadgeStylesParams) {
+export function resolveBadgeStyles({
+  variant,
+  size,
+  colors,
+}: ResolveBadgeStylesParams) {
   const dims = BadgeDimensions[size] || BadgeDimensions.md;
 
   let backgroundColor: string = colors.backgroundSecondary;
@@ -19,32 +19,32 @@ export function resolveBadgeStyles({ variant, size, colors }: ResolveBadgeStyles
   let borderColor: string = colors.border;
 
   switch (variant) {
-    case 'primary':
+    case "primary":
       backgroundColor = colors.primaryGlow;
       textColor = colors.primary;
       borderColor = colors.primary;
       break;
-    case 'success':
+    case "success":
       backgroundColor = colors.successGlow;
       textColor = colors.success;
       borderColor = colors.success;
       break;
-    case 'warning':
+    case "warning":
       backgroundColor = colors.warningGlow;
       textColor = colors.warning;
       borderColor = colors.warning;
       break;
-    case 'danger':
+    case "danger":
       backgroundColor = colors.dangerGlow;
       textColor = colors.danger;
       borderColor = colors.danger;
       break;
-    case 'info':
+    case "info":
       backgroundColor = colors.infoGlow;
       textColor = colors.info;
       borderColor = colors.info;
       break;
-    case 'neutral':
+    case "neutral":
     default:
       backgroundColor = colors.backgroundSecondary;
       textColor = colors.textSecondary;
@@ -60,15 +60,15 @@ export function resolveBadgeStyles({ variant, size, colors }: ResolveBadgeStyles
       backgroundColor,
       borderWidth: 1,
       borderColor,
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      justifyContent: 'center' as const,
-      alignSelf: 'flex-start' as const,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      alignSelf: "flex-start" as const,
     },
     textStyle: {
       fontSize: dims.fontSize,
       color: textColor,
-      fontWeight: '600' as const,
+      fontWeight: "600" as const,
     },
     iconSize: dims.iconSize,
     iconGap: 4,

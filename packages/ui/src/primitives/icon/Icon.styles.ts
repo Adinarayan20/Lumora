@@ -1,6 +1,10 @@
-import type { ColorPalette, ThemeMode, WindowSizeClass } from '@lumora/theme';
-import { IconSizes, IconStrokeWeights, IconTouchTargets } from '@lumora/theme';
-import type { SemanticIconColor, SemanticIconSize, IconStrokeWeight } from './Icon.types';
+import type { ColorPalette, ThemeMode, WindowSizeClass } from "@lumora/theme";
+import { IconSizes, IconStrokeWeights, IconTouchTargets } from "@lumora/theme";
+import type {
+  SemanticIconColor,
+  SemanticIconSize,
+  IconStrokeWeight,
+} from "./Icon.types";
 
 export interface IconStyleConfig {
   readonly resolvedSize: number;
@@ -22,8 +26,8 @@ export function resolveIconStyles(params: {
 }): IconStyleConfig {
   const {
     size,
-    color = 'icon.primary',
-    strokeWeight = 'auto',
+    color = "icon.primary",
+    strokeWeight = "auto",
     themeColors,
     themeMode,
     sizeClass,
@@ -32,12 +36,12 @@ export function resolveIconStyles(params: {
   } = params;
 
   // 1. Resolve Contextual Default Size if prop omitted
-  let resolvedSizeToken: SemanticIconSize = size ?? 'md';
+  let resolvedSizeToken: SemanticIconSize = size ?? "md";
   if (!size) {
-    if (sizeClass === 'Medium') {
-      resolvedSizeToken = 'lg';
+    if (sizeClass === "Medium") {
+      resolvedSizeToken = "lg";
     } else {
-      resolvedSizeToken = 'md';
+      resolvedSizeToken = "md";
     }
   }
 
@@ -45,15 +49,19 @@ export function resolveIconStyles(params: {
 
   // 2. Resolve Stroke Weight (No raw numeric props exposed!)
   let resolvedStrokeWidth = IconStrokeWeights.regular;
-  if (strokeWeight === 'thin') {
+  if (strokeWeight === "thin") {
     resolvedStrokeWidth = IconStrokeWeights.thin;
-  } else if (strokeWeight === 'strong' || themeMode === 'highContrast') {
+  } else if (strokeWeight === "strong" || themeMode === "highContrast") {
     resolvedStrokeWidth = IconStrokeWeights.strong;
-  } else if (strokeWeight === 'regular') {
+  } else if (strokeWeight === "regular") {
     resolvedStrokeWidth = IconStrokeWeights.regular;
   } else {
     // 'auto' mode
-    if (resolvedSizeToken === 'lg' || resolvedSizeToken === 'xl' || resolvedSizeToken === 'display') {
+    if (
+      resolvedSizeToken === "lg" ||
+      resolvedSizeToken === "xl" ||
+      resolvedSizeToken === "display"
+    ) {
       resolvedStrokeWidth = IconStrokeWeights.strong;
     } else {
       resolvedStrokeWidth = IconStrokeWeights.regular;
@@ -64,24 +72,24 @@ export function resolveIconStyles(params: {
   let resolvedColor = themeColors.textPrimary;
   let resolvedOpacity = 1.0;
 
-  if (color === 'icon.disabled') {
+  if (color === "icon.disabled") {
     resolvedColor = themeColors.textMuted;
     resolvedOpacity = themeColors.disabledOpacity;
-  } else if (color === 'icon.secondary') {
+  } else if (color === "icon.secondary") {
     resolvedColor = themeColors.textSecondary;
-  } else if (color === 'icon.muted') {
+  } else if (color === "icon.muted") {
     resolvedColor = themeColors.textMuted;
-  } else if (color === 'icon.brand') {
+  } else if (color === "icon.brand") {
     resolvedColor = themeColors.primary;
-  } else if (color === 'icon.accent') {
+  } else if (color === "icon.accent") {
     resolvedColor = themeColors.accent;
-  } else if (color === 'icon.inverse') {
+  } else if (color === "icon.inverse") {
     resolvedColor = themeColors.surface;
-  } else if (color === 'icon.success') {
+  } else if (color === "icon.success") {
     resolvedColor = themeColors.success;
-  } else if (color === 'icon.warning') {
+  } else if (color === "icon.warning") {
     resolvedColor = themeColors.warning;
-  } else if (color === 'icon.danger') {
+  } else if (color === "icon.danger") {
     resolvedColor = themeColors.danger;
   } else {
     // 'icon.primary'
@@ -92,7 +100,7 @@ export function resolveIconStyles(params: {
   let touchTargetDimension = IconTouchTargets.minimum;
   if (!isTouchMode) {
     touchTargetDimension = IconTouchTargets.pointer;
-  } else if (sizeClass === 'Medium' || sizeClass === 'Expanded') {
+  } else if (sizeClass === "Medium" || sizeClass === "Expanded") {
     touchTargetDimension = IconTouchTargets.comfortable;
   }
 

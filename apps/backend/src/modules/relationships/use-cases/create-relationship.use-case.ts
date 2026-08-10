@@ -40,7 +40,10 @@ export class CreateRelationshipUseCase {
       );
       if (!sourceExists) {
         return Result.fail(
-          new ConflictException('Relationship', `Source object '${dto.sourceObjectId}' not found in workspace.`),
+          new ConflictException(
+            'Relationship',
+            `Source object '${dto.sourceObjectId}' not found in workspace.`,
+          ),
         );
       }
 
@@ -50,7 +53,10 @@ export class CreateRelationshipUseCase {
       );
       if (!targetExists) {
         return Result.fail(
-          new ConflictException('Relationship', `Target object '${dto.targetObjectId}' not found in workspace.`),
+          new ConflictException(
+            'Relationship',
+            `Target object '${dto.targetObjectId}' not found in workspace.`,
+          ),
         );
       }
 

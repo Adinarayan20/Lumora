@@ -1,4 +1,4 @@
-import type { ViewStyle, TextStyle } from 'react-native';
+import type { ViewStyle, TextStyle } from "react-native";
 import {
   RadiusScale,
   InputHeights,
@@ -6,10 +6,10 @@ import {
   InputIconGaps,
   InputFontSizes,
   InputInteractiveTargetMinimum,
-} from '@lumora/theme';
-import type { ColorPalette, ViewportSizeClass } from '@lumora/theme';
-import type { SemanticIconColor, SemanticIconSize } from '../icon/Icon.types';
-import type { InputVariant, InputSize, InputShape } from './Input.types';
+} from "@lumora/theme";
+import type { ColorPalette, ViewportSizeClass } from "@lumora/theme";
+import type { SemanticIconColor, SemanticIconSize } from "../icon/Icon.types";
+import type { InputVariant, InputSize, InputShape } from "./Input.types";
 
 export interface ResolveInputStylesOptions {
   readonly variant?: InputVariant;
@@ -40,21 +40,21 @@ export interface ResolvedInputStyles {
 }
 
 export function resolveInputStyles({
-  variant = 'default',
+  variant = "default",
   size,
-  shape = 'rounded',
+  shape = "rounded",
   themeColors,
   sizeClass,
   disabled = false,
   error = false,
 }: ResolveInputStylesOptions): ResolvedInputStyles {
   // 1. Resolve Contextual Responsive Size Class
-  let resolvedSize: InputSize = size ?? 'md';
+  let resolvedSize: InputSize = size ?? "md";
   if (!size) {
-    if (sizeClass === 'Medium' || sizeClass === 'Expanded') {
-      resolvedSize = 'lg';
+    if (sizeClass === "Medium" || sizeClass === "Expanded") {
+      resolvedSize = "lg";
     } else {
-      resolvedSize = 'md';
+      resolvedSize = "md";
     }
   }
 
@@ -84,30 +84,30 @@ export function resolveInputStyles({
 
   // 3. Resolve Icon Size Token
   const resolvedIconSize: SemanticIconSize =
-    resolvedSize === 'sm' ? 'sm' : resolvedSize === 'lg' ? 'lg' : 'md';
+    resolvedSize === "sm" ? "sm" : resolvedSize === "lg" ? "lg" : "md";
 
   // 4. Resolve Radius
-  const resolvedRadius = shape === 'pill' ? RadiusScale.full : RadiusScale.md;
+  const resolvedRadius = shape === "pill" ? RadiusScale.full : RadiusScale.md;
 
   // 5. Resolve Variant Colors
   let resolvedBackgroundColor = themeColors.surface;
   let resolvedBorderColor = themeColors.border;
   let resolvedBorderWidth = 1;
-  let iconColorToken: SemanticIconColor = 'icon.secondary';
+  let iconColorToken: SemanticIconColor = "icon.secondary";
   const focusRingColor = themeColors.primary;
 
   switch (variant) {
-    case 'filled':
+    case "filled":
       resolvedBackgroundColor = themeColors.backgroundSecondary;
-      resolvedBorderColor = 'transparent';
+      resolvedBorderColor = "transparent";
       break;
 
-    case 'ghost':
-      resolvedBackgroundColor = 'transparent';
-      resolvedBorderColor = 'transparent';
+    case "ghost":
+      resolvedBackgroundColor = "transparent";
+      resolvedBorderColor = "transparent";
       break;
 
-    case 'default':
+    case "default":
     default:
       resolvedBackgroundColor = themeColors.surface;
       resolvedBorderColor = themeColors.border;
@@ -117,7 +117,7 @@ export function resolveInputStyles({
   // Error state overrides border color
   if (error) {
     resolvedBorderColor = themeColors.danger;
-    iconColorToken = 'icon.primary';
+    iconColorToken = "icon.primary";
   }
 
   const resolvedOpacity = disabled ? themeColors.disabledOpacity : 1.0;
@@ -131,8 +131,8 @@ export function resolveInputStyles({
     borderWidth: resolvedBorderWidth,
     borderColor: resolvedBorderColor,
     opacity: resolvedOpacity,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   };
 
   const inputTextStyle: TextStyle = {
@@ -140,7 +140,7 @@ export function resolveInputStyles({
     color: disabled ? themeColors.textMuted : themeColors.textPrimary,
     fontSize: resolvedFontSize,
     includeFontPadding: false,
-    textAlignVertical: 'center',
+    textAlignVertical: "center",
   };
 
   return {

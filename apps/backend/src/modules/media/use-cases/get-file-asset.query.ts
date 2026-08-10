@@ -44,17 +44,26 @@ export class GetFileAssetQuery {
         new UniqueEntityId(fileAssetId),
       );
       if (!aggregate) {
-        return Result.fail(new EntityNotFoundException('FileAsset', fileAssetId));
+        return Result.fail(
+          new EntityNotFoundException('FileAsset', fileAssetId),
+        );
       }
       // Workspace ownership check
       if (
         aggregate.workspaceId &&
         aggregate.workspaceId.toValue() !== workspaceId
       ) {
-        return Result.fail(new EntityNotFoundException('FileAsset', fileAssetId));
+        return Result.fail(
+          new EntityNotFoundException('FileAsset', fileAssetId),
+        );
       }
-      const downloadUrl = await this.storageProvider.getSignedUrl(aggregate.path);
-      return Result.ok({ asset: FileAssetResponseMapper.toResponseDto(aggregate), downloadUrl });
+      const downloadUrl = await this.storageProvider.getSignedUrl(
+        aggregate.path,
+      );
+      return Result.ok({
+        asset: FileAssetResponseMapper.toResponseDto(aggregate),
+        downloadUrl,
+      });
     } catch (error) {
       if (error instanceof ApplicationException) return Result.fail(error);
       throw error;

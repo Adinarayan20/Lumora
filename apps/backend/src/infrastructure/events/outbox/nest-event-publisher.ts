@@ -14,7 +14,9 @@ import type { IDomainEventPublisher, DomainEvent } from '@lumora/shared';
 export class NestEventPublisher implements IDomainEventPublisher {
   private readonly logger = new Logger(NestEventPublisher.name);
 
-  public async publish(events: readonly DomainEvent<any, any>[]): Promise<void> {
+  public async publish(
+    events: readonly DomainEvent<any, any>[],
+  ): Promise<void> {
     for (const event of events) {
       this.logger.log(
         `[OutboxPublished] eventName=${event.eventName} aggregateId=${event.aggregateId?.toValue()} workspaceId=${event.workspaceId?.toValue()}`,

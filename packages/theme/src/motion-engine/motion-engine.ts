@@ -7,7 +7,7 @@ export interface MotionConfig {
 
 export class MotionEngine {
   public static press(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 200,
       scale: 0.97,
@@ -17,7 +17,7 @@ export class MotionEngine {
   }
 
   public static fadeIn(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 250,
       scale: 1.0,
@@ -27,7 +27,7 @@ export class MotionEngine {
   }
 
   public static fadeOut(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 180,
       scale: 0.95,
@@ -37,7 +37,7 @@ export class MotionEngine {
   }
 
   public static cardLift(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 220,
       scale: 1.02,
@@ -47,7 +47,7 @@ export class MotionEngine {
   }
 
   public static heroExpand(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 350,
       scale: 1.04,
@@ -57,7 +57,7 @@ export class MotionEngine {
   }
 
   public static sheet(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 300,
       scale: 1.0,
@@ -67,7 +67,7 @@ export class MotionEngine {
   }
 
   public static dialog(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 250,
       scale: 1.0,
@@ -77,7 +77,7 @@ export class MotionEngine {
   }
 
   public static snackbar(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 200,
       scale: 1.0,
@@ -87,7 +87,7 @@ export class MotionEngine {
   }
 
   public static fabMorph(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 280,
       scale: 1.05,
@@ -97,7 +97,7 @@ export class MotionEngine {
   }
 
   public static iconPress(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 180,
       scale: 0.95,
@@ -107,7 +107,7 @@ export class MotionEngine {
   }
 
   public static iconLoading(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 1000,
       scale: 1.0,
@@ -117,7 +117,7 @@ export class MotionEngine {
   }
 
   public static buttonPress(): MotionConfig {
-    'worklet';
+    "worklet";
     return {
       duration: 180,
       scale: 0.96,

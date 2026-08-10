@@ -43,7 +43,8 @@ export const ErrorCode = {
   // ─── Workspace Domain ─────────────────────────────────────────────────────
 
   /** Attempted to delete a PERSONAL workspace, which is permanent and cannot be removed. */
-  PERSONAL_WORKSPACE_DELETION_FORBIDDEN: "PERSONAL_WORKSPACE_DELETION_FORBIDDEN",
+  PERSONAL_WORKSPACE_DELETION_FORBIDDEN:
+    "PERSONAL_WORKSPACE_DELETION_FORBIDDEN",
 
   /** The target user for a membership or ownership operation is not a workspace member. */
   TARGET_NOT_WORKSPACE_MEMBER: "TARGET_NOT_WORKSPACE_MEMBER",

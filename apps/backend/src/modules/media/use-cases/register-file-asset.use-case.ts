@@ -31,7 +31,9 @@ export class RegisterFileAssetUseCase {
       const workspaceEntityId = new UniqueEntityId(workspaceId);
 
       const currentUsedBytes =
-        await this.fileAssetRepository.calculateUserTotalStorageBytes(userEntityId);
+        await this.fileAssetRepository.calculateUserTotalStorageBytes(
+          userEntityId,
+        );
       StorageQuotaPolicy.validateStorageQuota(currentUsedBytes, dto.size);
 
       const aggregate = FileAssetAggregate.create({

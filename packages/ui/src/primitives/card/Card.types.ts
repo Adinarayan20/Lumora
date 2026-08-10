@@ -1,8 +1,8 @@
-import type React from 'react';
+import type React from "react";
 
-export type CardVariant = 'flat' | 'outlined' | 'elevated' | 'interactive';
+export type CardVariant = "flat" | "outlined" | "elevated" | "interactive";
 
-export type CardPadding = 'none' | 'xs' | 'sm' | 'md' | 'lg';
+export type CardPadding = "none" | "xs" | "sm" | "md" | "lg";
 
 export interface CardProps {
   readonly variant?: CardVariant;

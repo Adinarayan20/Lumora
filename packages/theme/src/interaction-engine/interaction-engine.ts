@@ -14,7 +14,7 @@ export class InteractionEngine {
       onPress: options?.onPress,
       onLongPress: options?.onLongPress,
       accessible: true,
-      accessibilityRole: 'button' as const,
+      accessibilityRole: "button" as const,
     };
   }
 }

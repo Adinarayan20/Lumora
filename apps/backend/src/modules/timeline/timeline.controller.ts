@@ -69,7 +69,7 @@ export class TimelineController {
    */
   @Post()
   @RequirePermissions(Permissions.Object.Read)
-    async recordActivity(
+  async recordActivity(
     @CurrentUser('id') _userId: string,
     @Body() dto: RecordTimelineActivityDto,
   ) {
@@ -82,5 +82,3 @@ export class TimelineController {
     return result.getValue();
   }
 }
-
-

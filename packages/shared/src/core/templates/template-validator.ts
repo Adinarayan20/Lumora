@@ -1,7 +1,7 @@
-import { DomainValidationException } from '../errors/domain-exceptions.js';
-import { Result } from '../primitives/result.js';
-import type { TemplatePackage } from './template-content.js';
-import type { TemplateManifest } from './template-manifest.js';
+import { DomainValidationException } from "../errors/domain-exceptions.js";
+import { Result } from "../primitives/result.js";
+import type { TemplatePackage } from "./template-content.js";
+import type { TemplateManifest } from "./template-manifest.js";
 
 export class TemplateValidator {
   public static validate(pkg: TemplatePackage): Result<void> {
@@ -20,25 +20,47 @@ export class TemplateValidator {
 
   public static validateManifest(manifest: TemplateManifest): Result<void> {
     if (!manifest.id || manifest.id.trim().length === 0) {
-      return Result.fail(new DomainValidationException('Template Manifest must specify an id.'));
+      return Result.fail(
+        new DomainValidationException("Template Manifest must specify an id."),
+      );
     }
     if (!manifest.key || manifest.key.trim().length === 0) {
-      return Result.fail(new DomainValidationException('Template Manifest must specify a key.'));
+      return Result.fail(
+        new DomainValidationException("Template Manifest must specify a key."),
+      );
     }
     if (!manifest.name || manifest.name.trim().length === 0) {
-      return Result.fail(new DomainValidationException('Template Manifest must specify a name.'));
+      return Result.fail(
+        new DomainValidationException("Template Manifest must specify a name."),
+      );
     }
     if (!manifest.version || manifest.version.trim().length === 0) {
-      return Result.fail(new DomainValidationException('Template Manifest must specify a version.'));
+      return Result.fail(
+        new DomainValidationException(
+          "Template Manifest must specify a version.",
+        ),
+      );
     }
     if (!manifest.packageUuid || manifest.packageUuid.trim().length === 0) {
-      return Result.fail(new DomainValidationException('Template Manifest must specify a packageUuid.'));
+      return Result.fail(
+        new DomainValidationException(
+          "Template Manifest must specify a packageUuid.",
+        ),
+      );
     }
     if (!manifest.publisherUuid || manifest.publisherUuid.trim().length === 0) {
-      return Result.fail(new DomainValidationException('Template Manifest must specify a publisherUuid.'));
+      return Result.fail(
+        new DomainValidationException(
+          "Template Manifest must specify a publisherUuid.",
+        ),
+      );
     }
     if (!manifest.packageHash || manifest.packageHash.trim().length === 0) {
-      return Result.fail(new DomainValidationException('Template Manifest must specify a packageHash.'));
+      return Result.fail(
+        new DomainValidationException(
+          "Template Manifest must specify a packageHash.",
+        ),
+      );
     }
 
     return Result.ok<void>(undefined);
@@ -63,7 +85,9 @@ export class TemplateValidator {
 
     // Check that every ObjectDefinition has a matching SchemaDefinition
     for (const objDef of content.objectDefinitions) {
-      const schema = content.schemaDefinitions.find((s) => s.typeKey === objDef.typeKey);
+      const schema = content.schemaDefinitions.find(
+        (s) => s.typeKey === objDef.typeKey,
+      );
       if (!schema) {
         return Result.fail(
           new DomainValidationException(
@@ -76,4 +100,3 @@ export class TemplateValidator {
     return Result.ok<void>(undefined);
   }
 }
-

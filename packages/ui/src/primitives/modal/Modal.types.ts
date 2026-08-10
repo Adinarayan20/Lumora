@@ -1,5 +1,5 @@
-import type React from 'react';
-import type { ButtonVariant } from '../button/Button.types';
+import type React from "react";
+import type { ButtonVariant } from "../button/Button.types";
 
 export interface DialogAction {
   readonly label: string;

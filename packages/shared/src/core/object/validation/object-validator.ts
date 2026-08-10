@@ -1,14 +1,18 @@
-import type { ObjectDefinition } from '../../catalog/object-definition.js';
-import type { SchemaDefinition } from '../../catalog/schema-definition.js';
-import type { FieldSchema } from '../../catalog/field-schema.js';
-import { FieldType } from '../../catalog/field-type.js';
-import { ObjectStatus } from '../../catalog/object-status.js';
-import type { CreateObjectInput, UpdateObjectInput, UniversalObject } from '../types/universal-object.types.js';
+import type { ObjectDefinition } from "../../catalog/object-definition.js";
+import type { SchemaDefinition } from "../../catalog/schema-definition.js";
+import type { FieldSchema } from "../../catalog/field-schema.js";
+import { FieldType } from "../../catalog/field-type.js";
+import { ObjectStatus } from "../../catalog/object-status.js";
+import type {
+  CreateObjectInput,
+  UpdateObjectInput,
+  UniversalObject,
+} from "../types/universal-object.types.js";
 import {
   ObjectValidationException,
   ObjectSchemaMismatchException,
   ObjectLifecycleConflictException,
-} from '../errors/object-runtime-error.js';
+} from "../errors/object-runtime-error.js";
 
 export interface ValidationResult {
   readonly isValid: boolean;
@@ -26,10 +30,16 @@ export class ObjectValidator {
     schema: SchemaDefinition,
   ): ValidationResult {
     if (input.typeKey !== definition.typeKey) {
-      throw new ObjectSchemaMismatchException(input.typeKey, definition.typeKey);
+      throw new ObjectSchemaMismatchException(
+        input.typeKey,
+        definition.typeKey,
+      );
     }
     if (schema.typeKey !== definition.typeKey) {
-      throw new ObjectSchemaMismatchException(schema.typeKey, definition.typeKey);
+      throw new ObjectSchemaMismatchException(
+        schema.typeKey,
+        definition.typeKey,
+      );
     }
     if (definition.schemaVersion !== schema.schemaVersion) {
       throw new ObjectSchemaMismatchException(
@@ -52,7 +62,10 @@ export class ObjectValidator {
     schema: SchemaDefinition,
   ): ValidationResult {
     if (existingObject.typeKey !== schema.typeKey) {
-      throw new ObjectSchemaMismatchException(existingObject.typeKey, schema.typeKey);
+      throw new ObjectSchemaMismatchException(
+        existingObject.typeKey,
+        schema.typeKey,
+      );
     }
     if (existingObject.schemaVersion !== schema.schemaVersion) {
       throw new ObjectSchemaMismatchException(
@@ -140,7 +153,7 @@ export class ObjectValidator {
         case FieldType.STRING:
         case FieldType.ENUM:
         case FieldType.DATE:
-          if (typeof value !== 'string') {
+          if (typeof value !== "string") {
             addFieldError(`Field '${field.label}' must be a string.`);
           } else {
             // Regex pattern validation
@@ -148,7 +161,9 @@ export class ObjectValidator {
               try {
                 const regex = new RegExp(field.validation.pattern);
                 if (!regex.test(value)) {
-                  addFieldError(`Field '${field.label}' does not match required pattern.`);
+                  addFieldError(
+                    `Field '${field.label}' does not match required pattern.`,
+                  );
                 }
               } catch {
                 // Ignore invalid regex patterns safely
@@ -158,28 +173,40 @@ export class ObjectValidator {
           break;
 
         case FieldType.NUMBER:
-          if (typeof value !== 'number' || Number.isNaN(value)) {
+          if (typeof value !== "number" || Number.isNaN(value)) {
             addFieldError(`Field '${field.label}' must be a valid number.`);
           } else {
-            if (field.validation?.min !== undefined && value < field.validation.min) {
-              addFieldError(`Field '${field.label}' must be at least ${field.validation.min}.`);
+            if (
+              field.validation?.min !== undefined &&
+              value < field.validation.min
+            ) {
+              addFieldError(
+                `Field '${field.label}' must be at least ${field.validation.min}.`,
+              );
             }
-            if (field.validation?.max !== undefined && value > field.validation.max) {
-              addFieldError(`Field '${field.label}' cannot exceed ${field.validation.max}.`);
+            if (
+              field.validation?.max !== undefined &&
+              value > field.validation.max
+            ) {
+              addFieldError(
+                `Field '${field.label}' cannot exceed ${field.validation.max}.`,
+              );
             }
           }
           break;
 
         case FieldType.BOOLEAN:
-          if (typeof value !== 'boolean') {
+          if (typeof value !== "boolean") {
             addFieldError(`Field '${field.label}' must be a boolean.`);
           }
           break;
 
         case FieldType.JSON:
           // FieldType.JSON semantics: plain object or array required; null/undefined handled above
-          if (typeof value !== 'object') {
-            addFieldError(`Field '${field.label}' must be a JSON object or array.`);
+          if (typeof value !== "object") {
+            addFieldError(
+              `Field '${field.label}' must be a JSON object or array.`,
+            );
           }
           break;
 

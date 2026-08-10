@@ -1,11 +1,11 @@
-import type { ObjectDefinition } from '../catalog/object-definition.js';
-import type { SchemaDefinition } from '../catalog/schema-definition.js';
-import type { TemplateManifest } from './template-manifest.js';
+import type { ObjectDefinition } from "../catalog/object-definition.js";
+import type { SchemaDefinition } from "../catalog/schema-definition.js";
+import type { TemplateManifest } from "./template-manifest.js";
 
 export enum SeedObjectType {
-  SYSTEM = 'SYSTEM',
-  WORKSPACE = 'WORKSPACE',
-  SAMPLE = 'SAMPLE',
+  SYSTEM = "SYSTEM",
+  WORKSPACE = "WORKSPACE",
+  SAMPLE = "SAMPLE",
 }
 
 export interface CategorizedSeedObject {

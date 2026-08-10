@@ -3,8 +3,8 @@ import {
   CardElevations,
   RadiusScale,
   SpacingScale,
-} from '@lumora/theme';
-import type { CardVariant, CardPadding } from './Card.types';
+} from "@lumora/theme";
+import type { CardVariant, CardPadding } from "./Card.types";
 
 export interface ResolveCardStylesParams {
   readonly variant: CardVariant;
@@ -25,19 +25,19 @@ export function resolveCardStyles({
 
   let paddingPx = 0;
   switch (padding) {
-    case 'xs':
+    case "xs":
       paddingPx = SpacingScale.xs;
       break;
-    case 'sm':
+    case "sm":
       paddingPx = SpacingScale.sm;
       break;
-    case 'md':
+    case "md":
       paddingPx = SpacingScale.md;
       break;
-    case 'lg':
+    case "lg":
       paddingPx = SpacingScale.lg;
       break;
-    case 'none':
+    case "none":
     default:
       paddingPx = 0;
       break;
@@ -45,13 +45,11 @@ export function resolveCardStyles({
 
   const backgroundColor = selected
     ? colors.primaryGlow
-    : variant === 'flat'
+    : variant === "flat"
       ? colors.backgroundSecondary
       : colors.surface;
 
-  const borderColor = selected
-    ? colors.primary
-    : colors.border;
+  const borderColor = selected ? colors.primary : colors.border;
 
   const opacity = disabled ? colors.disabledOpacity : 1.0;
 
@@ -68,7 +66,7 @@ export function resolveCardStyles({
       shadowRadius: elevation.shadowRadius,
       elevation: elevation.elevation,
       opacity,
-      overflow: 'hidden' as const,
+      overflow: "hidden" as const,
     },
   };
 }

@@ -1,6 +1,9 @@
-import { useState, useCallback } from 'react';
-import type { DynamicObjectDetailProps, ObjectActionConfig } from './DynamicObjectDetail.types';
-import type { UniversalObjectData } from '../detail/BlockRegistry.types';
+import { useState, useCallback } from "react";
+import type {
+  DynamicObjectDetailProps,
+  ObjectActionConfig,
+} from "./DynamicObjectDetail.types";
+import type { UniversalObjectData } from "../detail/BlockRegistry.types";
 
 export interface UseObjectDetailResult {
   readonly isEditing: boolean;
@@ -13,15 +16,22 @@ export interface UseObjectDetailResult {
   readonly resolvedActions: readonly ObjectActionConfig[];
 }
 
-export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetailResult {
+export function useObjectDetail(
+  props: DynamicObjectDetailProps,
+): UseObjectDetailResult {
   const { object, schema, actions, onEdit, onDelete, onArchive } = props;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [pendingAction, setPendingAction] = useState<ObjectActionConfig | null>(null);
+  const [pendingAction, setPendingAction] = useState<ObjectActionConfig | null>(
+    null,
+  );
 
-  const requestActionConfirmation = useCallback((action: ObjectActionConfig) => {
-    setPendingAction(action);
-  }, []);
+  const requestActionConfirmation = useCallback(
+    (action: ObjectActionConfig) => {
+      setPendingAction(action);
+    },
+    [],
+  );
 
   const handleCancelPendingAction = useCallback(() => {
     setPendingAction(null);
@@ -33,7 +43,7 @@ export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetai
 
     if (!object || !actionToExecute) return;
 
-    if (actionToExecute.key === 'delete' && onDelete) {
+    if (actionToExecute.key === "delete" && onDelete) {
       onDelete(object);
     }
 
@@ -47,10 +57,10 @@ export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetai
   if (onEdit) {
     const isEditDisabled = !schema?.fields || schema.fields.length === 0;
     defaultActions.push({
-      key: 'edit',
-      label: 'Edit',
-      icon: 'edit',
-      variant: 'secondary',
+      key: "edit",
+      label: "Edit",
+      icon: "edit",
+      variant: "secondary",
       disabled: isEditDisabled,
       onPress: (obj: UniversalObjectData) => {
         setIsEditing(true);
@@ -61,10 +71,10 @@ export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetai
 
   if (onArchive) {
     defaultActions.push({
-      key: 'archive',
-      label: 'Archive',
-      icon: 'archive',
-      variant: 'secondary',
+      key: "archive",
+      label: "Archive",
+      icon: "archive",
+      variant: "secondary",
       onPress: (obj: UniversalObjectData) => {
         onArchive(obj);
       },
@@ -73,10 +83,10 @@ export function useObjectDetail(props: DynamicObjectDetailProps): UseObjectDetai
 
   if (onDelete) {
     defaultActions.push({
-      key: 'delete',
-      label: 'Delete',
-      icon: 'trash',
-      variant: 'danger',
+      key: "delete",
+      label: "Delete",
+      icon: "trash",
+      variant: "danger",
       requiresConfirmation: true,
     });
   }

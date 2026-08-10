@@ -1,5 +1,5 @@
-import type { PublisherTrustLevel } from './publisher-trust-level.js';
-import type { TemplateCategory } from './template-category.js';
+import type { PublisherTrustLevel } from "./publisher-trust-level.js";
+import type { TemplateCategory } from "./template-category.js";
 
 export interface CapabilityRequirement {
   key: string;

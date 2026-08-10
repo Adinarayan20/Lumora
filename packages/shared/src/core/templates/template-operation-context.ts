@@ -1,11 +1,11 @@
 export type TemplateOperationType =
-  | 'INSTALL'
-  | 'UPGRADE'
-  | 'UNINSTALL'
-  | 'ROLLBACK'
-  | 'IMPORT'
-  | 'EXPORT'
-  | 'VALIDATE';
+  | "INSTALL"
+  | "UPGRADE"
+  | "UNINSTALL"
+  | "ROLLBACK"
+  | "IMPORT"
+  | "EXPORT"
+  | "VALIDATE";
 
 export interface TemplateOperationContext {
   readonly workspaceId: string;

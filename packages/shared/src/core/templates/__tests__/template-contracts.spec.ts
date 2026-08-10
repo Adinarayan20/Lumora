@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest';
-import { STARTER_LIBRARY_CATALOG } from '../starter-library.catalog.js';
-import { TemplateValidator } from '../template-validator.js';
+import { describe, it, expect } from "vitest";
+import { STARTER_LIBRARY_CATALOG } from "../starter-library.catalog.js";
+import { TemplateValidator } from "../template-validator.js";
 import {
   CapabilityCompatibilityRegistry,
   CompatibilityResolver,
-} from '../capability-compatibility-matrix.js';
-import { PublisherTrustLevel } from '../publisher-trust-level.js';
+} from "../capability-compatibility-matrix.js";
+import { PublisherTrustLevel } from "../publisher-trust-level.js";
 
-describe('Sub-Milestone 3.1: Template Contracts & Starter Catalog', () => {
-  it('should validate all 5 production starter templates in STARTER_LIBRARY_CATALOG', () => {
+describe("Sub-Milestone 3.1: Template Contracts & Starter Catalog", () => {
+  it("should validate all 5 production starter templates in STARTER_LIBRARY_CATALOG", () => {
     expect(STARTER_LIBRARY_CATALOG.length).toBe(5);
 
     for (const pkg of STARTER_LIBRARY_CATALOG) {
@@ -21,29 +21,29 @@ describe('Sub-Milestone 3.1: Template Contracts & Starter Catalog', () => {
     }
   });
 
-  it('should fail validation when manifest is missing required properties', () => {
+  it("should fail validation when manifest is missing required properties", () => {
     const invalidPkg = {
       manifest: {
-        id: '',
-        packageUuid: '',
-        publisherUuid: '',
-        packageHash: '',
-        key: '',
-        name: '',
-        description: 'Test',
-        category: 'LIFE_OS' as any,
-        version: '1.0.0',
-        minPlatformVersion: '1.0.0',
+        id: "",
+        packageUuid: "",
+        publisherUuid: "",
+        packageHash: "",
+        key: "",
+        name: "",
+        description: "Test",
+        category: "LIFE_OS" as any,
+        version: "1.0.0",
+        minPlatformVersion: "1.0.0",
         author: {
-          name: 'Test',
-          publisherId: 'test',
+          name: "Test",
+          publisherId: "test",
           trustLevel: PublisherTrustLevel.LOCAL,
         },
-        license: 'MIT',
+        license: "MIT",
         dependencies: [],
         capabilities: [],
         permissions: { requiredPermissions: [] },
-        icon: 'icon',
+        icon: "icon",
         tags: [],
       },
       content: {
@@ -56,23 +56,23 @@ describe('Sub-Milestone 3.1: Template Contracts & Starter Catalog', () => {
     expect(result.isFailure).toBe(true);
   });
 
-  it('should evaluate capability compatibility correctly via CompatibilityResolver', () => {
+  it("should evaluate capability compatibility correctly via CompatibilityResolver", () => {
     const registry = new CapabilityCompatibilityRegistry();
     registry.registerDefinition({
-      id: 'rule-timeline-search',
-      capabilityKey: 'timeline',
-      targetCapabilityKey: 'search',
+      id: "rule-timeline-search",
+      capabilityKey: "timeline",
+      targetCapabilityKey: "search",
       compatible: true,
     });
 
     const resolver = new CompatibilityResolver(registry);
     const result = resolver.evaluate(
       [
-        { key: 'timeline', versionConstraint: '>=1.0.0' },
-        { key: 'search', versionConstraint: '>=1.0.0' },
+        { key: "timeline", versionConstraint: ">=1.0.0" },
+        { key: "search", versionConstraint: ">=1.0.0" },
       ],
       {
-        platformVersion: '1.0.0',
+        platformVersion: "1.0.0",
         featureFlags: {},
       },
     );

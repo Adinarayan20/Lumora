@@ -36,5 +36,3 @@ describe('RecordTimelineActivityUseCase', () => {
     expect(mockRepo.save).toHaveBeenCalled();
   });
 });
-
-

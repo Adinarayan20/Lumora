@@ -1,4 +1,9 @@
-import { AggregateRoot, UniqueEntityId, Guard, DomainValidationException } from '@lumora/shared';
+import {
+  AggregateRoot,
+  UniqueEntityId,
+  Guard,
+  DomainValidationException,
+} from '@lumora/shared';
 
 export interface RelationshipProps {
   id?: UniqueEntityId;
@@ -49,13 +54,22 @@ export class RelationshipAggregate extends AggregateRoot<UniqueEntityId> {
   }
 
   public static create(props: RelationshipProps): RelationshipAggregate {
-    const wsGuard = Guard.againstNullOrUndefined(props.workspaceId, 'workspaceId');
+    const wsGuard = Guard.againstNullOrUndefined(
+      props.workspaceId,
+      'workspaceId',
+    );
     if (wsGuard.isFailure) throw wsGuard.getError();
 
-    const srcGuard = Guard.againstNullOrUndefined(props.sourceObjectId, 'sourceObjectId');
+    const srcGuard = Guard.againstNullOrUndefined(
+      props.sourceObjectId,
+      'sourceObjectId',
+    );
     if (srcGuard.isFailure) throw srcGuard.getError();
 
-    const tgtGuard = Guard.againstNullOrUndefined(props.targetObjectId, 'targetObjectId');
+    const tgtGuard = Guard.againstNullOrUndefined(
+      props.targetObjectId,
+      'targetObjectId',
+    );
     if (tgtGuard.isFailure) throw tgtGuard.getError();
 
     if (!props.type || props.type.trim().length === 0) {

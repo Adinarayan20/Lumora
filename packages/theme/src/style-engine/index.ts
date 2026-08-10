@@ -1,4 +1,4 @@
-import type { ColorPalette, ThemeMode } from '../generated/tokens';
+import type { ColorPalette, ThemeMode } from "../generated/tokens";
 import {
   SpacingScale,
   RadiusScale,
@@ -6,11 +6,17 @@ import {
   SemanticTypographyRole,
   LightThemeColors,
   DarkThemeColors,
-} from '../generated/tokens';
+} from "../generated/tokens";
 
 export class StyleEngine {
-  public static resolveColor(colorToken: keyof ColorPalette, themeMode: ThemeMode): string {
-    const palette = themeMode === 'dark' || themeMode === 'amoled' ? DarkThemeColors : LightThemeColors;
+  public static resolveColor(
+    colorToken: keyof ColorPalette,
+    themeMode: ThemeMode,
+  ): string {
+    const palette =
+      themeMode === "dark" || themeMode === "amoled"
+        ? DarkThemeColors
+        : LightThemeColors;
     return palette[colorToken] ?? palette.textPrimary;
   }
 
@@ -28,7 +34,9 @@ export class StyleEngine {
     return SemanticTypographyMap[role]?.fontSize ?? 16;
   }
 
-  public static resolveFontWeight(role: SemanticTypographyRole): '400' | '500' | '600' | '700' {
-    return SemanticTypographyMap[role]?.fontWeight ?? '400';
+  public static resolveFontWeight(
+    role: SemanticTypographyRole,
+  ): "400" | "500" | "600" | "700" {
+    return SemanticTypographyMap[role]?.fontWeight ?? "400";
   }
 }

@@ -1,17 +1,17 @@
-import type { SemanticTypographyRole } from '@lumora/theme';
-import { SemanticTypographyMap } from '@lumora/theme';
+import type { SemanticTypographyRole } from "@lumora/theme";
+import { SemanticTypographyMap } from "@lumora/theme";
 
 export class TypographyScaleResolver {
   public static resolveScale(
     role: SemanticTypographyRole,
-    deviceType: 'phone' | 'tablet' | 'desktop',
+    deviceType: "phone" | "tablet" | "desktop",
   ): { fontSize: number; lineHeight: number } {
     const config = SemanticTypographyMap[role] ?? SemanticTypographyMap.Body;
 
     let opticalScale = config.opticalScalePhone;
-    if (deviceType === 'desktop') {
+    if (deviceType === "desktop") {
       opticalScale = config.opticalScaleDesktop;
-    } else if (deviceType === 'tablet') {
+    } else if (deviceType === "tablet") {
       opticalScale = config.opticalScaleTablet;
     }
 

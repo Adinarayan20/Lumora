@@ -4,7 +4,7 @@ export interface ToggleProps {
   readonly label?: string;
   readonly helperText?: string;
   readonly disabled?: boolean;
-  readonly size?: 'sm' | 'md';
+  readonly size?: "sm" | "md";
   readonly accessibilityLabel?: string;
   readonly testID?: string;
 }
@@ -15,7 +15,7 @@ export interface CheckboxProps {
   readonly label?: string;
   readonly helperText?: string;
   readonly disabled?: boolean;
-  readonly size?: 'sm' | 'md';
+  readonly size?: "sm" | "md";
   readonly accessibilityLabel?: string;
   readonly testID?: string;
 }
@@ -44,7 +44,7 @@ export interface RadioGroupProps<T = string> {
   readonly helperText?: string;
   readonly errorText?: string;
   readonly disabled?: boolean;
-  readonly direction?: 'row' | 'column';
+  readonly direction?: "row" | "column";
   readonly accessibilityLabel?: string;
   readonly testID?: string;
 }

@@ -30,8 +30,11 @@ export interface ObjectFilter extends Record<string, unknown> {
   isFavorite?: boolean;
 }
 
-export interface IObjectAggregateRepository
-  extends IPaginatedRepository<ObjectAggregate, UniqueEntityId, ObjectFilter> {
+export interface IObjectAggregateRepository extends IPaginatedRepository<
+  ObjectAggregate,
+  UniqueEntityId,
+  ObjectFilter
+> {
   findByObjectKey(
     workspaceId: UniqueEntityId,
     objectKey: ObjectKey,

@@ -1,24 +1,24 @@
-import type { SchemaDefinition } from '../../catalog/schema-definition.js';
-import { ObjectStatus } from '../../catalog/object-status.js';
-import { IdGenerator } from '../../primitives/id-generator.js';
+import type { SchemaDefinition } from "../../catalog/schema-definition.js";
+import { ObjectStatus } from "../../catalog/object-status.js";
+import { IdGenerator } from "../../primitives/id-generator.js";
 import type {
   UniversalObject,
   ObjectFilterOptions,
-} from '../types/universal-object.types.js';
+} from "../types/universal-object.types.js";
 import type {
   ObjectRuntimeDependencies,
   CreateObjectOptions,
   UpdateObjectOptions,
   ClockProvider,
   IdGeneratorProvider,
-} from '../types/object-runtime.types.js';
-import type { IObjectRepository } from '../repository/object-repository.interface.js';
-import { ObjectValidator } from '../validation/object-validator.js';
+} from "../types/object-runtime.types.js";
+import type { IObjectRepository } from "../repository/object-repository.interface.js";
+import { ObjectValidator } from "../validation/object-validator.js";
 import {
   ObjectNotFoundException,
   ObjectValidationException,
   ObjectConcurrencyException,
-} from '../errors/object-runtime-error.js';
+} from "../errors/object-runtime-error.js";
 
 export class SystemClockProvider implements ClockProvider {
   public nowIso(): string {
@@ -46,7 +46,9 @@ export class ObjectRuntime {
   /**
    * Creates, validates, normalizes, and persists a new Universal Object.
    */
-  public async createObject(options: CreateObjectOptions): Promise<UniversalObject> {
+  public async createObject(
+    options: CreateObjectOptions,
+  ): Promise<UniversalObject> {
     const { definition, schema, attributes, id } = options;
 
     const validation = ObjectValidator.validateCreation(
@@ -93,13 +95,19 @@ export class ObjectRuntime {
   /**
    * Patches, validates, and persists updates to an existing Universal Object.
    */
-  public async updateObject(options: UpdateObjectOptions): Promise<UniversalObject> {
+  public async updateObject(
+    options: UpdateObjectOptions,
+  ): Promise<UniversalObject> {
     const { id, schema, attributes, expectedVersion } = options;
 
     const existing = await this.getObject(id);
 
     if (expectedVersion !== undefined && existing.version !== expectedVersion) {
-      throw new ObjectConcurrencyException(id, expectedVersion, existing.version);
+      throw new ObjectConcurrencyException(
+        id,
+        expectedVersion,
+        existing.version,
+      );
     }
 
     const validation = ObjectValidator.validateUpdate(
@@ -132,7 +140,11 @@ export class ObjectRuntime {
    */
   public async archiveObject(id: string): Promise<UniversalObject> {
     const existing = await this.getObject(id);
-    ObjectValidator.validateLifecycleTransition(existing.status, ObjectStatus.ARCHIVED, id);
+    ObjectValidator.validateLifecycleTransition(
+      existing.status,
+      ObjectStatus.ARCHIVED,
+      id,
+    );
 
     const now = this.clock.nowIso();
     return this.repository.archive(id, now, now);
@@ -143,7 +155,11 @@ export class ObjectRuntime {
    */
   public async restoreObject(id: string): Promise<UniversalObject> {
     const existing = await this.getObject(id);
-    ObjectValidator.validateLifecycleTransition(existing.status, ObjectStatus.ACTIVE, id);
+    ObjectValidator.validateLifecycleTransition(
+      existing.status,
+      ObjectStatus.ACTIVE,
+      id,
+    );
 
     const now = this.clock.nowIso();
     return this.repository.restore(id, now);
@@ -152,7 +168,9 @@ export class ObjectRuntime {
   /**
    * Queries stored objects matching optional filter options.
    */
-  public async listObjects(options?: ObjectFilterOptions): Promise<readonly UniversalObject[]> {
+  public async listObjects(
+    options?: ObjectFilterOptions,
+  ): Promise<readonly UniversalObject[]> {
     return this.repository.list(options);
   }
 }
@@ -160,6 +178,8 @@ export class ObjectRuntime {
 /**
  * Factory function creating an ObjectRuntime instance with dependency injection support.
  */
-export function createObjectRuntime(deps: ObjectRuntimeDependencies): ObjectRuntime {
+export function createObjectRuntime(
+  deps: ObjectRuntimeDependencies,
+): ObjectRuntime {
   return new ObjectRuntime(deps);
 }

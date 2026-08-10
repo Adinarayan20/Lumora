@@ -9,4 +9,3 @@ export * from "./payloads/workspace-payloads.js";
 export * from "./payloads/object-payloads.js";
 export * from "./payloads/reminder-payloads.js";
 export * from "./template-events.js";
-

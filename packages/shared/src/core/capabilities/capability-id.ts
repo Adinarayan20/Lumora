@@ -15,7 +15,9 @@ export class CapabilityId extends ValueObject<CapabilityIdProps> {
 
   public static create(id: string): CapabilityId {
     if (!id || id.trim().length === 0) {
-      throw new DomainValidationException("CapabilityId value cannot be empty.");
+      throw new DomainValidationException(
+        "CapabilityId value cannot be empty.",
+      );
     }
     return new CapabilityId({ value: id.trim().toLowerCase() });
   }

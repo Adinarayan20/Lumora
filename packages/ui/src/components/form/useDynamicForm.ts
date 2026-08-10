@@ -1,7 +1,7 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import type { FieldSchema } from '@lumora/shared';
-import type { DynamicFormState } from './DynamicForm.types';
-import { SchemaValidator } from './SchemaValidator';
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import type { FieldSchema } from "@lumora/shared";
+import type { DynamicFormState } from "./DynamicForm.types";
+import { SchemaValidator } from "./SchemaValidator";
 
 export interface UseDynamicFormOptions {
   readonly fields: readonly FieldSchema[];
@@ -9,7 +9,11 @@ export interface UseDynamicFormOptions {
   readonly onSubmit: (values: Record<string, unknown>) => void | Promise<void>;
 }
 
-export function useDynamicForm({ fields, initialValues, onSubmit }: UseDynamicFormOptions) {
+export function useDynamicForm({
+  fields,
+  initialValues,
+  onSubmit,
+}: UseDynamicFormOptions) {
   const normalizedInitialValues = useMemo(() => {
     const base: Record<string, unknown> = {};
     for (const field of fields) {
@@ -22,7 +26,9 @@ export function useDynamicForm({ fields, initialValues, onSubmit }: UseDynamicFo
     return base;
   }, [fields, initialValues]);
 
-  const [values, setValues] = useState<Record<string, unknown>>(normalizedInitialValues);
+  const [values, setValues] = useState<Record<string, unknown>>(
+    normalizedInitialValues,
+  );
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const isMountedRef = useRef<boolean>(true);
@@ -35,12 +41,17 @@ export function useDynamicForm({ fields, initialValues, onSubmit }: UseDynamicFo
   }, []);
 
   // Synchronize internal values state when initialValues or fields change dynamically
-  const prevInitialValuesRef = useRef<Record<string, unknown>>(normalizedInitialValues);
+  const prevInitialValuesRef = useRef<Record<string, unknown>>(
+    normalizedInitialValues,
+  );
   useEffect(() => {
     const prev = prevInitialValuesRef.current;
     const hasChanged =
-      Object.keys(normalizedInitialValues).length !== Object.keys(prev).length ||
-      Object.keys(normalizedInitialValues).some((key) => normalizedInitialValues[key] !== prev[key]);
+      Object.keys(normalizedInitialValues).length !==
+        Object.keys(prev).length ||
+      Object.keys(normalizedInitialValues).some(
+        (key) => normalizedInitialValues[key] !== prev[key],
+      );
 
     if (hasChanged) {
       setValues(normalizedInitialValues);

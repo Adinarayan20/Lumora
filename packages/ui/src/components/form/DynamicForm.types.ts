@@ -1,4 +1,4 @@
-import type { FieldSchema, FieldType } from '@lumora/shared';
+import type { FieldSchema, FieldType } from "@lumora/shared";
 
 export interface FieldControlAdapterProps<TValue = unknown> {
   readonly value: TValue;
@@ -11,7 +11,9 @@ export interface FieldControlAdapterProps<TValue = unknown> {
   readonly testID?: string;
 }
 
-export type FieldControlComponent = React.ComponentType<FieldControlAdapterProps<unknown>>;
+export type FieldControlComponent = React.ComponentType<
+  FieldControlAdapterProps<unknown>
+>;
 
 export interface DynamicFormProps {
   readonly fields: readonly FieldSchema[];

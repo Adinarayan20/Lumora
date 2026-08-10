@@ -211,5 +211,3 @@ export class GetReminderQuery {
     return this.service.getReminderById(input.workspaceId, input.reminderId);
   }
 }
-
-

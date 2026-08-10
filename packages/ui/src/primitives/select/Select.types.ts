@@ -1,5 +1,5 @@
-import type { SemanticIconName } from '../icon/Icon.types';
-import type { InputVariant, InputSize } from '../input/Input.types';
+import type { SemanticIconName } from "../icon/Icon.types";
+import type { InputVariant, InputSize } from "../input/Input.types";
 
 export interface SelectOption<T = string> {
   readonly label: string;

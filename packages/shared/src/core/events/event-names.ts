@@ -141,7 +141,6 @@ export const TemplateEventName = {
   EXPORTED: "template.exported",
 } as const;
 
-
 export type TemplateEventName =
   (typeof TemplateEventName)[keyof typeof TemplateEventName];
 
@@ -163,4 +162,3 @@ export type DomainEventName =
   | HouseholdEventName
   | CatalogEventName
   | TemplateEventName;
-

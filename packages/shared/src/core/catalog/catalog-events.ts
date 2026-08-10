@@ -3,9 +3,10 @@ import { CatalogEventName } from "../events/event-names.js";
 import { UniqueEntityId } from "../primitives/unique-entity-id.js";
 import type { InstantString } from "../events/instant-string.js";
 
-export class SchemaRegisteredEvent
-  implements DomainEvent<CatalogEventName, { typeKey: string; schemaVersion: number }>
-{
+export class SchemaRegisteredEvent implements DomainEvent<
+  CatalogEventName,
+  { typeKey: string; schemaVersion: number }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = CatalogEventName.SCHEMA_REGISTERED;
   public readonly aggregateId: UniqueEntityId;
@@ -29,9 +30,10 @@ export class SchemaRegisteredEvent
   }
 }
 
-export class SchemaUpdatedEvent
-  implements DomainEvent<CatalogEventName, { typeKey: string; schemaVersion: number }>
-{
+export class SchemaUpdatedEvent implements DomainEvent<
+  CatalogEventName,
+  { typeKey: string; schemaVersion: number }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = CatalogEventName.SCHEMA_UPDATED;
   public readonly aggregateId: UniqueEntityId;
@@ -55,9 +57,10 @@ export class SchemaUpdatedEvent
   }
 }
 
-export class ObjectDefinitionRegisteredEvent
-  implements DomainEvent<CatalogEventName, { typeKey: string }>
-{
+export class ObjectDefinitionRegisteredEvent implements DomainEvent<
+  CatalogEventName,
+  { typeKey: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = CatalogEventName.OBJECT_DEFINITION_REGISTERED;
   public readonly aggregateId: UniqueEntityId;
@@ -80,9 +83,10 @@ export class ObjectDefinitionRegisteredEvent
   }
 }
 
-export class ObjectDefinitionUpdatedEvent
-  implements DomainEvent<CatalogEventName, { typeKey: string }>
-{
+export class ObjectDefinitionUpdatedEvent implements DomainEvent<
+  CatalogEventName,
+  { typeKey: string }
+> {
   public readonly eventId: UniqueEntityId;
   public readonly eventName = CatalogEventName.OBJECT_DEFINITION_UPDATED;
   public readonly aggregateId: UniqueEntityId;

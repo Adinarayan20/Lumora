@@ -1,11 +1,12 @@
-import type { StyleProp, ViewStyle } from 'react-native';
-import type { SemanticIconName, ExtensionIconName } from '../icon/Icon.types';
+import type { StyleProp, ViewStyle } from "react-native";
+import type { SemanticIconName, ExtensionIconName } from "../icon/Icon.types";
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
+export type ButtonVariant =
+  "primary" | "secondary" | "outline" | "ghost" | "destructive";
 
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonSize = "sm" | "md" | "lg";
 
-export type ButtonShape = 'rounded' | 'pill';
+export type ButtonShape = "rounded" | "pill";
 
 export interface ButtonProps {
   /** Text label displayed inside the button */
@@ -51,18 +52,18 @@ export interface ButtonProps {
   readonly style?: StyleProp<
     Omit<
       ViewStyle,
-      | 'height'
-      | 'minHeight'
-      | 'maxHeight'
-      | 'padding'
-      | 'paddingHorizontal'
-      | 'paddingVertical'
-      | 'transform'
-      | 'backgroundColor'
-      | 'borderRadius'
-      | 'borderWidth'
-      | 'borderColor'
-      | 'opacity'
+      | "height"
+      | "minHeight"
+      | "maxHeight"
+      | "padding"
+      | "paddingHorizontal"
+      | "paddingVertical"
+      | "transform"
+      | "backgroundColor"
+      | "borderRadius"
+      | "borderWidth"
+      | "borderColor"
+      | "opacity"
     >
   >;
 }
@@ -102,21 +103,21 @@ export interface IconButtonProps {
   readonly style?: StyleProp<
     Omit<
       ViewStyle,
-      | 'width'
-      | 'minWidth'
-      | 'maxWidth'
-      | 'height'
-      | 'minHeight'
-      | 'maxHeight'
-      | 'padding'
-      | 'paddingHorizontal'
-      | 'paddingVertical'
-      | 'transform'
-      | 'backgroundColor'
-      | 'borderRadius'
-      | 'borderWidth'
-      | 'borderColor'
-      | 'opacity'
+      | "width"
+      | "minWidth"
+      | "maxWidth"
+      | "height"
+      | "minHeight"
+      | "maxHeight"
+      | "padding"
+      | "paddingHorizontal"
+      | "paddingVertical"
+      | "transform"
+      | "backgroundColor"
+      | "borderRadius"
+      | "borderWidth"
+      | "borderColor"
+      | "opacity"
     >
   >;
 }

@@ -19,7 +19,10 @@ import {
   CollectionStatus,
   CollectionType,
 } from '../../generated/prisma/client.js';
-import { CollectionResponseDto, CollectionItemResponseDto } from './dto/collection-response.dto.js';
+import {
+  CollectionResponseDto,
+  CollectionItemResponseDto,
+} from './dto/collection-response.dto.js';
 
 @Injectable()
 export class CollectionsService {
@@ -79,7 +82,7 @@ export class CollectionsService {
         workspaceId,
         filter,
       );
-    return Result.ok(collections.map(c => this.toDto(c)));
+    return Result.ok(collections.map((c) => this.toDto(c)));
   }
 
   async getCollectionByIdOrSlug(
@@ -220,7 +223,10 @@ export class CollectionsService {
 
     const collection = collectionResult.getValue();
 
-    const objectExists = await this.objectsService.verifyObjectInWorkspace(workspaceId, dto.objectId);
+    const objectExists = await this.objectsService.verifyObjectInWorkspace(
+      workspaceId,
+      dto.objectId,
+    );
     if (!objectExists) {
       return Result.fail(new EntityNotFoundException('Object', dto.objectId));
     }
@@ -293,7 +299,9 @@ export class CollectionsService {
     return Result.ok({ removed: result.count > 0 });
   }
 
-  private toDto(c: import('../../generated/prisma/client.js').Collection): CollectionResponseDto {
+  private toDto(
+    c: import('../../generated/prisma/client.js').Collection,
+  ): CollectionResponseDto {
     return {
       id: c.id,
       workspaceId: c.workspaceId,
@@ -317,7 +325,9 @@ export class CollectionsService {
       updatedAt: c.updatedAt.toISOString(),
     };
   }
-  private toItemDto(i: import('../../generated/prisma/client.js').CollectionItem): CollectionItemResponseDto {
+  private toItemDto(
+    i: import('../../generated/prisma/client.js').CollectionItem,
+  ): CollectionItemResponseDto {
     return {
       id: i.id,
       collectionId: i.collectionId,
@@ -350,10 +360,3 @@ export class CollectionsService {
     return candidate;
   }
 }
-
-
-
-
-
-
-

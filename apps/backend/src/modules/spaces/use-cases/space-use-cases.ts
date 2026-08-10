@@ -104,5 +104,3 @@ export class GetSpaceQuery {
     return this.service.getSpaceByIdOrSlug(input.workspaceId, input.idOrSlug);
   }
 }
-
-

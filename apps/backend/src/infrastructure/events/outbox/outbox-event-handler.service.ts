@@ -8,7 +8,11 @@ import { ObjectEventName } from '@lumora/shared';
 import { RecordTimelineActivityUseCase } from '../../../modules/timeline/use-cases/record-timeline-activity.use-case.js';
 import { IndexEntityUseCase } from '../../../modules/search/use-cases/index-entity.use-case.js';
 import { RemoveSearchIndexUseCase } from '../../../modules/search/use-cases/remove-search-index.use-case.js';
-import type { ObjectCreatedEvent, ObjectUpdatedEvent, ObjectDeletedEvent } from '../../../domain/objects/events/object.events.js';
+import type {
+  ObjectCreatedEvent,
+  ObjectUpdatedEvent,
+  ObjectDeletedEvent,
+} from '../../../domain/objects/events/object.events.js';
 
 type ObjectDomainEvent = DomainEvent<DomainEventName, Record<string, unknown>>;
 
@@ -49,34 +53,37 @@ export class OutboxEventHandlerService implements IDomainEventPublisher {
     switch (event.eventName) {
       case ObjectEventName.CREATED:
         handlers.push(
-          () => this.handleObjectCreated(event as unknown as ObjectCreatedEvent),
+          () =>
+            this.handleObjectCreated(event as unknown as ObjectCreatedEvent),
           () => this.handleSearchIndex(event, 'created'),
         );
         break;
 
       case ObjectEventName.UPDATED:
         handlers.push(
-          () => this.handleObjectUpdated(event as unknown as ObjectUpdatedEvent),
+          () =>
+            this.handleObjectUpdated(event as unknown as ObjectUpdatedEvent),
           () => this.handleSearchIndex(event, 'updated'),
         );
         break;
 
       case ObjectEventName.DELETED:
         handlers.push(
-          () => this.handleObjectDeleted(event as unknown as ObjectDeletedEvent),
+          () =>
+            this.handleObjectDeleted(event as unknown as ObjectDeletedEvent),
           () => this.handleSearchRemove(event),
         );
         break;
 
       case ObjectEventName.ARCHIVED:
-        handlers.push(
-          () => this.handleTimelineRecord(event, ObjectEventName.ARCHIVED),
+        handlers.push(() =>
+          this.handleTimelineRecord(event, ObjectEventName.ARCHIVED),
         );
         break;
 
       case ObjectEventName.RESTORED:
-        handlers.push(
-          () => this.handleTimelineRecord(event, ObjectEventName.RESTORED),
+        handlers.push(() =>
+          this.handleTimelineRecord(event, ObjectEventName.RESTORED),
         );
         break;
 
