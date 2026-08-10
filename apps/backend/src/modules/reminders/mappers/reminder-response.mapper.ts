@@ -23,7 +23,10 @@ export class ReminderResponseMapper {
       completedAt: aggregate.completedAt
         ? aggregate.completedAt.toISOString()
         : undefined,
-      executionCount: 0,
+      executionStatus: 'PENDING',
+      source: 'MANUAL',
+      triggerType: 'TIME',
+      revision: 1,
       createdAt: aggregate.createdAt.toISOString(),
       updatedAt: aggregate.updatedAt.toISOString(),
     };

@@ -13,6 +13,7 @@ describe('RecordTimelineActivityUseCase', () => {
       save: vi.fn().mockResolvedValue(undefined),
       findWorkspaceTimeline: vi.fn(),
       findUserTimeline: vi.fn(),
+      findObjectTimeline: vi.fn().mockResolvedValue([]),
     };
 
     const useCase = new RecordTimelineActivityUseCase(mockRepo);
@@ -35,3 +36,5 @@ describe('RecordTimelineActivityUseCase', () => {
     expect(mockRepo.save).toHaveBeenCalled();
   });
 });
+
+

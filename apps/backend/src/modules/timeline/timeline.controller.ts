@@ -39,6 +39,7 @@ export class TimelineController {
   async getWorkspaceTimeline(
     @Param('workspaceId') workspaceId: string,
     @Query('userId') userId?: string,
+    @Query('objectId') objectId?: string,
     @Query('limit') limit?: string,
   ) {
     const parsedLimit = limit ? parseInt(limit, 10) : undefined;
@@ -50,6 +51,7 @@ export class TimelineController {
     const result = await this.getWorkspaceTimelineQuery.execute({
       workspaceId,
       userId,
+      objectId,
       limit: parsedLimit,
     });
 
@@ -80,4 +82,5 @@ export class TimelineController {
     return result.getValue();
   }
 }
+
 

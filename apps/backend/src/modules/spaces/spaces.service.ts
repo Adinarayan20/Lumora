@@ -12,10 +12,10 @@ import { UpdateSpaceDto } from './dto/update-space.dto';
 import { FilterSpaceDto } from './dto/filter-space.dto';
 import { AuditLogRepository } from '../auth/repositories/audit-log.repository';
 import {
-  Space as LumoraSpace,
   AuditAction,
   SpaceStatus,
 } from '../../generated/prisma/client.js';
+import { SpaceResponseDto } from './dto/space-response.dto.js';
 
 @Injectable()
 export class SpacesService {
@@ -28,7 +28,7 @@ export class SpacesService {
     workspaceId: string,
     createdById: string,
     dto: CreateSpaceDto,
-  ): Promise<Result<LumoraSpace, ApplicationException>> {
+  ): Promise<Result<SpaceResponseDto, ApplicationException>> {
     if (dto.parentId) {
       const parentResult = await this.validateParent(workspaceId, dto.parentId);
       if (parentResult.isFailure) {
@@ -68,24 +68,24 @@ export class SpacesService {
       },
     });
 
-    return Result.ok(space);
+    return Result.ok(this.toDto(space));
   }
 
   async getWorkspaceSpaces(
     workspaceId: string,
     filter: FilterSpaceDto,
-  ): Promise<Result<LumoraSpace[], ApplicationException>> {
+  ): Promise<Result<SpaceResponseDto[], ApplicationException>> {
     const spaces = await this.spaceRepository.findWorkspaceSpaces(
       workspaceId,
       filter,
     );
-    return Result.ok(spaces);
+    return Result.ok(spaces.map(s => this.toDto(s)));
   }
 
   async getSpaceByIdOrSlug(
     workspaceId: string,
     idOrSlug: string,
-  ): Promise<Result<LumoraSpace, ApplicationException>> {
+  ): Promise<Result<SpaceResponseDto, ApplicationException>> {
     const isUuid =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         idOrSlug,
@@ -100,7 +100,7 @@ export class SpacesService {
       return Result.fail(new EntityNotFoundException('Space', idOrSlug));
     }
 
-    return Result.ok(space);
+    return Result.ok(this.toDto(space));
   }
 
   async updateSpace(
@@ -108,7 +108,7 @@ export class SpacesService {
     spaceId: string,
     userId: string,
     dto: UpdateSpaceDto,
-  ): Promise<Result<LumoraSpace, ApplicationException>> {
+  ): Promise<Result<SpaceResponseDto, ApplicationException>> {
     const spaceResult = await this.getSpaceByIdOrSlug(workspaceId, spaceId);
     if (spaceResult.isFailure) {
       return Result.fail(spaceResult.getError());
@@ -178,14 +178,14 @@ export class SpacesService {
       },
     });
 
-    return Result.ok(updated);
+    return Result.ok(this.toDto(updated));
   }
 
   async softDeleteSpace(
     workspaceId: string,
     spaceId: string,
     userId: string,
-  ): Promise<Result<LumoraSpace, ApplicationException>> {
+  ): Promise<Result<SpaceResponseDto, ApplicationException>> {
     const spaceResult = await this.getSpaceByIdOrSlug(workspaceId, spaceId);
     if (spaceResult.isFailure) {
       return Result.fail(spaceResult.getError());
@@ -213,7 +213,7 @@ export class SpacesService {
       action: AuditAction.DELETE,
     });
 
-    return Result.ok(deleted);
+    return Result.ok(this.toDto(deleted));
   }
 
   private async validateParent(
@@ -251,6 +251,30 @@ export class SpacesService {
     return Result.ok(undefined);
   }
 
+  private toDto(s: import('../../generated/prisma/client.js').Space): SpaceResponseDto {
+    return {
+      id: s.id,
+      workspaceId: s.workspaceId,
+      parentId: s.parentId ?? undefined,
+      createdById: s.createdById,
+      updatedById: s.updatedById ?? undefined,
+      slug: s.slug,
+      name: s.name,
+      description: s.description ?? undefined,
+      icon: s.icon ?? undefined,
+      emoji: s.emoji ?? undefined,
+      cover: s.cover ?? undefined,
+      color: s.color ?? undefined,
+      pinnedAt: s.pinnedAt?.toISOString(),
+      isFavorite: s.isFavorite,
+      status: s.status,
+      settings: (s.settings as Record<string, unknown>) ?? undefined,
+      revision: s.revision,
+      archivedAt: s.archivedAt?.toISOString(),
+      createdAt: s.createdAt.toISOString(),
+      updatedAt: s.updatedAt.toISOString(),
+    };
+  }
   private async generateSlug(
     workspaceId: string,
     name: string,
@@ -273,3 +297,4 @@ export class SpacesService {
     return candidate;
   }
 }
+

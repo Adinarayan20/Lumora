@@ -14,12 +14,12 @@ import { FilterCollectionDto } from './dto/filter-collection.dto';
 import { AddCollectionItemDto } from './dto/add-collection-item.dto';
 import { AuditLogRepository } from '../auth/repositories/audit-log.repository';
 import {
-  Collection as LumoraCollection,
   CollectionItem,
   AuditAction,
   CollectionStatus,
   CollectionType,
 } from '../../generated/prisma/client.js';
+import { CollectionResponseDto, CollectionItemResponseDto } from './dto/collection-response.dto.js';
 
 @Injectable()
 export class CollectionsService {
@@ -33,7 +33,7 @@ export class CollectionsService {
     workspaceId: string,
     createdById: string,
     dto: CreateCollectionDto,
-  ): Promise<Result<LumoraCollection, ApplicationException>> {
+  ): Promise<Result<CollectionResponseDto, ApplicationException>> {
     const slug = await this.generateSlug(workspaceId, dto.name);
     const pinnedAt = dto.pinnedAt ? new Date(dto.pinnedAt) : undefined;
 
@@ -67,25 +67,25 @@ export class CollectionsService {
       },
     });
 
-    return Result.ok(collection);
+    return Result.ok(this.toDto(collection));
   }
 
   async getWorkspaceCollections(
     workspaceId: string,
     filter: FilterCollectionDto,
-  ): Promise<Result<LumoraCollection[], ApplicationException>> {
+  ): Promise<Result<CollectionResponseDto[], ApplicationException>> {
     const collections =
       await this.collectionRepository.findWorkspaceCollections(
         workspaceId,
         filter,
       );
-    return Result.ok(collections);
+    return Result.ok(collections.map(c => this.toDto(c)));
   }
 
   async getCollectionByIdOrSlug(
     workspaceId: string,
     idOrSlug: string,
-  ): Promise<Result<LumoraCollection, ApplicationException>> {
+  ): Promise<Result<CollectionResponseDto, ApplicationException>> {
     const isUuid =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         idOrSlug,
@@ -105,7 +105,7 @@ export class CollectionsService {
       return Result.fail(new EntityNotFoundException('Collection', idOrSlug));
     }
 
-    return Result.ok(collection);
+    return Result.ok(this.toDto(collection));
   }
 
   async updateCollection(
@@ -113,7 +113,7 @@ export class CollectionsService {
     collectionId: string,
     userId: string,
     dto: UpdateCollectionDto,
-  ): Promise<Result<LumoraCollection, ApplicationException>> {
+  ): Promise<Result<CollectionResponseDto, ApplicationException>> {
     const collectionResult = await this.getCollectionByIdOrSlug(
       workspaceId,
       collectionId,
@@ -171,14 +171,14 @@ export class CollectionsService {
       },
     });
 
-    return Result.ok(updated);
+    return Result.ok(this.toDto(updated));
   }
 
   async softDeleteCollection(
     workspaceId: string,
     collectionId: string,
     userId: string,
-  ): Promise<Result<LumoraCollection, ApplicationException>> {
+  ): Promise<Result<CollectionResponseDto, ApplicationException>> {
     const collectionResult = await this.getCollectionByIdOrSlug(
       workspaceId,
       collectionId,
@@ -201,7 +201,7 @@ export class CollectionsService {
       action: AuditAction.DELETE,
     });
 
-    return Result.ok(deleted);
+    return Result.ok(this.toDto(deleted));
   }
 
   async addCollectionItem(
@@ -209,7 +209,7 @@ export class CollectionsService {
     collectionId: string,
     userId: string,
     dto: AddCollectionItemDto,
-  ): Promise<Result<CollectionItem, ApplicationException>> {
+  ): Promise<Result<CollectionItemResponseDto, ApplicationException>> {
     const collectionResult = await this.getCollectionByIdOrSlug(
       workspaceId,
       collectionId,
@@ -243,7 +243,7 @@ export class CollectionsService {
         },
       });
 
-      return Result.ok(item);
+      return Result.ok(this.toItemDto(item));
     } catch (err: unknown) {
       if (
         typeof err === 'object' &&
@@ -293,6 +293,39 @@ export class CollectionsService {
     return Result.ok({ removed: result.count > 0 });
   }
 
+  private toDto(c: import('../../generated/prisma/client.js').Collection): CollectionResponseDto {
+    return {
+      id: c.id,
+      workspaceId: c.workspaceId,
+      createdById: c.createdById,
+      updatedById: c.updatedById ?? undefined,
+      slug: c.slug,
+      name: c.name,
+      description: c.description ?? undefined,
+      type: c.type,
+      query: (c.query as Record<string, unknown>) ?? undefined,
+      icon: c.icon ?? undefined,
+      emoji: c.emoji ?? undefined,
+      cover: c.cover ?? undefined,
+      color: c.color ?? undefined,
+      pinnedAt: c.pinnedAt?.toISOString(),
+      isFavorite: c.isFavorite,
+      status: c.status,
+      revision: c.revision,
+      archivedAt: c.archivedAt?.toISOString(),
+      createdAt: c.createdAt.toISOString(),
+      updatedAt: c.updatedAt.toISOString(),
+    };
+  }
+  private toItemDto(i: import('../../generated/prisma/client.js').CollectionItem): CollectionItemResponseDto {
+    return {
+      id: i.id,
+      collectionId: i.collectionId,
+      objectId: i.objectId,
+      order: i.order,
+      addedAt: i.addedAt.toISOString(),
+    };
+  }
   private async generateSlug(
     workspaceId: string,
     name: string,
@@ -317,6 +350,8 @@ export class CollectionsService {
     return candidate;
   }
 }
+
+
 
 
 

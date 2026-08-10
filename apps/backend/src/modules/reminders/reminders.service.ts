@@ -16,11 +16,12 @@ import { UpdateReminderDto } from './dto/update-reminder.dto';
 import { FilterReminderDto } from './dto/filter-reminder.dto';
 import { SnoozeReminderDto } from './dto/snooze-reminder.dto';
 import {
-  Reminder,
   AuditAction,
   ReminderExecutionStatus,
   ReminderStatus,
+  Reminder,
 } from '../../generated/prisma/client.js';
+import { ReminderResponseDto } from './dto/reminder-response.dto.js';
 import {
   ReminderCreatedEvent,
   ReminderSnoozedEvent,
@@ -43,7 +44,7 @@ export class RemindersService {
     objectId: string,
     userId: string,
     dto: CreateReminderDto,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     const objectExists = await this.objectsService.verifyObjectInWorkspace(workspaceId, objectId);
     if (!objectExists) {
       return Result.fail(new EntityNotFoundException('Object', objectId));
@@ -107,24 +108,24 @@ export class RemindersService {
       ),
     );
 
-    return Result.ok(reminder);
+    return Result.ok(this.toDto(reminder));
   }
 
   async getWorkspaceReminders(
     workspaceId: string,
     filter: FilterReminderDto,
-  ): Promise<Result<Reminder[], ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto[], ApplicationException>> {
     const reminders = await this.reminderRepository.findWorkspaceReminders(
       workspaceId,
       filter,
     );
-    return Result.ok(reminders);
+    return Result.ok(reminders.map(r => this.toDto(r)));
   }
 
   async getObjectReminders(
     workspaceId: string,
     objectId: string,
-  ): Promise<Result<Reminder[], ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto[], ApplicationException>> {
     const objectExists = await this.objectsService.verifyObjectInWorkspace(workspaceId, objectId);
     if (!objectExists) {
       return Result.fail(new EntityNotFoundException('Object', objectId));
@@ -133,18 +134,18 @@ export class RemindersService {
       workspaceId,
       objectId,
     );
-    return Result.ok(reminders);
+    return Result.ok(reminders.map(r => this.toDto(r)));
   }
 
   async getReminderById(
     workspaceId: string,
     reminderId: string,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     const reminder = await this.reminderRepository.findById(reminderId);
     if (!reminder || reminder.workspaceId !== workspaceId) {
       return Result.fail(new EntityNotFoundException('Reminder', reminderId));
     }
-    return Result.ok(reminder);
+    return Result.ok(this.toDto(reminder));
   }
 
   async updateReminder(
@@ -152,7 +153,7 @@ export class RemindersService {
     reminderId: string,
     userId: string,
     dto: UpdateReminderDto,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     const reminderResult = await this.getReminderById(workspaceId, reminderId);
     if (reminderResult.isFailure) {
       return Result.fail(reminderResult.getError());
@@ -210,7 +211,7 @@ export class RemindersService {
       },
     });
 
-    return Result.ok(updated);
+    return Result.ok(this.toDto(updated));
   }
 
   async snoozeReminder(
@@ -218,7 +219,7 @@ export class RemindersService {
     reminderId: string,
     userId: string,
     dto: SnoozeReminderDto,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     const reminderResult = await this.getReminderById(workspaceId, reminderId);
     if (reminderResult.isFailure) {
       return Result.fail(reminderResult.getError());
@@ -265,14 +266,14 @@ export class RemindersService {
       },
     });
 
-    return Result.ok(updated);
+    return Result.ok(this.toDto(updated));
   }
 
   async completeReminder(
     workspaceId: string,
     reminderId: string,
     userId: string,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     const reminderResult = await this.getReminderById(workspaceId, reminderId);
     if (reminderResult.isFailure) {
       return Result.fail(reminderResult.getError());
@@ -308,14 +309,14 @@ export class RemindersService {
       },
     });
 
-    return Result.ok(updated);
+    return Result.ok(this.toDto(updated));
   }
 
   async cancelReminder(
     workspaceId: string,
     reminderId: string,
     userId: string,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     const reminderResult = await this.getReminderById(workspaceId, reminderId);
     if (reminderResult.isFailure) {
       return Result.fail(reminderResult.getError());
@@ -351,14 +352,14 @@ export class RemindersService {
       },
     });
 
-    return Result.ok(updated);
+    return Result.ok(this.toDto(updated));
   }
 
   async restoreReminder(
     workspaceId: string,
     reminderId: string,
     userId: string,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     const reminderResult = await this.getReminderById(workspaceId, reminderId);
     if (reminderResult.isFailure) {
       return Result.fail(reminderResult.getError());
@@ -393,14 +394,14 @@ export class RemindersService {
       },
     });
 
-    return Result.ok(updated);
+    return Result.ok(this.toDto(updated));
   }
 
   async softDeleteReminder(
     workspaceId: string,
     reminderId: string,
     userId: string,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     const reminderResult = await this.getReminderById(workspaceId, reminderId);
     if (reminderResult.isFailure) {
       return Result.fail(reminderResult.getError());
@@ -420,10 +421,31 @@ export class RemindersService {
       action: AuditAction.DELETE,
     });
 
-    return Result.ok(deleted);
+    return Result.ok(this.toDto(deleted));
+  }
+  private toDto(r: Reminder): ReminderResponseDto {
+    return {
+      id: r.id,
+      workspaceId: r.workspaceId,
+      objectId: r.objectId,
+      createdById: r.createdById,
+      updatedById: r.updatedById ?? undefined,
+      status: r.status,
+      executionStatus: r.executionStatus,
+      remindAt: r.remindAt.toISOString(),
+      snoozedUntil: r.snoozedUntil?.toISOString(),
+      nextOccurrenceAt: r.nextOccurrenceAt?.toISOString(),
+      lastTriggeredAt: r.lastTriggeredAt?.toISOString(),
+      completedAt: r.completedAt?.toISOString(),
+      cancelledAt: r.cancelledAt?.toISOString(),
+      timezone: r.timezone,
+      recurrenceRule: r.recurrenceRule ?? undefined,
+      priority: r.priority ?? undefined,
+      source: r.source,
+      triggerType: r.triggerType,
+      revision: r.revision,
+      createdAt: r.createdAt.toISOString(),
+      updatedAt: r.updatedAt.toISOString(),
+    };
   }
 }
-
-
-
-

@@ -1,3 +1,4 @@
+import { CollectionResponseDto, CollectionItemResponseDto } from '../dto/collection-response.dto.js';
 /**
  * Application-layer façade use cases for the Collections bounded context.
  *
@@ -12,10 +13,7 @@ import { CreateCollectionDto } from '../dto/create-collection.dto.js';
 import { UpdateCollectionDto } from '../dto/update-collection.dto.js';
 import { FilterCollectionDto } from '../dto/filter-collection.dto.js';
 import { AddCollectionItemDto } from '../dto/add-collection-item.dto.js';
-import {
-  Collection as LumoraCollection,
-  CollectionItem,
-} from '../../../generated/prisma/client.js';
+import { CollectionType, CollectionStatus, AuditAction, CollectionItem } from '../../../generated/prisma/client.js';
 
 // ─── Commands ────────────────────────────────────────────────────────────────
 
@@ -30,7 +28,7 @@ export class CreateCollectionUseCase {
   constructor(private readonly service: CollectionsService) {}
   async execute(
     cmd: CreateCollectionCommand,
-  ): Promise<Result<LumoraCollection, ApplicationException>> {
+  ): Promise<Result<CollectionResponseDto, ApplicationException>> {
     return this.service.createCollection(
       cmd.workspaceId,
       cmd.createdById,
@@ -51,7 +49,7 @@ export class UpdateCollectionUseCase {
   constructor(private readonly service: CollectionsService) {}
   async execute(
     cmd: UpdateCollectionCommand,
-  ): Promise<Result<LumoraCollection, ApplicationException>> {
+  ): Promise<Result<CollectionResponseDto, ApplicationException>> {
     return this.service.updateCollection(
       cmd.workspaceId,
       cmd.collectionId,
@@ -72,7 +70,7 @@ export class DeleteCollectionUseCase {
   constructor(private readonly service: CollectionsService) {}
   async execute(
     cmd: DeleteCollectionCommand,
-  ): Promise<Result<LumoraCollection, ApplicationException>> {
+  ): Promise<Result<CollectionResponseDto, ApplicationException>> {
     return this.service.softDeleteCollection(
       cmd.workspaceId,
       cmd.collectionId,
@@ -93,7 +91,7 @@ export class AddCollectionItemUseCase {
   constructor(private readonly service: CollectionsService) {}
   async execute(
     cmd: AddCollectionItemCommand,
-  ): Promise<Result<CollectionItem, ApplicationException>> {
+  ): Promise<Result<CollectionItemResponseDto, ApplicationException>> {
     return this.service.addCollectionItem(
       cmd.workspaceId,
       cmd.collectionId,
@@ -137,7 +135,7 @@ export class GetWorkspaceCollectionsQuery {
   constructor(private readonly service: CollectionsService) {}
   async execute(
     input: GetWorkspaceCollectionsQueryInput,
-  ): Promise<Result<LumoraCollection[], ApplicationException>> {
+  ): Promise<Result<CollectionResponseDto[], ApplicationException>> {
     return this.service.getWorkspaceCollections(
       input.workspaceId,
       input.filter,
@@ -155,10 +153,13 @@ export class GetCollectionQuery {
   constructor(private readonly service: CollectionsService) {}
   async execute(
     input: GetCollectionQueryInput,
-  ): Promise<Result<LumoraCollection, ApplicationException>> {
+  ): Promise<Result<CollectionResponseDto, ApplicationException>> {
     return this.service.getCollectionByIdOrSlug(
       input.workspaceId,
       input.idOrSlug,
     );
   }
 }
+
+
+

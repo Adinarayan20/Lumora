@@ -14,4 +14,11 @@ export interface ITimelineRepository {
     userId: UniqueEntityId,
     limit?: number,
   ): Promise<TimelineRecordEntity[]>;
+
+  /** Returns timeline records for a specific object. Workspace isolation enforced. */
+  findObjectTimeline(
+    workspaceId: UniqueEntityId,
+    objectId: UniqueEntityId,
+    limit?: number,
+  ): Promise<TimelineRecordEntity[]>;
 }

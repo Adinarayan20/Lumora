@@ -1,16 +1,27 @@
+/**
+ * Stable API response DTO for Reminder resources.
+ * Does NOT expose Prisma model types.
+ */
 export class ReminderResponseDto {
   id!: string;
   workspaceId!: string;
   objectId!: string;
   createdById!: string;
-  remindAt!: string;
+  updatedById?: string;
   status!: string;
-  priority!: string;
-  recurrenceRule?: string;
-  timezone!: string;
+  executionStatus!: string;
+  remindAt!: string;
   snoozedUntil?: string;
+  nextOccurrenceAt?: string;
+  lastTriggeredAt?: string;
   completedAt?: string;
-  executionCount!: number;
+  cancelledAt?: string;
+  timezone!: string;
+  recurrenceRule?: string;
+  priority?: string;
+  source!: string;
+  triggerType!: string;
+  revision!: number;
   createdAt!: string;
   updatedAt!: string;
 }

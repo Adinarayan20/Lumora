@@ -11,7 +11,7 @@ import { SpacesService } from '../spaces.service.js';
 import { CreateSpaceDto } from '../dto/create-space.dto.js';
 import { UpdateSpaceDto } from '../dto/update-space.dto.js';
 import { FilterSpaceDto } from '../dto/filter-space.dto.js';
-import { Space as LumoraSpace } from '../../../generated/prisma/client.js';
+import { SpaceResponseDto } from '../dto/space-response.dto.js';
 
 // ─── Commands ────────────────────────────────────────────────────────────────
 
@@ -26,7 +26,7 @@ export class CreateSpaceUseCase {
   constructor(private readonly service: SpacesService) {}
   async execute(
     cmd: CreateSpaceCommand,
-  ): Promise<Result<LumoraSpace, ApplicationException>> {
+  ): Promise<Result<SpaceResponseDto, ApplicationException>> {
     return this.service.createSpace(cmd.workspaceId, cmd.createdById, cmd.dto);
   }
 }
@@ -43,7 +43,7 @@ export class UpdateSpaceUseCase {
   constructor(private readonly service: SpacesService) {}
   async execute(
     cmd: UpdateSpaceCommand,
-  ): Promise<Result<LumoraSpace, ApplicationException>> {
+  ): Promise<Result<SpaceResponseDto, ApplicationException>> {
     return this.service.updateSpace(
       cmd.workspaceId,
       cmd.spaceId,
@@ -64,7 +64,7 @@ export class DeleteSpaceUseCase {
   constructor(private readonly service: SpacesService) {}
   async execute(
     cmd: DeleteSpaceCommand,
-  ): Promise<Result<LumoraSpace, ApplicationException>> {
+  ): Promise<Result<SpaceResponseDto, ApplicationException>> {
     return this.service.softDeleteSpace(
       cmd.workspaceId,
       cmd.spaceId,
@@ -85,7 +85,7 @@ export class GetWorkspaceSpacesQuery {
   constructor(private readonly service: SpacesService) {}
   async execute(
     input: GetWorkspaceSpacesQueryInput,
-  ): Promise<Result<LumoraSpace[], ApplicationException>> {
+  ): Promise<Result<SpaceResponseDto[], ApplicationException>> {
     return this.service.getWorkspaceSpaces(input.workspaceId, input.filter);
   }
 }
@@ -100,7 +100,9 @@ export class GetSpaceQuery {
   constructor(private readonly service: SpacesService) {}
   async execute(
     input: GetSpaceQueryInput,
-  ): Promise<Result<LumoraSpace, ApplicationException>> {
+  ): Promise<Result<SpaceResponseDto, ApplicationException>> {
     return this.service.getSpaceByIdOrSlug(input.workspaceId, input.idOrSlug);
   }
 }
+
+

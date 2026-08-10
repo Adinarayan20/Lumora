@@ -71,9 +71,28 @@ export class PrismaTimelineRepository implements ITimelineRepository {
     }
   }
 
+  public async findObjectTimeline(
+    workspaceId: UniqueEntityId,
+    objectId: UniqueEntityId,
+    limit = 50,
+  ): Promise<TimelineRecordEntity[]> {
+    try {
+      const records = await this.prisma.timeline.findMany({
+        where: {
+          workspaceId: workspaceId.toString(),
+          objectId: objectId.toString(),
+        },
+        take: limit,
+        orderBy: { startedAt: 'desc' },
+      });
+      return records.map((r) => this.toDomain(r));
+    } catch (error) {
+      throw PrismaExceptionMapper.toDomainException(error);
+    }
+  }
+
   /**
    * Explicit mapping converting database Timeline model to TimelineRecordEntity domain object.
-   * Rehydrates real audit columns (workspaceId, userId, action, metadata) added in schema v2.
    */
   public toDomain(model: PrismaTimeline): TimelineRecordEntity {
     return TimelineRecordEntity.reconstitute({

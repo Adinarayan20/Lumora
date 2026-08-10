@@ -12,7 +12,7 @@ import { CreateReminderDto } from '../dto/create-reminder.dto.js';
 import { UpdateReminderDto } from '../dto/update-reminder.dto.js';
 import { FilterReminderDto } from '../dto/filter-reminder.dto.js';
 import { SnoozeReminderDto } from '../dto/snooze-reminder.dto.js';
-import { Reminder } from '../../../generated/prisma/client.js';
+import { ReminderResponseDto } from '../dto/reminder-response.dto.js';
 
 // ─── Commands ────────────────────────────────────────────────────────────────
 
@@ -31,7 +31,7 @@ export class CreateReminderFacadeUseCase {
   constructor(private readonly service: RemindersService) {}
   async execute(
     cmd: CreateReminderCommand,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     return this.service.createReminder(
       cmd.workspaceId,
       cmd.objectId,
@@ -53,7 +53,7 @@ export class UpdateReminderUseCase {
   constructor(private readonly service: RemindersService) {}
   async execute(
     cmd: UpdateReminderCommand,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     return this.service.updateReminder(
       cmd.workspaceId,
       cmd.reminderId,
@@ -75,7 +75,7 @@ export class SnoozeReminderUseCase {
   constructor(private readonly service: RemindersService) {}
   async execute(
     cmd: SnoozeReminderCommand,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     return this.service.snoozeReminder(
       cmd.workspaceId,
       cmd.reminderId,
@@ -96,7 +96,7 @@ export class CompleteReminderUseCase {
   constructor(private readonly service: RemindersService) {}
   async execute(
     cmd: CompleteReminderCommand,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     return this.service.completeReminder(
       cmd.workspaceId,
       cmd.reminderId,
@@ -116,7 +116,7 @@ export class CancelReminderUseCase {
   constructor(private readonly service: RemindersService) {}
   async execute(
     cmd: CancelReminderCommand,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     return this.service.cancelReminder(
       cmd.workspaceId,
       cmd.reminderId,
@@ -136,7 +136,7 @@ export class RestoreReminderUseCase {
   constructor(private readonly service: RemindersService) {}
   async execute(
     cmd: RestoreReminderCommand,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     return this.service.restoreReminder(
       cmd.workspaceId,
       cmd.reminderId,
@@ -156,7 +156,7 @@ export class DeleteReminderUseCase {
   constructor(private readonly service: RemindersService) {}
   async execute(
     cmd: DeleteReminderCommand,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     return this.service.softDeleteReminder(
       cmd.workspaceId,
       cmd.reminderId,
@@ -177,7 +177,7 @@ export class GetWorkspaceRemindersQuery {
   constructor(private readonly service: RemindersService) {}
   async execute(
     input: GetWorkspaceRemindersQueryInput,
-  ): Promise<Result<Reminder[], ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto[], ApplicationException>> {
     return this.service.getWorkspaceReminders(input.workspaceId, input.filter);
   }
 }
@@ -192,7 +192,7 @@ export class GetObjectRemindersQuery {
   constructor(private readonly service: RemindersService) {}
   async execute(
     input: GetObjectRemindersQueryInput,
-  ): Promise<Result<Reminder[], ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto[], ApplicationException>> {
     return this.service.getObjectReminders(input.workspaceId, input.objectId);
   }
 }
@@ -207,7 +207,9 @@ export class GetReminderQuery {
   constructor(private readonly service: RemindersService) {}
   async execute(
     input: GetReminderQueryInput,
-  ): Promise<Result<Reminder, ApplicationException>> {
+  ): Promise<Result<ReminderResponseDto, ApplicationException>> {
     return this.service.getReminderById(input.workspaceId, input.reminderId);
   }
 }
+
+

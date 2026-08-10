@@ -19,6 +19,7 @@ describe('GetWorkspaceTimelineQuery', () => {
       save: vi.fn(),
       findWorkspaceTimeline: vi.fn().mockResolvedValue([record]),
       findUserTimeline: vi.fn(),
+      findObjectTimeline: vi.fn().mockResolvedValue([]),
     };
 
     const queryHandler = new GetWorkspaceTimelineQuery(mockRepo);
@@ -30,3 +31,5 @@ describe('GetWorkspaceTimelineQuery', () => {
     expect(dtos[0].action).toBe('SPACE_CREATED');
   });
 });
+
+

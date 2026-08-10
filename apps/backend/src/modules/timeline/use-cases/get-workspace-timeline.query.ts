@@ -8,6 +8,8 @@ import { TimelineRecordResponseMapper } from '../mappers/timeline-record-respons
 export interface GetWorkspaceTimelineQueryInput {
   workspaceId: string;
   userId?: string;
+  /** Filter records for a specific object (e.g. Object Detail timeline view) */
+  objectId?: string;
   limit?: number;
 }
 
@@ -22,32 +24,31 @@ export class GetWorkspaceTimelineQuery {
     input: GetWorkspaceTimelineQueryInput,
   ): Promise<Result<TimelineRecordResponseDto[], ApplicationException>> {
     try {
-      const { workspaceId, userId, limit = 50 } = input;
-      const wsEntityId = new UniqueEntityId(workspaceId);
+      const { workspaceId, userId, objectId, limit = 50 } = input;
+      const wsId = new UniqueEntityId(workspaceId);
 
-      let records: import('../../../domain/timeline/entities/timeline-record.entity.js').TimelineRecordEntity[];
+      let records;
 
-      if (userId) {
+      if (objectId) {
+        // Object-level timeline filter — for Object Detail view
+        records = await this.timelineRepository.findObjectTimeline(
+          wsId,
+          new UniqueEntityId(objectId),
+          limit,
+        );
+      } else if (userId) {
         records = await this.timelineRepository.findUserTimeline(
-          wsEntityId,
+          wsId,
           new UniqueEntityId(userId),
           limit,
         );
       } else {
-        records = await this.timelineRepository.findWorkspaceTimeline(
-          wsEntityId,
-          limit,
-        );
+        records = await this.timelineRepository.findWorkspaceTimeline(wsId, limit);
       }
 
-      const dtos = records.map((r) =>
-        TimelineRecordResponseMapper.toResponseDto(r),
-      );
-      return Result.ok(dtos);
+      return Result.ok(records.map((r) => TimelineRecordResponseMapper.toResponseDto(r)));
     } catch (error) {
-      if (error instanceof ApplicationException) {
-        return Result.fail(error);
-      }
+      if (error instanceof ApplicationException) return Result.fail(error);
       throw error;
     }
   }
