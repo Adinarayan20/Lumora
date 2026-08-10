@@ -1,14 +1,25 @@
-import { Global, Module, OnModuleInit, OnModuleDestroy, Inject, Optional } from '@nestjs/common';
+import {
+  Global,
+  Module,
+  OnModuleInit,
+  OnModuleDestroy,
+  Inject,
+  Optional,
+} from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module.js';
 import { PrismaOutboxRepository } from './prisma-outbox.repository.js';
 import { OutboxPublisher } from './outbox-publisher.js';
 import { OutboxWorker } from './outbox-worker.js';
 import { NestEventPublisher } from './nest-event-publisher.js';
+import { OutboxEventHandlerService } from './outbox-event-handler.service.js';
 import type { IOutboxRepository } from '../../../domain/common/repositories/outbox.repository.interface.js';
+import type { IDomainEventPublisher } from '@lumora/shared';
 import {
   BACKGROUND_JOB_DISPATCHER_TOKEN,
   type IBackgroundJobDispatcher,
 } from '../../../application/jobs/interfaces/background-job-dispatcher.interface.js';
+import { TimelineModule } from '../../../modules/timeline/timeline.module.js';
+import { SearchModule } from '../../../modules/search/search.module.js';
 
 export const OUTBOX_REPOSITORY_TOKEN = 'IOutboxRepository';
 export const DOMAIN_EVENT_PUBLISHER_TOKEN = 'IDomainEventPublisher';
@@ -16,31 +27,31 @@ export const DOMAIN_EVENT_PUBLISHER_TOKEN = 'IDomainEventPublisher';
 /**
  * OutboxModule — Global infrastructure module for the Transactional Outbox.
  *
- * Provides:
- *   - PrismaOutboxRepository (repaired to use outbox_messages table)
- *   - OutboxPublisher (stages domain events into the outbox within a transaction)
- *   - OutboxWorker (background polling, started on module init, stopped on destroy)
- *   - NestEventPublisher (in-process IDomainEventPublisher for current scale)
+ * IDomainEventPublisher is now wired to OutboxEventHandlerService which routes
+ * dispatched events to real consumers:
+ *   - ObjectCreatedEvent / UpdatedEvent / DeletedEvent → RecordTimelineActivityUseCase
+ *   - ObjectCreatedEvent / UpdatedEvent → IndexEntityUseCase
+ *   - ObjectDeletedEvent → RemoveSearchIndexUseCase
  *
- * Exported: OutboxPublisher — consumed by use cases that need to stage events.
- *
- * Phase F fix: OutboxWorker is now started via OnModuleInit.
- * Previously it was never started because no module provided it.
+ * NestEventPublisher remains as a fallback logger for unhandled event types.
  */
 @Global()
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, TimelineModule, SearchModule],
   providers: [
     PrismaOutboxRepository,
     NestEventPublisher,
+    OutboxEventHandlerService,
 
     {
       provide: OUTBOX_REPOSITORY_TOKEN,
       useClass: PrismaOutboxRepository,
     },
+
+    // Wire real event handler as the IDomainEventPublisher
     {
       provide: DOMAIN_EVENT_PUBLISHER_TOKEN,
-      useClass: NestEventPublisher,
+      useClass: OutboxEventHandlerService,
     },
 
     OutboxPublisher,
@@ -49,7 +60,7 @@ export const DOMAIN_EVENT_PUBLISHER_TOKEN = 'IDomainEventPublisher';
       provide: OutboxWorker,
       useFactory: (
         outboxRepo: IOutboxRepository,
-        eventPublisher: NestEventPublisher,
+        eventPublisher: IDomainEventPublisher,
         jobDispatcher?: IBackgroundJobDispatcher,
       ) =>
         new OutboxWorker(outboxRepo, eventPublisher, jobDispatcher, {
@@ -70,6 +81,7 @@ export const DOMAIN_EVENT_PUBLISHER_TOKEN = 'IDomainEventPublisher';
     PrismaOutboxRepository,
     OUTBOX_REPOSITORY_TOKEN,
     OutboxWorker,
+    OutboxEventHandlerService,
   ],
 })
 export class OutboxModule implements OnModuleInit, OnModuleDestroy {

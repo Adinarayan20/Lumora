@@ -3,11 +3,15 @@ import { IdGenerator } from '@lumora/shared';
 import { CreateObjectUseCase } from '../create-object.use-case.js';
 import type { IObjectAggregateRepository } from '../../../../domain/objects/repositories/object-aggregate.repository.interface.js';
 import type { ObjectAggregateRepositoryFactory } from '../../objects.tokens.js';
+import type { OutboxPublisher } from '../../../../infrastructure/events/outbox/outbox-publisher.js';
+import type { IUnitOfWork } from '../../../../domain/common/unit-of-work/unit-of-work.interface.js';
 
 describe('CreateObjectUseCase', () => {
   let useCase: CreateObjectUseCase;
   let mockObjectRepository: IObjectAggregateRepository;
   let mockFactory: ObjectAggregateRepositoryFactory;
+  let mockOutboxPublisher: OutboxPublisher;
+  let mockUnitOfWork: IUnitOfWork;
 
   beforeEach(() => {
     mockObjectRepository = {
@@ -19,17 +23,24 @@ describe('CreateObjectUseCase', () => {
       delete: vi.fn().mockResolvedValue(undefined),
       findPaginated: vi.fn().mockResolvedValue({
         items: [],
-        pageInfo: {
-          hasNextPage: false,
-          hasPreviousPage: false,
-        },
+        pageInfo: { hasNextPage: false, hasPreviousPage: false },
       }),
     };
 
-    // Factory returns the same mock repository regardless of workspaceId/userId
     mockFactory = vi.fn().mockReturnValue(mockObjectRepository);
 
-    useCase = new CreateObjectUseCase(mockFactory);
+    mockOutboxPublisher = {
+      stageEvents: vi.fn().mockResolvedValue(undefined),
+    } as unknown as OutboxPublisher;
+
+    // UnitOfWork mock: executes the work function immediately (no real transaction)
+    mockUnitOfWork = {
+      execute: vi.fn().mockImplementation(async (work: (tx: unknown) => Promise<unknown>) => {
+        return work({});
+      }),
+    };
+
+    useCase = new CreateObjectUseCase(mockFactory, mockOutboxPublisher, mockUnitOfWork);
   });
 
   it('should successfully create an object aggregate and return an ObjectResponseDto', async () => {
@@ -55,6 +66,8 @@ describe('CreateObjectUseCase', () => {
     expect(mockFactory).toHaveBeenCalledWith(wsId, userId);
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockObjectRepository.save).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockUnitOfWork.execute).toHaveBeenCalledTimes(1);
   });
 
   it('should fail gracefully when aggregate creation encounters invariant failure (empty title)', async () => {
@@ -64,10 +77,7 @@ describe('CreateObjectUseCase', () => {
     const result = await useCase.execute({
       workspaceId: wsId,
       createdById: userId,
-      dto: {
-        typeKey: 'NOTE',
-        title: '', // Empty title triggers ObjectTitle Guard failure
-      },
+      dto: { typeKey: 'NOTE', title: '' },
     });
 
     expect(result.isFailure).toBe(true);
@@ -82,10 +92,7 @@ describe('CreateObjectUseCase', () => {
     const result = await useCase.execute({
       workspaceId: wsId,
       createdById: userId,
-      dto: {
-        typeKey: 'INVALID_UNREGISTERED_TYPE',
-        title: 'Test Object',
-      },
+      dto: { typeKey: 'INVALID_UNREGISTERED_TYPE', title: 'Test Object' },
     });
 
     expect(result.isFailure).toBe(true);

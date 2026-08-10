@@ -107,7 +107,8 @@ model User {
   collectionsUpdated Collection[] @relation("CollectionModifier")
   remindersCreated  Reminder[]   @relation("ReminderAuthor")
   remindersUpdated  Reminder[]   @relation("ReminderModifier")
-  remindersDismissed Reminder[]  @relation("ReminderDismissedBy")
+  remindersDismissed Reminder[]   @relation("ReminderDismissedBy")
+  relationships      Relationship[] @relation("RelationshipAuthor")
 
   @@index([email])
   @@index([username])
@@ -721,6 +722,8 @@ model Object {
   timeline Timeline[]
 
   collectionItems CollectionItem[]
+  sourceRelationships Relationship[] @relation("RelationshipSource")
+  targetRelationships Relationship[] @relation("RelationshipTarget")
 
   @@unique([workspaceId, objectKey])
   @@index([workspaceId, status])
@@ -882,26 +885,17 @@ model Notification {
 
 model Timeline {
   id String @id @default(uuid()) @db.Uuid
-
   objectId String @db.Uuid
-
   startedAt DateTime
-
   endedAt DateTime?
-
   timezone String
-
-  workspaceId String? @db.Uuid
-
-  userId String? @db.Uuid
-
-  action String?
-
+  workspaceId String @db.Uuid
+  userId String @db.Uuid
+  action String
   metadata Json?
-
   object Object @relation(fields: [objectId], references: [id])
-
   @@index([workspaceId])
+  @@index([workspaceId, objectId])
   @@index([userId])
   @@index([action])
 }
@@ -1030,5 +1024,40 @@ model InstalledTemplate {
   @@unique([workspaceId, templateKey])
   @@index([workspaceId])
   @@index([templateKey])
+}
+
+
+
+//////////////////////////////////////////////////////
+// RELATIONSHIPS
+//////////////////////////////////////////////////////
+
+/// Generic directed relationship between two Universal Objects within a workspace.
+/// Replaces any future object-type-specific relationship tables.
+/// Both sourceObjectId and targetObjectId must belong to the same workspace.
+model Relationship {
+  id             String    @id @default(uuid()) @db.Uuid
+  workspaceId    String    @db.Uuid
+  sourceObjectId String    @db.Uuid
+  targetObjectId String    @db.Uuid
+
+  /// Relationship semantics: 'parent', 'depends-on', 'related-to', 'blocks', 'duplicates', etc.
+  type           String
+
+  metadata       Json?
+  createdById    String    @db.Uuid
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  sourceObject   Object    @relation("RelationshipSource", fields: [sourceObjectId], references: [id], onDelete: Cascade)
+  targetObject   Object    @relation("RelationshipTarget", fields: [targetObjectId], references: [id], onDelete: Cascade)
+  createdBy      User      @relation("RelationshipAuthor", fields: [createdById], references: [id])
+
+  @@unique([workspaceId, sourceObjectId, targetObjectId, type])
+  @@index([workspaceId])
+  @@index([sourceObjectId])
+  @@index([targetObjectId])
+  @@index([workspaceId, type])
 }
 

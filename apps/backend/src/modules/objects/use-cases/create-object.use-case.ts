@@ -15,6 +15,10 @@ import {
   OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN,
   type ObjectAggregateRepositoryFactory,
 } from '../objects.tokens.js';
+import { OutboxPublisher } from '../../../infrastructure/events/outbox/outbox-publisher.js';
+import { UNIT_OF_WORK } from '../../../domain/common/unit-of-work/unit-of-work.interface.js';
+import type { IUnitOfWork } from '../../../domain/common/unit-of-work/unit-of-work.interface.js';
+import type { ITransactionContext } from '../../../domain/common/unit-of-work/transaction-context.interface.js';
 
 export interface CreateObjectCommand {
   workspaceId: string;
@@ -25,17 +29,20 @@ export interface CreateObjectCommand {
 /**
  * Creates a new Universal Object via the domain aggregate path.
  *
- * Uses the OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN to obtain a workspace-scoped
- * IObjectAggregateRepository for each command invocation, ensuring correct
- * WorkspaceExecutionContext without REQUEST-scoped DI complexity.
+ * Transaction boundary: Object insert + Outbox staging happen atomically
+ * inside a single PrismaUnitOfWork.$transaction(). If either fails, both roll back.
  *
- * ADR-016: This use case now correctly routes through ObjectAggregateRepositoryAdapter → Tier 1.
+ * Domain events emitted by ObjectAggregate.create() are pulled after the
+ * aggregate is assembled and staged to the OutboxMessage table before commit.
  */
 @Injectable()
 export class CreateObjectUseCase {
   constructor(
     @Inject(OBJECT_AGGREGATE_REPOSITORY_FACTORY_TOKEN)
     private readonly repositoryFactory: ObjectAggregateRepositoryFactory,
+    private readonly outboxPublisher: OutboxPublisher,
+    @Inject(UNIT_OF_WORK)
+    private readonly unitOfWork: IUnitOfWork,
   ) {}
 
   public async execute(
@@ -46,13 +53,12 @@ export class CreateObjectUseCase {
 
       const objectRepository = this.repositoryFactory(workspaceId, createdById);
 
+      // Unique objectKey check before transaction (read-only, not in tx)
       let keyStr = dto.objectKey?.trim();
       if (!keyStr) {
         const randomSuffix = IdGenerator.generate().substring(0, 8);
         keyStr = `${dto.typeKey.toLowerCase()}-${randomSuffix}`;
       }
-
-      // Guarantee unique objectKey within workspace
       const keyObj = ObjectKey.create(keyStr);
       const keyExists = await objectRepository.existsByObjectKey(
         new UniqueEntityId(workspaceId),
@@ -82,7 +88,16 @@ export class CreateObjectUseCase {
         attributes: dto.attributes ?? {},
       });
 
-      await objectRepository.save(aggregate);
+      // Pull domain events BEFORE transaction — events are assembled from the aggregate
+      const domainEvents = aggregate.pullDomainEvents();
+
+      // Atomic: Object insert + Outbox staging in one $transaction
+      await this.unitOfWork.execute(async (tx: ITransactionContext) => {
+        await objectRepository.save(aggregate);
+        if (domainEvents.length > 0) {
+          await this.outboxPublisher.stageEvents(domainEvents, tx);
+        }
+      });
 
       const responseDto = ObjectResponseMapper.toResponseDto(aggregate);
       return Result.ok(responseDto);

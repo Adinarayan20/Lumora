@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
+import { createHash } from 'crypto';
+import { PrismaService } from '../../../infrastructure/prisma/prisma.service.js';
 import { Session, SessionStatus } from '../../../generated/prisma/client.js';
-import { PrismaTransaction } from './audit-log.repository';
+import { PrismaTransaction } from './audit-log.repository.js';
 
 export interface CreateSessionData {
   userId: string;
@@ -13,9 +14,23 @@ export interface CreateSessionData {
   userAgent?: string;
 }
 
+/**
+ * SessionRepository — stores session tokens as SHA-256 hashes.
+ *
+ * Security: refresh tokens are hashed before persistence so that a database
+ * breach does not expose usable tokens. The raw token is returned to the caller
+ * (for sending to the client) but only the hash is stored.
+ *
+ * Lookup: incoming refresh token is hashed before querying.
+ */
 @Injectable()
 export class SessionRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  /** Hash a token with SHA-256 for safe storage. */
+  private static hashToken(token: string): string {
+    return createHash('sha256').update(token).digest('hex');
+  }
 
   async findById(id: string, tx?: PrismaTransaction): Promise<Session | null> {
     const client = tx ?? this.prisma;
@@ -30,8 +45,9 @@ export class SessionRepository {
     tx?: PrismaTransaction,
   ): Promise<Session | null> {
     const client = tx ?? this.prisma;
+    const hash = SessionRepository.hashToken(refreshToken);
     return client.session.findFirst({
-      where: { refreshToken },
+      where: { refreshToken: hash },
       include: { device: true },
     });
   }
@@ -42,10 +58,7 @@ export class SessionRepository {
   ): Promise<Session[]> {
     const client = tx ?? this.prisma;
     return client.session.findMany({
-      where: {
-        userId,
-        status: SessionStatus.ACTIVE,
-      },
+      where: { userId, status: SessionStatus.ACTIVE },
       include: { device: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -60,8 +73,8 @@ export class SessionRepository {
       data: {
         userId: data.userId,
         deviceId: data.deviceId,
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
+        accessToken: SessionRepository.hashToken(data.accessToken),
+        refreshToken: SessionRepository.hashToken(data.refreshToken),
         expiresAt: data.expiresAt,
         status: SessionStatus.ACTIVE,
         ipAddress: data.ipAddress,
@@ -81,8 +94,8 @@ export class SessionRepository {
     return client.session.update({
       where: { id },
       data: {
-        accessToken,
-        refreshToken,
+        accessToken: SessionRepository.hashToken(accessToken),
+        refreshToken: SessionRepository.hashToken(refreshToken),
         expiresAt,
         status: SessionStatus.ACTIVE,
       },
@@ -95,10 +108,7 @@ export class SessionRepository {
     tx?: PrismaTransaction,
   ): Promise<Session> {
     const client = tx ?? this.prisma;
-    return client.session.update({
-      where: { id },
-      data: { status },
-    });
+    return client.session.update({ where: { id }, data: { status } });
   }
 
   async revokeAllUserSessions(

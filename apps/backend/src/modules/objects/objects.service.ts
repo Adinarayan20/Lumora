@@ -11,11 +11,29 @@ import { AuditLogRepository } from '../auth/repositories/audit-log.repository.js
 import { UpdateObjectDto } from './dto/update-object.dto.js';
 import { FilterObjectDto } from './dto/filter-object.dto.js';
 import { ObjectResponseDto } from './dto/object-response.dto.js';
+import type { PaginationQueryDto } from '../../common/dto/pagination-query.dto.js';
+
+export interface PaginatedObjectsResult {
+  items: ObjectResponseDto[];
+  hasNextPage: boolean;
+  nextCursor?: string;
+  total?: number;
+}
 import {
   ObjectStatus as PrismaObjectStatus,
   Prisma,
   AuditAction,
 } from '../../generated/prisma/client.js';
+
+const DEFAULT_PAGE_SIZE = 50;
+const MAX_PAGE_SIZE = 100;
+
+export interface PaginatedObjectsResult {
+  items: ObjectResponseDto[];
+  hasNextPage: boolean;
+  nextCursor?: string;
+  total?: number;
+}
 
 @Injectable()
 export class ObjectsService {
@@ -27,7 +45,8 @@ export class ObjectsService {
   async getWorkspaceObjects(
     workspaceId: string,
     filter: FilterObjectDto,
-  ): Promise<Result<ObjectResponseDto[], ApplicationException>> {
+    pagination?: PaginationQueryDto,
+  ): Promise<Result<PaginatedObjectsResult, ApplicationException>> {
     try {
       const where: Prisma.ObjectWhereInput = { workspaceId };
 
@@ -47,12 +66,58 @@ export class ObjectsService {
         ];
       }
 
+      // Cursor-based pagination (first + after)
+      if (pagination?.first !== undefined || pagination?.after !== undefined) {
+        const pageSize = Math.min(pagination.first ?? DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
+        let cursorWhere: Prisma.ObjectWhereInput | undefined;
+
+        if (pagination.after) {
+          const decoded = this.decodeCursor(pagination.after);
+          if (decoded) {
+            cursorWhere = {
+              OR: [
+                { updatedAt: { lt: decoded.updatedAt } },
+                { updatedAt: { equals: decoded.updatedAt }, id: { lt: decoded.id } },
+              ],
+            };
+          }
+        }
+
+        const finalWhere: Prisma.ObjectWhereInput = cursorWhere
+          ? { AND: [where, cursorWhere] }
+          : where;
+
+        const rows = await this.prisma.object.findMany({
+          where: finalWhere,
+          orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+          take: pageSize + 1,
+        });
+
+        const hasNextPage = rows.length > pageSize;
+        const items = hasNextPage ? rows.slice(0, pageSize) : rows;
+        const nextCursor = items.length > 0
+          ? this.encodeCursor(items[items.length - 1])
+          : undefined;
+
+        return Result.ok({
+          items: items.map((r) => this.rowToDto(r)),
+          hasNextPage,
+          nextCursor,
+        });
+      }
+
+      // Legacy limit/offset pagination
+      const limit = Math.min(pagination?.limit ?? DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
+      const offset = pagination?.offset ?? 0;
+
       const rows = await this.prisma.object.findMany({
         where,
         orderBy: [{ pinnedAt: 'desc' }, { updatedAt: 'desc' }],
+        take: limit,
+        skip: offset,
       });
 
-      return Result.ok(rows.map((r) => this.rowToDto(r)));
+      return Result.ok({ items: rows.map((r) => this.rowToDto(r)), hasNextPage: false });
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error, 'Object');
     }
@@ -188,6 +253,24 @@ export class ObjectsService {
       where: { id: objectId, workspaceId, status: { not: PrismaObjectStatus.DELETED } },
     });
     return count > 0;
+  }
+
+  private encodeCursor(row: { updatedAt: Date; id: string }): string {
+    return Buffer.from(`${row.updatedAt.toISOString()}|${row.id}`).toString('base64url');
+  }
+
+  private decodeCursor(cursor: string): { updatedAt: Date; id: string } | null {
+    try {
+      const raw = Buffer.from(cursor, 'base64url').toString('utf-8');
+      const sep = raw.indexOf('|');
+      if (sep === -1) return null;
+      const updatedAt = new Date(raw.substring(0, sep));
+      const id = raw.substring(sep + 1);
+      if (!id || isNaN(updatedAt.getTime())) return null;
+      return { updatedAt, id };
+    } catch {
+      return null;
+    }
   }
 
   private rowToDto(row: Prisma.ObjectGetPayload<object>): ObjectResponseDto {

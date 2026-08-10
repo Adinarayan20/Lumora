@@ -22,6 +22,7 @@ import { DeleteObjectUseCase } from './use-cases/delete-object.use-case.js';
 import { CreateObjectDto } from './dto/create-object.dto';
 import { UpdateObjectDto } from './dto/update-object.dto';
 import { FilterObjectDto } from './dto/filter-object.dto';
+import { PaginationQueryDto } from '../../common/dto/pagination-query.dto.js';
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('workspaces/:workspaceId/objects')
@@ -55,10 +56,12 @@ export class ObjectsController {
   async getWorkspaceObjects(
     @Param('workspaceId') workspaceId: string,
     @Query() filter: FilterObjectDto,
+    @Query() pagination: PaginationQueryDto,
   ) {
     const result = await this.getWorkspaceObjectsQuery.execute({
       workspaceId,
       filter,
+      pagination,
     });
     if (result.isFailure) throw result.getError();
     return result.getValue();

@@ -78,17 +78,11 @@ export class PrismaTimelineRepository implements ITimelineRepository {
   public toDomain(model: PrismaTimeline): TimelineRecordEntity {
     return TimelineRecordEntity.reconstitute({
       id: new UniqueEntityId(model.id),
-      workspaceId: model.workspaceId
-        ? new UniqueEntityId(model.workspaceId)
-        : new UniqueEntityId(),
-      userId: model.userId
-        ? new UniqueEntityId(model.userId)
-        : new UniqueEntityId(),
+      workspaceId: new UniqueEntityId(model.workspaceId),
+      userId: new UniqueEntityId(model.userId),
       entityCategory: TimelineCategory.create('OBJECT'),
       entityId: new UniqueEntityId(model.objectId),
-      action: model.action
-        ? TimelineAction.create(model.action)
-        : TimelineAction.create('TIMELINE_ACTIVITY'),
+      action: TimelineAction.create(model.action),
       timestamp: model.startedAt,
       metadata: (model.metadata as Record<string, unknown>) ?? undefined,
     });

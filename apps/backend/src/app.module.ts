@@ -12,6 +12,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { ObjectsModule } from './modules/objects/objects.module';
 import { RemindersModule } from './modules/reminders/reminders.module';
 import { SearchModule } from './modules/search/search.module';
+import { RelationshipsModule } from './modules/relationships/relationships.module.js';
 import { SettingsModule } from './modules/settings/settings.module';
 import { SpacesModule } from './modules/spaces/spaces.module';
 import { TimelineModule } from './modules/timeline/timeline.module';
@@ -42,6 +43,7 @@ import { ApplicationExceptionFilter } from './common/filters/index.js';
     MediaModule,
     SearchModule,
     SettingsModule,
+    RelationshipsModule,
   ],
   providers: [
     {
