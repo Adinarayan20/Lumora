@@ -109,8 +109,8 @@ export class PrismaFileAssetRepository implements IFileAssetRepository {
     return FileAssetAggregate.reconstitute({
       id: new UniqueEntityId(model.id),
       uploadedById: new UniqueEntityId(model.uploadedById),
-      workspaceId: (model as any).workspaceId
-        ? new UniqueEntityId((model as any).workspaceId)
+      workspaceId: model.workspaceId
+        ? new UniqueEntityId(model.workspaceId)
         : undefined,
       provider: model.provider as FileProvider,
       bucket: model.bucket ?? undefined,

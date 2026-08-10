@@ -11,7 +11,6 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { IndexEntityUseCase } from './use-cases/index-entity.use-case.js';
 import { RemoveSearchIndexUseCase } from './use-cases/remove-search-index.use-case.js';
 import { SearchObjectsQuery } from './use-cases/search-objects.query.js';

@@ -28,7 +28,7 @@ describe.runIf(isPostgresIntegrationTestEnabled)(
     const contextB = new WorkspaceExecutionContext(workspaceIdB, userIdB);
 
     beforeAll(async () => {
-      prisma = new PrismaService({} as any);
+      prisma = new PrismaService();
       await prisma.$connect();
     });
 
@@ -82,14 +82,16 @@ describe.runIf(isPostgresIntegrationTestEnabled)(
       ]);
 
       const fulfilled = results.filter((r) => r.status === 'fulfilled');
-      const rejected = results.filter((r) => r.status === 'rejected');
+      const rejected = results.filter(
+        (r): r is PromiseRejectedResult => r.status === 'rejected',
+      );
 
       // 4. Assert CAS Invariant: Exactly one succeeded, exactly one failed
       expect(fulfilled.length).toBe(1);
       expect(rejected.length).toBe(1);
 
       // 5. Verify exception type of rejected operation
-      const rejectionReason = (rejected[0] as PromiseRejectedResult).reason;
+      const rejectionReason = rejected[0].reason;
       expect(rejectionReason).toBeInstanceOf(ObjectConcurrencyException);
 
       // 6. Verify stored DB state: revision is 2

@@ -54,13 +54,13 @@ export class PrismaSearchRepository implements ISearchRepository {
       const data = this.toPersistence(entity);
       await this.prisma.searchIndex.upsert({
         where: { id: entity.id.toString() },
-        create: data as Prisma.SearchIndexUncheckedCreateInput,
+        create: data,
         update: {
-          title: data.title as string,
-          content: data.content as string,
-          workspaceId: data.workspaceId as string,
+          title: data.title,
+          content: data.content,
+          workspaceId: data.workspaceId,
           updatedAt: new Date(),
-        } as Prisma.SearchIndexUncheckedUpdateInput,
+        },
       });
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error);
@@ -108,7 +108,7 @@ export class PrismaSearchRepository implements ISearchRepository {
     return SearchIndexEntity.reconstitute({
       id: new UniqueEntityId(model.id),
       workspaceId: new UniqueEntityId(
-        (model as any).workspaceId ?? '00000000-0000-0000-0000-000000000000',
+        model.workspaceId ?? '00000000-0000-0000-0000-000000000000',
       ),
       entityCategory: SearchEntityCategory.create(model.entity),
       entityId: new UniqueEntityId(model.entityId),
@@ -119,14 +119,16 @@ export class PrismaSearchRepository implements ISearchRepository {
     });
   }
 
-  public toPersistence(entity: SearchIndexEntity): Record<string, unknown> {
+  public toPersistence(
+    entity: SearchIndexEntity,
+  ): Prisma.SearchIndexUncheckedCreateInput {
     return {
       id: entity.id.toString(),
       workspaceId: entity.workspaceId.toValue(),
       entity: entity.entityCategory.getValue(),
       entityId: entity.entityId.toString(),
       title: entity.title,
-      content: entity.content,
+      content: entity.content ?? null,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     };

@@ -59,7 +59,7 @@ export class PrismaRelationshipRepository implements IRelationshipRepository {
       const row = await this.prisma.relationship.findFirst({
         where: { id: id.toValue(), deletedAt: null },
       });
-      return row ? this.toDomain(row as PrismaRelationship) : null;
+      return row ? this.toDomain(row) : null;
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error, 'Relationship');
     }
@@ -78,7 +78,7 @@ export class PrismaRelationshipRepository implements IRelationshipRepository {
       };
       if (type) where.type = type;
       const rows = await this.prisma.relationship.findMany({ where });
-      return rows.map((r) => this.toDomain(r as PrismaRelationship));
+      return rows.map((r) => this.toDomain(r));
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error, 'Relationship');
     }
@@ -97,7 +97,7 @@ export class PrismaRelationshipRepository implements IRelationshipRepository {
       };
       if (type) where.type = type;
       const rows = await this.prisma.relationship.findMany({ where });
-      return rows.map((r) => this.toDomain(r as PrismaRelationship));
+      return rows.map((r) => this.toDomain(r));
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error, 'Relationship');
     }
@@ -117,7 +117,7 @@ export class PrismaRelationshipRepository implements IRelationshipRepository {
       };
       if (type) where.type = type;
       const rows = await this.prisma.relationship.findMany({ where });
-      return rows.map((r) => this.toDomain(r as PrismaRelationship));
+      return rows.map((r) => this.toDomain(r));
     } catch (error) {
       throw PrismaExceptionMapper.toDomainException(error, 'Relationship');
     }

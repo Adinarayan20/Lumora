@@ -14,7 +14,6 @@ import { FilterCollectionDto } from './dto/filter-collection.dto';
 import { AddCollectionItemDto } from './dto/add-collection-item.dto';
 import { AuditLogRepository } from '../auth/repositories/audit-log.repository';
 import {
-  CollectionItem,
   AuditAction,
   CollectionStatus,
   CollectionType,

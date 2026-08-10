@@ -1,11 +1,4 @@
-import {
-  Global,
-  Module,
-  OnModuleInit,
-  OnModuleDestroy,
-  Inject,
-  Optional,
-} from '@nestjs/common';
+import { Global, Module, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module.js';
 import { PrismaOutboxRepository } from './prisma-outbox.repository.js';
 import { OutboxPublisher } from './outbox-publisher.js';

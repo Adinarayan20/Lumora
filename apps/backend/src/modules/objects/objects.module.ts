@@ -12,8 +12,6 @@ import {
 } from './objects.tokens.js';
 import { ObjectAggregateRepositoryAdapter } from '../../infrastructure/prisma/repositories/object-aggregate.repository.adapter.js';
 import { WorkspaceExecutionContext } from '../../infrastructure/prisma/context/workspace-execution-context.js';
-import { OutboxPublisher } from '../../infrastructure/events/outbox/outbox-publisher.js';
-import { UNIT_OF_WORK } from '../../domain/common/unit-of-work/unit-of-work.interface.js';
 import { CreateObjectUseCase } from './use-cases/create-object.use-case.js';
 import { GetWorkspaceObjectsQuery } from './use-cases/get-workspace-objects.query.js';
 import { GetObjectQuery } from './use-cases/get-object.query.js';

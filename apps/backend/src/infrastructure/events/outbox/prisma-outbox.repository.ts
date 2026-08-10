@@ -7,7 +7,6 @@ import {
 import type { IOutboxRepository } from '../../../domain/common/repositories/outbox.repository.interface.js';
 import {
   OutboxMessage,
-  OutboxStatus,
   OUTBOX_DEFAULTS,
 } from '../../../domain/common/events/index.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -262,7 +261,7 @@ export class PrismaOutboxRepository implements IOutboxRepository {
       workspaceId: new UniqueEntityId(model.workspaceId),
       payload,
       schemaVersion: model.payloadSchemaVersion,
-      status: model.status as OutboxStatus,
+      status: model.status,
       retryCount: model.retryCount,
       maxRetries: model.maxRetries,
       lastError: model.lastError ?? undefined,

@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { PrismaClient } from '../../generated/prisma/client.js';
+import { PrismaClient, Prisma } from '../../generated/prisma/client.js';
 import { softDeleteExtension } from './extensions/soft-delete.extension.js';
 
 /**
@@ -16,6 +16,10 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   private _extendedClient: ReturnType<typeof this.$extends> | null = null;
+
+  constructor(options?: Prisma.PrismaClientOptions) {
+    super(options as Prisma.PrismaClientOptions);
+  }
 
   public get client() {
     if (!this._extendedClient) {

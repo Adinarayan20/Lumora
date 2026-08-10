@@ -235,7 +235,7 @@ export class ObjectsService {
           workspaceId,
           status: { not: PrismaObjectStatus.DELETED },
         },
-        data: updateData as Prisma.ObjectUncheckedUpdateManyInput,
+        data: updateData,
       });
 
       if (result.count === 0)

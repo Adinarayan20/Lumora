@@ -16,12 +16,6 @@ import { CreateCollectionDto } from '../dto/create-collection.dto.js';
 import { UpdateCollectionDto } from '../dto/update-collection.dto.js';
 import { FilterCollectionDto } from '../dto/filter-collection.dto.js';
 import { AddCollectionItemDto } from '../dto/add-collection-item.dto.js';
-import {
-  CollectionType,
-  CollectionStatus,
-  AuditAction,
-  CollectionItem,
-} from '../../../generated/prisma/client.js';
 
 // ─── Commands ────────────────────────────────────────────────────────────────
 

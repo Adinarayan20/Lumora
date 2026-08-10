@@ -7,15 +7,11 @@
  * All imports are lazy-loaded to prevent module resolution failures
  * when the guard is false and PostgreSQL is unavailable.
  */
-import {
-  describe,
-  it,
-  expect,
-  beforeAll,
-  afterAll,
-  beforeEach,
-  vi,
-} from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import type { PrismaService } from '../../../prisma.service.js';
+import type { ObjectAggregateRepositoryAdapter } from '../../object-aggregate.repository.adapter.js';
+import type { PrismaUnitOfWork } from '../../../prisma-unit-of-work.js';
+import type { ObjectAggregate } from '../../../../../domain/objects/object.aggregate.js';
 
 const RUN = process.env.POSTGRES_INTEGRATION_TEST === 'true';
 
@@ -30,11 +26,8 @@ describe.runIf(RUN)(
       await import('../../../context/workspace-execution-context.js');
     const { PrismaUnitOfWork } =
       await import('../../../prisma-unit-of-work.js');
-    const {
-      UniqueEntityId,
-      ObjectConcurrencyException,
-      ObjectNotFoundException,
-    } = await import('@lumora/shared');
+    const { UniqueEntityId, ObjectConcurrencyException } =
+      await import('@lumora/shared');
     const { ObjectAggregate } =
       await import('../../../../../domain/objects/object.aggregate.js');
     const { ObjectTitle } =
@@ -44,10 +37,10 @@ describe.runIf(RUN)(
     const { ObjectStatus } =
       await import('../../../../../domain/objects/value-objects/object-status.js');
 
-    let prisma: any;
-    let adapterA: any;
-    let adapterB: any;
-    let uow: any;
+    let prisma: PrismaService;
+    let adapterA: ObjectAggregateRepositoryAdapter;
+    let adapterB: ObjectAggregateRepositoryAdapter;
+    let uow: PrismaUnitOfWork;
 
     const wsA = '11111111-aaaa-4111-a111-111111111111';
     const wsB = '22222222-bbbb-4222-a222-222222222222';
@@ -55,7 +48,7 @@ describe.runIf(RUN)(
     const userB = '44444444-bbbb-4444-a444-444444444444';
 
     beforeAll(async () => {
-      prisma = new PrismaService({} as any);
+      prisma = new PrismaService();
       await prisma.$connect();
       uow = new PrismaUnitOfWork(prisma);
     });
@@ -78,13 +71,17 @@ describe.runIf(RUN)(
       adapterB = new ObjectAggregateRepositoryAdapter(prisma, ctxB);
     });
 
-    function makeAggregate(wsId: string, userId: string, id?: string): any {
+    function makeAggregate(
+      wsId: string,
+      userId: string,
+      id?: string,
+    ): ObjectAggregate {
       return ObjectAggregate.create({
         id: id ? new UniqueEntityId(id) : undefined,
         workspaceId: new UniqueEntityId(wsId),
         createdById: new UniqueEntityId(userId),
         objectKey: ObjectKey.create(),
-        typeKey: 'NOTE' as any,
+        typeKey: 'NOTE',
         title: ObjectTitle.create('Test Note'),
         attributes: {},
       });

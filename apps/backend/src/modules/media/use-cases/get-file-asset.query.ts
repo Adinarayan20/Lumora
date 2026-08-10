@@ -3,7 +3,6 @@ import {
   Result,
   UniqueEntityId,
   EntityNotFoundException,
-  ForbiddenException,
   ApplicationException,
 } from '@lumora/shared';
 import type { IFileAssetRepository } from '../../../domain/media/repositories/file-asset.repository.interface.js';
@@ -39,7 +38,7 @@ export class GetFileAssetQuery {
     input: GetFileAssetQueryInput,
   ): Promise<Result<GetFileAssetQueryOutput, ApplicationException>> {
     try {
-      const { workspaceId, fileAssetId, requestedById } = input;
+      const { workspaceId, fileAssetId, requestedById: _requestedById } = input;
       const aggregate = await this.fileAssetRepository.findById(
         new UniqueEntityId(fileAssetId),
       );

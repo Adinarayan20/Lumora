@@ -17,7 +17,6 @@ import type {
 import { ObjectAggregate } from '../../../domain/objects/object.aggregate.js';
 import { ObjectTitle } from '../../../domain/objects/value-objects/object-title.js';
 import { ObjectKey } from '../../../domain/objects/value-objects/object-key.js';
-import { ObjectStatus } from '../../../domain/objects/value-objects/object-status.js';
 import type { PrismaService } from '../prisma.service.js';
 import { PrismaObjectMapper } from '../mappers/prisma-object.mapper.js';
 import { PrismaExceptionMapper } from '../mappers/prisma-exception.mapper.js';
@@ -215,7 +214,7 @@ export class ObjectAggregateRepositoryAdapter implements IObjectAggregateReposit
       const where: Prisma.ObjectWhereInput = {
         workspaceId,
         status: filter?.status
-          ? (filter.status as PrismaObjectStatus)
+          ? filter.status
           : { not: PrismaObjectStatus.DELETED },
       };
 
@@ -223,7 +222,7 @@ export class ObjectAggregateRepositoryAdapter implements IObjectAggregateReposit
         where.spaceId = filter.spaceId.toValue();
       }
       if (filter?.typeKey) {
-        where.typeKey = filter.typeKey as string;
+        where.typeKey = filter.typeKey;
       }
       if (filter?.isFavorite !== undefined) {
         where.isFavorite = filter.isFavorite;
@@ -320,7 +319,7 @@ export class ObjectAggregateRepositoryAdapter implements IObjectAggregateReposit
           spaceId: aggregate.spaceId?.toValue() ?? null,
           pinnedAt: aggregate.pinnedAt ?? null,
           isFavorite: aggregate.isFavorite,
-          status: aggregate.status as PrismaObjectStatus,
+          status: aggregate.status,
           schemaVersion: 1,
           systemData:
             (aggregate.systemData as Prisma.InputJsonValue) ?? Prisma.JsonNull,
@@ -332,9 +331,8 @@ export class ObjectAggregateRepositoryAdapter implements IObjectAggregateReposit
       });
     } catch (error) {
       if (
-        error instanceof Error &&
-        'code' in error &&
-        (error as any).code === 'P2002'
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
       ) {
         throw new ObjectAlreadyExistsException(aggregate.id.toValue());
       }
@@ -433,7 +431,7 @@ export class ObjectAggregateRepositoryAdapter implements IObjectAggregateReposit
       color: row.color ?? undefined,
       pinnedAt: row.pinnedAt ?? undefined,
       isFavorite: row.isFavorite,
-      status: row.status as ObjectStatus,
+      status: row.status,
       systemData: (row.systemData as Record<string, unknown>) ?? {},
       attributes: (row.attributes as Record<string, unknown>) ?? {},
       revision: row.revision,
