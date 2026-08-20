@@ -12,7 +12,6 @@ import {
   type IBackgroundJobDispatcher,
 } from '../../../application/jobs/interfaces/background-job-dispatcher.interface.js';
 import { TimelineModule } from '../../../modules/timeline/timeline.module.js';
-import { SearchModule } from '../../../modules/search/search.module.js';
 
 export const OUTBOX_REPOSITORY_TOKEN = 'IOutboxRepository';
 export const DOMAIN_EVENT_PUBLISHER_TOKEN = 'IDomainEventPublisher';
@@ -20,17 +19,18 @@ export const DOMAIN_EVENT_PUBLISHER_TOKEN = 'IDomainEventPublisher';
 /**
  * OutboxModule — Global infrastructure module for the Transactional Outbox.
  *
- * IDomainEventPublisher is now wired to OutboxEventHandlerService which routes
+ * IDomainEventPublisher is wired to OutboxEventHandlerService which routes
  * dispatched events to real consumers:
  *   - ObjectCreatedEvent / UpdatedEvent / DeletedEvent → RecordTimelineActivityUseCase
- *   - ObjectCreatedEvent / UpdatedEvent → IndexEntityUseCase
- *   - ObjectDeletedEvent → RemoveSearchIndexUseCase
+ *
+ * Search indexing was removed from this pipeline — see cleanup report §5.
+ * SearchModule is no longer imported here.
  *
  * NestEventPublisher remains as a fallback logger for unhandled event types.
  */
 @Global()
 @Module({
-  imports: [PrismaModule, TimelineModule, SearchModule],
+  imports: [PrismaModule, TimelineModule],
   providers: [
     PrismaOutboxRepository,
     NestEventPublisher,

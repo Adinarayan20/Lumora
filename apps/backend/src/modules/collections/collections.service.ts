@@ -4,7 +4,6 @@ import {
   ApplicationException,
   EntityNotFoundException,
   ConflictException,
-  RevisionConflictException,
 } from '@lumora/shared';
 import { CollectionRepository } from './repositories/collection.repository';
 import { ObjectsService } from '../objects/objects.service.js';
@@ -13,16 +12,18 @@ import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { FilterCollectionDto } from './dto/filter-collection.dto';
 import { AddCollectionItemDto } from './dto/add-collection-item.dto';
 import { AuditLogRepository } from '../auth/repositories/audit-log.repository';
-import {
-  AuditAction,
-  CollectionStatus,
-  CollectionType,
-} from '../../generated/prisma/client.js';
+import { AuditAction, CollectionType } from '../../generated/prisma/client.js';
 import {
   CollectionResponseDto,
   CollectionItemResponseDto,
 } from './dto/collection-response.dto.js';
 
+//
+// Collection was reduced — see cleanup report §12. No lifecycle/status,
+// no CAS revision. softDeleteCollection() is now a real hard delete
+// internally (method name kept as the public/use-case contract); a
+// Collection either exists or is gone, with no soft-delete recovery window.
+//
 @Injectable()
 export class CollectionsService {
   constructor(
@@ -37,7 +38,6 @@ export class CollectionsService {
     dto: CreateCollectionDto,
   ): Promise<Result<CollectionResponseDto, ApplicationException>> {
     const slug = await this.generateSlug(workspaceId, dto.name);
-    const pinnedAt = dto.pinnedAt ? new Date(dto.pinnedAt) : undefined;
 
     const collection = await this.collectionRepository.create({
       workspaceId,
@@ -47,13 +47,6 @@ export class CollectionsService {
       description: dto.description,
       type: dto.type ?? CollectionType.STATIC,
       query: dto.query,
-      icon: dto.icon,
-      emoji: dto.emoji,
-      cover: dto.cover,
-      color: dto.color,
-      pinnedAt,
-      isFavorite: dto.isFavorite,
-      settings: dto.settings,
     });
 
     await this.auditLogRepository.create({
@@ -126,40 +119,12 @@ export class CollectionsService {
 
     const collection = collectionResult.getValue();
 
-    if (dto.revision !== undefined && dto.revision !== collection.revision) {
-      return Result.fail(
-        new RevisionConflictException(
-          'Collection',
-          collection.revision,
-          dto.revision,
-        ),
-      );
-    }
-
-    const pinnedAt =
-      dto.pinnedAt === null
-        ? null
-        : dto.pinnedAt
-          ? new Date(dto.pinnedAt)
-          : undefined;
-    const archivedAt =
-      dto.status === CollectionStatus.ARCHIVED ? new Date() : undefined;
-
     const updated = await this.collectionRepository.update(collection.id, {
       updatedById: userId,
       name: dto.name,
       description: dto.description,
       type: dto.type,
       query: dto.query,
-      icon: dto.icon,
-      emoji: dto.emoji,
-      cover: dto.cover,
-      color: dto.color,
-      pinnedAt,
-      isFavorite: dto.isFavorite,
-      status: dto.status,
-      settings: dto.settings,
-      archivedAt,
     });
 
     await this.auditLogRepository.create({
@@ -169,13 +134,16 @@ export class CollectionsService {
       action: AuditAction.UPDATE,
       newData: {
         name: dto.name,
-        revision: updated.revision,
       },
     });
 
     return Result.ok(this.toDto(updated));
   }
 
+  /**
+   * Hard-deletes a Collection. No soft-delete recovery window — see
+   * cleanup report §12. Name kept for use-case/controller contract stability.
+   */
   async softDeleteCollection(
     workspaceId: string,
     collectionId: string,
@@ -191,10 +159,7 @@ export class CollectionsService {
 
     const collection = collectionResult.getValue();
 
-    const deleted = await this.collectionRepository.softDelete(
-      collection.id,
-      userId,
-    );
+    const deleted = await this.collectionRepository.delete(collection.id);
 
     await this.auditLogRepository.create({
       userId,
@@ -311,15 +276,6 @@ export class CollectionsService {
       description: c.description ?? undefined,
       type: c.type,
       query: (c.query as Record<string, unknown>) ?? undefined,
-      icon: c.icon ?? undefined,
-      emoji: c.emoji ?? undefined,
-      cover: c.cover ?? undefined,
-      color: c.color ?? undefined,
-      pinnedAt: c.pinnedAt?.toISOString(),
-      isFavorite: c.isFavorite,
-      status: c.status,
-      revision: c.revision,
-      archivedAt: c.archivedAt?.toISOString(),
       createdAt: c.createdAt.toISOString(),
       updatedAt: c.updatedAt.toISOString(),
     };

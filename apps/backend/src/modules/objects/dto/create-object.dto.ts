@@ -27,10 +27,6 @@ export class CreateObjectDto {
 
   @IsOptional()
   @IsString()
-  spaceId?: string;
-
-  @IsOptional()
-  @IsString()
   icon?: string;
 
   @IsOptional()

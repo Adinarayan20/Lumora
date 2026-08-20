@@ -57,7 +57,6 @@ export class ObjectsService {
       }
 
       if (filter.typeKey) where.typeKey = filter.typeKey;
-      if (filter.spaceId) where.spaceId = filter.spaceId;
       if (filter.isFavorite !== undefined) where.isFavorite = filter.isFavorite;
       if (filter.search) {
         where.OR = [
@@ -198,7 +197,7 @@ export class ObjectsService {
 
       const now = new Date();
 
-      // Use unchecked update input so scalar IDs (updatedById, spaceId) work directly
+      // Use unchecked update input so scalar IDs (updatedById) work directly
       const updateData: Prisma.ObjectUncheckedUpdateInput = {
         updatedById: userId,
         revision: { increment: 1 },
@@ -208,7 +207,6 @@ export class ObjectsService {
       if (dto.title !== undefined) updateData.title = dto.title;
       if (dto.description !== undefined)
         updateData.description = dto.description;
-      if (dto.spaceId !== undefined) updateData.spaceId = dto.spaceId;
       if (dto.icon !== undefined) updateData.icon = dto.icon;
       if (dto.emoji !== undefined) updateData.emoji = dto.emoji;
       if (dto.cover !== undefined) updateData.cover = dto.cover;
@@ -341,7 +339,6 @@ export class ObjectsService {
     return {
       id: row.id,
       workspaceId: row.workspaceId,
-      spaceId: row.spaceId ?? undefined,
       createdById: row.createdById,
       updatedById: row.updatedById ?? undefined,
       objectKey: row.objectKey,

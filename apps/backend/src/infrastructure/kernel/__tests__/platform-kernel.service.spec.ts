@@ -1,19 +1,19 @@
 import { describe, it, expect, vi } from 'vitest';
 import { LumoraPlatformKernel } from '../platform-kernel.service.js';
 import type { RedisSchemaCache } from '../../catalog/redis-schema.cache.js';
-import { CapabilityRegistry } from '../../../domain/capabilities/capability-registry.js';
-import { CapabilityExecutor } from '../../../domain/capabilities/capability-executor.js';
-import { UniversalCapabilityEngine } from '../../../domain/capabilities/universal-capability-engine.js';
 
+//
+// Capability engine mocks removed — see cleanup report §10.
+// LumoraPlatformKernel no longer depends on CapabilityRegistry/
+// CapabilityExecutor/UniversalCapabilityEngine; it only verifies the
+// catalog is loaded and probes Redis Schema Cache connectivity.
+//
 describe('LumoraPlatformKernel', () => {
   function makeKernel() {
     const mockCache = {
       getSchema: vi.fn().mockResolvedValue(null),
     } as unknown as RedisSchemaCache;
-    const registry = new CapabilityRegistry();
-    const executor = new CapabilityExecutor(registry);
-    const engine = new UniversalCapabilityEngine(registry, executor);
-    return new LumoraPlatformKernel(mockCache, registry, engine);
+    return new LumoraPlatformKernel(mockCache);
   }
 
   it('should execute deterministic bootstrap sequence cleanly', async () => {
@@ -31,5 +31,14 @@ describe('LumoraPlatformKernel', () => {
     const second = await kernel.bootstrap();
     expect(second.durationMs).toBe(0);
     expect(kernel.isBooted()).toBe(true);
+  });
+
+  it('should not throw when Redis Schema Cache is unavailable (non-fatal probe)', async () => {
+    const failingCache = {
+      getSchema: vi.fn().mockRejectedValue(new Error('connection refused')),
+    } as unknown as RedisSchemaCache;
+    const kernel = new LumoraPlatformKernel(failingCache);
+    const result = await kernel.bootstrap();
+    expect(result.initialized).toBe(true);
   });
 });

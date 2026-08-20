@@ -3,11 +3,7 @@ import {
   BUILT_IN_CATALOG_DEFINITIONS,
   ObjectCatalogRegistry,
 } from '@lumora/shared';
-import type { CapabilityDescriptor } from '@lumora/shared';
-import { ExecutionPolicy, FailurePolicy } from '@lumora/shared';
 import type { RedisSchemaCache } from '../catalog/redis-schema.cache.js';
-import { CapabilityRegistry } from '../../domain/capabilities/capability-registry.js';
-import { UniversalCapabilityEngine } from '../../domain/capabilities/universal-capability-engine.js';
 
 export interface KernelBootResult {
   initialized: boolean;
@@ -21,102 +17,18 @@ export interface IPlatformKernel {
 }
 
 /**
- * Built-in capability descriptors derived from BUILT_IN_CATALOG_DEFINITIONS.
- * These map BehaviorExtensionKey values to registered CapabilityDescriptors.
+ * LumoraPlatformKernel — lightweight boot-time verification service.
+ *
+ * Responsibilities:
+ *   1. Confirm that ObjectCatalogRegistry is loaded and contains expected types.
+ *   2. Probe Redis Schema Cache connectivity (non-fatal: cache-miss fallback active).
+ *
+ * What this service deliberately does NOT do:
+ *   - It does not register capabilities into a runtime registry (the capability
+ *     engine has been removed: see cleanup report §10).
+ *   - It does not maintain a list of built-in capability descriptors.
+ *   - It does not require any capability infrastructure to boot.
  */
-const BUILT_IN_CAPABILITIES: readonly CapabilityDescriptor[] = Object.freeze([
-  {
-    key: 'lumora.capability.reminder',
-    version: '1.0.0',
-    name: 'Reminder',
-    description: 'Schedule time-based reminders for any object.',
-    priority: 10,
-    executionOrder: 10,
-    defaultEnabled: true,
-    systemRequired: false,
-    cannotDisable: false,
-    isExperimental: false,
-    executionPolicy: ExecutionPolicy.SEQUENTIAL,
-    failurePolicy: FailurePolicy.FAIL_FAST,
-    supportsOffline: false,
-    supportsUndo: true,
-    requiredTraits: [],
-    dependencies: [],
-  },
-  {
-    key: 'lumora.capability.timeline',
-    version: '1.0.0',
-    name: 'Timeline',
-    description: 'Immutable audit history ledger for any object.',
-    priority: 20,
-    executionOrder: 20,
-    defaultEnabled: true,
-    systemRequired: true,
-    cannotDisable: false,
-    isExperimental: false,
-    executionPolicy: ExecutionPolicy.SEQUENTIAL,
-    failurePolicy: FailurePolicy.FAIL_FAST,
-    supportsOffline: false,
-    supportsUndo: false,
-    requiredTraits: [],
-    dependencies: [],
-  },
-  {
-    key: 'lumora.capability.media',
-    version: '1.0.0',
-    name: 'Media Attachments',
-    description: 'Attach files and media to any object.',
-    priority: 30,
-    executionOrder: 30,
-    defaultEnabled: true,
-    systemRequired: false,
-    cannotDisable: false,
-    isExperimental: false,
-    executionPolicy: ExecutionPolicy.SEQUENTIAL,
-    failurePolicy: FailurePolicy.FAIL_FAST,
-    supportsOffline: false,
-    supportsUndo: true,
-    requiredTraits: [],
-    dependencies: [],
-  },
-  {
-    key: 'lumora.capability.search',
-    version: '1.0.0',
-    name: 'Search Indexing',
-    description: 'Index object content into the workspace search projection.',
-    priority: 40,
-    executionOrder: 40,
-    defaultEnabled: true,
-    systemRequired: true,
-    cannotDisable: false,
-    isExperimental: false,
-    executionPolicy: ExecutionPolicy.PARALLEL,
-    failurePolicy: FailurePolicy.IGNORE,
-    supportsOffline: false,
-    supportsUndo: false,
-    requiredTraits: [],
-    dependencies: [],
-  },
-  {
-    key: 'lumora.capability.favorite',
-    version: '1.0.0',
-    name: 'Favorites',
-    description: 'Pin or favorite any object.',
-    priority: 50,
-    executionOrder: 50,
-    defaultEnabled: true,
-    systemRequired: false,
-    cannotDisable: false,
-    isExperimental: false,
-    executionPolicy: ExecutionPolicy.SEQUENTIAL,
-    failurePolicy: FailurePolicy.FAIL_FAST,
-    supportsOffline: true,
-    supportsUndo: true,
-    requiredTraits: [],
-    dependencies: [],
-  },
-]);
-
 @Injectable()
 export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
   private readonly logger = new Logger(LumoraPlatformKernel.name);
@@ -124,8 +36,6 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
 
   constructor(
     private readonly schemaCache: RedisSchemaCache,
-    private readonly capabilityRegistry: CapabilityRegistry,
-    private readonly capabilityEngine: UniversalCapabilityEngine,
   ) {}
 
   public async onModuleInit(): Promise<void> {
@@ -138,54 +48,35 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
     }
 
     const startTime = Date.now();
-    this.logger.log(
-      '[LumoraPlatformKernel] Starting platform kernel initialization...',
-    );
 
     // Step 1: Verify ObjectCatalogRegistry is loaded (static, always ready)
     const registeredTypes = ObjectCatalogRegistry.getAll();
     this.logger.log(
-      `[LumoraPlatformKernel] Step 1/4: ObjectCatalogRegistry loaded — ${registeredTypes.length} built-in types: ${registeredTypes.map((t) => t.typeKey).join(', ')}`,
+      `[Kernel] ObjectCatalogRegistry: ${registeredTypes.length} built-in types — ${registeredTypes.map((t) => t.typeKey).join(', ')}`,
     );
 
-    // Step 2: Register built-in capabilities into CapabilityRegistry
-    let capRegistered = 0;
-    for (const cap of BUILT_IN_CAPABILITIES) {
-      if (!this.capabilityRegistry.has(cap.key)) {
-        this.capabilityEngine.registerCapability(cap);
-        capRegistered++;
-      }
+    if (registeredTypes.length === 0) {
+      this.logger.warn('[Kernel] WARNING: ObjectCatalogRegistry returned zero types. Check @lumora/shared build.');
     }
-    this.logger.log(
-      `[LumoraPlatformKernel] Step 2/4: CapabilityRegistry — ${capRegistered} capabilities registered.`,
-    );
 
-    // Step 3: Verify Redis Schema Cache connectivity (non-blocking if Redis is unavailable)
+    // Step 2: Log type → extension mappings at DEBUG level
+    for (const def of BUILT_IN_CATALOG_DEFINITIONS) {
+      this.logger.debug(
+        `[Kernel] Type '${def.typeKey}' — extensions: [${def.supportedExtensions.join(', ')}]`,
+      );
+    }
+
+    // Step 3: Probe Redis Schema Cache (non-blocking)
     try {
       await this.schemaCache.getSchema('__kernel_probe__', '__probe__');
-      this.logger.log(
-        '[LumoraPlatformKernel] Step 3/4: Redis Schema Cache — connected.',
-      );
+      this.logger.log('[Kernel] Redis Schema Cache — connected.');
     } catch {
-      this.logger.warn(
-        '[LumoraPlatformKernel] Step 3/4: Redis Schema Cache — unavailable (non-fatal, cache miss fallback active).',
-      );
-    }
-
-    // Step 4: Log catalog type → capability mappings
-    for (const def of BUILT_IN_CATALOG_DEFINITIONS) {
-      this.logger.log(
-        `[LumoraPlatformKernel] Step 4/4: Type '${def.typeKey}' supports extensions: [${def.supportedExtensions.join(', ')}]`,
-      );
+      this.logger.warn('[Kernel] Redis Schema Cache — unavailable (non-fatal, cache-miss fallback active).');
     }
 
     const durationMs = Date.now() - startTime;
     this._isBooted = true;
-
-    this.logger.log(
-      `[LumoraPlatformKernel] Platform Kernel booted successfully in ${durationMs}ms. ` +
-        `Types: ${registeredTypes.length} | Capabilities: ${capRegistered}`,
-    );
+    this.logger.log(`[Kernel] Boot complete in ${durationMs}ms.`);
 
     return { initialized: true, durationMs, bootedAt: new Date() };
   }

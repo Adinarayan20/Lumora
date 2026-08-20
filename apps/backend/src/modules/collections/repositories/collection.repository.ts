@@ -3,7 +3,6 @@ import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
 import {
   Collection as LumoraCollection,
   CollectionItem,
-  CollectionStatus,
   CollectionType,
   Prisma,
 } from '../../../generated/prisma/client.js';
@@ -38,13 +37,6 @@ export interface CreateCollectionData {
   description?: string;
   type?: CollectionType;
   query?: Record<string, any>;
-  icon?: string;
-  emoji?: string;
-  cover?: string;
-  color?: string;
-  pinnedAt?: Date;
-  isFavorite?: boolean;
-  settings?: Record<string, any>;
 }
 
 export interface UpdateCollectionData {
@@ -53,18 +45,15 @@ export interface UpdateCollectionData {
   description?: string;
   type?: CollectionType;
   query?: Record<string, any>;
-  icon?: string;
-  emoji?: string;
-  cover?: string;
-  color?: string;
-  pinnedAt?: Date | null;
-  isFavorite?: boolean;
-  status?: CollectionStatus;
-  settings?: Record<string, any>;
-  archivedAt?: Date | null;
-  deletedAt?: Date | null;
 }
 
+//
+// Collection was reduced — see cleanup report §12. No status/lifecycle
+// fields remain: findById/findBySlug/findWorkspaceCollections no longer
+// filter by status, softDelete() is now a real hard delete(), and update()
+// no longer touches a CAS revision counter (Collection is not a
+// concurrently-edited source of truth the way Object is).
+//
 @Injectable()
 export class CollectionRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -75,10 +64,7 @@ export class CollectionRepository {
   ): Promise<CollectionWithRelations | null> {
     const client = tx ?? this.prisma;
     return client.collection.findFirst({
-      where: {
-        id,
-        status: { not: CollectionStatus.DELETED },
-      },
+      where: { id },
       include: COLLECTION_RELATIONS_INCLUDE,
     });
   }
@@ -90,11 +76,7 @@ export class CollectionRepository {
   ): Promise<CollectionWithRelations | null> {
     const client = tx ?? this.prisma;
     return client.collection.findFirst({
-      where: {
-        workspaceId,
-        slug,
-        status: { not: CollectionStatus.DELETED },
-      },
+      where: { workspaceId, slug },
       include: COLLECTION_RELATIONS_INCLUDE,
     });
   }
@@ -117,16 +99,10 @@ export class CollectionRepository {
     tx?: PrismaTransaction,
   ): Promise<CollectionWithRelations[]> {
     const client = tx ?? this.prisma;
-    const where: Prisma.CollectionWhereInput = {
-      workspaceId,
-      status: filter.status ?? { not: CollectionStatus.DELETED },
-    };
+    const where: Prisma.CollectionWhereInput = { workspaceId };
 
     if (filter.type) {
       where.type = filter.type;
-    }
-    if (filter.isFavorite !== undefined) {
-      where.isFavorite = filter.isFavorite;
     }
     if (filter.search) {
       where.OR = [
@@ -138,7 +114,7 @@ export class CollectionRepository {
     return client.collection.findMany({
       where,
       include: COLLECTION_RELATIONS_INCLUDE,
-      orderBy: [{ pinnedAt: 'desc' }, { updatedAt: 'desc' }],
+      orderBy: [{ updatedAt: 'desc' }],
     });
   }
 
@@ -156,13 +132,6 @@ export class CollectionRepository {
         description: data.description,
         type: data.type ?? CollectionType.STATIC,
         query: data.query,
-        icon: data.icon,
-        emoji: data.emoji,
-        cover: data.cover,
-        color: data.color,
-        pinnedAt: data.pinnedAt,
-        isFavorite: data.isFavorite ?? false,
-        settings: data.settings,
       },
     });
   }
@@ -181,37 +150,20 @@ export class CollectionRepository {
         description: data.description,
         type: data.type,
         query: data.query,
-        icon: data.icon,
-        emoji: data.emoji,
-        cover: data.cover,
-        color: data.color,
-        pinnedAt: data.pinnedAt,
-        isFavorite: data.isFavorite,
-        status: data.status,
-        settings: data.settings,
-        archivedAt: data.archivedAt,
-        deletedAt: data.deletedAt,
-        revision: { increment: 1 },
       },
       include: COLLECTION_RELATIONS_INCLUDE,
     });
   }
 
-  async softDelete(
-    id: string,
-    userId: string,
-    tx?: PrismaTransaction,
-  ): Promise<LumoraCollection> {
+  /**
+   * Hard-deletes a Collection. Collection has no soft-delete recovery
+   * window — losing a saved grouping is not the same stakes as losing
+   * an Object. CollectionItem rows cascade-delete automatically
+   * (schema onDelete: Cascade); the referenced Objects are untouched.
+   */
+  async delete(id: string, tx?: PrismaTransaction): Promise<LumoraCollection> {
     const client = tx ?? this.prisma;
-    return client.collection.update({
-      where: { id },
-      data: {
-        status: CollectionStatus.DELETED,
-        deletedAt: new Date(),
-        updatedById: userId,
-        revision: { increment: 1 },
-      },
-    });
+    return client.collection.delete({ where: { id } });
   }
 
   async addItem(

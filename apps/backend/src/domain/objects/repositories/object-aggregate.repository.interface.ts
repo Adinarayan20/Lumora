@@ -24,7 +24,6 @@ import type { ObjectStatus } from '../value-objects/object-status.js';
  */
 export interface ObjectFilter extends Record<string, unknown> {
   workspaceId: UniqueEntityId;
-  spaceId?: UniqueEntityId;
   typeKey?: ObjectTypeKey;
   status?: ObjectStatus;
   isFavorite?: boolean;

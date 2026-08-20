@@ -74,7 +74,6 @@ export class CreateObjectUseCase {
       const aggregate = ObjectAggregate.create({
         workspaceId: new UniqueEntityId(workspaceId),
         createdById: new UniqueEntityId(createdById),
-        spaceId: dto.spaceId ? new UniqueEntityId(dto.spaceId) : undefined,
         objectKey: finalKeyObj,
         typeKey: dto.typeKey as ObjectTypeKey,
         title: titleObj,

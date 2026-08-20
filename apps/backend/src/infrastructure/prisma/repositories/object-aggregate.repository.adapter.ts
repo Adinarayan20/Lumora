@@ -218,9 +218,6 @@ export class ObjectAggregateRepositoryAdapter implements IObjectAggregateReposit
           : { not: PrismaObjectStatus.DELETED },
       };
 
-      if (filter?.spaceId) {
-        where.spaceId = filter.spaceId.toValue();
-      }
       if (filter?.typeKey) {
         where.typeKey = filter.typeKey;
       }
@@ -316,7 +313,6 @@ export class ObjectAggregateRepositoryAdapter implements IObjectAggregateReposit
           emoji: aggregate.emoji ?? null,
           cover: aggregate.cover ?? null,
           color: aggregate.color ?? null,
-          spaceId: aggregate.spaceId?.toValue() ?? null,
           pinnedAt: aggregate.pinnedAt ?? null,
           isFavorite: aggregate.isFavorite,
           status: aggregate.status,
@@ -363,7 +359,6 @@ export class ObjectAggregateRepositoryAdapter implements IObjectAggregateReposit
         "emoji"       = ${aggregate.emoji ?? null},
         "cover"       = ${aggregate.cover ?? null},
         "color"       = ${aggregate.color ?? null},
-        "spaceId"     = ${aggregate.spaceId?.toValue() ?? null}::uuid,
         "pinnedAt"    = ${aggregate.pinnedAt ?? null},
         "isFavorite"  = ${aggregate.isFavorite},
         "status"      = ${aggregate.status}::"ObjectStatus",
@@ -416,7 +411,6 @@ export class ObjectAggregateRepositoryAdapter implements IObjectAggregateReposit
     return ObjectAggregate.reconstitute({
       id: new UniqueEntityId(row.id),
       workspaceId: new UniqueEntityId(row.workspaceId),
-      spaceId: row.spaceId ? new UniqueEntityId(row.spaceId) : undefined,
       createdById: new UniqueEntityId(row.createdById),
       updatedById: row.updatedById
         ? new UniqueEntityId(row.updatedById)

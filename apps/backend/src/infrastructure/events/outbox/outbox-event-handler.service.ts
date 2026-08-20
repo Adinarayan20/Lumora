@@ -6,8 +6,6 @@ import type {
 } from '@lumora/shared';
 import { ObjectEventName } from '@lumora/shared';
 import { RecordTimelineActivityUseCase } from '../../../modules/timeline/use-cases/record-timeline-activity.use-case.js';
-import { IndexEntityUseCase } from '../../../modules/search/use-cases/index-entity.use-case.js';
-import { RemoveSearchIndexUseCase } from '../../../modules/search/use-cases/remove-search-index.use-case.js';
 import type {
   ObjectCreatedEvent,
   ObjectUpdatedEvent,
@@ -21,9 +19,14 @@ type ObjectDomainEvent = DomainEvent<DomainEventName, Record<string, unknown>>;
  *
  * This service implements IDomainEventPublisher and replaces the no-op NestEventPublisher
  * logging shell for the events this application currently needs to handle:
- *   - ObjectCreatedEvent  → Timeline record + Search index entry
- *   - ObjectUpdatedEvent  → Timeline record + Search index update
- *   - ObjectDeletedEvent  → Timeline record + Search index removal
+ *   - ObjectCreatedEvent  → Timeline record
+ *   - ObjectUpdatedEvent  → Timeline record
+ *   - ObjectDeletedEvent  → Timeline record
+ *
+ * Search indexing was removed from this pipeline (cleanup report §5): Search
+ * is deferred out of V1 per 02 §41 / 03 §11. It was previously wired here as
+ * a non-optional side effect of every Object mutation. If Search is brought
+ * back into V1 later, it should be re-added deliberately, not silently.
  *
  * Architecture: Outbox worker dispatches via IDomainEventPublisher.publish().
  * This service receives that call and routes to the appropriate use cases.
@@ -37,8 +40,6 @@ export class OutboxEventHandlerService implements IDomainEventPublisher {
 
   constructor(
     private readonly recordTimelineActivity: RecordTimelineActivityUseCase,
-    private readonly indexEntity: IndexEntityUseCase,
-    private readonly removeSearchIndex: RemoveSearchIndexUseCase,
   ) {}
 
   public async publish(events: readonly ObjectDomainEvent[]): Promise<void> {
@@ -52,26 +53,20 @@ export class OutboxEventHandlerService implements IDomainEventPublisher {
 
     switch (event.eventName) {
       case ObjectEventName.CREATED:
-        handlers.push(
-          () =>
-            this.handleObjectCreated(event as unknown as ObjectCreatedEvent),
-          () => this.handleSearchIndex(event, 'created'),
+        handlers.push(() =>
+          this.handleObjectCreated(event as unknown as ObjectCreatedEvent),
         );
         break;
 
       case ObjectEventName.UPDATED:
-        handlers.push(
-          () =>
-            this.handleObjectUpdated(event as unknown as ObjectUpdatedEvent),
-          () => this.handleSearchIndex(event, 'updated'),
+        handlers.push(() =>
+          this.handleObjectUpdated(event as unknown as ObjectUpdatedEvent),
         );
         break;
 
       case ObjectEventName.DELETED:
-        handlers.push(
-          () =>
-            this.handleObjectDeleted(event as unknown as ObjectDeletedEvent),
-          () => this.handleSearchRemove(event),
+        handlers.push(() =>
+          this.handleObjectDeleted(event as unknown as ObjectDeletedEvent),
         );
         break;
 
@@ -191,39 +186,4 @@ export class OutboxEventHandlerService implements IDomainEventPublisher {
     });
   }
 
-  // ─── Search handlers ─────────────────────────────────────────────────────────
-
-  private async handleSearchIndex(
-    event: ObjectDomainEvent,
-    _operation: 'created' | 'updated',
-  ): Promise<void> {
-    const workspaceId = event.workspaceId?.toValue();
-    if (!workspaceId) return;
-
-    const title =
-      (event.payload.title as string) ||
-      (event.payload.objectKey as string) ||
-      event.aggregateId.toValue();
-
-    await this.indexEntity.execute({
-      dto: {
-        workspaceId,
-        entityCategory: 'OBJECT',
-        entityId: event.aggregateId.toValue(),
-        title,
-        content: title,
-      },
-    });
-  }
-
-  private async handleSearchRemove(event: ObjectDomainEvent): Promise<void> {
-    const workspaceId = event.workspaceId?.toValue();
-    if (!workspaceId) return;
-
-    await this.removeSearchIndex.execute({
-      workspaceId,
-      entityCategory: 'OBJECT',
-      entityId: event.aggregateId.toValue(),
-    });
-  }
 }

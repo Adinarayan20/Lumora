@@ -18,7 +18,6 @@ export class ObjectCreatedEvent implements DomainEvent<ObjectEventName> {
     readonly typeKey: ObjectTypeKey;
     readonly title: string;
     readonly createdById: string;
-    readonly spaceId?: string;
   };
 
   constructor(
@@ -28,7 +27,6 @@ export class ObjectCreatedEvent implements DomainEvent<ObjectEventName> {
     typeKey: ObjectTypeKey,
     title: string,
     createdById: UniqueEntityId,
-    spaceId?: UniqueEntityId,
   ) {
     this.eventId = new UniqueEntityId();
     this.aggregateId = objectId;
@@ -39,7 +37,6 @@ export class ObjectCreatedEvent implements DomainEvent<ObjectEventName> {
       typeKey,
       title,
       createdById: createdById.toValue(),
-      spaceId: spaceId?.toValue(),
     });
   }
 }
