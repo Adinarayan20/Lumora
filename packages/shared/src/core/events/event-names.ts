@@ -75,14 +75,6 @@ export const MediaEventName = {
 export type MediaEventName =
   (typeof MediaEventName)[keyof typeof MediaEventName];
 
-export const SearchEventName = {
-  INDEXED: "search.indexed",
-  REMOVED: "search.removed",
-} as const;
-
-export type SearchEventName =
-  (typeof SearchEventName)[keyof typeof SearchEventName];
-
 export const TimelineEventName = {
   RECORDED: "timeline.recorded",
 } as const;
@@ -119,7 +111,6 @@ export type DomainEventName =
   | CollectionEventName
   | NotificationEventName
   | MediaEventName
-  | SearchEventName
   | TimelineEventName
   | SettingsEventName
   | CatalogEventName;

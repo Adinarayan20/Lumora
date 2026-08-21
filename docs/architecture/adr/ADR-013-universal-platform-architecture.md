@@ -30,6 +30,36 @@ To support infinite object types over the next 10+ years without requiring rewri
    - Milestone 8: Performance Optimization & Frontend Platform Integration
 
 ## Status
+**SUPERSEDED** — see Lumora Cleanup Finalization + Migration Truth Gate report.
+
+The frozen `00`–`04` architecture specification replaces this ADR's Capability
+Engine, Template Engine, Relationship Engine, and Search/Timeline-coupling
+decisions:
+
+- **Capability Registry & Universal Capability Engine** (Milestone 2): rejected.
+  `02_DOMAIN_BUSINESS_LOGIC.md` explicitly prohibits a generic plugin/capability
+  runtime. `CapabilityRegistry`/`CapabilityExecutor`/`UniversalCapabilityEngine`
+  have been deleted from the codebase.
+- **Template Engine & Starter Library** (Milestone 3): rejected. `01`/`02` §10
+  explicitly prohibit package-manager-style install/upgrade/rollback semantics
+  for templates. Deleted from the codebase; see `ADR-015` (also superseded).
+- **Universal Relationship Engine** (Milestone 5): deferred out of V1.
+  `02` §41 / `03` §11 require no V1 storage, API, or service for Relationships.
+  Removed from the codebase.
+- **Universal Timeline & Global Search Engine, as coupled capabilities**
+  (Milestone 6): Timeline is retained but is a Tier-3 read projection, not a
+  "capability" in this ADR's sense. Search is deferred out of V1 per `02` §41 /
+  `03` §11 — its code remains in the tree, physically isolated and unwired,
+  pending a separate decision (see the Cleanup Finalization report).
+
+Milestone 1 (Metadata Registry & Object Definition Registry) is not part of
+this supersession — its current implementation (`CatalogModule`,
+`ObjectDefinitionRegistry`) remains architecturally live and unaffected.
+
+This document is retained as a historical record, not as active architecture.
+Do not treat any milestone above as current guidance.
+
+## Original Status (superseded)
 Accepted
 
 ## Consequences
