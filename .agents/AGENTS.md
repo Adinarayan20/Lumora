@@ -155,3 +155,121 @@ For every implementation unit, present all 4 steps together in a single response
 7. **Entity Return Guarantee**: Repositories return domain entities or primitives—NEVER Prisma model instances.
 8. **Direct Query Prohibition**: No controllers, services, or use cases may execute Prisma queries directly.
 9. **Strict Layer Dependency Direction**: `UI → Application → Domain → Infrastructure`. Infrastructure may depend on Domain; Domain must NEVER depend on Infrastructure.
+
+---
+
+## AI Coding Quality Mandates — Non-Negotiable Execution Rules
+
+> These rules govern HOW the AI writes code. Violating any of them produces unacceptable output.
+
+### Rule 1: MCP Tool Protocol (Mandatory Before Every Implementation)
+
+Before writing a single line of code for any non-trivial task, the AI MUST use MCPs in this exact order:
+
+1. **`sequential-thinking`** → Decompose the task. Plan the approach. Identify risks. If the plan requires >3 files, pause and re-evaluate scope.
+2. **`context7`** → Fetch live API documentation for every library being used. Never write API calls from memory.
+3. **`filesystem`** → Read the existing code in the relevant module BEFORE adding new code. Never duplicate what already exists.
+4. **`memory`** → Check if an architectural decision for this problem was already made. Retrieve it.
+5. **Only then** → Write the implementation.
+
+Skipping these steps is the primary cause of bloated, incorrect, and duplicate code.
+
+---
+
+### Rule 2: Hard File Size Limits
+
+| File Type | Soft Limit | Hard Limit (Never Exceed) |
+|-----------|-----------|--------------------------|
+| Domain Entity | 80 lines | 120 lines |
+| Use Case / Command Handler | 60 lines | 100 lines |
+| Repository Implementation | 100 lines | 150 lines |
+| React / RN Component | 80 lines | 150 lines |
+| Service / Utility | 60 lines | 100 lines |
+| Controller / Route Handler | 40 lines | 80 lines |
+| Test File | 150 lines | 250 lines |
+
+**If a file exceeds its hard limit, it MUST be split before the response is submitted.** No exceptions. A 1000-line file is an automatic failure.
+
+---
+
+### Rule 3: Forbidden Anti-Patterns (Never Write These)
+
+The following patterns are strictly prohibited and must NEVER appear in any Lumora codebase:
+
+- ❌ `any` type in TypeScript — use `unknown` and narrow with type guards
+- ❌ `// TODO`, `// FIXME`, `// HACK` — finish the implementation or do not write it
+- ❌ `console.log` in production code — use the structured logger only
+- ❌ `try { } catch (e) {}` empty catch blocks — always handle or re-throw
+- ❌ `new Date()` scattered inline — use a centralized `Clock` abstraction
+- ❌ Hardcoded strings for keys, types, or statuses — use enums or const maps
+- ❌ Nested ternaries beyond 1 level — extract to a named function
+- ❌ God functions >30 lines with multiple responsibilities — split them
+- ❌ `useEffect` with business logic inside React components — move to hooks or services
+- ❌ Importing from a sibling module's internals — only import from public index barrel
+- ❌ `SELECT *` or equivalent unscoped queries — always select explicit fields
+- ❌ Synchronous blocking operations on the main thread — always async
+- ❌ Copying the same validation logic in multiple places — extract to a shared validator
+
+---
+
+### Rule 4: Mandatory Self-Review Checklist
+
+After writing any code, the AI MUST silently audit its own output against this checklist before responding:
+
+- [ ] Does this file exceed its hard line limit? If yes → split it.
+- [ ] Is there any duplicated logic that already exists in the codebase? If yes → delete and reuse.
+- [ ] Does every function have a single, clear responsibility? If no → split it.
+- [ ] Are all types explicit with zero `any`? If no → fix them.
+- [ ] Does the implementation respect the `UI → Application → Domain → Infrastructure` layer rule?
+- [ ] Are all error paths handled explicitly? No silent failures?
+- [ ] Is this the simplest correct implementation? Could it be 30% shorter without losing clarity?
+- [ ] Does the code introduce any new external dependency? If yes → justify it explicitly.
+- [ ] Are there any hardcoded values that should be config or enum? If yes → extract them.
+- [ ] Will this code work offline? If no → document the offline failure mode explicitly.
+
+---
+
+### Rule 5: TypeScript Strict Mode — Always
+
+Every file written MUST be compatible with the following `tsconfig` settings. Never write code that would fail under strict mode:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  }
+}
+```
+
+- Every function must have an explicit return type annotation.
+- Every parameter must have a type annotation.
+- Optional properties must be handled with null-coalescing, not cast away.
+- `as` type assertions require a comment explaining why they are safe.
+
+---
+
+### Rule 6: Naming Conventions — Zero Ambiguity
+
+| Construct | Convention | Example |
+|-----------|-----------|---------|
+| Domain Entity | `PascalCase` noun | `LumoraObject`, `Reminder` |
+| Use Case | `PascalCase` + verb | `CreateObject`, `CompleteReminder` |
+| Domain Event | `PascalCase` + past tense | `ObjectCreated`, `ReminderCompleted` |
+| Repository Interface | `I` prefix + `Repository` suffix | `IObjectRepository` |
+| Value Object | `PascalCase` noun | `ObjectId`, `DueDate` |
+| React Component | `PascalCase` noun | `ObjectCard`, `TimelineView` |
+| Custom Hook | `use` prefix + noun/verb | `useObjectStore`, `useReminderTrigger` |
+| Service | `PascalCase` + `Service` suffix | `NotificationService` |
+| Constants | `SCREAMING_SNAKE_CASE` | `MAX_OBJECTS_PER_PAGE` |
+| Enum values | `SCREAMING_SNAKE_CASE` | `ObjectType.REMINDER` |
+| Boolean variables | `is`, `has`, `can`, `should` prefix | `isArchived`, `hasAttachments` |
+| Event handlers | `handle` + event | `handleObjectCreate` |
+
+File names always match the primary export name, in `kebab-case`: `create-object.use-case.ts`, `object.entity.ts`, `object-card.component.tsx`.
+

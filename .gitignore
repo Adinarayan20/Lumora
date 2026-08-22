@@ -41,3 +41,6 @@ Thumbs.db
 !.vscode/extensions.json
 !.vscode/settings.json
 .idea/
+
+# Git bundles (import artifacts — must never be committed)
+*.bundle
