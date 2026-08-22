@@ -1,6 +1,4 @@
 import {
-  IsBoolean,
-  IsDateString,
   IsEnum,
   IsNotEmpty,
   IsObject,
@@ -27,32 +25,4 @@ export class CreateCollectionDto {
   @IsOptional()
   @IsObject()
   query?: Record<string, unknown>;
-
-  @IsOptional()
-  @IsString()
-  icon?: string;
-
-  @IsOptional()
-  @IsString()
-  emoji?: string;
-
-  @IsOptional()
-  @IsString()
-  cover?: string;
-
-  @IsOptional()
-  @IsString()
-  color?: string; // Semantic design token e.g. "theme.emerald"
-
-  @IsOptional()
-  @IsDateString()
-  pinnedAt?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isFavorite?: boolean;
-
-  @IsOptional()
-  @IsObject()
-  settings?: Record<string, unknown>;
 }

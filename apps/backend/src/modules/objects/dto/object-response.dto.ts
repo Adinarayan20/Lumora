@@ -8,7 +8,6 @@
 export class ObjectResponseDto {
   id!: string;
   workspaceId!: string;
-  spaceId?: string;
   createdById!: string;
   updatedById?: string;
   objectKey!: string;

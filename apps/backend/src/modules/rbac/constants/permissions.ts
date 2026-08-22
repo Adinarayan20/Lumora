@@ -17,12 +17,6 @@ export const Permissions = {
     Update: 'workspace.role.update',
     Delete: 'workspace.role.delete',
   },
-  Space: {
-    Create: 'workspace.space.create',
-    Read: 'workspace.space.read',
-    Update: 'workspace.space.update',
-    Delete: 'workspace.space.delete',
-  },
   Object: {
     Create: 'workspace.object.create',
     Read: 'workspace.object.read',

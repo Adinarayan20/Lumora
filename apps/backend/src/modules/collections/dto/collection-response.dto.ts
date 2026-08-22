@@ -1,6 +1,9 @@
 /**
  * Stable API response DTO for Collection resources.
  * Does NOT expose Prisma model types.
+ *
+ * Reduced per cleanup report §12 — Collection has no lifecycle/status,
+ * no CAS revision, and no presentation state of its own.
  */
 export class CollectionResponseDto {
   id!: string;
@@ -12,15 +15,6 @@ export class CollectionResponseDto {
   description?: string;
   type!: string;
   query?: Record<string, unknown>;
-  icon?: string;
-  emoji?: string;
-  cover?: string;
-  color?: string;
-  pinnedAt?: string;
-  isFavorite!: boolean;
-  status!: string;
-  revision!: number;
-  archivedAt?: string;
   createdAt!: string;
   updatedAt!: string;
 }

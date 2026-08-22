@@ -5,10 +5,7 @@ import {
   DomainValidationException,
 } from '@lumora/shared';
 import { CollectionSlug } from './value-objects/collection-slug.js';
-import {
-  CollectionType,
-  CollectionStatus,
-} from './value-objects/collection-enums.js';
+import { CollectionType } from './value-objects/collection-enums.js';
 import { CollectionItemEntity } from './entities/collection-item.entity.js';
 import { CollectionCreatedEvent } from './events/collection.events.js';
 
@@ -22,24 +19,23 @@ export interface CollectionAggregateProps {
   description?: string;
   type?: CollectionType;
   query?: Record<string, unknown>;
-  icon?: string;
-  emoji?: string;
-  cover?: string;
-  color?: string;
-  pinnedAt?: Date;
-  isFavorite?: boolean;
-  status?: CollectionStatus;
-  settings?: Record<string, unknown>;
-  revision?: number;
   items?: CollectionItemEntity[];
-  archivedAt?: Date;
-  deletedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 /**
- * Domain Aggregate Root representing a Collection grouping of Universal Objects.
+ * Domain Aggregate Root representing a Collection: a saved static list or
+ * saved dynamic query grouping of Universal Objects within a workspace.
+ *
+ * Deliberately minimal — see cleanup report §12. This is NOT a peer
+ * aggregate to Object. It has no lifecycle (no status/archivedAt/deletedAt),
+ * no CAS revision (it is not a concurrently-edited source of truth the way
+ * Object is), and no presentation state (icon/emoji/cover/color/pinnedAt/
+ * isFavorite/settings) — those were duplicating concerns that belong to
+ * Object or to the user's own preferences, not to the grouping construct.
+ *
+ * A Collection either exists or is hard-deleted.
  */
 export class CollectionAggregate extends AggregateRoot<UniqueEntityId> {
   public readonly workspaceId: UniqueEntityId;
@@ -50,18 +46,7 @@ export class CollectionAggregate extends AggregateRoot<UniqueEntityId> {
   public description?: string | undefined;
   public readonly type: CollectionType;
   public query?: Readonly<Record<string, unknown>> | undefined;
-  public icon?: string | undefined;
-  public emoji?: string | undefined;
-  public cover?: string | undefined;
-  public color?: string | undefined;
-  public pinnedAt?: Date | undefined;
-  public isFavorite: boolean;
-  public status: CollectionStatus;
-  public settings: Readonly<Record<string, unknown>>;
-  public revision: number;
   private _items: Map<string, CollectionItemEntity>;
-  public archivedAt?: Date | undefined;
-  public deletedAt?: Date | undefined;
   public readonly createdAt: Date;
   public updatedAt: Date;
 
@@ -75,15 +60,6 @@ export class CollectionAggregate extends AggregateRoot<UniqueEntityId> {
     this.description = props.description;
     this.type = props.type ?? CollectionType.STATIC;
     this.query = props.query ? Object.freeze({ ...props.query }) : undefined;
-    this.icon = props.icon;
-    this.emoji = props.emoji;
-    this.cover = props.cover;
-    this.color = props.color;
-    this.pinnedAt = props.pinnedAt;
-    this.isFavorite = props.isFavorite ?? false;
-    this.status = props.status ?? CollectionStatus.ACTIVE;
-    this.settings = Object.freeze({ ...(props.settings ?? {}) });
-    this.revision = props.revision ?? 1;
 
     this._items = new Map();
     if (props.items) {
@@ -92,8 +68,6 @@ export class CollectionAggregate extends AggregateRoot<UniqueEntityId> {
       }
     }
 
-    this.archivedAt = props.archivedAt;
-    this.deletedAt = props.deletedAt;
     this.createdAt = props.createdAt ?? new Date();
     this.updatedAt = props.updatedAt ?? new Date();
   }
@@ -139,6 +113,23 @@ export class CollectionAggregate extends AggregateRoot<UniqueEntityId> {
     return new CollectionAggregate(props);
   }
 
+  public updateDetails(
+    updatedById: UniqueEntityId,
+    props: {
+      name?: string;
+      description?: string;
+      query?: Record<string, unknown>;
+    },
+  ): void {
+    if (props.name !== undefined) this.name = props.name;
+    if (props.description !== undefined) this.description = props.description;
+    if (props.query !== undefined) {
+      this.query = Object.freeze({ ...props.query });
+    }
+    this.updatedById = updatedById;
+    this.updatedAt = new Date();
+  }
+
   public addItem(
     objectId: UniqueEntityId,
     order: number = 0,
@@ -165,7 +156,6 @@ export class CollectionAggregate extends AggregateRoot<UniqueEntityId> {
     });
 
     this._items.set(key, item);
-    this.revision += 1;
     this.updatedAt = new Date();
 
     return item;
@@ -181,7 +171,6 @@ export class CollectionAggregate extends AggregateRoot<UniqueEntityId> {
     }
 
     this._items.delete(key);
-    this.revision += 1;
     this.updatedAt = new Date();
   }
 }

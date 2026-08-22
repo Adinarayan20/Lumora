@@ -83,31 +83,6 @@ export const GLOBAL_PERMISSIONS_SEED: PermissionSeedData[] = [
     action: 'delete',
     description: 'Delete custom workspace role',
   },
-  // Space
-  {
-    key: Permissions.Space.Create,
-    resource: 'workspace.space',
-    action: 'create',
-    description: 'Create spaces within workspace',
-  },
-  {
-    key: Permissions.Space.Read,
-    resource: 'workspace.space',
-    action: 'read',
-    description: 'Read spaces within workspace',
-  },
-  {
-    key: Permissions.Space.Update,
-    resource: 'workspace.space',
-    action: 'update',
-    description: 'Update spaces within workspace',
-  },
-  {
-    key: Permissions.Space.Delete,
-    resource: 'workspace.space',
-    action: 'delete',
-    description: 'Delete spaces within workspace',
-  },
   // Object
   {
     key: Permissions.Object.Create,

@@ -11,7 +11,6 @@ import { PrismaTransaction } from '../auth/repositories/audit-log.repository';
 
 export interface ResourceContext {
   objectId?: string;
-  spaceId?: string;
 }
 
 @Injectable()

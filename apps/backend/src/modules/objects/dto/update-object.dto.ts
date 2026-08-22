@@ -29,10 +29,6 @@ export class UpdateObjectDto {
 
   @IsOptional()
   @IsString()
-  spaceId?: string;
-
-  @IsOptional()
-  @IsString()
   icon?: string;
 
   @IsOptional()

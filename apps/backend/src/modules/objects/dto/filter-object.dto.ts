@@ -17,10 +17,6 @@ export class FilterObjectDto {
   typeKey?: string;
 
   @IsOptional()
-  @IsString()
-  spaceId?: string;
-
-  @IsOptional()
   @IsEnum(ObjectStatusFilter)
   status?: string;
 

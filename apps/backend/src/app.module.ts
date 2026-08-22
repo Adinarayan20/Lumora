@@ -4,23 +4,31 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { KernelModule } from './infrastructure/kernel/kernel.module.js';
 import { OutboxModule } from './infrastructure/events/outbox/outbox.module.js';
-import { CollectionsModule } from './modules/collections/collections.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
+import { CollectionsModule } from './modules/collections/collections.module';
 import { MediaModule } from './modules/media/media.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { ObjectsModule } from './modules/objects/objects.module';
 import { RemindersModule } from './modules/reminders/reminders.module';
-import { SearchModule } from './modules/search/search.module';
-import { RelationshipsModule } from './modules/relationships/relationships.module.js';
 import { SettingsModule } from './modules/settings/settings.module';
-import { SpacesModule } from './modules/spaces/spaces.module';
 import { TimelineModule } from './modules/timeline/timeline.module';
 import { UsersModule } from './modules/users/users.module';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 import { RbacModule } from './modules/rbac/rbac.module';
 import { LoggerModule } from './infrastructure/logger/logger.module';
 import { ApplicationExceptionFilter } from './common/filters/index.js';
+
+//
+// REMOVED from V1 (see cleanup report §5, §6):
+//   - RelationshipsModule: deferred to LATER per 02 §41, 03 §11
+//   - SearchModule: deferred to LATER per 02 §41, 03 §11
+//   - SpacesModule: Space domain aggregate removed per 02 Invariant 38
+//
+// REMOVED (deleted, see cleanup report §10, §11):
+//   - Capability engine modules (deleted from codebase)
+//   - HouseholdsModule (deleted from codebase)
+//
 
 @Module({
   imports: [
@@ -34,16 +42,13 @@ import { ApplicationExceptionFilter } from './common/filters/index.js';
     WorkspacesModule,
     RbacModule,
     CatalogModule,
-    SpacesModule,
     CollectionsModule,
     ObjectsModule,
     RemindersModule,
     TimelineModule,
     NotificationsModule,
     MediaModule,
-    SearchModule,
     SettingsModule,
-    RelationshipsModule,
   ],
   providers: [
     {

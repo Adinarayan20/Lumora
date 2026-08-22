@@ -1,8 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
   Param,
   Query,
   UseGuards,
@@ -11,29 +9,40 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { PermissionsGuard } from '../rbac/guards/permissions.guard.js';
-import { RequirePermissions } from '../rbac/decorators/require-permissions.decorator.js';
-import { Permissions } from '../rbac/constants/permissions.js';
-import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { RecordTimelineActivityUseCase } from './use-cases/record-timeline-activity.use-case.js';
 import { GetWorkspaceTimelineQuery } from './use-cases/get-workspace-timeline.query.js';
-import { RecordTimelineActivityDto } from './dto/record-timeline-activity.dto.js';
+
+//
+// POST /workspaces/:workspaceId/timeline was removed.
+//
+// Reason: Timeline is a Tier-3 read projection driven exclusively by the
+// transactional Outbox. No client — internal or external — writes to it
+// directly. The prior endpoint was gated by Permissions.Object.Read
+// (a READ permission guarding a WRITE operation), which was both an
+// architecture violation (02 Invariant 5, 03 §7) and a security defect:
+// any authenticated user with read access could inject arbitrary audit
+// entries with no connection to real domain events.
+//
+// Timeline entries are written only by OutboxEventHandlerService →
+// RecordTimelineActivityUseCase, never by HTTP request.
+//
 
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('workspaces/:workspaceId/timeline')
 export class TimelineController {
   constructor(
-    private readonly recordActivityUseCase: RecordTimelineActivityUseCase,
     private readonly getWorkspaceTimelineQuery: GetWorkspaceTimelineQuery,
   ) {}
 
   /**
    * GET /workspaces/:workspaceId/timeline
-   * Retrieves chronological timeline records for a workspace.
-   * Optionally scoped to a single user with ?userId and bounded by ?limit.
    *
-   * NOTE: In the full Outbox architecture, timeline records are populated
-   * asynchronously by workers processing domain events. The GET endpoint
-   * reads from the already-populated read-side projection.
+   * Read-only. Returns timeline records for a workspace, populated by
+   * the Outbox worker processing ObjectCreated/Updated/Deleted domain events.
+   *
+   * Query params:
+   *   ?userId   — filter to a specific actor
+   *   ?objectId — filter to a specific object
+   *   ?limit    — maximum entries to return (positive integer)
    */
   @Get()
   async getWorkspaceTimeline(
@@ -58,27 +67,6 @@ export class TimelineController {
     if (result.isFailure) {
       throw new InternalServerErrorException(result.getError().message);
     }
-    return result.getValue();
-  }
-
-  /**
-   * POST /workspaces/:workspaceId/timeline
-   * Records a timeline activity entry. Intended for internal use by
-   * background workers consuming Outbox events. May also be called directly
-   * during synchronous workflows that do not yet use the Outbox.
-   */
-  @Post()
-  @RequirePermissions(Permissions.Object.Read)
-  async recordActivity(
-    @CurrentUser('id') _userId: string,
-    @Body() dto: RecordTimelineActivityDto,
-  ) {
-    const result = await this.recordActivityUseCase.execute({ dto });
-
-    if (result.isFailure) {
-      throw new BadRequestException(result.getError().message);
-    }
-
     return result.getValue();
   }
 }

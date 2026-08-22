@@ -11,7 +11,6 @@ export class ObjectResponseMapper {
       typeKey: aggregate.typeKey,
       title: aggregate.title.toValue(),
       description: aggregate.description,
-      spaceId: aggregate.spaceId ? aggregate.spaceId.toString() : undefined,
       icon: aggregate.icon,
       emoji: aggregate.emoji,
       cover: aggregate.cover,

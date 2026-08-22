@@ -6,11 +6,7 @@ export const CollectionType = {
 export type CollectionType =
   (typeof CollectionType)[keyof typeof CollectionType];
 
-export const CollectionStatus = {
-  ACTIVE: 'ACTIVE',
-  ARCHIVED: 'ARCHIVED',
-  DELETED: 'DELETED',
-} as const;
-
-export type CollectionStatus =
-  (typeof CollectionStatus)[keyof typeof CollectionStatus];
+//
+// CollectionStatus was removed — see cleanup report §12. Collection no
+// longer has a lifecycle of its own; it either exists or is hard-deleted.
+//

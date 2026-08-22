@@ -47,16 +47,6 @@ export const ReminderEventName = {
 export type ReminderEventName =
   (typeof ReminderEventName)[keyof typeof ReminderEventName];
 
-export const SpaceEventName = {
-  CREATED: "space.created",
-  UPDATED: "space.updated",
-  DELETED: "space.deleted",
-  ARCHIVED: "space.archived",
-} as const;
-
-export type SpaceEventName =
-  (typeof SpaceEventName)[keyof typeof SpaceEventName];
-
 export const CollectionEventName = {
   CREATED: "collection.created",
   UPDATED: "collection.updated",
@@ -85,14 +75,6 @@ export const MediaEventName = {
 export type MediaEventName =
   (typeof MediaEventName)[keyof typeof MediaEventName];
 
-export const SearchEventName = {
-  INDEXED: "search.indexed",
-  REMOVED: "search.removed",
-} as const;
-
-export type SearchEventName =
-  (typeof SearchEventName)[keyof typeof SearchEventName];
-
 export const TimelineEventName = {
   RECORDED: "timeline.recorded",
 } as const;
@@ -108,41 +90,15 @@ export const SettingsEventName = {
 export type SettingsEventName =
   (typeof SettingsEventName)[keyof typeof SettingsEventName];
 
-export const HouseholdEventName = {
-  CREATED: "household.created",
-  MEMBER_ADDED: "household.member_added",
-  MEMBER_REMOVED: "household.member_removed",
-} as const;
-
-export type HouseholdEventName =
-  (typeof HouseholdEventName)[keyof typeof HouseholdEventName];
-
 export const CatalogEventName = {
   SCHEMA_REGISTERED: "catalog.schema_registered",
   SCHEMA_UPDATED: "catalog.schema_updated",
   OBJECT_DEFINITION_REGISTERED: "catalog.definition_registered",
   OBJECT_DEFINITION_UPDATED: "catalog.definition_updated",
-  CAPABILITY_EXECUTED: "capability.executed",
 } as const;
 
 export type CatalogEventName =
   (typeof CatalogEventName)[keyof typeof CatalogEventName];
-
-export const TemplateEventName = {
-  INSTALLED: "template.installed",
-  INSTALLATION_FAILED: "template.installation_failed",
-  OPERATION_FAILED: "template.operation_failed",
-  UPGRADED: "template.upgraded",
-  ROLLBACK_STARTED: "template.rollback_started",
-  ROLLBACK_COMPLETED: "template.rollback_completed",
-  ARCHIVED: "template.archived",
-  DELETED: "template.deleted",
-  IMPORTED: "template.imported",
-  EXPORTED: "template.exported",
-} as const;
-
-export type TemplateEventName =
-  (typeof TemplateEventName)[keyof typeof TemplateEventName];
 
 /**
  * Union type representing all valid domain event name string literals.
@@ -152,13 +108,9 @@ export type DomainEventName =
   | WorkspaceEventName
   | ObjectEventName
   | ReminderEventName
-  | SpaceEventName
   | CollectionEventName
   | NotificationEventName
   | MediaEventName
-  | SearchEventName
   | TimelineEventName
   | SettingsEventName
-  | HouseholdEventName
-  | CatalogEventName
-  | TemplateEventName;
+  | CatalogEventName;

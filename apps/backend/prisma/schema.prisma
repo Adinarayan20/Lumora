@@ -101,14 +101,11 @@ model User {
   events        Event[]
   objectsCreated Object[] @relation("ObjectAuthor")
   objectsUpdated Object[] @relation("ObjectModifier")
-  spacesCreated  Space[]  @relation("SpaceAuthor")
-  spacesUpdated  Space[]  @relation("SpaceModifier")
   collectionsCreated Collection[] @relation("CollectionAuthor")
   collectionsUpdated Collection[] @relation("CollectionModifier")
   remindersCreated  Reminder[]   @relation("ReminderAuthor")
   remindersUpdated  Reminder[]   @relation("ReminderModifier")
   remindersDismissed Reminder[]   @relation("ReminderDismissedBy")
-  relationships      Relationship[] @relation("RelationshipAuthor")
 
   @@index([email])
   @@index([username])
@@ -160,8 +157,6 @@ model Workspace {
   members WorkspaceMember[]
 
   roles Role[]
-
-  spaces Space[]
 
   invitations WorkspaceInvitation[]
 
@@ -334,27 +329,13 @@ enum EventStatus {
   FAILED
 }
 
-enum SpaceType {
-  PERSONAL
-  TEAM
-  SHARED
-}
-
-enum SpaceStatus {
-  ACTIVE
-  ARCHIVED
-  DELETED
-}
+//
+// enum SpaceType was removed alongside model Space — see cleanup report §4.
+//
 
 enum CollectionType {
   STATIC
   DYNAMIC
-}
-
-enum CollectionStatus {
-  ACTIVE
-  ARCHIVED
-  DELETED
 }
 
 enum ObjectType {
@@ -597,75 +578,19 @@ model SearchIndex {
   @@index([entityId])
 }
 
-model Space {
-  id String @id @default(uuid()) @db.Uuid
-
-  workspaceId String @db.Uuid
-
-  parentId String? @db.Uuid
-
-  createdById String @db.Uuid
-
-  updatedById String? @db.Uuid
-
-  slug String
-
-  name String
-
-  description String?
-
-  icon String?
-
-  emoji String?
-
-  cover String?
-
-  color String?
-
-  pinnedAt DateTime?
-
-  isFavorite Boolean @default(false)
-
-  status SpaceStatus @default(ACTIVE)
-
-  settings Json? @default("{}")
-
-  revision Int @default(1)
-
-  archivedAt DateTime?
-
-  deletedAt DateTime?
-
-  createdAt DateTime @default(now())
-
-  updatedAt DateTime @updatedAt
-
-  workspace Workspace @relation(fields: [workspaceId], references: [id])
-
-  parent Space? @relation("SpaceHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
-
-  children Space[] @relation("SpaceHierarchy")
-
-  createdBy User @relation("SpaceAuthor", fields: [createdById], references: [id])
-
-  updatedBy User? @relation("SpaceModifier", fields: [updatedById], references: [id])
-
-  objects Object[]
-
-  @@index([workspaceId, slug])
-  @@index([workspaceId, status])
-  @@index([workspaceId, parentId])
-  @@index([workspaceId, isFavorite])
-  @@index([workspaceId, pinnedAt])
-  @@index([createdById])
-}
+//
+// model Space was removed — see Lumora Repository Reset / Cleanup Report §4.
+// It had acquired lifecycle, hierarchy, and its own persistence/permission
+// surface, violating 02_DOMAIN_BUSINESS_LOGIC.md Invariant 38 (no
+// presentation-level grouping concept may acquire ownership, access,
+// membership, lifecycle, persistence, or tenancy semantics — Workspace is
+// the only concept with those semantics). Object.spaceId was removed with it.
+//
 
 model Object {
   id String @id @default(uuid()) @db.Uuid
 
   workspaceId String @db.Uuid
-
-  spaceId String? @db.Uuid
 
   createdById String @db.Uuid
 
@@ -711,8 +636,6 @@ model Object {
 
   workspace Workspace @relation(fields: [workspaceId], references: [id])
 
-  space Space? @relation(fields: [spaceId], references: [id])
-
   createdBy User @relation("ObjectAuthor", fields: [createdById], references: [id])
 
   updatedBy User? @relation("ObjectModifier", fields: [updatedById], references: [id])
@@ -722,8 +645,6 @@ model Object {
   timeline Timeline[]
 
   collectionItems CollectionItem[]
-  sourceRelationships Relationship[] @relation("RelationshipSource")
-  targetRelationships Relationship[] @relation("RelationshipTarget")
 
   @@unique([workspaceId, objectKey])
   @@index([workspaceId, status])
@@ -731,7 +652,6 @@ model Object {
   @@index([workspaceId, updatedAt(sort: Desc), id])
   @@index([workspaceId, isFavorite])
   @@index([workspaceId, pinnedAt])
-  @@index([spaceId])
   @@index([createdById])
   @@index([updatedById])
 }
@@ -900,6 +820,25 @@ model Timeline {
   @@index([action])
 }
 
+//
+// Collection was reduced — see Lumora Repository Reset / Cleanup Report §12.
+//
+// status/archivedAt/deletedAt/revision/pinnedAt/isFavorite/icon/emoji/cover/
+// color/settings were removed. Per 02_DOMAIN_BUSINESS_LOGIC.md Invariant 38
+// ("no presentation-level grouping concept... however named... or otherwise"
+// may acquire lifecycle/persistence semantics of its own), Collection is a
+// saved static list or saved dynamic query — not a peer aggregate to Object
+// with its own state machine. It does not own Objects (CollectionItem is a
+// join, cascade-deleting only membership rows, never Objects — Invariant 40
+// is not violated), so this is a reduction, not a full removal.
+//
+// A Collection either exists or is hard-deleted. No soft-delete recovery
+// window: it is not a concurrently-edited source of truth in the way Object
+// is, so it doesn't need Object's CAS revision machinery either.
+//
+// Never migrated (confirmed against migration history) — this edit requires
+// no migration, cheapest possible time to make this change.
+//
 model Collection {
   id String @id @default(uuid()) @db.Uuid
 
@@ -917,29 +856,8 @@ model Collection {
 
   type CollectionType @default(STATIC)
 
+  /// Query definition for DYNAMIC collections (saved queries). Null for STATIC.
   query Json?
-
-  icon String?
-
-  emoji String?
-
-  cover String?
-
-  color String?
-
-  pinnedAt DateTime?
-
-  isFavorite Boolean @default(false)
-
-  status CollectionStatus @default(ACTIVE)
-
-  settings Json? @default("{}")
-
-  revision Int @default(1)
-
-  archivedAt DateTime?
-
-  deletedAt DateTime?
 
   createdAt DateTime @default(now())
 
@@ -954,9 +872,6 @@ model Collection {
   items CollectionItem[]
 
   @@index([workspaceId, slug])
-  @@index([workspaceId, status])
-  @@index([workspaceId, isFavorite])
-  @@index([workspaceId, pinnedAt])
   @@index([createdById])
 }
 
@@ -980,84 +895,16 @@ model CollectionItem {
   @@index([objectId])
 }
 
-//////////////////////////////////////////////////////
-// TEMPLATES & INSTALLED TEMPLATES
-//////////////////////////////////////////////////////
-
-enum InstalledTemplateStatus {
-  DRAFT
-  VALIDATING
-  INSTALLING
-  ACTIVE
-  UPGRADED
-  ROLLING_BACK
-  FAILED
-  DISABLED
-  UNINSTALLING
-  ARCHIVED
-  DEPRECATED
-}
-
-model Template {
-  id          String   @id @default(uuid()) @db.Uuid
-  key         String   @unique
-  packageUuid String   @default(uuid())
-  publisherUuid String @default(uuid())
-  packageHash String
-  manifest    Json
-  content     Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([key])
-}
-
-model InstalledTemplate {
-  id               String                  @id @default(uuid()) @db.Uuid
-  workspaceId      String                  @db.Uuid
-  templateKey      String
-  installedVersion String
-  status           InstalledTemplateStatus @default(ACTIVE)
-  installedAt      DateTime                @default(now())
-  updatedAt        DateTime                @updatedAt
-
-  @@unique([workspaceId, templateKey])
-  @@index([workspaceId])
-  @@index([templateKey])
-}
-
-
-
-//////////////////////////////////////////////////////
-// RELATIONSHIPS
-//////////////////////////////////////////////////////
-
-/// Generic directed relationship between two Universal Objects within a workspace.
-/// Replaces any future object-type-specific relationship tables.
-/// Both sourceObjectId and targetObjectId must belong to the same workspace.
-model Relationship {
-  id             String    @id @default(uuid()) @db.Uuid
-  workspaceId    String    @db.Uuid
-  sourceObjectId String    @db.Uuid
-  targetObjectId String    @db.Uuid
-
-  /// Relationship semantics: 'parent', 'depends-on', 'related-to', 'blocks', 'duplicates', etc.
-  type           String
-
-  metadata       Json?
-  createdById    String    @db.Uuid
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  deletedAt      DateTime?
-
-  sourceObject   Object    @relation("RelationshipSource", fields: [sourceObjectId], references: [id], onDelete: Cascade)
-  targetObject   Object    @relation("RelationshipTarget", fields: [targetObjectId], references: [id], onDelete: Cascade)
-  createdBy      User      @relation("RelationshipAuthor", fields: [createdById], references: [id])
-
-  @@unique([workspaceId, sourceObjectId, targetObjectId, type])
-  @@index([workspaceId])
-  @@index([sourceObjectId])
-  @@index([targetObjectId])
-  @@index([workspaceId, type])
-}
-
+//
+// Template, InstalledTemplate, and Relationship models were removed —
+// see Lumora Repository Reset / Cleanup Report §3 and §6.
+//
+// Template/InstalledTemplate: package-manager-style install/upgrade/rollback
+// machinery explicitly rejected by 01_PRODUCT_VISION.md §10 and
+// 02_DOMAIN_BUSINESS_LOGIC.md §10 (frozen). Neither table was ever migrated
+// (no CREATE TABLE for either in migration history), so this removal
+// required no migration.
+//
+// Relationship: deferred to LATER per 02 §41 / 03 §11 — no V1 storage, API,
+// or service. Was never migrated either — schema-only removal.
+//

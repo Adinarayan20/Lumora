@@ -21,6 +21,23 @@ Phase 5 — Milestone 3 introduces the **Template Engine & Starter Library**, es
 4. Publish 9 explicit domain events through the Transactional Outbox stream.
 
 ## Status
+**SUPERSEDED** — see Lumora Repository Reset / Cleanup Report, §3.
+
+This ADR's decision was reversed. `01_PRODUCT_VISION.md` §10 and
+`02_DOMAIN_BUSINESS_LOGIC.md` §10 (frozen) explicitly reject
+package-manager-style install/upgrade/rollback/dependency-resolution
+semantics for templates. Everything described below — `TemplateManifest`/
+`TemplateContent`, the DAG dependency resolver, the dry-run planner, the
+rollback engine, exclusive operation locking, and the policy engine — was
+implemented and has since been deleted from the codebase.
+
+This document is retained as a historical record of a decision that was
+made and later reversed, not as active architecture. Do not reimplement
+this system. If a starter-content feature is wanted in the future, it
+should be plain seed data (JSON) consumed by ordinary application code —
+metadata/content, not a versioned runtime with its own lifecycle.
+
+## Original Status (superseded)
 Accepted
 
 ## Consequences

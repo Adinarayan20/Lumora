@@ -18,7 +18,6 @@ import {
 export interface ObjectAggregateProps {
   id?: UniqueEntityId;
   workspaceId: UniqueEntityId;
-  spaceId?: UniqueEntityId;
   createdById: UniqueEntityId;
   updatedById?: UniqueEntityId;
   objectKey: ObjectKey;
@@ -46,7 +45,6 @@ export interface ObjectAggregateProps {
  */
 export class ObjectAggregate extends AggregateRoot<UniqueEntityId> {
   public readonly workspaceId: UniqueEntityId;
-  public spaceId?: UniqueEntityId | undefined;
   public readonly createdById: UniqueEntityId;
   public updatedById?: UniqueEntityId | undefined;
   public readonly objectKey: ObjectKey;
@@ -71,7 +69,6 @@ export class ObjectAggregate extends AggregateRoot<UniqueEntityId> {
   private constructor(props: ObjectAggregateProps) {
     super(props.id);
     this.workspaceId = props.workspaceId;
-    this.spaceId = props.spaceId;
     this.createdById = props.createdById;
     this.updatedById = props.updatedById;
     this.objectKey = props.objectKey;
@@ -123,7 +120,6 @@ export class ObjectAggregate extends AggregateRoot<UniqueEntityId> {
         aggregate.typeKey,
         aggregate.title.toValue(),
         aggregate.createdById,
-        aggregate.spaceId,
       ),
     );
 
@@ -163,7 +159,6 @@ export class ObjectAggregate extends AggregateRoot<UniqueEntityId> {
       emoji?: string;
       cover?: string;
       color?: string;
-      spaceId?: UniqueEntityId;
       isFavorite?: boolean;
       status?: ObjectStatus;
       pinnedAt?: Date;
@@ -177,7 +172,6 @@ export class ObjectAggregate extends AggregateRoot<UniqueEntityId> {
     if (props.emoji !== undefined) this.emoji = props.emoji;
     if (props.cover !== undefined) this.cover = props.cover;
     if (props.color !== undefined) this.color = props.color;
-    if (props.spaceId !== undefined) this.spaceId = props.spaceId;
     if (props.isFavorite !== undefined) this.isFavorite = props.isFavorite;
     if (props.status !== undefined) this.status = props.status;
     if (props.pinnedAt !== undefined) this.pinnedAt = props.pinnedAt;

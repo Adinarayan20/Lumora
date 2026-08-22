@@ -75,7 +75,6 @@ export class UpdateObjectUseCase {
         emoji: dto.emoji,
         cover: dto.cover,
         color: dto.color,
-        spaceId: dto.spaceId ? new UniqueEntityId(dto.spaceId) : undefined,
         isFavorite: dto.isFavorite,
         status: dto.status as ObjectStatus | undefined,
         pinnedAt: dto.pinnedAt ? new Date(dto.pinnedAt) : undefined,
