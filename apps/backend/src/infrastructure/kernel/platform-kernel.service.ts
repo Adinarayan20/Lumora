@@ -34,9 +34,7 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
   private readonly logger = new Logger(LumoraPlatformKernel.name);
   private _isBooted = false;
 
-  constructor(
-    private readonly schemaCache: RedisSchemaCache,
-  ) {}
+  constructor(private readonly schemaCache: RedisSchemaCache) {}
 
   public async onModuleInit(): Promise<void> {
     await this.bootstrap();
@@ -56,7 +54,9 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
     );
 
     if (registeredTypes.length === 0) {
-      this.logger.warn('[Kernel] WARNING: ObjectCatalogRegistry returned zero types. Check @lumora/shared build.');
+      this.logger.warn(
+        '[Kernel] WARNING: ObjectCatalogRegistry returned zero types. Check @lumora/shared build.',
+      );
     }
 
     // Step 2: Log type → extension mappings at DEBUG level
@@ -71,7 +71,9 @@ export class LumoraPlatformKernel implements IPlatformKernel, OnModuleInit {
       await this.schemaCache.getSchema('__kernel_probe__', '__probe__');
       this.logger.log('[Kernel] Redis Schema Cache — connected.');
     } catch {
-      this.logger.warn('[Kernel] Redis Schema Cache — unavailable (non-fatal, cache-miss fallback active).');
+      this.logger.warn(
+        '[Kernel] Redis Schema Cache — unavailable (non-fatal, cache-miss fallback active).',
+      );
     }
 
     const durationMs = Date.now() - startTime;

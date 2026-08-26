@@ -185,5 +185,4 @@ export class OutboxEventHandlerService implements IDomainEventPublisher {
       },
     });
   }
-
 }

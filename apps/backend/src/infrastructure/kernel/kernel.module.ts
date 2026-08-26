@@ -18,13 +18,7 @@ import { LumoraPlatformKernel } from './platform-kernel.service.js';
 @Global()
 @Module({
   imports: [RedisModule],
-  providers: [
-    RedisSchemaCache,
-    LumoraPlatformKernel,
-  ],
-  exports: [
-    RedisSchemaCache,
-    LumoraPlatformKernel,
-  ],
+  providers: [RedisSchemaCache, LumoraPlatformKernel],
+  exports: [RedisSchemaCache, LumoraPlatformKernel],
 })
 export class KernelModule {}
