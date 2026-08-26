@@ -145,7 +145,7 @@ Every request carries one resolved Workspace context, derived server-side, never
 
 ## 14. Authorization Architecture — Capability Keys Are Vocabulary, Not RBAC
 
-A capability key (`responsibility.occurrence.complete`) names *what* is checked — it is not a role, a permission grant, or evidence of a role-resolution engine. For V1, the evaluation behind nearly every key is simply "is the actor the Object's Owner" (02's Owner-only rules, restored after "workspace role with edit authority" was found undefined in five places during domain hardening). The one exception is Responsibility completion, where an active assignee also qualifies. No permission matrix, no role table, no general resolution engine exists or is implied.
+A capability key (`responsibility.occurrence.complete`) names *what* is checked — it is not a role, a permission grant, or evidence of a role-resolution engine. For V1, the evaluation behind nearly every key is simply "is the actor the Object's Owner" (02's Owner-only rules, restored after "workspace role with edit authority" was found undefined in five places during domain hardening). The one exception is Responsibility completion, where an active assignee also qualifies. No permission matrix, no role table, no general resolution engine exists or is implied. This applies specifically to object-level access and action authority — whether a given actor may view or act on a given Object — which `02` §8 governs via Owner status and Grants. It does not describe or constrain workspace/platform-administration authorization (workspace membership, workspace-level roles, administrative operations), which remains a separate concern served by the existing RBAC infrastructure (`Role`/`Permission`/`RolePermission`). The two are architecturally distinct layers answering different questions — workspace-administration authority versus object-level access — and neither replaces the other.
 
 ## 15. Category/TypeKey Presentation Architecture
 
@@ -189,16 +189,21 @@ Non-sequential Object IDs remove enumeration as a viable attack independent of w
 
 ## 23. Implementation Truth vs. Target
 
-**Repository implementation audit: verified**, re-checked directly against source at HEAD `903fbad612929486569105941597e174cb4388b3`, branch `main`, working tree clean (one untracked build artifact, not a code change).
+Repository truth as of HEAD `4974ccaae3e2fd10bca5084fd833ad4b298ffb34` (refreshed from the original `903fbad` snapshot). This describes what the repository's source code, `schema.prisma`, and committed migration files contain — it does not describe or assume the state of any actual database, which repository evidence alone cannot establish.
 
-| Claim | Evidence | State |
-|---|---|---|
-| Household unwired | `grep "Household" app.module.ts` → no match | REMOVE confirmed |
-| Reminders completion bug | `reminders.service.ts` `completeReminder()` — blind `update()`, no revision check, actor written to `updatedById` not a dedicated field | REBUILD confirmed |
-| Templates dead/unwired | Controller file exists, no module file, not importable | REMOVE confirmed |
-| Redis present | `infrastructure/redis/providers/*` | REMOVE confirmed (premature) |
-| Capability engine uncalled | Only its own test specs reference it | REMOVE confirmed |
-| Mobile app scaffold-only | 7 files total, unchanged | REBUILD (near-zero) confirmed |
+| Item | Repository Truth |
+|---|---|
+| Space | Domain aggregate and `Object.spaceId` removed from application source and `schema.prisma`. A migration dropping the `Space` table and `Object.spaceId` column is committed to the repository's migration history; whether it has been executed against any database is not established by repository evidence. |
+| Relationship | Domain/application/infrastructure code and the `Relationship` model removed from application source and `schema.prisma`. The same migration referenced above also drops the `Relationship` table; same caveat on execution status. |
+| Household | Removed from application source. Never had a corresponding table in any committed migration — no database-side action was ever required for this one. |
+| Template Engine | Package-manager-style install/upgrade/rollback/version/dependency-resolution code removed from application source. `Template`/`InstalledTemplate` removed from `schema.prisma`; neither ever had a corresponding table in any committed migration. |
+| Capability Engine | `CapabilityRegistry`, `CapabilityExecutor`, and `UniversalCapabilityEngine` — the capability-execution runtime — removed from application source. Distinct from the object-type cataloging code that remains: `ObjectCatalogRegistry` (`packages/shared`, static/in-memory) is live, wired, and consumed by `LumoraPlatformKernel` at boot. `SchemaRegistryAggregate` and `ObjectDefinitionRegistryAggregate` (`apps/backend/src/domain/catalog/`) and their application-layer use-cases exist and are tested but are not registered as a provider in any module — `CatalogModule` itself wires only an intentionally-stubbed `CatalogService`/`CatalogController`. None of this was part of what was removed. |
+| `LumoraObjectRuntime` | Removed from application source (confirmed zero consumers outside its own test file prior to removal). |
+| Unused domain Redis caches | Object/Workspace/User cache providers removed from application source, after confirming zero consumers in the repository. |
+| Legitimate Redis infrastructure | Rate limiting, schema cache, and queue transport (BullMQ) remain in the repository, each retained independently of the removal above. |
+| Reminder / ReminderExecution / Notification | Unchanged from the pre-cleanup model in application source — still the mutable-state implementation. Rebuild has not started; excluded from the approved clean-baseline migration target under design (§6 of this document specifies the intended replacement architecture). |
+| RBAC (`Role`/`Permission`/`RolePermission`) | Unchanged, present in application source. See §14's clarified scope for its relationship to object-level Grants. |
+| Mobile app | Clean scaffold, zero product screens, unchanged from the original repository state. |
 
 **Build/test health: unverified** — `prisma generate` blocked by this sandbox's network allowlist (`binaries.prisma.sh` not reachable); stated as an environment limitation, not claimed either way. **Target architecture: defined** (this document). **Implementation conformance: not yet established.**
 

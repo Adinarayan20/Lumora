@@ -14,12 +14,12 @@ Lumora is a Personal Life Operating System built on a **Universal Object Model**
 
 ## Documentation & Architecture
 
-All documentation is reconciled and maintained as a single source of truth in the [`docs/`](docs/) directory:
+All documentation is reconciled and maintained as a single source of truth in the [`docs/`](docs/) directory. The frozen architectural contract — [`docs/00_DOCUMENTATION_INDEX.md`](docs/00_DOCUMENTATION_INDEX.md) through `docs/04_DATA_SECURITY_RELIABILITY.md` — is the primary authority; everything below is subordinate to it.
 
-- **[Master Documentation Index](docs/README.md)**: [`docs/README.md`](docs/README.md)
-- **Current Architecture**: [`docs/architecture/CURRENT_ARCHITECTURE.md`](docs/architecture/CURRENT_ARCHITECTURE.md)
+- **Master Documentation Index**: [`docs/README.md`](docs/README.md)
+- **Frozen Architectural Contract**: [`docs/00_DOCUMENTATION_INDEX.md`](docs/00_DOCUMENTATION_INDEX.md)
 - **Team Ownership Boundaries**: [`docs/architecture/DEVELOPMENT_BOUNDARIES.md`](docs/architecture/DEVELOPMENT_BOUNDARIES.md)
-- **Product Roadmap**: [`docs/architecture/PRODUCT_ROADMAP.md`](docs/architecture/PRODUCT_ROADMAP.md)
+- **Product Roadmap**: [`docs/product/PRODUCT_ROADMAP.md`](docs/product/PRODUCT_ROADMAP.md)
 - **Technical Debt Registry**: [`docs/architecture/TECH_DEBT.md`](docs/architecture/TECH_DEBT.md)
 - **Architecture Decision Records**: [`docs/architecture/adr/`](docs/architecture/adr/)
 
