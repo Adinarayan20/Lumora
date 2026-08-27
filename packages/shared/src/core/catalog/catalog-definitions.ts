@@ -26,13 +26,6 @@ export const BUILT_IN_CATALOG_DEFINITIONS: readonly ObjectTypeMetadata[] =
       ]),
     }),
     Object.freeze({
-      typeKey: ObjectTypeKey.REMINDER,
-      displayNameKey: "object.type.reminder.name",
-      descriptionKey: "object.type.reminder.description",
-      iconKey: "reminder",
-      supportedExtensions: Object.freeze([BehaviorExtensionKey.REMINDER]),
-    }),
-    Object.freeze({
       typeKey: ObjectTypeKey.EVENT,
       displayNameKey: "object.type.event.name",
       descriptionKey: "object.type.event.description",

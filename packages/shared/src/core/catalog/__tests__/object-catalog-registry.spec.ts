@@ -20,7 +20,7 @@ describe("ObjectCatalogRegistry", () => {
   it("should return all registered metadata definitions", () => {
     const allMeta = ObjectCatalogRegistry.getAll();
 
-    expect(allMeta.length).toBeGreaterThanOrEqual(6);
+    expect(allMeta.length).toBeGreaterThanOrEqual(5);
     expect(allMeta.some((m) => m.typeKey === ObjectTypeKey.NOTE)).toBe(true);
     expect(allMeta.some((m) => m.typeKey === ObjectTypeKey.HABIT)).toBe(true);
   });
