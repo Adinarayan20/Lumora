@@ -2,9 +2,14 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client.js';
 import { GLOBAL_PERMISSIONS_SEED } from './data/permissions.seed';
 
-const connectionString =
-  process.env.DATABASE_URL ||
-  'postgresql://neondb_owner:npg_96SLNpxPXteZ@ep-silent-poetry-ayc8mmx1-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  console.error(
+    '❌ DATABASE_URL environment variable is not set. ' +
+      'Copy apps/backend/.env.example to apps/backend/.env and fill in your database credentials.',
+  );
+  process.exit(1);
+}
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
